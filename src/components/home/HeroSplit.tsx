@@ -26,7 +26,7 @@ export default function HeroSplit() {
     <section className="flex flex-col-reverse md:flex-row w-full min-h-screen md:h-screen">
       <HeroSide
         side="btp"
-        dates="2008 — 2022 · BTP"
+        dates="2008 - 2022 · BTP"
         title="BIM Manager"
         subtitle="Bouygues Construction"
         tags={["Maquette numérique", "100+ modèles", "2 milliards €"]}
@@ -37,7 +37,7 @@ export default function HeroSplit() {
 
       <HeroSide
         side="dev"
-        dates="2022 — aujourd'hui · DEV"
+        dates="2022 - aujourd'hui · DEV"
         title="Développeur"
         subtitle="TypeScript, Node.js, React, Prisma"
         tags={["Claude Code", "Docker", "Nginx"]}

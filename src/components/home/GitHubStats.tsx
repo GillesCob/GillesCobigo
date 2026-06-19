@@ -20,7 +20,7 @@ export default function GitHubStats() {
     <section className="py-10 px-4 border-b border-border">
       <div className="max-w-4xl mx-auto">
         <p className="text-muted-foreground text-xs uppercase tracking-widest mb-6 text-center font-mono">
-          GitHub — en direct
+          GitHub - en direct
         </p>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
           {isLoading ? (

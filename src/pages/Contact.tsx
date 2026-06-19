@@ -114,12 +114,12 @@ export default function Contact() {
                 <Linkedin size={16} /> linkedin.com/in/gillescobigo
               </a>
               <a
-                href="https://github.com/gillescobigo"
+                href="https://github.com/gillescob"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                <Github size={16} /> github.com/gillescobigo
+                <Github size={16} /> github.com/gillescob
               </a>
             </div>
           </div>
@@ -129,7 +129,7 @@ export default function Contact() {
             <div className="flex flex-col gap-2.5 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Clock size={14} className="flex-shrink-0" />
-                <span>Disponible — ouvert aux missions freelance et CDI</span>
+                <span>Disponible - ouvert aux missions freelance et CDI</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin size={14} className="flex-shrink-0" />
