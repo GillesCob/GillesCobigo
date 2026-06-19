@@ -1,9 +1,9 @@
-import ProjectCard from '@/components/projects/ProjectCard'
-import { devProjects } from '@/data/devProjects'
+import ProjectCard from "@/components/projects/ProjectCard";
+import { devProjects } from "@/data/devProjects";
 
 export default function Projects() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-16">
+    <div className="max-w-6xl mx-auto px-4 py-16 mt-11">
       <h1 className="text-3xl font-bold mb-3">Projets</h1>
       <p className="text-muted-foreground mb-12">
         Tout ce qui est en prod, en cours ou qui m&apos;a appris quelque chose.
@@ -14,5 +14,5 @@ export default function Projects() {
         ))}
       </div>
     </div>
-  )
+  );
 }
