@@ -1,14 +1,14 @@
-import { useState } from 'react'
-import ArticleCard from '@/components/articles/ArticleCard'
-import { useArticles } from '@/hooks/useArticles'
-import { Button } from '@/components/ui/button'
+import { useState } from "react";
+import ArticleCard from "@/components/articles/ArticleCard";
+import { useArticles } from "@/hooks/useArticles";
+import { Button } from "@/components/ui/button";
 
 export default function Articles() {
-  const [page, setPage] = useState(1)
-  const { data: articles, isLoading, isError } = useArticles(page, 9)
+  const [page, setPage] = useState(1);
+  const { data: articles, isLoading, isError } = useArticles(page, 9);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-16">
+    <div className="max-w-6xl mx-auto px-4 py-16 mt-11">
       <h1 className="text-3xl font-bold mb-3">Articles</h1>
       <p className="text-muted-foreground mb-12">
         Notes de parcours, retours d&apos;expérience, explorations techniques.
@@ -50,5 +50,5 @@ export default function Articles() {
         </>
       )}
     </div>
-  )
+  );
 }

@@ -1,16 +1,16 @@
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { Github, Linkedin, MapPin, Clock } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Github, Linkedin, MapPin, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface IContactForm {
-  name: string
-  email: string
-  message: string
+  name: string;
+  email: string;
+  message: string;
 }
 
 // Remplacer par ton ID Formspree après création du compte : https://formspree.io
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/PLACEHOLDER_FORM_ID'
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/mykarjar";
 
 export default function Contact() {
   const {
@@ -18,31 +18,29 @@ export default function Contact() {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<IContactForm>()
-  const [submitted, setSubmitted] = useState(false)
-  const [submitError, setSubmitError] = useState<string | null>(null)
+  } = useForm<IContactForm>();
+  const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   async function onSubmit(data: IContactForm) {
-    setSubmitError(null)
+    setSubmitError(null);
     const res = await fetch(FORMSPREE_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify(data),
-    })
+    });
     if (res.ok) {
-      setSubmitted(true)
-      reset()
+      setSubmitted(true);
+      reset();
     } else {
-      setSubmitError('Envoi échoué. Contacte-moi directement sur LinkedIn.')
+      setSubmitError("Envoi échoué. Contacte-moi directement sur LinkedIn.");
     }
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-16">
+    <div className="max-w-4xl mx-auto px-4 py-16 mt-11">
       <h1 className="text-3xl font-bold mb-3">Contact</h1>
-      <p className="text-muted-foreground mb-12">
-        Pour une mission, un projet, ou juste échanger sur la stack.
-      </p>
+      <p className="text-muted-foreground mb-12">Pour une mission, un projet, ou juste échanger sur la stack.</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         <div>
@@ -59,13 +57,11 @@ export default function Contact() {
                 </label>
                 <input
                   id="name"
-                  {...register('name', { required: 'Champ obligatoire' })}
+                  {...register("name", { required: "Champ obligatoire" })}
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
                   placeholder="Votre nom"
                 />
-                {errors.name && (
-                  <p className="text-destructive text-xs mt-1">{errors.name.message}</p>
-                )}
+                {errors.name && <p className="text-destructive text-xs mt-1">{errors.name.message}</p>}
               </div>
 
               <div>
@@ -75,13 +71,11 @@ export default function Contact() {
                 <input
                   id="email"
                   type="email"
-                  {...register('email', { required: 'Champ obligatoire' })}
+                  {...register("email", { required: "Champ obligatoire" })}
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
                   placeholder="votre@email.com"
                 />
-                {errors.email && (
-                  <p className="text-destructive text-xs mt-1">{errors.email.message}</p>
-                )}
+                {errors.email && <p className="text-destructive text-xs mt-1">{errors.email.message}</p>}
               </div>
 
               <div>
@@ -90,20 +84,18 @@ export default function Contact() {
                 </label>
                 <textarea
                   id="message"
-                  {...register('message', { required: 'Champ obligatoire' })}
+                  {...register("message", { required: "Champ obligatoire" })}
                   rows={5}
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none transition-colors"
                   placeholder="Votre message..."
                 />
-                {errors.message && (
-                  <p className="text-destructive text-xs mt-1">{errors.message.message}</p>
-                )}
+                {errors.message && <p className="text-destructive text-xs mt-1">{errors.message.message}</p>}
               </div>
 
               {submitError && <p className="text-destructive text-sm">{submitError}</p>}
 
               <Button type="submit" disabled={isSubmitting} className="self-start">
-                {isSubmitting ? 'Envoi...' : 'Envoyer'}
+                {isSubmitting ? "Envoi..." : "Envoyer"}
               </Button>
             </form>
           )}
@@ -148,5 +140,5 @@ export default function Contact() {
         </div>
       </div>
     </div>
-  )
+  );
 }
