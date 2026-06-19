@@ -1,22 +1,29 @@
-import { AnimatePresence, motion } from 'framer-motion'
-import { X, ExternalLink, Github } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import type { IBTPProject } from '@/data/btpProjects'
-import type { IDevProject } from '@/data/devProjects'
+import { AnimatePresence, motion } from "framer-motion";
+import { X, ExternalLink, Github } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import type { IBTPProject } from "@/data/btpProjects";
+import type { IDevProject } from "@/data/devProjects";
 
 interface IProjectModalProps {
-  isOpen: boolean
-  onClose: () => void
-  project: IBTPProject | IDevProject | null
-  side: 'btp' | 'dev'
+  isOpen: boolean;
+  onClose: () => void;
+  project: IBTPProject | IDevProject | null;
+  side: "btp" | "dev";
 }
 
-function isBTPProject(p: IBTPProject | IDevProject): p is IBTPProject {
-  return 'imagePlaceholder' in p
+function isDevProject(p: IBTPProject | IDevProject): p is IDevProject {
+  return "stack" in p;
+}
+
+function getProjectImage(p: IBTPProject | IDevProject): string | undefined {
+  return p.image;
 }
 
 export default function ProjectModal({ isOpen, onClose, project, side }: IProjectModalProps) {
+  const bgColor = side === "btp" ? "#2C1810" : "#111111";
+  const overlayColor = side === "btp" ? "44,24,16" : "10,10,10";
+
   return (
     <AnimatePresence>
       {isOpen && project && (
@@ -35,19 +42,19 @@ export default function ProjectModal({ isOpen, onClose, project, side }: IProjec
             initial={{ opacity: 0, scale: 0.95, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 8 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
           >
             <div
               className="relative w-full max-w-lg rounded-xl overflow-hidden shadow-2xl pointer-events-auto"
-              style={{ backgroundColor: side === 'btp' ? '#2C1810' : '#111111' }}
+              style={{ backgroundColor: bgColor }}
               onClick={(e) => e.stopPropagation()}
             >
-              {isBTPProject(project) && (
+              {getProjectImage(project) && (
                 <div
                   className="h-48 bg-cover bg-center flex-shrink-0"
                   style={{
-                    backgroundImage: `linear-gradient(to bottom, rgba(44,24,16,0.2), rgba(44,24,16,0.9)), url(${project.imagePlaceholder})`,
-                    backgroundColor: '#3d2415',
+                    backgroundImage: `linear-gradient(to bottom, rgba(${overlayColor},0.2), rgba(${overlayColor},0.9)), url(${getProjectImage(project)})`,
+                    backgroundColor: bgColor,
                   }}
                 />
               )}
@@ -66,15 +73,11 @@ export default function ProjectModal({ isOpen, onClose, project, side }: IProjec
 
                 <p className="text-white/75 text-sm leading-relaxed mb-4">{project.description}</p>
 
-                {!isBTPProject(project) && (
+                {isDevProject(project) && (
                   <>
                     <div className="flex flex-wrap gap-2 mb-3">
                       {project.stack.map((tech) => (
-                        <Badge
-                          key={tech}
-                          variant="outline"
-                          className="border-white/20 text-white/55 text-xs"
-                        >
+                        <Badge key={tech} variant="outline" className="border-white/20 text-white/55 text-xs">
                           {tech}
                         </Badge>
                       ))}
@@ -116,5 +119,5 @@ export default function ProjectModal({ isOpen, onClose, project, side }: IProjec
         </>
       )}
     </AnimatePresence>
-  )
+  );
 }

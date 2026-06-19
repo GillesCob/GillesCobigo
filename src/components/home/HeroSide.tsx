@@ -1,58 +1,47 @@
-import { Badge } from '@/components/ui/badge'
-
 interface IProjectItem {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 interface IHeroSideProps {
-  side: 'btp' | 'dev'
-  dates: string
-  title: string
-  tags: string[]
-  bgColor: string
-  projectItems: IProjectItem[]
-  onProjectClick: (id: string) => void
+  side: "btp" | "dev";
+  dates: string;
+  title: string;
+  subtitle: string;
+  tags: string[];
+  projectItems: IProjectItem[]; // Ce sont ces items qui deviennent les boutons cliquables
+  bgColor: string;
+  onProjectClick: (id: string) => void;
 }
 
-export default function HeroSide({
-  dates,
-  title,
-  tags,
-  bgColor,
-  projectItems,
-  onProjectClick,
-}: IHeroSideProps) {
+export default function HeroSide({ dates, title, subtitle, projectItems, bgColor, onProjectClick }: IHeroSideProps) {
   return (
     <div
-      className="relative flex flex-col justify-between w-full md:w-1/2 min-h-[60vh] md:min-h-screen px-8 py-12 md:px-14 md:py-16"
+      className="relative flex flex-col w-full md:w-1/2 min-h-screen md:h-screen pt-24 md:pt-96 pb-16 px-8 md:px-16 md:overflow-hidden"
       style={{ backgroundColor: bgColor }}
     >
-      <p className="text-white/40 text-xs font-mono tracking-widest uppercase">{dates}</p>
+      <div className="w-full max-w-xl">
+        <p className="text-white/40 text-sm font-mono tracking-widest uppercase mb-10">{dates}</p>
 
-      <div className="flex flex-col gap-8">
-        <h2 className="text-white text-5xl md:text-6xl font-bold tracking-tight">{title}</h2>
-        <ul className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2 mb-10">
+          <h2 className="text-white text-5xl md:text-6xl font-bold leading-[1.1]" style={{ opacity: 0.4 }}>
+            {title}
+          </h2>
+          <p className="text-white/90 text-2xl md:text-3xl font-medium">{subtitle}</p>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
           {projectItems.map((project) => (
-            <li key={project.id}>
-              <button
-                onClick={() => onProjectClick(project.id)}
-                className="text-white/75 hover:text-white text-xl md:text-2xl font-medium hover:underline underline-offset-4 transition-colors text-left"
-              >
-                {project.name}
-              </button>
-            </li>
+            <button
+              key={project.id}
+              onClick={() => onProjectClick(project.id)}
+              className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white rounded-sm text-sm transition-colors"
+            >
+              {project.name}
+            </button>
           ))}
-        </ul>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {tags.map((tag) => (
-          <Badge key={tag} variant="outline" className="border-white/25 text-white/50 text-xs">
-            {tag}
-          </Badge>
-        ))}
+        </div>
       </div>
     </div>
-  )
+  );
 }

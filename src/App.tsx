@@ -1,9 +1,9 @@
-import { Routes, Route } from 'react-router-dom'
-import Navbar from '@/components/layout/Navbar'
-import Home from '@/pages/Home'
-import Projects from '@/pages/Projects'
-import Articles from '@/pages/Articles'
-import Contact from '@/pages/Contact'
+import { Routes, Route } from "react-router-dom";
+import Navbar from "@/components/layout/Navbar";
+import Home from "@/pages/Home";
+import Projects from "@/pages/Projects";
+import Articles from "@/pages/Articles";
+import Contact from "@/pages/Contact";
 
 export default function App() {
   return (
@@ -18,5 +18,5 @@ export default function App() {
         </Routes>
       </main>
     </>
-  )
+  );
 }
