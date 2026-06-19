@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useThemeStore } from "@/store/themeStore";
 
 interface ISkill {
   name: string;
@@ -112,11 +113,14 @@ const THEORY_STROKE = "#4A90D9";
 const THEORY_FILL = "rgba(74,144,217,0.12)";
 const PRACTICE_STROKE = "#E8734A";
 const PRACTICE_FILL = "rgba(232,115,74,0.12)";
-const GRID_COLOR = "rgba(0,0,0,0.08)";
-const TEXT_COLOR = "#555";
 
 export default function SkillsRadar() {
   const [selected, setSelected] = useState<number | null>(null);
+  const { theme } = useThemeStore();
+  const isDark = theme === "dark";
+  const gridColor = isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)";
+  const textColor = isDark ? "#aaa" : "#555";
+  const dotFill = isDark ? "#111" : "#fff";
   const n = categories.length;
 
   const theoryValues = categories.map((c) => c.theory);
@@ -127,45 +131,17 @@ export default function SkillsRadar() {
   }
 
   return (
-    <div style={{ fontFamily: "sans-serif", maxWidth: 640, margin: "0 auto" }}>
-      <div
-        style={{
-          display: "flex",
-          gap: 20,
-          marginBottom: 12,
-          fontSize: 13,
-          color: "#666",
-          flexWrap: "wrap",
-          alignItems: "center",
-        }}
-      >
-        <span>
-          <span
-            style={{
-              display: "inline-block",
-              width: 10,
-              height: 10,
-              borderRadius: "50%",
-              background: THEORY_STROKE,
-              marginRight: 6,
-            }}
-          />
+    <div className="font-sans max-w-2xl mx-auto">
+      <div className="flex flex-wrap gap-5 mb-3 text-sm text-muted-foreground items-center">
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block w-2.5 h-2.5 rounded-full" style={{ background: THEORY_STROKE }} />
           Théorique
         </span>
-        <span>
-          <span
-            style={{
-              display: "inline-block",
-              width: 10,
-              height: 10,
-              borderRadius: "50%",
-              background: PRACTICE_STROKE,
-              marginRight: 6,
-            }}
-          />
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block w-2.5 h-2.5 rounded-full" style={{ background: PRACTICE_STROKE }} />
           Pratique
         </span>
-        <span style={{ color: "#999", fontStyle: "italic" }}>
+        <span className="italic text-muted-foreground/70">
           Cliquer sur une section pour le détail
         </span>
       </div>
@@ -180,7 +156,7 @@ export default function SkillsRadar() {
             key={l}
             points={toPolyPoints(Array(n).fill((l + 1) * 20), n)}
             fill="none"
-            stroke={GRID_COLOR}
+            stroke={gridColor}
             strokeWidth={0.8}
           />
         ))}
@@ -194,7 +170,7 @@ export default function SkillsRadar() {
               y1={cy}
               x2={x2}
               y2={y2}
-              stroke={GRID_COLOR}
+              stroke={gridColor}
               strokeWidth={0.8}
             />
           );
@@ -233,7 +209,7 @@ export default function SkillsRadar() {
                 y={ly}
                 textAnchor={anchor}
                 fontSize={13}
-                fill={selected === i ? THEORY_STROKE : TEXT_COLOR}
+                fill={selected === i ? THEORY_STROKE : textColor}
                 fontWeight={selected === i ? "600" : "500"}
               >
                 {cat.label}
@@ -242,7 +218,7 @@ export default function SkillsRadar() {
                 cx={px}
                 cy={py}
                 r={selected === i ? 6 : 4}
-                fill={selected === i ? THEORY_STROKE : "#fff"}
+                fill={selected === i ? THEORY_STROKE : dotFill}
                 stroke={THEORY_STROKE}
                 strokeWidth={2}
               />
@@ -252,101 +228,34 @@ export default function SkillsRadar() {
       </svg>
 
       {selected !== null && (
-        <div
-          style={{
-            marginTop: 20,
-            background: "#fff",
-            border: "0.5px solid rgba(0,0,0,0.1)",
-            borderRadius: 12,
-            padding: "1.25rem",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 12,
-            }}
-          >
-            <p style={{ fontWeight: 600, fontSize: 15, margin: 0 }}>
-              {categories[selected].label}
-            </p>
-            <span style={{ fontSize: 12, color: "#999" }}>théorie / pratique</span>
+        <div className="mt-5 rounded-xl border border-border bg-card p-5">
+          <div className="flex justify-between items-center mb-3">
+            <p className="font-semibold text-sm m-0">{categories[selected].label}</p>
+            <span className="text-xs text-muted-foreground">théorie / pratique</span>
           </div>
 
           {categories[selected].skills.map((s, idx) => (
             <div
               key={idx}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-                padding: "8px 0",
-                borderBottom:
-                  idx < categories[selected].skills.length - 1
-                    ? "0.5px solid rgba(0,0,0,0.08)"
-                    : "none",
-              }}
+              className="flex items-center gap-2.5 py-2 border-b border-border/50 last:border-0"
             >
-              <span style={{ fontSize: 13, minWidth: 150, color: "#333" }}>
-                {s.name}
-              </span>
+              <span className="text-sm min-w-[150px] text-foreground">{s.name}</span>
 
-              <div
-                style={{
-                  flex: 1,
-                  height: 6,
-                  background: "#f0f0f0",
-                  borderRadius: 3,
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    width: `${s.theory}%`,
-                    height: "100%",
-                    background: THEORY_STROKE,
-                    borderRadius: 3,
-                  }}
-                />
+              <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                <div style={{ width: `${s.theory}%`, height: "100%", background: THEORY_STROKE }} />
               </div>
-              <span style={{ fontSize: 12, color: "#666", minWidth: 26, textAlign: "right" }}>
+              <span className="text-xs text-muted-foreground min-w-[26px] text-right tabular-nums">
                 {s.theory}
               </span>
 
-              <div
-                style={{
-                  flex: 1,
-                  height: 6,
-                  background: "#f0f0f0",
-                  borderRadius: 3,
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    width: `${s.practice}%`,
-                    height: "100%",
-                    background: PRACTICE_STROKE,
-                    borderRadius: 3,
-                  }}
-                />
+              <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                <div style={{ width: `${s.practice}%`, height: "100%", background: PRACTICE_STROKE }} />
               </div>
-              <span style={{ fontSize: 12, color: "#666", minWidth: 26, textAlign: "right" }}>
+              <span className="text-xs text-muted-foreground min-w-[26px] text-right tabular-nums">
                 {s.practice}
               </span>
 
-              <span
-                style={{
-                  fontSize: 11,
-                  padding: "2px 8px",
-                  borderRadius: 6,
-                  background: "#f5f5f5",
-                  color: "#888",
-                  whiteSpace: "nowrap",
-                }}
-              >
+              <span className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground whitespace-nowrap">
                 {s.project}
               </span>
             </div>
