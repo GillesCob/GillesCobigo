@@ -3,6 +3,7 @@ import Navbar from "@/components/layout/Navbar";
 import Home from "@/pages/Home";
 import Projects from "@/pages/Projects";
 import Articles from "@/pages/Articles";
+import ArticlePage from "@/pages/ArticlePage";
 import Contact from "@/pages/Contact";
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/articles" element={<Articles />} />
+          <Route path="/articles/:slug" element={<ArticlePage />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
       </main>
