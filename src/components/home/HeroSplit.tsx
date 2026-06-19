@@ -6,8 +6,6 @@ import { devProjects, type IDevProject } from "@/data/devProjects";
 
 type ActiveModal = { side: "btp"; project: IBTPProject } | { side: "dev"; project: IDevProject } | null;
 
-const BTP_TAGS = ["Maquette numérique", "100+ modèles", "Bouygues"];
-const DEV_TAGS = ["TypeScript", "Node.js", "React", "Claude Code", "Docker", "Nginx"];
 
 export default function HeroSplit() {
   const [modal, setModal] = useState<ActiveModal>(null);
