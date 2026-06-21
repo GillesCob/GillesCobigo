@@ -1,0 +1,48 @@
+export const frontmatter = {
+  title: "Comment déployer simplement et rapidement votre propre application web",
+  date: "2026-06-03",
+  description:
+    "Retour d'expérience sur le déploiement d'un Front-end avec Vercel et l'utilisation de données simulées (SEED) pour pallier l'absence de base de données.",
+  tags: ["Déploiement", "Vercel", "GitHub", "IA Agentique", "Frontend"],
+  headings: [
+    { level: 2, text: "Préambule", id: "preambule" },
+    { level: 2, text: "Déployer la partie front d'une app", id: "deployer-la-partie-front-d-une-app" },
+    { level: 2, text: "Proposer une expérience temporaire", id: "proposer-une-experience-temporaire" },
+    { level: 2, text: "Conclusion", id: "conclusion" },
+  ],
+};
+
+## Préambule
+
+Lors de mes précédents posts je vous ai parlé de ChouxFleurs, l’app que j’avais développé durant ma période d’autodidacte.
+Cette même application, codée avec Claude Code (CC) en 1h, m’a permis de mettre un premier pas dans le développement avec l’IA Agentique.
+Je me suis cependant retrouvé bien embêté : comment présenter par la suite mes découvertes quant au code fourni par CC et les modifications que je vais lui apporter si je ne peux pas vous donner accès à l’app ?
+L’idée pour moi est d’y aller par étape et de d’abord faire une grande passe sur la partie Front développée par CC. Je me devais donc au moins de vous donner accès à cette partie.
+
+## Déployer la partie front d'une app
+
+Il existe de nombreux moyens de déployer simplement et rapidement la partie Front. Je ne les connais certainement pas, je ne le fais sûrement pas de la meilleure façon mais pour le moment j’utilise Vercel.
+C’est simple, rapide, intuitif, je l’ai déjà utilisé à de nombreuses occasions donc il y a un côté rassurant à poursuivre.
+Pour déployer une app, rien de plus simple : vous connectez votre Front présent sur Github à Vercel, vous avez accès à une URL pour accéder à votre app.
+Je suis allé un peu plus loin en modifiant cette adresse et en donnant plutôt accès à mon app depuis un sous-domaine de mon site gillescobigo.com.
+Ainsi vous pouvez dès à présent accéder à ChouxFleurs2 via cette adresse : [https://chouxfleurs2.gillescobigo.com/](https://chouxfleurs2.gillescobigo.com/).
+
+## Proposer une expérience temporaire
+
+Je dois permettre au visiteur de découvrir mon app, la manipuler, comprendre chaque fonctionnalité mais sans BDD.
+J’ai par le passé déjà utilisé ce qu’on appelle un SEED, une série de données présentes dans notre Front et qui vont permettre de simuler des données comme si elles étaient en BDD.
+En 3 prompts avec CC j’ai pu avoir bien plus !
+
+- Accès direct au Dashboard de mon App.
+- Des projets accessibles en fonction que l’on soit l’admin ou un invité.
+- Des pronostics ainsi que des produits randoms afin de montrer à quoi va ressembler l’interface.
+- La possibilité d’agir sur l’application, d’ajouter un prono, donner la réponse, participer à l’achat d’un produit et tout ça sans persistance des données.
+
+C’est le genre de fonctionnalité qui m’aurait pris des heures. Pour être honnête je ne sais même pas si j’aurais pu sortir quelque chose d’aussi propre.
+Chaque interface est propre, fonctionnelle et bien que tout ne corresponde pas à ce que je souhaite, je suis maintenant assis sur une base solide sur laquelle je vais pouvoir me faire plaisir afin d’obtenir l’application que je souhaite.
+
+## Conclusion
+
+Le plus difficile souvent en tant que dev n’est pas, à mon sens, de modifier ou d’améliorer l’existant mais plutôt de trouver la façon de coder la base.
+Avec Claude Code s’ouvre une vraie cour de récréation pour moi où je vais pouvoir apprendre de lui, comprendre comment il a procédé et apporter une réelle plus-value en apportant la couche métier et les besoins utilisateurs qui manquent à l’application.
+Au boulot !

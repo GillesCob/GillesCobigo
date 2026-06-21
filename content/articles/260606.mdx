@@ -1,0 +1,29 @@
+export const frontmatter = {
+  title: "Sécuriser nos requêtes front : architecture propre et robuste",
+  date: "2026-06-06",
+  description:
+    "Mise en place d'une architecture front sécurisée avec Axios, JWT et gestion automatique des tokens pour une expérience utilisateur sans coupure.",
+  tags: ["Sécurité", "JWT", "Axios", "Architecture", "Frontend"],
+  headings: [
+    { level: 2, text: "Préambule", id: "preambule" },
+    { level: 2, text: "Modification de nos règles Claude Code", id: "modification-de-nos-regles-claude-code" },
+    { level: 2, text: "Conclusion", id: "conclusion" },
+  ],
+};
+
+## Préambule
+
+Dans le précédent article, deux sujets n’ont pas été abordés : l’utilisation d’Axios et la sécurité avec l’injection d’un Access Token dans le header de mes requêtes.
+En effet, dans une application Front avec React, l’une des façons les plus sécurisées de procéder est d’injecter directement dans chaque requête notre JWT, qui sera ensuite vérifié dans notre Back avec des Guards.
+Nous souhaitons également, au retour d’une requête, faire en sorte de capter les erreurs et potentiellement appeler une route qui utilisera notre Refresh Token. Cela permet d’éviter une coupure de service pour notre utilisateur légitime.
+
+## Modification de nos règles Claude Code
+
+Nous souhaitons mettre en œuvre ce fonctionnement dans notre app et intégrer nativement à chacun de nos projets l’utilisation de Zustand et Tanstack, tout en ajoutant une couche de sécurité avec les JWT.
+Nous modifions ainsi notre fichier `CLAUDE.md` afin d'imposer ces standards dès la génération du code.
+
+Nous obtenons ainsi un fichier de configuration propre qui nous permettra, pour chacune de nos applications, de partir d’une base très saine et connue. Nous pourrons ensuite rapidement ajouter de la valeur ajoutée en implémentant la logique métier spécifique au projet.
+
+## Conclusion
+
+Je l’ai bien entendu utilisé afin de mettre à jour le projet ChouxFleurs2 et ainsi avoir une base que je maîtrise pleinement. Cette rigueur dans la configuration initiale est le socle de la robustesse de mes futures applications.
