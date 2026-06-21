@@ -20,11 +20,11 @@ export default function HeadlineSection() {
             Voir mes projets <ArrowRight size={16} className="ml-1" />
           </Link>
         </Button>
+        {/* Couleurs fixes indépendantes du thème — la section a un fond crème fixe (#F8F5F0) */}
         <Button
           asChild
-          variant="outline"
           size="lg"
-          className="border-gray-300 text-gray-700 hover:bg-gray-100"
+          className="bg-transparent border border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors"
         >
           <a href="/cv-gilles-cobigo.pdf" download>
             Télécharger le CV <Download size={16} className="ml-1" />

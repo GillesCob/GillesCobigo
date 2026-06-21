@@ -5,6 +5,7 @@ import Projects from "@/pages/Projects";
 import Articles from "@/pages/Articles";
 import ArticlePage from "@/pages/ArticlePage";
 import Contact from "@/pages/Contact";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
         </Routes>
       </main>
+      <ScrollToTop />
     </>
   );
 }
