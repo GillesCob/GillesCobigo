@@ -3,7 +3,6 @@ import { stackTechs, computeScore, getScoreMessage } from "@/data/stackData";
 
 export default function StackMatcher() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [customTech, setCustomTech] = useState("");
 
   function toggle(id: string): void {
     setSelected((prev) => {
@@ -45,14 +44,6 @@ export default function StackMatcher() {
           })}
         </div>
 
-        <input
-          type="text"
-          placeholder="Autre techno..."
-          value={customTech}
-          onChange={(e) => setCustomTech(e.target.value)}
-          className="w-full max-w-xs rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-colors mb-8"
-        />
-
         {selected.size > 0 && (
           <div className="rounded-xl border border-border bg-card p-6 flex flex-col gap-4">
             <div className="flex items-baseline gap-4">
@@ -70,12 +61,6 @@ export default function StackMatcher() {
               </div>
             )}
 
-            {customTech.trim() && (
-              <p className="text-sm text-muted-foreground pt-2 border-t border-border">
-                Tu utilises <span className="font-medium text-foreground">{customTech.trim()}</span> - ce n&apos;est pas
-                dans ma stack actuelle mais je m&apos;adapte vite aux nouveaux outils.
-              </p>
-            )}
           </div>
         )}
       </div>

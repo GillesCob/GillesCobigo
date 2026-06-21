@@ -133,7 +133,7 @@ export default function Contact() {
               </div>
               <div className="flex items-center gap-2">
                 <MapPin size={14} className="flex-shrink-0" />
-                <span>Marseille + remote (France entière)</span>
+                <span>Nouvelle Aquitaine + remote (France entière)</span>
               </div>
             </div>
           </div>

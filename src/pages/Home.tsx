@@ -3,8 +3,6 @@ import HeadlineSection from '@/components/home/HeadlineSection'
 import StackMatcher from '@/components/home/StackMatcher'
 import Timeline from '@/components/home/Timeline'
 import GitHubStats from '@/components/home/GitHubStats'
-import ProjectsSection from '@/components/home/ProjectsSection'
-import ArticlesSection from '@/components/home/ArticlesSection'
 import SkillsRadar from '@/components/shared/SkillsRadar'
 
 export default function Home() {
@@ -21,8 +19,6 @@ export default function Home() {
           <SkillsRadar />
         </div>
       </section>
-      <ProjectsSection />
-      <ArticlesSection />
     </>
   )
 }
