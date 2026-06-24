@@ -1,0 +1,53 @@
+export const frontmatter = {
+  title: "La pratique révèle les lacunes mieux que n'importe quel cours",
+  date: "2026-06-20",
+  description:
+    "Retour sur trois frictions syntaxiques rencontrées lors de l'implémentation du dashboard de Cerithe : gestion des ternaires en JSX, typage des props React et invalidation du cache avec TanStack Query.",
+  tags: ["cerithe", "react", "typescript"],
+  headings: [
+    {
+      level: 2,
+      text: "Le contexte : brancher le dashboard de Cerithe",
+      id: "le-contexte-brancher-le-dashboard-de-cerithe",
+    },
+    { level: 2, text: "Trois frictions cette semaine", id: "trois-frictions-cette-semaine" },
+    { level: 2, text: "La ternaire dans le JSX", id: "la-ternaire-dans-le-jsx" },
+    { level: 2, text: "Le typage des props React", id: "le-typage-des-props-react" },
+    {
+      level: 2,
+      text: "invalidateQueries : pourquoi le cache devient périmé",
+      id: "invalidatequeries-pourquoi-le-cache-devient-perime",
+    },
+  ],
+};
+
+## Le contexte : brancher le dashboard de Cerithe
+
+Cette semaine j’ai branché le dashboard de Cerithe sur le backend. Concrètement : récupérer la liste des biens via TanStack Query, afficher un état vide si la liste est vide, créer un bien depuis un formulaire, mettre à jour le dashboard automatiquement après création.
+
+Rien de complexe sur le papier. Mais c’est exactement dans ce genre de tâche que les frictions syntaxiques apparaissent. Pas dans les tutos, pas dans la théorie. Dans le code qu’on écrit pour de vrai.
+
+Trois frictions cette semaine. Voici comment je les ai résolues.
+
+## La ternaire dans le JSX
+
+Afficher la liste des biens si elle existe, afficher un état vide sinon. En JavaScript, réflexe naturel : un if/else. En JSX, ça ne fonctionne pas directement dans le return. Il faut une ternaire.
+
+La friction : j’ai essayé de mettre la ternaire autour de la card état vide, à l’intérieur de la card, avec des accolades dans les parenthèses. Chaque tentative cassait quelque chose. Ce que j’ai compris : la ternaire doit envelopper les deux cas au même niveau, et les parenthèses ne contiennent que du JSX, pas des accolades d’expressions JavaScript.
+![Légende de mon image](/imagesArticles/2026/06/20/1.png)
+
+## Le typage des props React
+
+En créant le composant PropertyCard, TypeScript m’a signalé que le paramètre property avait implicitement le type any. La solution semblait évidente : écrire property: IProperty dans les paramètres. Mauvaise piste.
+
+En React, une fonction composant reçoit toujours un objet unique en paramètre : les props. On destructure cet objet pour en extraire ce dont on a besoin. Le typage porte donc sur l’objet props entier, pas sur les paramètres individuels. D’où la syntaxe `{ property }: { property: IProperty }` : destructuration à gauche, type de l’objet à droite. Une fois compris, c’est logique. Avant de le comprendre, c’est opaque.
+
+## invalidateQueries : pourquoi le cache devient périmé
+
+Après la création d’un bien, le dashboard n’affichait pas le nouveau bien. TanStack Query avait mis en cache la liste récupérée avant la création. Pour lui, rien n’avait changé.
+
+La solution : dans le onSuccess de la mutation, invalider la clé "properties" dans le cache. TanStack Query déclenche alors un nouveau fetch automatiquement. Le dashboard se met à jour sans intervention manuelle.
+
+C’est là que la séparation entre données locales et données serveur prend tout son sens. Les données serveur ont un cycle de vie externe : elles peuvent changer sans que l’app le sache. TanStack Query gère ce cycle, mais c’est au développeur de lui dire quand invalider.
+
+Cerithe avance. La semaine prochaine : upload de documents sur chaque bien.

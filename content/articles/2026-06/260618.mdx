@@ -1,0 +1,81 @@
+export const frontmatter = {
+  title: "Ce que j'ai appris en branchant mon premier formulaire",
+  date: "2026-06-18",
+  description:
+    "Analyse de l'architecture frontend de Cerithe : séparation des responsabilités entre composants, hooks et services, configuration d'Axios pour l'authentification et flow de connexion complet.",
+  tags: ["cerithe", "react", "frontend"],
+  headings: [
+    { level: 2, text: "Le moment où tout doit se parler", id: "le-moment-ou-tout-doit-se-parler" },
+    { level: 2, text: "L'architecture en couches côté frontend", id: "l-architecture-en-couches-cote-frontend" },
+    { level: 2, text: "L'instance Axios personnalisée", id: "l-instance-axios-personnalisee" },
+    { level: 2, text: "Le flow complet d'une connexion", id: "le-flow-complet-d-une-connexion" },
+    {
+      level: 2,
+      text: "Un détail qui m'a fait réfléchir : le profil automatique",
+      id: "un-detail-qui-m-a-fait-reflechir-le-profil-automatique",
+    },
+    { level: 2, text: "Où on en est", id: "ou-on-en-est" },
+  ],
+};
+
+## Le moment où tout doit se parler
+
+Le backend de Cerithe est terminé. Auth, CRUD des biens, upload de documents vers Supabase Storage. Tout tourne, tout est testé dans Bruno.
+
+Maintenant vient la vraie question : comment le frontend va parler à tout ça ?
+
+C’est le moment où beaucoup de tutoriels s’arrêtent. On te montre comment créer une API, on te montre comment créer une interface, mais le fil qui relie les deux est souvent laissé au lecteur. Ce matin j’ai construit ce fil, et voilà ce que j’en retiens.
+
+## L'architecture en couches côté frontend
+
+Côté backend j’ai une architecture en couches : route, controller, service, Prisma. Côté frontend c’est le même principe avec d’autres noms.
+
+Le composant affiche. Il ne sait pas comment récupérer des données, il ne sait pas comment appeler une API. Il délègue.
+
+Le custom hook contient la logique métier. Il appelle le service, stocke le résultat dans Zustand, gère la navigation.
+
+Le service fait l’appel API avec Axios. Il connaît l’URL et le verbe HTTP. Rien de plus.
+
+Axios intercepte chaque requête pour injecter l’access token dans le header automatiquement.
+![Légende de mon image](/imagesArticles/2026/06/18/1.png)
+
+## L'instance Axios personnalisée
+
+On pourrait utiliser Axios directement, il exporte une instance prête à l’emploi. Mais créer sa propre instance avec axios.create() permet de centraliser la configuration en un seul endroit : l’URL de base du backend et les credentials pour les cookies.
+
+L’intercepteur request s’attache ensuite à cette instance. À chaque requête sortante il va lire l’access token dans le store Zustand et l’injecter dans le header Authorization.
+![Légende de mon image](/imagesArticles/2026/06/18/2.png)
+
+Ce fichier est le point d’entrée de toutes les requêtes vers le backend. Un seul endroit à modifier si l’URL change, si on ajoute un header global, si on gère le refresh token plus tard.
+
+## Le flow complet d'une connexion
+
+Voilà ce qui se passe quand un utilisateur clique sur « Se connecter » sur Cerithe :
+
+React Hook Form valide les champs côté client, email valide, mot de passe d’au moins 8 caractères. Si la validation échoue, les messages d’erreur s’affichent sans envoyer quoi que ce soit au backend (excellent pour l’UX et notre bande passante).
+
+Si tout est valide, handleSubmit crée un objet data et appelle onSubmit. Cette fonction appelle handleLogin du hook useAuth.
+
+Le hook appelle authService.login() qui fait un POST vers /api/auth/login via apiClient.
+
+Le backend vérifie les credentials, génère un access token et un refresh token. Le refresh token part dans un cookie httpOnly, l’access token revient dans le body.
+
+Le hook extrait l’access token de la réponse, le stocke dans Zustand via setAccessToken, puis redirige vers le dashboard avec useNavigate.
+
+Toute la chaîne en quelques lignes de code, chaque couche avec sa responsabilité.
+
+## Un détail qui m'a fait réfléchir : le profil automatique
+
+Sur Cerithe, un bien appartient à un profil, pas directement à un utilisateur. C’est un choix de conception pour permettre à terme qu’un même utilisateur ait plusieurs rôles sur la plateforme.
+
+Problème : à l’inscription on crée un user, mais pas le profil. Impossible donc d’ajouter un bien dès la première connexion.
+
+La solution : créer un profil vide automatiquement dans le controller du register, juste après la création du user. L’utilisateur pourra compléter ses infos dans « Mon compte » quand il le souhaite.
+
+## Où on en est
+
+Le backend MVP de Cerithe est terminé. Le frontend démarre : login et register fonctionnels, dashboard en place, architecture posée.
+
+Prochain chantier : brancher les vrais appels API sur le dashboard pour afficher les biens, ajouter le formulaire de création, gérer l’upload de documents.
+
+La suite au prochain épisode.

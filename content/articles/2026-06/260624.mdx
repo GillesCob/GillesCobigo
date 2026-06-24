@@ -1,0 +1,81 @@
+export const frontmatter = {
+  title: "Concevoir une feature avant de coder : le cas de la transmission de bien",
+  date: "2026-06-24",
+  description: "Deux heures de réflexion pour éviter une semaine de refactoring.",
+  tags: ["cerithe", "backend", "architecture"],
+  headings: [
+    { level: 2, text: "La feature qui justifie tout le reste", id: "section-1" },
+    { level: 2, text: "Poser le flux principal avant tout", id: "section-2" },
+    { level: 2, text: "Les cas limites qu'on oublie toujours", id: "section-3" },
+    { level: 2, text: "Ce que ça donne concrètement en base de données", id: "section-4" },
+    { level: 2, text: "Ce que j'en tire", id: "section-5" },
+  ],
+};
+
+_Cerithe_, c'est un carnet de santé numérique du bâtiment. Le propriétaire consigne ses travaux, ses documents, ses projets sur ses biens immobiliers. Mais la vraie proposition de valeur, celle qui différencie le produit, c'est la transmission : quand tu vends ton bien, tout l'historique part vers le nouvel acquéreur.
+
+Autant dire que si cette feature est mal conçue, tout le reste ne sert à rien.
+
+## La feature qui justifie tout le reste
+
+J'aurais pu l'attaquer directement. Ouvrir le schéma Prisma, ajouter un modèle TransmissionToken, commencer à coder le controller. C'est souvent ce qu'on fait quand on est pressé. Mais les features qui touchent à la sécurité, aux droits d'accès et aux données critiques méritent qu'on les pense avant de les écrire. Une fois que tu as migré ta BDD et câblé cinq endpoints, revenir sur une décision de conception coûte cher.
+
+Alors j'ai sorti une feuille blanche et j'ai commencé à dérouler le flux.
+
+## Poser le flux principal avant tout
+
+Le principe de base est simple : le vendeur génère un lien d'invitation unique, le destinataire clique dessus, les deux parties valident, le bien change de propriétaire. Mais "simple" c'est rarement la réalité dès qu'on creuse.
+
+Première question que je me suis posée : le destinataire a-t-il un compte _Cerithe_ ? Il faut gérer les deux cas. S'il n'est pas inscrit, le lien doit l'emmener vers la page de register avec son email pré-rempli et non modifiable. Pourquoi non modifiable ? Parce que toute la sécurité du système repose sur la correspondance entre l'email saisi par le vendeur et l'email du compte destinataire. Si le destinataire peut changer l'adresse sur le register, n'importe qui interceptant le lien peut s'approprier le bien.
+
+Deuxième décision : un tel lien doit avoir une limite de validité. Quand est-ce que le compte à rebours démarre ? À la génération du lien ou au premier clic du destinataire ? J'ai choisi le premier clic. Si le timer démarrait à la génération, le vendeur pourrait envoyer le lien en fin de journée et le destinataire se retrouverait avec moins de temps que prévu sans comprendre pourquoi. Le clic, c'est le moment où le destinataire entre activement dans le processus. C'est à partir de là que l'horloge tourne.
+
+Nous avons choisi un délai de 48h. Pourquoi ? Parce que la transmission d'un bien immobilier, même informelle, nécessite que les deux parties puissent se synchroniser. 24h c'est trop court si le destinataire reçoit le lien un vendredi soir. 7 jours c'est trop long, ça laisse le bien dans un état flottant trop longtemps. 48h c'est le compromis raisonnable pour un MVP.
+
+Troisième décision : la double validation. Le destinataire accepte, puis le vendeur doit confirmer. Pourquoi ne pas finaliser automatiquement dès que le destinataire valide ? Parce que le vendeur voit le profil qui accepte (nom, prénom) et doit pouvoir vérifier que c'est bien la bonne personne. Une erreur d'email dans la saisie initiale, et sans cette étape de confirmation, le bien part chez quelqu'un que le vendeur ne connaît pas, de manière définitive et irrévocable. C'est une protection simple mais indispensable.
+
+## Les cas limites qu'on oublie toujours
+
+C'est là que la phase de réflexion devient vraiment utile. Les cas nominaux, tout le monde les voit. Les cas limites, c'est ce qui plante en production.
+
+Qu'est-ce qui se passe si le vendeur supprime son bien après avoir généré le lien ? Le destinataire clique et tombe sur quoi ? J'ai décidé : une page "Bien introuvable. Contactez votre vendeur." Côté BDD, une cascade sur la suppression du bien invalide le token automatiquement. Pas de token orphelin qui traîne.
+
+Qu'est-ce qui se passe si quelqu'un clique deux fois sur le même lien ? Le champ `clickedAt` est déjà renseigné au premier clic, on ne recalcule pas l'`expiresAt`. Le timer ne repart pas à zéro. Un seul clic compte.
+
+Qu'est-ce qui se passe si le vendeur réalise qu'il a saisi le mauvais email ? Deux cas selon l'état du token. Si le token est encore en `pending` (le destinataire n'a pas cliqué), le vendeur peut annuler et regénérer un nouveau lien. Si le token est en `accepted` (le destinataire a déjà validé sa part), le vendeur doit d'abord annuler toute la transaction avant de recommencer. On ne peut pas changer de destinataire en cours de route.
+
+Et si le vendeur annule après que le destinataire a accepté ? C'était le cas limite le plus délicat à traiter. Dans le cadre de la transaction, un bien temporaire est créé chez le destinataire. Il contient toutes les infos concernant la transaction en cours (le nom du vendeur, le timer...). J'ai décidé que ce bien temporaire ne disparaît pas silencieusement. Il passe en statut "Annulé", reste visible 7 jours avec une modale explicative et un bouton "Compris" pour que le destinataire le supprime manuellement. Une disparition silencieuse aurait été une mauvaise expérience utilisateur : le destinataire aurait pu croire à un bug.
+
+honnêtement, sans cette phase de réflexion, j'aurais oublié au moins la moitié de ces cas. J'aurais codé quelque chose qui aurait l'air de fonctionner jusqu'au premier cas limite rencontré en prod.
+
+## Ce que ça donne concrètement en base de données
+
+Au bout de ce cheminement, le modèle `TransmissionToken` est devenu clair. Chaque champ répond à une décision prise pendant la réflexion.
+
+`token` : un UUID unique qui constitue le lien partagé.
+
+`propertyId` : FK vers le bien, avec cascade à la suppression pour éviter les tokens orphelins.
+
+`recipientEmail` : l'email saisi par le vendeur, point de référence de la sécurité.
+
+`clickedAt` : null tant que le lien n'est pas cliqué, renseigné au premier clic.
+
+`expiresAt` : calculé au clic (clickedAt + 48h), pas à la génération.
+
+`cancelledAt` : null par défaut, renseigné si le vendeur annule.
+
+`status` : un enum avec six états.
+
+Ces six états couvrent tous les cas identifiés : `pending`, `clicked`, `accepted`, `confirmed`, `cancelled`, `expired`. Chaque transition est explicite. Aucun état ambigu, aucun "on verra à l'usage".
+
+C'est exactement ce genre de modèle qu'on ne peut pas écrire directement sans avoir réfléchi avant. Les champs émergent des décisions, pas l'inverse.
+
+## Ce que j'en tire
+
+Deux heures de réflexion pour une feature qu'on mettra probablement une semaine à coder. Est-ce que c'est du temps perdu ? Non, c'est du temps investi.
+
+Ce qu'on a évité : une migration Prisma corrective à mi-chemin parce qu'on aurait oublié le `clickedAt`, des endpoints mal pensés à refactorer parce qu'on n'avait pas anticipé la double validation, des bugs de prod sur les cas limites qu'on aurait découverts trop tard.
+
+Ce que j'ai compris depuis le début de _Cerithe_, c'est que coder à la main (sans agent IA qui génère tout) oblige à cette rigueur. On ne peut pas se permettre de foncer et de corriger après, parce que chaque correction est une ligne de code qu'on écrit, comprend et assume.
+
+voilà ce que j'en ai tiré : la conception n'est pas une perte de temps. C'est la partie du dev où on réfléchit vraiment. Et c'est souvent là que se jouent les projets qui tiennent dans le temps.

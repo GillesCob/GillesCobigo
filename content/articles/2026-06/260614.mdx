@@ -1,0 +1,85 @@
+export const frontmatter = {
+  title: "Pourquoi la deuxième fois est toujours plus facile",
+  date: "2026-06-14",
+  description:
+    "Comment switcher de stack technologique rapidement en s'appuyant sur les fondamentaux et l'aide de l'IA. Retour d'expérience sur l'apprentissage express de .NET et Vue.js.",
+  tags: ["reconversion", "ia agentique"],
+  headings: [
+    {
+      level: 2,
+      text: "Un entretien lundi, une stack inconnue vendredi",
+      id: "un-entretien-lundi-une-stack-inconnue-vendredi",
+    },
+    { level: 2, text: "La théorie du second instrument", id: "la-theorie-du-second-instrument" },
+    {
+      level: 2,
+      text: "Ce que .NET a de commun avec ce que je connais déjà",
+      id: "ce-que-net-a-de-commun-avec-ce-que-je-connais-deja",
+    },
+    {
+      level: 2,
+      text: "Vue.js vs React : plus proche qu'on ne le pense",
+      id: "vue-js-vs-react-plus-proche-qu-on-ne-le-pense",
+    },
+    { level: 2, text: "Le rôle de l'IA dans tout ça", id: "le-role-de-l-ia-dans-tout-ca" },
+    { level: 2, text: "Ce que je retiens avant lundi", id: "ce-que-je-retiens-avant-lundi" },
+  ],
+};
+
+## Un entretien lundi, une stack inconnue vendredi
+
+J’ai un entretien lundi matin avec une startup qui fait de la gestion d’affichage produit pour retailers. Leur stack : Vue.js côté frontend, .NET / C# côté backend, Azure pour l’infra.
+
+Je suis un dev TypeScript / Node / React. Je n’ai jamais touché à .NET ni à Vue.js de façon sérieuse.
+
+J’aurais pu passer le weekend à regarder des tutos. J’ai choisi autre chose : construire une vraie app avec leur stack, assisté par Claude Code, et documenter chaque étape pour comprendre ce que je faisais.
+
+Voilà ce que j’ai appris.
+
+## La théorie du second instrument
+
+J’ai commencé la guitare à 18 ans. Les premiers mois ont été durs : les doigts qui ne suivent pas, tout sonne faux et en même temps j’apprenais un peu de théorie musicale : les notes, les gammes, les accords, le rythme, … la frustration de ne pas avancer.
+
+Quand j’ai voulu apprendre le piano quelques années plus tard, quelque chose s’est passé. La partie technique était nouvelle, les doigts devaient réapprendre. Mais tout le reste était déjà là. Je savais lire une tablature, je comprenais la structure d’un morceau, je savais ce qu’était une gamme mineure.
+
+Le code c’est exactement pareil.
+
+Apprendre TypeScript après JavaScript c’est plus facile. Apprendre NestJS après Express c’est plus facile. Et apprendre .NET après avoir maîtrisé Node.js, ce n’est pas repartir de zéro, c’est juste changer d’instrument.
+
+## Ce que .NET a de commun avec ce que je connais déjà
+
+Quand Claude Code a généré le backend .NET de Labelr, mon app de gestion de fiches produit, j’ai reconnu des patterns que je pratique tous les jours sur Cerithe.
+
+L’architecture en couches Controller / Service / Repository c’est exactement le même principe que Route / Controller / Service en Express. Les noms changent, la logique reste identique.
+![Légende de mon image](/imagesArticles/2026/06/14/1.png)
+
+Les DTOs en C# avec le mot-clé record c’est l’équivalent des types inférés par Zod en TypeScript. Entity Framework c’est Prisma, un ORM qui génère les migrations et abstrait le SQL. JWT, BCrypt, middleware d’authentification : les mêmes concepts, une syntaxe différente.
+
+Ce n’est pas de la magie. C’est la preuve que les bonnes pratiques transcendent les langages.
+
+## Vue.js vs React : plus proche qu'on ne le pense
+
+Même constat côté frontend. Vue.js 3 avec la Composition API ressemble beaucoup à React avec les hooks.
+![Légende de mon image](/imagesArticles/2026/06/14/2.png)
+
+Pinia remplace Zustand pour la gestion d’état. Vue Router remplace React Router. Les composants ont une structure différente mais le principe de séparation des responsabilités est identique.
+
+En moins d’une heure j’étais capable de lire et comprendre les composants Vue générés par Claude Code. Pas de les écrire par coeur, mais de les comprendre et de les expliquer. C’est déjà beaucoup.
+
+## Le rôle de l'IA dans tout ça
+
+Sans Claude Code, mon weekend aurait ressemblé à ça : installer .NET, galérer avec la config, lire de la documentation, tenter d’écrire du C# sans savoir où commencer. Peut-être arriver à un hello world en deux jours.
+
+Avec Claude Code, j’ai eu une app fullstack complète en quelques heures. Backend .NET avec auth JWT, CRUD produits, Entity Framework. Frontend Vue.js avec dashboard, liste paginée, formulaires validés.
+
+Mais l’important n’est pas la vitesse. C’est ce que j’ai fait ensuite : lire le code généré, comprendre les choix d’architecture, faire les parallèles avec ma stack habituelle. L’IA m’a donné une base solide sur laquelle apprendre, pas un raccourci pour éviter d’apprendre.
+
+C’est une différence fondamentale.
+
+## Ce que je retiens avant lundi
+
+Je ne vais pas en entretien en prétendant maîtriser .NET et Vue.js. Je vais en entretien en étant capable d’expliquer comment fonctionne leur architecture, quels sont les parallèles avec ce que je connais, et comment j’ai abordé une stack inconnue de façon structurée en moins d’un weekend.
+
+C’est ça la vraie compétence d’un dev en 2026 : pas de tout savoir, mais de savoir apprendre vite et de comprendre pourquoi les choses fonctionnent comme elles fonctionnent.
+
+Plus on apprend d’instruments, plus il est simple d’en apprendre de nouveaux. Le code c’est pareil.

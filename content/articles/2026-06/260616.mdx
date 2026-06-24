@@ -1,0 +1,84 @@
+export const frontmatter = {
+  title: "Ce que req.user cache derrière une ligne de code",
+  date: "2026-06-16",
+  description:
+    "Analyse du middleware d'authentification JWT dans Express : rôle de la protection des routes, extension des types TypeScript (req.user) et séparation des responsabilités dans le cycle de vie d'une requête.",
+  tags: ["sécurité", "backend", "typescript"],
+  headings: [
+    { level: 2, text: "Le problème à résoudre", id: "le-probleme-a-resoudre" },
+    { level: 2, text: "Un middleware c'est quoi exactement", id: "un-middleware-c-est-quoi-exactement" },
+    { level: 2, text: "Ce que fait le middleware JWT pas à pas", id: "ce-que-fait-le-middleware-jwt-pas-a-pas" },
+    { level: 2, text: "La ligne qui m'a le plus appris : req.user", id: "la-ligne-qui-m-a-le-plus-appris-req-user" },
+    { level: 2, text: "La route /me : un cas d'usage concret", id: "la-route-me-un-cas-d-usage-concret" },
+    {
+      level: 2,
+      text: "Le CRUD Property : même logique, nouveau domaine",
+      id: "le-crud-property-meme-logique-nouveau-domaine",
+    },
+    { level: 2, text: "Ce que j'en retiens", id: "ce-que-j-en-retiens" },
+  ],
+};
+
+## Le problème à résoudre
+
+Sur Cerithe, l’auth est en place. Register et login fonctionnent. Mais toutes les routes sont accessibles à n’importe qui, il suffit de connaître l’URL pour lire, modifier ou supprimer des données.
+
+C’est un problème évident. La solution : un middleware qui vérifie l’identité du demandeur avant de laisser passer la requête.
+
+C’est le rôle du middleware JWT.
+
+## Un middleware c'est quoi exactement
+
+Dans mon architecture Express, chaque requête passe par une série d’étapes avant d’arriver au controller. Ces étapes intermédiaires s’appellent des middlewares.
+
+J’en ai déjà un sur Cerithe : le middleware Zod qui vérifie le format des données. Le middleware JWT joue le même rôle mais pour l’identité : il vérifie que la personne qui fait la requête est bien connectée et que son token est valide.
+
+La règle que j’ai retenue : middleware = zone de vérification avant le controller. Tout ce qui doit être vérifié sur plusieurs routes va là.
+![Légende de mon image](/imagesArticles/2026/06/16/1.png)
+
+## Ce que fait le middleware JWT pas à pas
+
+Le middleware extrait le token du header Authorization, vérifie sa signature avec le secret stocké dans les variables d’environnement, et attache le payload décodé à la requête.
+![Légende de mon image](/imagesArticles/2026/06/16/2.png)
+
+Trois cas possibles : pas de token, token invalide ou expiré, token valide. Dans les deux premiers cas on renvoie une 401. Dans le troisième on appelle next() pour laisser passer la requête vers le controller.
+
+## La ligne qui m'a le plus appris : req.user
+
+La partie la plus intéressante c’est celle-ci :
+
+`req.user = { userId: decoded.userId }`
+En ajoutant cette propriété à la requête, le middleware enrichit l’objet req qui va traverser toute la suite du pipeline. Le controller n’a pas besoin de re-décoder le token, il trouve directement le userId dans req.user.
+
+Mais TypeScript n’accepte pas qu’on ajoute des propriétés à un objet typé par une librairie externe. Il a fallu étendre le type Request d’Express via une déclaration de module, un fichier .d.ts qui dit à TypeScript « dans mon app, Request a aussi une propriété user ».
+
+C’est une technique TypeScript avancée mais très courante dans les projets Express. Et elle illustre bien quelque chose : TypeScript est strict, pas parce qu’il veut compliquer la vie, mais parce qu’il force à rendre les intentions explicites.
+
+## La route /me : un cas d'usage concret
+
+Pour tester le middleware j’ai ajouté une route /auth/me. Son rôle : retourner les infos du user connecté.
+
+La question que je me suis posée au moment de l’implémenter : pourquoi cette route si j’ai déjà les infos du user au moment du login ?
+
+La réponse : au rechargement de page, le store Zustand est vidé. L’access token disparaît de la mémoire. Pour reconnecter l’utilisateur de façon transparente sans qu’il ait à retaper ses identifiants, on utilise le refresh token pour générer un nouvel AT, puis /me pour récupérer les infos du user.
+
+Un seul aller-retour au lieu de deux si on intègre le user directement dans la réponse du `/auth/refresh`. C’est ce qu’on fera sur Cerithe, la route `/auth/refresh` renverra `{ accessToken, user }` en une seule réponse.
+
+## Le CRUD Property : même logique, nouveau domaine
+
+Une fois le middleware en place, j’ai attaqué le CRUD des biens. Validator Zod, service Prisma, controller Express.
+
+La structure est identique à l’auth. Ce qui change c’est la logique métier, les champs du bien, les relations avec le profil, la gestion des erreurs spécifiques.
+
+Un détail qui mérite d’être souligné : le service ne connaît pas req et res. Il reçoit des données simples, travaille avec Prisma, retourne un résultat ou lance une exception. C’est le controller qui traduit ça en réponse HTTP.
+
+Cette séparation n’est pas une contrainte, c’est ce qui permet de tester la logique métier sans monter un serveur HTTP.
+![Légende de mon image](/imagesArticles/2026/06/16/3.png)
+
+## Ce que j'en retiens
+
+Le middleware JWT c’est plus qu’une vérification de sécurité. C’est une illustration parfaite de la séparation des responsabilités : chaque couche fait une chose et une seule.
+
+Le middleware vérifie l’identité et enrichit la requête. Le controller orchestre. Le service travaille.
+
+Et req.user c’est le fil qui relie tout ça, une propriété ajoutée par le middleware, utilisée par le controller, issue d’un token signé au moment du login. Toute la chaîne en une ligne.

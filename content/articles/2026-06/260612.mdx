@@ -1,0 +1,88 @@
+export const frontmatter = {
+  title: "Concevoir sa base de données avant d'écrire du code",
+  date: "2026-06-12",
+  description:
+    "Réflexion sur la modélisation de la base de données de Cerithe : choix des UUID, séparation User/Profile, gestion de la hiérarchie des entités et architecture de la feature de transmission.",
+  tags: ["cerithe", "prisma", "architecture"],
+  headings: [
+    { level: 2, text: "Avant d'écrire une ligne de code", id: "avant-d-ecrire-une-ligne-de-code" },
+    { level: 2, text: "UUID plutôt qu'autoincrement", id: "uuid-plutot-qu-autoincrement" },
+    { level: 2, text: "La séparation User / Profile", id: "la-separation-user-profile" },
+    { level: 2, text: "La hiérarchie des entités", id: "la-hierarchie-des-entites" },
+    { level: 2, text: "La relation Projet / Pièce : du many-to-many", id: "la-relation-projet-piece-du-many-to-many" },
+    {
+      level: 2,
+      text: "La transmission : la feature qui change tout",
+      id: "la-transmission-la-feature-qui-change-tout",
+    },
+    { level: 2, text: "Ce que j'en retiens", id: "ce-que-j-en-retiens" },
+  ],
+};
+
+## Avant d'écrire une ligne de code
+
+Le réflexe quand on commence un projet c’est de vouloir coder tout de suite. J’ai appris à résister à cette envie.
+
+Sur Cerithe, avant de toucher au moindre fichier TypeScript, j’ai passé plusieurs heures à réfléchir au schéma de base de données. Parce qu’un mauvais schéma au départ, c’est de la dette technique pour toute la durée du projet.
+
+Voilà les vraies décisions prises, et surtout pourquoi.
+
+## UUID plutôt qu'autoincrement
+
+Première décision : tous les identifiants de Cerithe sont des UUIDs, pas des entiers auto-incrémentés.
+![Légende de mon image](/imagesArticles/2026/06/12/1.png)
+
+Pourquoi ? Deux raisons.
+
+La première c’est la sécurité. Un ID entier expose des informations sur son volume de données. Si l’ID de ton dernier utilisateur est 42, tout le monde sait que tu as 42 utilisateurs.
+
+La deuxième c’est la feature de transmission de Cerithe. Quand un bien change de mains, on doit pouvoir référencer des entités de façon stable. Les UUIDs sont parfaits pour ça car ils sont uniques, non séquentiels, et ne révèlent rien sur le volume de données.
+
+## La séparation User / Profile
+
+Un User c’est les credentials d’authentification, email et mot de passe. Rien d’autre.
+
+Un Profile c’est les données métier : prénom, nom, téléphone, rôle.
+![Légende de mon image](/imagesArticles/2026/06/12/2.png)
+
+Pourquoi séparer les deux ? Parce que demain, un même utilisateur pourrait avoir plusieurs casquettes sur la plateforme : propriétaire particulier ET professionnel du bâtiment. Avec une seule table qui mélange tout, c’est impossible sans tout réécrire.
+
+Cette séparation ne coûte rien au départ. Elle ouvre des portes pour l’avenir.
+
+## La hiérarchie des entités
+
+Le coeur de Cerithe c’est cette hiérarchie :
+![Légende de mon image](/imagesArticles/2026/06/12/3.png)
+
+Une tâche peut être attachée directement à une pièce : ex : « j’ai changé la cuisinière ».
+Elle peut également appartenir à un projet : ex : « rénovation complète de la cuisine ».
+
+Cette flexibilité est importante d’un point de vue UX. Obliger l’utilisateur à créer un projet pour chaque petite intervention, c’est de la friction inutile. Une tâche a donc deux FK optionnelles : propertyId et roomId. Au moins l’une doit être renseignée. C’est une contrainte gérée côté API.
+
+## La relation Projet / Pièce : du many-to-many
+
+Un projet de rénovation cuisine concerne la cuisine. Mais un projet de ravalement de façade concerne le bien dans sa globalité, pas une pièce spécifique.
+
+On a donc une relation many-to-many entre Project et Room, via une table de jonction :
+![Légende de mon image](/imagesArticles/2026/06/12/4.png)
+
+La clé primaire composite @@id([projectId, roomId]) garantit qu’on ne peut pas associer deux fois la même pièce au même projet. Si aucune pièce n’est renseignée, le projet concerne le bien global. Simple et flexible.
+
+## La transmission : la feature qui change tout
+
+C’est la décision la plus structurante du schéma.
+
+La réflexion naïve : « un bien change de propriétaire, je change juste la FK profileId dans la table Property. » Techniquement ça marche. Mais on perd tout l’historique : combien de fois ce bien a changé de mains, à quelle date, pour quel montant, … ?
+
+On a donc une table Transmission dédiée :
+![Légende de mon image](/imagesArticles/2026/06/12/5.png)
+
+Deux relations nommées vers Profile, une pour l’ancien propriétaire, une pour le nouveau. Prisma exige de nommer les relations quand deux FK pointent vers le même modèle. Le montant est nullable parce qu’une transmission peut être une donation ou un héritage.
+
+## Ce que j'en retiens
+
+Concevoir un schéma c’est avant tout répondre à des questions métier, pas techniques. « Comment l’utilisateur va-t-il utiliser l’app ? » avant « comment je structure mes tables ? »
+
+Les décisions techniques découlent des réponses métier. L’UUID parce qu’on a une feature de transmission. La table Transmission parce qu’on veut l’historique. Les FK optionnelles parce qu’on veut de la flexibilité sans contraindre l’utilisateur.
+
+Un schéma mal pensé se paie pendant toute la durée du projet. Un schéma bien pensé, on l’oublie parce qu’il ne résiste jamais.

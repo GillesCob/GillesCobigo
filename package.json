@@ -25,6 +25,7 @@
     "react-hook-form": "^7.52.0",
     "react-router-dom": "^6.26.0",
     "remark-gfm": "^4.0.1",
+    "remark-heading-id": "^1.0.1",
     "tailwind-merge": "^2.5.0",
     "zustand": "^5.0.0"
   },

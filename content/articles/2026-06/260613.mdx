@@ -1,0 +1,103 @@
+export const frontmatter = {
+  title: "argon2, JWT et cookies httpOnly pour sécuriser son app",
+  date: "2026-06-13",
+  description:
+    "Retour sur la construction d'un système d'authentification robuste : validation Zod, hashing avec argon2, gestion sécurisée des access/refresh tokens et bonnes pratiques de stockage.",
+  tags: ["sécurité", "node.js", "architecture"],
+  headings: [
+    {
+      level: 2,
+      text: "Ce que j'aurais voulu lire avant de commencer",
+      id: "ce-que-j-aurais-voulu-lire-avant-de-commencer",
+    },
+    { level: 2, text: "La validation avant tout : Zod", id: "la-validation-avant-tout-zod" },
+    { level: 2, text: "argon2 plutôt que bcrypt", id: "argon2-plutot-que-bcrypt" },
+    { level: 2, text: "Access token vs refresh token", id: "access-token-vs-refresh-token" },
+    {
+      level: 2,
+      text: "Pourquoi hasher le refresh token en base de données",
+      id: "pourquoi-hasher-le-refresh-token-en-base-de-donnees",
+    },
+    { level: 2, text: "Où stocker les tokens côté frontend", id: "ou-stocker-les-tokens-cote-frontend" },
+    {
+      level: 2,
+      text: "Un détail qui m'a fait réfléchir : que dire à l'utilisateur ?",
+      id: "un-detail-qui-m-a-fait-reflechir-que-dire-a-l-utilisateur",
+    },
+    { level: 2, text: "Ce que j'en retiens", id: "ce-que-j-en-retiens" },
+  ],
+};
+
+## Ce que j'aurais voulu lire avant de commencer
+
+L’authentification c’est le sujet qui fait peur à tous les juniors. Parce que c’est un endroit où une erreur peut avoir des conséquences réelles sur la sécurité des utilisateurs.
+
+Je ne suis pas expert en sécurité. Mais j’ai construit le système d’auth de Cerithe from scratch, en faisant des choix réfléchis et documentés. Voilà ce que j’ai appris.
+
+## La validation avant tout : Zod
+
+Avant même de vérifier un email ou un mot de passe, on valide que les données reçues ont la bonne forme. C’est le rôle de Zod, une librairie de validation de schémas TypeScript.
+
+On définit exactement ce qu’on accepte, par exemple ci-dessous pour les credentials lors de l’inscription :
+![Légende de mon image](/imagesArticles/2026/06/13/1.png)
+
+Et pour ne pas réécrire cette validation pour chaque route, on crée un middleware générique, une fonction qui prend n’importe quel schéma Zod et retourne un middleware Express :
+![Légende de mon image](/imagesArticles/2026/06/13/2.png)
+
+Un seul middleware, tous les schémas. Sur la route, ça donne :
+![Légende de mon image](/imagesArticles/2026/06/13/3.png)
+
+## argon2 plutôt que bcrypt
+
+Pour hasher les mots de passe, j’utilise argon2 plutôt que bcrypt.
+
+Bcrypt c’est ce qu’on voit dans 90% des tutos. C’est solide. Mais argon2 est recommandé par l’OWASP. C’est l’algorithme qui a gagné le Password Hashing Competition en 2015. Il est plus résistant aux attaques par force brute et aux attaques GPU.
+![Légende de mon image](/imagesArticles/2026/06/13/4.png)
+
+Le try/catch est là pour distinguer une erreur technique qu’elle vienne de l’utilisation d’argon2 ou d’un simple mot de passe incorrect. Ce n’est pas la même chose et on ne traite pas les deux cas pareil.
+
+## Access token vs refresh token
+
+C’est le coeur du sujet JWT. Les deux tokens ont des rôles très différents.
+
+L’access token est envoyé dans le header de chaque requête. Le backend le vérifie à chaque appel. Sa durée de vie est courte (15 minutes sur Cerithe).
+Pourquoi ? Parce qu’il transite sur le réseau à chaque requête. S’il est volé, on veut limiter la fenêtre d’exposition.
+
+Le refresh token a une durée de vie longue (7 jours). Il ne transite pas dans les headers. Son seul rôle : demander un nouvel access token quand l’ancien a expiré.
+![Légende de mon image](/imagesArticles/2026/06/13/5.png)
+
+Les deux tokens ont des secrets différents. Si un secret est compromis, l’autre reste sûr. La compromission est isolée.
+
+## Pourquoi hasher le refresh token en base de données
+
+Le refresh token est stocké en base de données et hashé avec argon2.
+
+Pourquoi hashé ? Si quelqu’un accède à la base de données, les refresh tokens en clair lui permettraient de se connecter en tant que n’importe quel utilisateur sans connaître son mot de passe. Un token hashé en BDD est inutilisable sans la valeur originale.
+
+C’est le même raisonnement que pour les mots de passe. Les secrets ne se stockent jamais en clair.
+
+## Où stocker les tokens côté frontend
+
+Deux conventions importantes sur la gestion des tokens côté client.
+
+L’access token va dans le store Zustand, en mémoire. Pas dans le localStorage, qui est accessible par JavaScript et donc vulnérable aux attaques XSS.
+
+Le refresh token va dans un cookie httpOnly, inaccessible par JavaScript, envoyé automatiquement par le navigateur. C’est la façon la plus sûre de le stocker.
+
+## Un détail qui m'a fait réfléchir : que dire à l'utilisateur ?
+
+Que dire quand un email est déjà utilisé lors de l’inscription ?
+
+On pourrait ne rien dire de précis pour éviter qu’un attaquant puisse tester des emails existants. Mais sur le register, dire « cet email est déjà utilisé » est généralement accepté, l’information se devine de toute façon en essayant de créer un compte.
+
+Sur le login en revanche, on ne précise jamais si c’est l’email ou le mot de passe qui est faux. On dit juste « identifiants incorrects ».
+
+Une règle simple à retenir : login = message générique, register = message explicite.
+
+## Ce que j'en retiens
+
+L’auth c’est un endroit où il ne faut pas improviser. Chaque décision a une raison. Argon2 plutôt que bcrypt, deux secrets séparés, refresh token hashé en BDD, cookie httpOnly.
+
+Ce qui m’a le plus marqué c’est que la sécurité n’est pas un module qu’on ajoute à la fin. C’est une série de petites décisions prises depuis le début, à chaque étape.
+
+Et honnêtement ? Construire ça from scratch m’a appris plus que n’importe quel tuto.

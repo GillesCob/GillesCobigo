@@ -1,0 +1,42 @@
+export const frontmatter = {
+  title: "Uploader un fichier vers Supabase Storage depuis React",
+  date: "2026-06-23",
+  description: "FormData, multer, bucket : la chaîne complète d'upload de fichier depuis React vers Supabase Storage.",
+  tags: ["cerithe", "react", "frontend"],
+  headings: [
+    { level: 2, text: "Pourquoi JSON ne suffit pas pour envoyer un fichier", id: "section-1" },
+    { level: 2, text: "Multer reçoit le fichier côté backend", id: "section-2" },
+    { level: 2, text: "Supabase Storage reçoit le Buffer", id: "section-3" },
+    { level: 2, text: "Reconstruire l'URL publique côté frontend", id: "section-4" },
+  ],
+};
+
+## Pourquoi JSON ne suffit pas pour envoyer un fichier
+
+Un fichier n'est pas une donnée texte. JSON ne sait pas encoder des données binaires. Pour envoyer un PDF vers un backend Express, il faut utiliser `FormData` - un format multipart/form-data qui emballe le fichier binaire et les métadonnées dans la même requête.
+
+Côté frontend, la construction est simple :
+
+![Construction du FormData côté frontend](/imagesArticles/2026/06/23/1.png)
+
+## Multer reçoit le fichier côté backend
+
+Express ne sait pas lire le multipart nativement. Multer est le middleware qui intercepte la requête, lit le fichier et l'expose sur `req.file`. La configuration `memoryStorage` garde le fichier en mémoire sous forme de Buffer - pas de fichier temporaire sur le disque, idéal pour un transfert direct vers Supabase.
+
+Le fichier est alors accessible via `req.file.buffer`, `req.file.originalname` et `req.file.mimetype`.
+
+## Supabase Storage reçoit le Buffer
+
+Le client Supabase Storage prend le Buffer directement. On génère un nom unique avec `Date.now()` pour éviter les collisions, on précise le `contentType` pour que le navigateur sache comment ouvrir le fichier, et Supabase retourne le chemin du fichier dans le bucket.
+
+Ce chemin est ensuite sauvegardé en base de données via Prisma. C'est lui qui permettra de reconstruire l'URL publique côté frontend.
+
+![Upload du Buffer vers Supabase Storage](/imagesArticles/2026/06/23/2.png)
+
+## Reconstruire l'URL publique côté frontend
+
+Supabase Storage expose les fichiers d'un bucket public via une URL prévisible. On stocke uniquement le nom du fichier en base, et on reconstruit l'URL complète côté frontend depuis une variable d'environnement. Pas d'URL stockée en dur, pas de couplage fort avec l'infrastructure.
+
+![Reconstruction de l'URL publique côté frontend](/imagesArticles/2026/06/23/3.png)
+
+La chaîne complète : `FormData` > `multipart/form-data` > `multer` > `req.file.buffer` > Supabase Storage > chemin en BDD > URL reconstruite. Chaque couche a une responsabilité claire.

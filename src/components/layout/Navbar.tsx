@@ -17,22 +17,38 @@ export default function Navbar() {
     <nav className="fixed top-0 left-0 w-full z-50 bg-[#0A0A0A] border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" onClick={handleNavClick} className="text-white font-semibold text-lg tracking-tight">
-            Gilles Cobigo
+          <Link to="/" onClick={handleNavClick} className="flex items-center gap-2">
+            <img src="/images/logo-gc-white.png" alt="Gilles Cobigo" className="h-8 w-auto" />
+            <span className="text-white font-semibold text-lg tracking-tight ml-2">Gilles Cobigo</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
-            <Link to="/projects" onClick={handleNavClick} className="text-white/70 hover:text-white text-sm transition-colors">
+            <Link
+              to="/projects"
+              onClick={handleNavClick}
+              className="text-white/70 hover:text-white text-sm transition-colors"
+            >
               Projets
             </Link>
-            <Link to="/articles" onClick={handleNavClick} className="text-white/70 hover:text-white text-sm transition-colors">
+            <Link
+              to="/articles"
+              onClick={handleNavClick}
+              className="text-white/70 hover:text-white text-sm transition-colors"
+            >
               Articles
             </Link>
-            <Link to="/contact" onClick={handleNavClick} className="text-white/70 hover:text-white text-sm transition-colors">
+            <Link
+              to="/contact"
+              onClick={handleNavClick}
+              className="text-white/70 hover:text-white text-sm transition-colors"
+            >
               Contact
             </Link>
             <button
-              onClick={toggleTheme}
+              onClick={() => {
+                toggleTheme();
+                setMobileOpen(false);
+              }}
               className="text-white/70 hover:text-white transition-colors p-1"
               aria-label="Basculer le thème"
             >
@@ -44,7 +60,9 @@ export default function Navbar() {
               size="sm"
               className="border-[#D85A30] text-[#D85A30] bg-transparent hover:bg-[#D85A30] hover:text-white transition-colors"
             >
-              <Link to="/contact" onClick={handleNavClick}>Me contacter</Link>
+              <Link to="/contact" onClick={handleNavClick}>
+                Me contacter
+              </Link>
             </Button>
           </div>
 
@@ -65,7 +83,13 @@ export default function Navbar() {
           <Link to="/contact" className="text-white/80 hover:text-white" onClick={handleNavClick}>
             Contact
           </Link>
-          <button onClick={toggleTheme} className="text-white/80 hover:text-white text-left">
+          <button
+            onClick={() => {
+              toggleTheme();
+              setMobileOpen(false);
+            }}
+            className="text-white/80 hover:text-white text-left"
+          >
             {theme === "dark" ? "Mode clair" : "Mode sombre"}
           </button>
         </div>

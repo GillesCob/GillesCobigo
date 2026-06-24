@@ -1,0 +1,34 @@
+export const frontmatter = {
+  title: "Sécuriser nos requêtes front : architecture propre et robuste",
+  date: "2026-06-06",
+  description:
+    "Mise en place d'une architecture front sécurisée avec Axios, JWT et gestion automatique des tokens pour une expérience utilisateur sans coupure.",
+  tags: ["sécurité", "frontend", "architecture"],
+  headings: [
+    { level: 2, text: "Préambule", id: "preambule" },
+    { level: 2, text: "Modification de nos règles Claude Code", id: "modification-de-nos-regles-claude-code" },
+    { level: 2, text: "Conclusion", id: "conclusion" },
+  ],
+};
+
+## Préambule
+
+Dans le précédent article, deux sujets n’ont pas été abordés : l’utilisation d’Axios et la sécurité avec l’injection d’un Access Token dans le header de mes requêtes.
+
+En effet dans une application Front avec React, l’une des façon les plus sécurisée de procéder et de directement injecter dans chaque requête notre JWT qui sera ensuite vérifié dans notre Back avec les Guards.
+
+Nous souhaitons également, au retour d’une requête, faire en sorte de capter les erreurs et potentiellement appeler une route qui utilisera notre Refresh Token et permettra ainsi d’éviter une coupure du service pour notre utilisateur légitime.
+
+Voici le schéma de notre structure côté Front :
+![Légende de mon image](/imagesArticles/2026/06/06/1.png)
+
+## Modification de nos règles Claude Code
+
+Nous souhaitons donc mettre en oeuvre ce fonctionnement dans notre app et ainsi intégrer nativement à chacun de nos projets une utilisation de Zustand et Tanstack (comme vu dans le précédent article) mais également ajouter une couche de sécurité avec l’utilisation des JWT.
+
+Nous modifions ainsi notre fichier CLAUDE.md en conséquence :
+![Légende de mon image](/imagesArticles/2026/06/06/2.png)
+
+Nous obtenons ainsi un fichier de configuration propre qui nous permettra, pour chacune de nos apps, de partir d’une base très saine, connue sur laquelle nous pourrons rapidement ajouter de la valeur ajoutée en implémentant de la logique métier adaptée aux spécificités du projet.
+
+Je l’ai bien entendu utilisé afin de mettre à jour le projet ChouxFleurs2 et ainsi avoir une base que je maitrise.

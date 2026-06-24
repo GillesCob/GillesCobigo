@@ -1,0 +1,59 @@
+export const frontmatter = {
+  title: "Coder la transmission de bien : du validator à la route",
+  date: "2026-06-25",
+  description: "Du validator à la route, l'architecture prend forme.",
+  tags: ["cerithe", "backend", "prisma"],
+  headings: [
+    { level: 2, text: "L'architecture en couches, concrètement", id: "section-1" },
+    { level: 2, text: "Trois données, trois origines différentes", id: "section-2" },
+    { level: 2, text: "Le principe des early returns", id: "section-3" },
+    { level: 2, text: "Pourquoi un token séparé de l'id en BDD", id: "section-4" },
+    { level: 2, text: "Ce que j'en tire", id: "section-5" },
+  ],
+};
+
+## L'architecture en couches, concrètement
+
+Hier on a réfléchi au flux. Aujourd'hui on code. Et dès les premières lignes, l'architecture en couches devient concrète : validator, service, controller, route. Chaque couche a un rôle précis, aucune ne fait le travail de l'autre.
+
+Le validator définit la forme des données attendues. Le service contient la logique métier et dialogue avec la BDD. Le controller orchestre les appels au service et construit la réponse. La route expose l'endpoint et branche les middlewares dans le bon ordre.
+
+Ce que j'ai compris en codant : cette séparation n'est pas du formalisme. C'est ce qui permet de modifier une couche sans toucher aux autres. Changer la validation ? On touche uniquement au validator. Changer la logique métier ? Uniquement le service. Le reste ne bouge pas.
+
+## Trois données, trois origines différentes
+
+Pour créer un token de transmission, j'ai besoin de trois informations : l'id du bien, l'id du propriétaire et l'email du destinataire. Ce qui est intéressant c'est que ces trois données ne viennent pas du même endroit.
+
+L'id du bien vient de l'URL (req.params). L'id du propriétaire vient du middleware JWT (req.user). L'email du destinataire vient du body de la requête (req.body).
+
+Le validator ne valide qu'une seule chose : l'email. Les deux autres données sont récupérées ailleurs. Chaque donnée a sa source légitime.
+
+## Le principe des early returns
+
+Avant de créer le token, le service fait trois vérifications dans l'ordre. Le bien existe-t-il ? Le demandeur en est-il bien le propriétaire ? Y a-t-il déjà un token actif sur ce bien ?
+
+À chaque étape, si quelque chose ne va pas, on sort immédiatement avec une erreur. C'est le principe des early returns : on ne continue pas si les conditions ne sont pas remplies. Ce qui passe toutes les vérifications est garanti d'exister.
+
+Ce pattern m'a posé une question concrète sur l'ownership : dans _Cerithe_, un User a des Profiles, et un Property appartient à un Profile. Comparer l'userId directement avec le profileId du bien aurait été une erreur, ce sont deux tables différentes. Il faut récupérer le profil de l'utilisateur depuis la BDD, puis comparer son id avec le profileId du bien. Un détail qui aurait provoqué un bug silencieux sans cette réflexion.
+
+![Early returns dans le service de transmission](/imagesArticles/2026/06/25/1.png)
+
+## Pourquoi un token séparé de l'id en BDD
+
+Pour construire le lien partageable, j'aurais pu utiliser l'id de l'entrée en BDD, c'est aussi un UUID. Mais j'ai choisi de générer un token séparé avec `crypto.randomUUID()`.
+
+Deux raisons. L'id est la clé interne de la table, le token est la clé publique partagée dans l'URL. Mélanger les deux crée un couplage entre la structure interne et l'API exposée. Si un jour je change la façon dont je génère les ids, tous les liens partagés deviennent invalides.
+
+Deuxième raison : la flexibilité. Si le vendeur veut regénérer un lien, on crée un nouveau TransmissionToken avec un nouveau token, sans toucher à l'historique. C'est le genre de décision qu'on prend en cinq secondes mais qui évite des problèmes en maintenance.
+
+![Création du token avec crypto.randomUUID](/imagesArticles/2026/06/25/2.png)
+
+## Ce que j'en tire
+
+Le premier endpoint de transmission fonctionne. Testé dans Bruno : POST avec un propertyId dans l'URL et un email dans le body, retourne une URL de transmission complète.
+
+Ce qui m'a le plus marqué dans cette session : la différence entre comprendre une architecture en théorie et la coder en pratique. Les couches sont claires dans la tête. Mais quand TypeScript te dit que `string | string[] | undefined` n'est pas assignable à `string`, tu comprends pourquoi chaque décision de typage a des conséquences concrètes. Chaque erreur de compilation cache une décision à prendre.
+
+Au passage, j'ai noté une dette technique : `req.params` devrait être validé avec Zod comme le body. Pour l'instant j'utilise `as string`, ça fonctionne, Express garantit que les params sont des strings. Mais c'est une assertion de type, pas une validation. À corriger après le MVP.
+
+Coder à la main force une rigueur que l'IA agentique ne peut pas remplacer. Chaque early return est une décision consciente. Chaque vérification est une protection contre un bug futur. C'est ça, apprendre.

@@ -1,0 +1,51 @@
+export const frontmatter = {
+  title: "Quatre règles apprises sur Nexio qui changent tout",
+  date: "2026-06-21",
+  description:
+    "Comment transformer le fichier CLAUDE.md en un contrat de collaboration agentique robuste. Retour d'expérience sur Nexio : formalisation des règles, gestion du périmètre et utilisation des modes d'exécution de Claude Code.",
+  tags: ["nexio", "ia agentique", "architecture"],
+  headings: [
+    {
+      level: 2,
+      text: "Les premiers projets agentiques : efficaces, mais sans cadre",
+      id: "les-premiers-projets-agentiques-efficaces-mais-sans-cadre",
+    },
+    { level: 2, text: "Ce qu'on a appris à formaliser", id: "ce-qu-on-a-appris-a-formaliser" },
+    {
+      level: 2,
+      text: "Plan mode et bypass : deux modes pour deux situations",
+      id: "plan-mode-et-bypass-deux-modes-pour-deux-situations",
+    },
+    { level: 2, text: "Le CLAUDE.md comme mémoire", id: "le-claude-md-comme-memoire" },
+  ],
+};
+
+## Les premiers projets agentiques : efficaces, mais sans cadre
+
+Sur ChouxFleurs et les premiers projets, j’utilisais Claude Code de façon empirique. Je donnais un prompt, je validais, je corrigeais. Ça fonctionnait, mais CC prenait des libertés : modifier des fichiers hors périmètre, inventer des patterns qui ne correspondaient pas à l’architecture en place, ignorer des conventions qu’on avait établies oralement.
+
+Nexio change ça. Double objectif : construire un outil utile pour ma recherche d’emploi et structurer ma pratique agentique. Le CLAUDE.md n’est plus un fichier de règles vagues. C’est un contrat de travail.
+
+## Ce qu'on a appris à formaliser
+
+Trois règles ont été ajoutées au CLAUDE.md global cette semaine, toutes nées d’observations concrètes.
+
+La première : le hook ne fait pas les appels API directement. CC avait mis les appels Axios dans les hooks sur ChouxFleurs. Pratique à court terme, problème d’architecture à long terme. Un fichier, une responsabilité. La règle est maintenant explicite : composant > hook > service > Axios.
+
+La deuxième : périmètre strict. CC ne modifie que les fichiers du plan validé. Même s’il juge qu’une correction serait utile ailleurs, il signale sans toucher. Le diff Git doit correspondre exactement au plan.
+
+La troisième : OAuth prévu dès le scaffold. Ajouter Google ou GitHub plus tard sans avoir prévu provider et providerId dans le schéma User oblige une migration cassante. On le prévoit dès le départ, même si on ne l’implémente pas tout de suite.
+
+## Plan mode et bypass : deux modes pour deux situations
+
+Sur la session auth de Nexio, j’ai utilisé le plan mode avant toute génération. CC a produit un plan détaillé de 17 fichiers à créer ou modifier. Je l’ai lu, validé, puis lancé en bypass permissions.
+
+La nuance est importante. Manually approve c’est pour le scaffold initial, quand on pose les fondations et qu’on veut lire chaque fichier. Bypass c’est pour les features, quand le plan est validé et qu’on fait confiance à l’agent pour exécuter. Ce n’est pas une question de confiance aveugle : c’est la review du diff Git à la fin qui garantit la qualité, pas la validation fichier par fichier pendant l’exécution.
+
+## Le CLAUDE.md comme mémoire
+
+Ce qui rend le CLAUDE.md puissant, c’est qu’il capitalise sur les erreurs. Chaque règle a une origine : une session qui a mal tourné, un pattern qu’on a dû corriger, une décision qu’on a prise et qu’on veut pas remettre en question à chaque session.
+
+Sans ce fichier, CC repart de zéro à chaque conversation. Avec lui, il hérite d’une expérience accumulée. C’est la différence entre un agent qu’on surveille et un agent avec lequel on travaille.
+
+Nexio avance. Prochaine session : CRUD contacts et kanban.
