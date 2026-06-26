@@ -9,6 +9,7 @@ import ArticlePage from "@/pages/ArticlePage";
 import Contact from "@/pages/Contact";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "@/components/ui/ScrollToTop";
+import ScrollReset from "@/components/layout/ScrollReset";
 
 function ScrollReset() {
   const { pathname } = useLocation();
