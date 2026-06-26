@@ -78,17 +78,19 @@ export default function ProjectModal({ isOpen, onClose, project, side }: IProjec
 
                 {isDevProject(project) && (
                   <>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {project.stack.map((tech) => (
-                        <Badge key={tech} variant="outline" className="border-white/20 text-white/55 text-xs">
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
+                    {project.stack && project.stack.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {project.stack.map((tech) => (
+                          <Badge key={tech} variant="outline" className="border-white/20 text-white/55 text-xs">
+                            {tech}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                     <p className="text-white/35 text-xs mb-4">{project.status}</p>
-                    {(project.links.github || project.links.live || project.links.demo || articleCount > 0) && (
+                    {(project.links?.github || project.links?.live || project.links?.demo || articleCount > 0) && (
                       <div className="flex gap-2 flex-wrap">
-                        {project.links.github && (
+                        {project.links?.github && (
                           <Button
                             asChild
                             variant="outline"
@@ -100,7 +102,7 @@ export default function ProjectModal({ isOpen, onClose, project, side }: IProjec
                             </a>
                           </Button>
                         )}
-                        {project.links.live && (
+                        {project.links?.live && (
                           <Button
                             asChild
                             variant="outline"
@@ -112,7 +114,7 @@ export default function ProjectModal({ isOpen, onClose, project, side }: IProjec
                             </a>
                           </Button>
                         )}
-                        {project.links.demo && (
+                        {project.links?.demo && (
                           <Button
                             asChild
                             variant="outline"
@@ -148,7 +150,7 @@ export default function ProjectModal({ isOpen, onClose, project, side }: IProjec
                       size="sm"
                       className="border-white/20 text-white/70 hover:text-white hover:border-white/50"
                     >
-                      <Link to={`/articles?tag=${project.id}`} onClick={onClose}>
+                      <Link to={`/articles?tag=${(project as IBTPProject).id}`} onClick={onClose}>
                         <FileText size={14} className="mr-1" /> Articles
                       </Link>
                     </Button>
