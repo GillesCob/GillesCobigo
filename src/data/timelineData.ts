@@ -13,7 +13,7 @@ export const timelineItems: ITimelineItem[] = [
     title: "Les débuts dans le bâtiment",
     subtitle: "Analyste thermique - EP",
     detail:
-      "Premiers pas dans la donnée technique. Avant le BIM, avant le code - comprendre comment les bâtiments fonctionnent de l'intérieur. La rigueur commence ici.",
+      "Premiers pas dans la donnée technique. Avant le BIM, avant le code, comprendre comment les bâtiments fonctionnent de l'intérieur. La rigueur commence ici.",
   },
   {
     id: "bouygues-tp-2016",
@@ -21,7 +21,7 @@ export const timelineItems: ITimelineItem[] = [
     title: "BIM Coordinateur",
     subtitle: "Bouygues Travaux Publics - Paris",
     detail:
-      "Premiers projets complexes, découverte du BIM. La donnée technique prend forme dans des maquettes numériques. Je commence à voir les limites des outils existants.",
+      "Premier projet complexe, découverte du BIM sur la mise en place des caissons sur l'extension en mer de la ville de Monaco. La donnée technique prend forme dans des maquettes numériques.",
   },
   {
     id: "bouygues-be-2018",
@@ -29,7 +29,7 @@ export const timelineItems: ITimelineItem[] = [
     title: "BIM Manager confirmé",
     subtitle: "Bouygues Batiment Sud-Est - Marseille",
     detail:
-      "Projets MRS3, TPR2. Coordination multi-lots, synthèse technique, gestion des conflits de données entre corps de métier. Marseille devient la base.",
+      "Projets MRS3, TPR2. Coordination multi-lots, synthèse technique, gestion des conflits de données entre corps de métier",
   },
   {
     id: "mareterra-2020",
@@ -37,7 +37,7 @@ export const timelineItems: ITimelineItem[] = [
     title: "Mareterra Monaco",
     subtitle: "Bouygues Construction",
     detail:
-      "Extension en mer de Monaco. 2 milliards €, 100+ maquettes numériques interconnectées. Le projet le plus complexe de ma carrière BTP - coordination technique à une échelle que peu de BIM Managers ont connue.",
+      "Extension en mer de Monaco. 2 milliards €, 100+ maquettes numériques interconnectées. Le projet le plus complexe de ma carrière. Coordination technique à une échelle que peu de BIM Managers ont connue.",
   },
   {
     id: "declic-2022",
@@ -53,7 +53,7 @@ export const timelineItems: ITimelineItem[] = [
     title: "L'apprentissage autodidacte",
     subtitle: "ChouxFleurs - premiers projets",
     detail:
-      "Python/Flask, puis Node.js, React, TypeScript. ChouxFleurs comme terrain d'expérimentation. Je découvre que le code, c'est ma voie - pas un détour.",
+      "Python/Flask, puis Node.js, React, TypeScript. ChouxFleurs comme terrain d'expérimentation. Je découvre que le code, c'est ma voie, pas un détour.",
   },
   {
     id: "formation-2025",

@@ -36,7 +36,21 @@ Avant de créer le token, le service fait trois vérifications dans l'ordre. Le 
 
 Ce pattern m'a posé une question concrète sur l'ownership : dans _Cerithe_, un User a des Profiles, et un Property appartient à un Profile. Comparer l'userId directement avec le profileId du bien aurait été une erreur, ce sont deux tables différentes. Il faut récupérer le profil de l'utilisateur depuis la BDD, puis comparer son id avec le profileId du bien. Un détail qui aurait provoqué un bug silencieux sans cette réflexion.
 
-![Early returns dans le service de transmission](/imagesArticles/2026/06/25/1.png)
+```ts
+const property = await prisma.property.findUnique({ where: { id: propertyId } });
+if (!property) throw new Error("Bien introuvable");
+if (property.profileId !== ownerId) throw new Error("Non autorisé");
+
+const existingToken = await prisma.transmissionToken.findFirst({ where: { propertyId } });
+if (existingToken && ["accepted", "confirmed"].includes(existingToken.status))
+  throw new Error("Bien déjà transmis");
+if (existingToken && ["pending", "clicked"].includes(existingToken.status)) {
+  await prisma.transmissionToken.update({
+    where: { id: existingToken.id },
+    data: { status: "cancelled" as transmissionStatus },
+  });
+}
+```
 
 ## Pourquoi un token séparé de l'id en BDD
 
@@ -46,7 +60,12 @@ Deux raisons. L'id est la clé interne de la table, le token est la clé publiqu
 
 Deuxième raison : la flexibilité. Si le vendeur veut regénérer un lien, on crée un nouveau TransmissionToken avec un nouveau token, sans toucher à l'historique. C'est le genre de décision qu'on prend en cinq secondes mais qui évite des problèmes en maintenance.
 
-![Création du token avec crypto.randomUUID](/imagesArticles/2026/06/25/2.png)
+```ts
+const token = crypto.randomUUID();
+return prisma.transmissionToken.create({
+  data: { recipientEmail, token, propertyId },
+});
+```
 
 ## Ce que j'en tire
 

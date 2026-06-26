@@ -71,7 +71,9 @@ export default function Articles() {
           )}
 
           {filtered.length === 0 ? (
-            <p className="text-muted-foreground">Aucun article pour l&apos;instant.</p>
+            <p className="text-muted-foreground">
+              {activeTags.length > 0 ? 'Aucun article pour ce tag.' : "Aucun article pour l'instant."}
+            </p>
           ) : (
             <div className="flex flex-col divide-y divide-border">
               {filtered.map((article) => (
@@ -93,9 +95,17 @@ export default function Articles() {
                     <div className="flex items-center gap-4">
                       <div className="flex flex-wrap gap-1.5">
                         {article.tags.map((tag) => (
-                          <span key={tag} className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground">
+                          <button
+                            key={tag}
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              setSearchParams({ tag: tag.toLowerCase() })
+                            }}
+                            className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground hover:bg-muted/70 transition-colors cursor-pointer"
+                          >
                             {tag}
-                          </span>
+                          </button>
                         ))}
                       </div>
                       <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors ml-auto flex items-center gap-1">

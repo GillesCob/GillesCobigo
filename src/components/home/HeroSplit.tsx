@@ -1,6 +1,7 @@
 import { useState } from "react";
 import HeroSide from "./HeroSide";
 import ProjectModal from "./ProjectModal";
+import BIMTerm from "@/components/shared/BIMTerm";
 import { btpProjects, type IBTPProject } from "@/data/btpProjects";
 import { devProjects, type IDevProject } from "@/data/devProjects";
 
@@ -27,7 +28,7 @@ export default function HeroSplit() {
       <HeroSide
         side="btp"
         dates="2008 - 2022 · BTP"
-        title="BIM Manager"
+        title={<><BIMTerm>BIM</BIMTerm> Manager</>}
         subtitle="Bouygues Construction"
         tags={["Maquette numérique", "100+ modèles", "2 milliards €"]}
         projectItems={btpProjects.map((p) => ({ id: p.id, name: p.name }))}

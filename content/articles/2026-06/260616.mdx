@@ -3,7 +3,7 @@ export const frontmatter = {
   date: "2026-06-16",
   description:
     "Analyse du middleware d'authentification JWT dans Express : rôle de la protection des routes, extension des types TypeScript (req.user) et séparation des responsabilités dans le cycle de vie d'une requête.",
-  tags: ["sécurité", "backend", "typescript"],
+  tags: ["sécurité", "backend", "typescript", "cerithe"],
   headings: [
     { level: 2, text: "Le problème à résoudre", id: "le-probleme-a-resoudre" },
     { level: 2, text: "Un middleware c'est quoi exactement", id: "un-middleware-c-est-quoi-exactement" },
@@ -34,12 +34,42 @@ Dans mon architecture Express, chaque requête passe par une série d’étapes 
 J’en ai déjà un sur Cerithe : le middleware Zod qui vérifie le format des données. Le middleware JWT joue le même rôle mais pour l’identité : il vérifie que la personne qui fait la requête est bien connectée et que son token est valide.
 
 La règle que j’ai retenue : middleware = zone de vérification avant le controller. Tout ce qui doit être vérifié sur plusieurs routes va là.
-![Légende de mon image](/imagesArticles/2026/06/16/1.png)
+
+```
+Requête entrante
+      ↓
+validate() : le body est-il bien formé ?
+      ↓
+verifyAccessToken() : l'utilisateur est-il authentifié ?
+      ↓
+Controller : logique métier
+      ↓
+Réponse
+```
 
 ## Ce que fait le middleware JWT pas à pas
 
 Le middleware extrait le token du header Authorization, vérifie sa signature avec le secret stocké dans les variables d’environnement, et attache le payload décodé à la requête.
-![Légende de mon image](/imagesArticles/2026/06/16/2.png)
+
+```ts
+export const verifyAccessToken = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+  const accessToken = authHeader?.split(" ")[1];
+
+  if (!accessToken) return res.status(401).json({ message: "Non autorisé" });
+
+  const atSecret = process.env.JWT_SECRET;
+  if (!atSecret) return res.status(401).json({ message: "Non autorisé" });
+
+  try {
+    const decoded = jwt.verify(accessToken, atSecret) as { userId: string };
+    req.user = { userId: decoded.userId };
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Non autorisé" });
+  }
+};
+```
 
 Trois cas possibles : pas de token, token invalide ou expiré, token valide. Dans les deux premiers cas on renvoie une 401. Dans le troisième on appelle next() pour laisser passer la requête vers le controller.
 
@@ -73,7 +103,23 @@ La structure est identique à l’auth. Ce qui change c’est la logique métier
 Un détail qui mérite d’être souligné : le service ne connaît pas req et res. Il reçoit des données simples, travaille avec Prisma, retourne un résultat ou lance une exception. C’est le controller qui traduit ça en réponse HTTP.
 
 Cette séparation n’est pas une contrainte, c’est ce qui permet de tester la logique métier sans monter un serveur HTTP.
-![Légende de mon image](/imagesArticles/2026/06/16/3.png)
+
+```ts
+// Le service : ne connaît pas HTTP
+export const createProperty = async (data: PropertyDto, profileId: string) => {
+  return await prisma.property.create({ data: { ...data, profileId } });
+};
+
+// Le controller : ne contient pas de logique métier
+export const createPropertyController = async (req: Request, res: Response) => {
+  try {
+    const property = await createProperty(req.body, req.user!.userId);
+    return res.status(201).json(property);
+  } catch (error) {
+    return res.status(500).json({ message: "Une erreur est survenue" });
+  }
+};
+```
 
 ## Ce que j'en retiens
 

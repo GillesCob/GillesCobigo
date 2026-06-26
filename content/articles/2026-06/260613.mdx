@@ -3,7 +3,7 @@ export const frontmatter = {
   date: "2026-06-13",
   description:
     "Retour sur la construction d'un système d'authentification robuste : validation Zod, hashing avec argon2, gestion sécurisée des access/refresh tokens et bonnes pratiques de stockage.",
-  tags: ["sécurité", "node.js", "architecture"],
+  tags: ["sécurité", "node.js", "architecture", "cerithe"],
   headings: [
     {
       level: 2,
@@ -39,20 +39,63 @@ Je ne suis pas expert en sécurité. Mais j’ai construit le système d’auth 
 Avant même de vérifier un email ou un mot de passe, on valide que les données reçues ont la bonne forme. C’est le rôle de Zod, une librairie de validation de schémas TypeScript.
 
 On définit exactement ce qu’on accepte, par exemple ci-dessous pour les credentials lors de l’inscription :
-![Légende de mon image](/imagesArticles/2026/06/13/1.png)
+
+```ts
+export const registerSchema = z.object({
+  email: z.string().email(),
+  password: z
+    .string()
+    .min(8, "Au moins 8 caractères")
+    .regex(/[a-z]/, "Au moins une minuscule")
+    .regex(/[A-Z]/, "Au moins une majuscule")
+    .regex(/\d/, "Au moins un chiffre")
+    .regex(/[@$!%*?&]/, "Au moins un caractère spécial"),
+});
+```
 
 Et pour ne pas réécrire cette validation pour chaque route, on crée un middleware générique, une fonction qui prend n’importe quel schéma Zod et retourne un middleware Express :
-![Légende de mon image](/imagesArticles/2026/06/13/2.png)
+
+```ts
+export const validate = (schema: z.ZodSchema) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const result = schema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ error: result.error.flatten() });
+    } else {
+      next();
+    }
+  };
+};
+```
 
 Un seul middleware, tous les schémas. Sur la route, ça donne :
-![Légende de mon image](/imagesArticles/2026/06/13/3.png)
+
+```ts
+router.post("/register", validate(registerSchema), registerController);
+```
 
 ## argon2 plutôt que bcrypt
 
 Pour hasher les mots de passe, j’utilise argon2 plutôt que bcrypt.
 
 Bcrypt c’est ce qu’on voit dans 90% des tutos. C’est solide. Mais argon2 est recommandé par l’OWASP. C’est l’algorithme qui a gagné le Password Hashing Competition en 2015. Il est plus résistant aux attaques par force brute et aux attaques GPU.
-![Légende de mon image](/imagesArticles/2026/06/13/4.png)
+
+```ts
+export const hashPassword = async (password: string) => {
+  return await argon2.hash(password);
+};
+
+export const verifyPassword = async (password: string, hash: string) => {
+  let isValid: boolean;
+  try {
+    isValid = await argon2.verify(hash, password);
+  } catch (err) {
+    throw new Error("Erreur lors de la vérification du mot de passe");
+  }
+  if (isValid) return true;
+  throw new Error("Mot de passe incorrect");
+};
+```
 
 Le try/catch est là pour distinguer une erreur technique qu’elle vienne de l’utilisation d’argon2 ou d’un simple mot de passe incorrect. Ce n’est pas la même chose et on ne traite pas les deux cas pareil.
 
@@ -64,7 +107,22 @@ L’access token est envoyé dans le header de chaque requête. Le backend le v�
 Pourquoi ? Parce qu’il transite sur le réseau à chaque requête. S’il est volé, on veut limiter la fenêtre d’exposition.
 
 Le refresh token a une durée de vie longue (7 jours). Il ne transite pas dans les headers. Son seul rôle : demander un nouvel access token quand l’ancien a expiré.
-![Légende de mon image](/imagesArticles/2026/06/13/5.png)
+
+```ts
+export const generateTokens = async (id: string) => {
+  const accessToken = jwt.sign(
+    { userId: id },
+    process.env.JWT_SECRET!,
+    { expiresIn: "15m" }
+  );
+  const refreshToken = jwt.sign(
+    { userId: id },
+    process.env.JWT_REFRESH_SECRET!,
+    { expiresIn: "7d" }
+  );
+  return { accessToken, refreshToken };
+};
+```
 
 Les deux tokens ont des secrets différents. Si un secret est compromis, l’autre reste sûr. La compromission est isolée.
 

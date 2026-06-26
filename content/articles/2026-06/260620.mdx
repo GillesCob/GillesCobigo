@@ -34,7 +34,16 @@ Trois frictions cette semaine. Voici comment je les ai résolues.
 Afficher la liste des biens si elle existe, afficher un état vide sinon. En JavaScript, réflexe naturel : un if/else. En JSX, ça ne fonctionne pas directement dans le return. Il faut une ternaire.
 
 La friction : j’ai essayé de mettre la ternaire autour de la card état vide, à l’intérieur de la card, avec des accolades dans les parenthèses. Chaque tentative cassait quelque chose. Ce que j’ai compris : la ternaire doit envelopper les deux cas au même niveau, et les parenthèses ne contiennent que du JSX, pas des accolades d’expressions JavaScript.
-![Légende de mon image](/imagesArticles/2026/06/20/1.png)
+
+```tsx
+{properties && properties.length > 0 ? (
+  properties.map((p: IProperty) => (
+    <PropertyCard key={p.id} property={p} />
+  ))
+) : (
+  <div>Vous n'avez pas encore de bien enregistré.</div>
+)}
+```
 
 ## Le typage des props React
 

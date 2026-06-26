@@ -17,7 +17,16 @@ Un fichier n'est pas une donnée texte. JSON ne sait pas encoder des données bi
 
 Côté frontend, la construction est simple :
 
-![Construction du FormData côté frontend](/imagesArticles/2026/06/23/1.png)
+```ts
+const formData = new FormData();
+formData.append("file", file);
+formData.append("propertyId", propertyId);
+formData.append("documentType", "BLUEPRINT");
+
+const response = await apiClient.post("/api/documents", formData, {
+  headers: { "Content-Type": "multipart/form-data" },
+});
+```
 
 ## Multer reçoit le fichier côté backend
 
@@ -31,12 +40,19 @@ Le client Supabase Storage prend le Buffer directement. On génère un nom uniqu
 
 Ce chemin est ensuite sauvegardé en base de données via Prisma. C'est lui qui permettra de reconstruire l'URL publique côté frontend.
 
-![Upload du Buffer vers Supabase Storage](/imagesArticles/2026/06/23/2.png)
+```ts
+const uniqueFileName = `${Date.now()}-${fileName}`;
+const { data, error } = await supabase.storage
+  .from("documents")
+  .upload(uniqueFileName, buffer, { contentType: mimeType });
+```
 
 ## Reconstruire l'URL publique côté frontend
 
 Supabase Storage expose les fichiers d'un bucket public via une URL prévisible. On stocke uniquement le nom du fichier en base, et on reconstruit l'URL complète côté frontend depuis une variable d'environnement. Pas d'URL stockée en dur, pas de couplage fort avec l'infrastructure.
 
-![Reconstruction de l'URL publique côté frontend](/imagesArticles/2026/06/23/3.png)
+```tsx
+href={`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/documents/${doc.url}`}
+```
 
 La chaîne complète : `FormData` > `multipart/form-data` > `multer` > `req.file.buffer` > Supabase Storage > chemin en BDD > URL reconstruite. Chaque couche a une responsabilité claire.

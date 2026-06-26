@@ -1,9 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { X, ExternalLink, Github } from "lucide-react";
+import { X, ExternalLink, FileText, Github } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { IBTPProject } from "@/data/btpProjects";
 import type { IDevProject } from "@/data/devProjects";
+import { useArticleCountByTag } from "@/hooks/useArticleCountByTag";
 
 interface IProjectModalProps {
   isOpen: boolean;
@@ -23,6 +25,7 @@ function getProjectImage(p: IBTPProject | IDevProject): string | undefined {
 export default function ProjectModal({ isOpen, onClose, project, side }: IProjectModalProps) {
   const bgColor = side === "btp" ? "#2C1810" : "#111111";
   const overlayColor = side === "btp" ? "44,24,16" : "10,10,10";
+  const articleCount = useArticleCountByTag(project?.id ?? "");
 
   return (
     <AnimatePresence>
@@ -83,8 +86,8 @@ export default function ProjectModal({ isOpen, onClose, project, side }: IProjec
                       ))}
                     </div>
                     <p className="text-white/35 text-xs mb-4">{project.status}</p>
-                    {(project.links.github || project.links.live) && (
-                      <div className="flex gap-2">
+                    {(project.links.github || project.links.live || project.links.demo || articleCount > 0) && (
+                      <div className="flex gap-2 flex-wrap">
                         {project.links.github && (
                           <Button
                             asChild
@@ -109,9 +112,47 @@ export default function ProjectModal({ isOpen, onClose, project, side }: IProjec
                             </a>
                           </Button>
                         )}
+                        {project.links.demo && (
+                          <Button
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className="border-white/20 text-white/70 hover:text-white hover:border-white/50"
+                          >
+                            <a href={project.links.demo} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink size={14} className="mr-1" /> Démo
+                            </a>
+                          </Button>
+                        )}
+                        {articleCount > 0 && (
+                          <Button
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className="border-white/20 text-white/70 hover:text-white hover:border-white/50"
+                          >
+                            <Link to={`/articles?tag=${project.id}`} onClick={onClose}>
+                              <FileText size={14} className="mr-1" /> Articles
+                            </Link>
+                          </Button>
+                        )}
                       </div>
                     )}
                   </>
+                )}
+                {!isDevProject(project) && articleCount > 0 && (
+                  <div className="flex gap-2 mt-2">
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="border-white/20 text-white/70 hover:text-white hover:border-white/50"
+                    >
+                      <Link to={`/articles?tag=${project.id}`} onClick={onClose}>
+                        <FileText size={14} className="mr-1" /> Articles
+                      </Link>
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>

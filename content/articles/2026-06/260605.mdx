@@ -3,7 +3,7 @@ export const frontmatter = {
   date: "2026-06-05",
   description:
     "Analyse critique du code généré par l'IA : identifier les lacunes, optimiser la structure (SOLID) et définir des standards techniques via CLAUDE.md.",
-  tags: ["react", "ia agentique", "frontend"],
+  tags: ["react", "ia agentique", "frontend", "chouxfleurs"],
   headings: [
     { level: 2, text: "Préambule", id: "preambule" },
     { level: 2, text: "Analyser le résultat obtenu", id: "analyser-le-resultat-obtenu" },
@@ -93,6 +93,48 @@ Au delà de l’aisance, l’objectif est surtout d’utiliser les outils les pl
 
 Ce qui est pratique avec l’IA c’est qu’elle permet de reformuler et de mettre en place des choses structurées.
 A partir de mes constatations, mes souhaits, il est alors facile de lui demander de mettre à jour le fichier CLAUDE.md global et ainsi inscrire les règles à suivre. Voici donc une première version des règles que je lui demande de suivre pour notre prochain projet.
-![Légende de mon image](/imagesArticles/2026/06/05/1.png)
+
+```md
+## Front-end Rules (React + Vite)
+
+## Stack Technique
+
+- Vite, React, TanStack Query, Zustand, React Hook Form, Axios, shadcn/ui (Tailwind + Radix UI).
+
+## Architecture
+
+- **Configuration :** Injection des providers/configurations dans `main.tsx` (jamais dans `App.tsx`).
+- **Séparation des préoccupations :** Les composants UI ne doivent contenir que de la logique d'affichage. La logique métier est déléguée aux Custom Hooks.
+- **Un fichier = une responsabilité :** Le hook ne fait jamais les appels API directement. Structure obligatoire : composant > hook > service > Axios.
+
+## Gestion d'état (Zustand)
+
+- Utilisation exclusive de **Zustand**. Interdiction formelle de la `Context API` pour la logique métier.
+- **Accès hors React :** Pour les utilitaires ou intercepteurs Axios, utiliser `store.getState()`.
+
+## Formulaires (React Hook Form)
+
+- Utilisation systématique de `useForm` via `register` et `handleSubmit`.
+- Le `onSubmit` doit appeler un **Custom Hook** dédié qui encapsule la mutation via **TanStack Query**.
+
+## Communication API (Axios Client)
+
+- **Authentification :** Intercepteur qui injecte l'access token depuis Zustand dans chaque requête.
+- **Gestion des erreurs :** Interception automatique des 401 et rafraîchissement via `/refresh`.
+- **Pureté :** Axios dédié au transport uniquement, sans logique d'état interne.
+
+## Conventions & Organisation
+
+- **Interfaces TypeScript :** Préfixe `I` obligatoire (ex: `IUser`, `ICardProps`).
+- **Nommage des fichiers :** `camelCase` systématique (ex: `userProfile.tsx`, `useAuthData.ts`).
+- **Architecture :** Si une fonctionnalité dépasse 3 fichiers, créer un dossier dédié.
+
+## UI & Composants (shadcn/ui)
+
+- **Structure :** `React.forwardRef` pour le contrôle DOM par le parent.
+- **Flexibilité :** Prop spreading (`...props`) sur l'élément racine.
+- **Stylisation :** Fonction utilitaire `cn()` pour fusionner les classes Tailwind.
+- **Débogage :** `displayName` systématique correspondant au nom du composant.
+```
 
 Ce fichier CLAUDE.md agit comme le « cerveau » du projet, dictant à l’IA les standards techniques à respecter pour garantir la cohérence dès la première ligne de code. Nous ferons bien entendu évoluer ces règles au fil de notre compréhension et de notre progression en tant que développeur.

@@ -30,7 +30,14 @@ Voilà les vraies décisions prises, et surtout pourquoi.
 ## UUID plutôt qu'autoincrement
 
 Première décision : tous les identifiants de Cerithe sont des UUIDs, pas des entiers auto-incrémentés.
-![Légende de mon image](/imagesArticles/2026/06/12/1.png)
+
+```prisma
+// Ce qu'on ne fait pas
+id Int    @id @default(autoincrement())
+
+// Ce qu'on fait
+id String @id @default(uuid())
+```
 
 Pourquoi ? Deux raisons.
 
@@ -43,7 +50,25 @@ La deuxième c’est la feature de transmission de Cerithe. Quand un bien change
 Un User c’est les credentials d’authentification, email et mot de passe. Rien d’autre.
 
 Un Profile c’est les données métier : prénom, nom, téléphone, rôle.
-![Légende de mon image](/imagesArticles/2026/06/12/2.png)
+
+```prisma
+model User {
+  id       String    @id @default(uuid())
+  email    String    @unique
+  password String
+  profile  Profile[]
+}
+
+model Profile {
+  id          String      @id @default(uuid())
+  firstName   String
+  lastName    String
+  phoneNumber String
+  role        profileRole
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+}
+```
 
 Pourquoi séparer les deux ? Parce que demain, un même utilisateur pourrait avoir plusieurs casquettes sur la plateforme : propriétaire particulier ET professionnel du bâtiment. Avec une seule table qui mélange tout, c’est impossible sans tout réécrire.
 
@@ -52,7 +77,11 @@ Cette séparation ne coûte rien au départ. Elle ouvre des portes pour l’aven
 ## La hiérarchie des entités
 
 Le coeur de Cerithe c’est cette hiérarchie :
-![Légende de mon image](/imagesArticles/2026/06/12/3.png)
+
+```
+Bien → Pièce → Tâche directe
+Bien → Projet → Tâches du projet
+```
 
 Une tâche peut être attachée directement à une pièce : ex : « j’ai changé la cuisinière ».
 Elle peut également appartenir à un projet : ex : « rénovation complète de la cuisine ».
@@ -64,7 +93,17 @@ Cette flexibilité est importante d’un point de vue UX. Obliger l’utilisateu
 Un projet de rénovation cuisine concerne la cuisine. Mais un projet de ravalement de façade concerne le bien dans sa globalité, pas une pièce spécifique.
 
 On a donc une relation many-to-many entre Project et Room, via une table de jonction :
-![Légende de mon image](/imagesArticles/2026/06/12/4.png)
+
+```prisma
+model project_has_room {
+  projectId String
+  roomId    String
+  project   Project @relation(fields: [projectId], references: [id])
+  room      Room    @relation(fields: [roomId], references: [id])
+
+  @@id([projectId, roomId])
+}
+```
 
 La clé primaire composite @@id([projectId, roomId]) garantit qu’on ne peut pas associer deux fois la même pièce au même projet. Si aucune pièce n’est renseignée, le projet concerne le bien global. Simple et flexible.
 
@@ -75,7 +114,19 @@ C’est la décision la plus structurante du schéma.
 La réflexion naïve : « un bien change de propriétaire, je change juste la FK profileId dans la table Property. » Techniquement ça marche. Mais on perd tout l’historique : combien de fois ce bien a changé de mains, à quelle date, pour quel montant, … ?
 
 On a donc une table Transmission dédiée :
-![Légende de mon image](/imagesArticles/2026/06/12/5.png)
+
+```prisma
+model Transmission {
+  id              String   @id @default(uuid())
+  amount          Decimal?
+  propertyId      String
+  previousOwnerId String
+  newOwnerId      String
+  property        Property @relation(fields: [propertyId], references: [id])
+  previousOwner   Profile  @relation("previousOwner", fields: [previousOwnerId], references: [id])
+  newOwner        Profile  @relation("newOwner", fields: [newOwnerId], references: [id])
+}
+```
 
 Deux relations nommées vers Profile, une pour l’ancien propriétaire, une pour le nouveau. Prisma exige de nommer les relations quand deux FK pointent vers le même modèle. Le montant est nullable parce qu’une transmission peut être une donation ou un héritage.
 

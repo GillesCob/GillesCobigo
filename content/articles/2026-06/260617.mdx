@@ -30,7 +30,10 @@ export const frontmatter = {
 Sur Cerithe, les propriétaires doivent pouvoir attacher des documents à leurs biens : factures, devis, plans, photos de chantier. Implémenter ça m’a obligé à comprendre quelque chose que j’avais toujours évité : comment un fichier voyage vraiment dans une requête HTTP.
 
 Quand tu envoies du JSON, le corps de la requête ressemble à ça :
-![Légende de mon image](/imagesArticles/2026/06/17/1.png)
+
+```json
+{ "name": "Ma maison", "surface": 120 }
+```
 
 Quand tu envoies un fichier, le corps ressemble à quelque chose de complètement différent. On parle de multipart/form-data, un format qui découpe la requête en plusieurs parties pour pouvoir mélanger du texte et des données binaires dans le même envoi.
 
@@ -41,12 +44,25 @@ Express ne sait pas parser ça nativement. Il faut un middleware dédié.
 Multer c’est le middleware Express qui intercepte les requêtes multipart, lit le fichier, et le met à disposition dans req.file. Sans lui, req.file est undefined et tu n’as rien.
 
 La configuration est simple. J’ai créé un fichier dédié dans le dossier middlewares :
-![Légende de mon image](/imagesArticles/2026/06/17/2.png)
+
+```ts
+import multer from "multer";
+
+export const upload = multer({ storage: multer.memoryStorage() });
+```
 
 memoryStorage() dit à multer de garder le fichier en mémoire sous forme de Buffer plutôt que de l’écrire sur le disque. C’est le bon choix quand on veut envoyer le fichier ailleurs juste après, comme vers Supabase Storage.
 
 Le middleware s’ajoute ensuite dans la route comme n’importe quel autre middleware :
-![Légende de mon image](/imagesArticles/2026/06/17/3.png)
+
+```ts
+documentRouter.post(
+  "/",
+  verifyAccessToken,
+  upload.single("file"),
+  createDocumentController
+);
+```
 
 upload.single("file") dit « je n’attends qu’un seul fichier, dans le champ nommé file« . Après ça, req.file contient le buffer, le nom original et le type MIME du fichier.
 
@@ -69,7 +85,12 @@ storage.service.ts fait une seule chose : uploader le fichier vers Supabase Stor
 document.service.ts fait une seule chose : créer l’entrée en BDD avec le titre, le type et l’URL du fichier.
 
 Le controller appelle les deux dans l’ordre. Chaque service ne connaît pas l’existence de l’autre.
-![Légende de mon image](/imagesArticles/2026/06/17/4.png)
+
+```ts
+// Le controller orchestre
+const newDocument = await uploadDocument(buffer, originalname, mimetype);
+const newDbEntry = await createDocument(originalname, type, newDocument.path, propertyId);
+```
 
 Cette séparation n’est pas du perfectionnisme. C’est de la maintenabilité. Si demain je veux migrer de Supabase vers Azure Blob Storage, je ne touche qu’à storage.service.ts. La logique BDD dans document.service.ts reste intacte.
 

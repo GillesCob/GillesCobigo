@@ -37,14 +37,39 @@ Le custom hook contient la logique métier. Il appelle le service, stocke le ré
 Le service fait l’appel API avec Axios. Il connaît l’URL et le verbe HTTP. Rien de plus.
 
 Axios intercepte chaque requête pour injecter l’access token dans le header automatiquement.
-![Légende de mon image](/imagesArticles/2026/06/18/1.png)
+
+```
+Composant (LoginPage)
+      ↓
+Custom hook (useAuth)
+      ↓
+Service (authService)
+      ↓
+Axios (intercepteur AT)
+      ↓
+Backend
+```
 
 ## L'instance Axios personnalisée
 
 On pourrait utiliser Axios directement, il exporte une instance prête à l’emploi. Mais créer sa propre instance avec axios.create() permet de centraliser la configuration en un seul endroit : l’URL de base du backend et les credentials pour les cookies.
 
 L’intercepteur request s’attache ensuite à cette instance. À chaque requête sortante il va lire l’access token dans le store Zustand et l’injecter dans le header Authorization.
-![Légende de mon image](/imagesArticles/2026/06/18/2.png)
+
+```ts
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true,
+});
+
+apiClient.interceptors.request.use((config) => {
+  const { accessToken } = useTokenStore.getState();
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+  return config;
+});
+```
 
 Ce fichier est le point d’entrée de toutes les requêtes vers le backend. Un seul endroit à modifier si l’URL change, si on ajoute un header global, si on gère le refresh token plus tard.
 

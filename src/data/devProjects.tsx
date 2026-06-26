@@ -1,18 +1,9 @@
-export interface IDevProject {
-  id: string;
-  name: string;
-  description: string;
-  stack: string[];
-  status: string;
-  image?: string;
-  links: {
-    github?: string;
-    live?: string;
-    demo?: string;
-  };
-}
+import type { IProjectCard } from "@/components/projects/ProjectCard";
+import React from "react";
 
-export const devProjects: IDevProject[] = [
+export type IDevProject = IProjectCard;
+
+export const devProjects: IProjectCard[] = [
   {
     id: "cerithe",
     name: "Cerithe",
@@ -21,7 +12,7 @@ export const devProjects: IDevProject[] = [
     stack: ["TypeScript", "Node.js", "Express", "Prisma", "PostgreSQL", "React"],
     status: "MVP le 17 juillet 2026",
     image: "/images/cerithe-placeholder.png",
-    links: { github: "https://github.com/GillesCob/Cerithe" },
+    links: { github: "https://github.com/GillesCob/Cerithe", live: `${import.meta.env.VITE_CERITHE_URL}` },
   },
   {
     id: "nexio",
@@ -33,7 +24,7 @@ export const devProjects: IDevProject[] = [
     image: "/images/nexio-placeholder.png",
     links: {
       github: "https://github.com/GillesCob/Nexio",
-      demo: "http://localhost:5173/login#:~:text=Voir-,la,-d%C3%A9mo",
+      demo: `${import.meta.env.VITE_NEXIO_URL}/login?demo=1`,
     },
   },
   {
@@ -44,7 +35,25 @@ export const devProjects: IDevProject[] = [
     stack: ["NestJS", "React", "Supabase", "TypeScript"],
     status: "En production",
     image: "/images/chouxfleurs-placeholder.png",
-    links: { github: "https://github.com/GillesCob/ChouxFleurs2" },
+    links: {
+      github: "https://github.com/GillesCob/ChouxFleurs2",
+      live: "https://chouxfleurs2.gillescobigo.com/register",
+    },
+  },
+  {
+    id: "labelr",
+    name: "Labelr",
+    description: (
+      <>
+        App de gestion de fiches produit conçue en un weekend pour préparer un entretien. Stack ASP.NET Core 8 et Vue.js
+        3, l'occasion de comparer concrètement les différences avec ma stack habituelle Node.js / React.
+      </>
+    ),
+    stack: ["ASP.NET Core 8", "Vue.js 3", "C#", "TypeScript"],
+    status: "Démo locale",
+    image: "/images/labelr-placeholder.png",
+
+    links: { github: "https://github.com/GillesCob/Labelr" },
   },
   {
     id: "vps-hetzner",

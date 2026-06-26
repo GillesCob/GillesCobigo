@@ -3,7 +3,7 @@ export const frontmatter = {
   date: "2026-06-14",
   description:
     "Comment switcher de stack technologique rapidement en s'appuyant sur les fondamentaux et l'aide de l'IA. Retour d'expérience sur l'apprentissage express de .NET et Vue.js.",
-  tags: ["reconversion", "ia agentique"],
+  tags: ["reconversion", "ia agentique", "labelr"],
   headings: [
     {
       level: 2,
@@ -51,7 +51,14 @@ Apprendre TypeScript après JavaScript c’est plus facile. Apprendre NestJS apr
 Quand Claude Code a généré le backend .NET de Labelr, mon app de gestion de fiches produit, j’ai reconnu des patterns que je pratique tous les jours sur Cerithe.
 
 L’architecture en couches Controller / Service / Repository c’est exactement le même principe que Route / Controller / Service en Express. Les noms changent, la logique reste identique.
-![Légende de mon image](/imagesArticles/2026/06/14/1.png)
+
+```ts
+// Express (ce que je connais)
+Route → Controller → Service → BDD
+
+// .NET (ce que j'apprends)
+Controller → Service → Repository → DbContext
+```
 
 Les DTOs en C# avec le mot-clé record c’est l’équivalent des types inférés par Zod en TypeScript. Entity Framework c’est Prisma, un ORM qui génère les migrations et abstrait le SQL. JWT, BCrypt, middleware d’authentification : les mêmes concepts, une syntaxe différente.
 
@@ -60,7 +67,14 @@ Ce n’est pas de la magie. C’est la preuve que les bonnes pratiques transcend
 ## Vue.js vs React : plus proche qu'on ne le pense
 
 Même constat côté frontend. Vue.js 3 avec la Composition API ressemble beaucoup à React avec les hooks.
-![Légende de mon image](/imagesArticles/2026/06/14/2.png)
+
+```ts
+// React (ce que je connais)
+const [count, setCount] = useState(0)
+
+// Vue.js 3 avec Composition API (ce que j'apprends)
+const count = ref(0)
+```
 
 Pinia remplace Zustand pour la gestion d’état. Vue Router remplace React Router. Les composants ont une structure différente mais le principe de séparation des responsabilités est identique.
 

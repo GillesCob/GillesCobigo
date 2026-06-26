@@ -33,14 +33,30 @@ Et en le faisant j’ai compris quelque chose que j’avais déjà codé sans vr
 Sans TanStack Query, récupérer une liste depuis une API demande un useEffect qui fetch au montage, un useState pour stocker le résultat, un autre pour le loading, un try/catch pour les erreurs. Quatre mécanismes pour faire une chose simple.
 
 Avec useQuery, c’est une clé unique et une fonction qui fetch. TanStack s’occupe du cache, du loading, des erreurs, de la revalidation.
-![Légende de mon image](/imagesArticles/2026/06/19/1.png)
+
+```ts
+const { data: properties, isPending, isError } = useQuery({
+  queryKey: ["properties"],
+  queryFn: getAllProperties,
+});
+```
 
 ## Le hook useProperties
 
 Même logique que côté backend : on ne met pas la logique directement dans le composant. Le composant consomme un hook, le hook wrap le useQuery, le service fait l’appel API.
 
 Renommer data en properties c’est un détail qui change tout à la lecture. Dans le dashboard on destructure properties et pas data. Six mois plus tard tu sais ce que c’est sans chercher.
-![Légende de mon image](/imagesArticles/2026/06/19/2.png)
+
+```ts
+export const useProperties = () => {
+  const { data: properties, isPending, isError } = useQuery({
+    queryKey: ["properties"],
+    queryFn: getAllProperties,
+  });
+
+  return { properties, isPending, isError };
+};
+```
 
 ## Le loader avant tout
 
