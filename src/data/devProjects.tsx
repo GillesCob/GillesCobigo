@@ -1,5 +1,4 @@
 import type { IProjectCard } from "@/components/projects/ProjectCard";
-import React from "react";
 
 export type IDevProject = IProjectCard;
 
