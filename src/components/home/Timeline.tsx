@@ -86,7 +86,7 @@ export default function Timeline() {
                   viewport={{ once: true, margin: "-80px" }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
                 >
-                  {/* Desktop — alternance gauche/droite */}
+                  {/* Desktop - alternance gauche/droite */}
                   <div className="hidden md:flex items-start">
                     <div className="flex-1 pr-10">
                       {isEven ? (
@@ -114,7 +114,7 @@ export default function Timeline() {
                     </div>
                   </div>
 
-                  {/* Mobile — tout à droite */}
+                  {/* Mobile - tout à droite */}
                   <div className="flex md:hidden items-start pl-10 relative">
                     <div
                       className={`absolute left-4 top-1.5 -translate-x-1/2 w-3 h-3 rounded-full ring-2 ring-background border border-border transition-colors ${
