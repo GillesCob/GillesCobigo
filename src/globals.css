@@ -61,10 +61,6 @@
   }
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 /* ── Syntax highlighting — rehype-pretty-code ───────────────────────────── */
 
 [data-rehype-pretty-code-figure] {
