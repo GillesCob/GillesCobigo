@@ -14,7 +14,7 @@ export default function StackMatcher() {
 
   const selectedIds = [...selected];
   const score = computeScore(selectedIds);
-  const scoreMessage = selected.size > 0 ? getScoreMessage(score) : null;
+  const scoreMessage = selected.size > 0 ? getScoreMessage(selectedIds, score) : null;
   const techNotes = stackTechs.filter((t) => selected.has(t.id) && t.note);
 
   return (
@@ -22,7 +22,7 @@ export default function StackMatcher() {
       <div className="max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold mb-2">Ma stack, la tienne.</h2>
         <p className="text-muted-foreground mb-8">
-          Coche les technos de ta stack - je calcule notre degré de compatibilité.
+          Coche les technos de ta stack, je calcule notre degré de compatibilité.
         </p>
 
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 mb-6">
@@ -60,7 +60,6 @@ export default function StackMatcher() {
                 ))}
               </div>
             )}
-
           </div>
         )}
       </div>

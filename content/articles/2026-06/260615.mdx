@@ -1,0 +1,123 @@
+export const frontmatter = {
+  title: "Le pattern auth qui se répète sur chaque endpoint",
+  date: "2026-06-15",
+  description:
+    "Analyse détaillée du pattern d'architecture Express (Route/Middleware/Controller/Service) appliqué au système d'authentification de Cerithe.",
+  tags: ["cerithe", "backend", "architecture"],
+  headings: [
+    { level: 2, text: "Le pattern qui se répète partout", id: "le-pattern-qui-se-repete-partout" },
+    {
+      level: 2,
+      text: "La chaîne complète : route, middleware, controller, service",
+      id: "la-chaine-complete-route-middleware-controller-service",
+    },
+    { level: 2, text: "Le service register", id: "le-service-register" },
+    { level: 2, text: "Le service login", id: "le-service-login" },
+    {
+      level: 2,
+      text: "Le controller : orchestrer sans logique métier",
+      id: "le-controller-orchestrer-sans-logique-metier",
+    },
+    { level: 2, text: "La route : brancher les pièces ensemble", id: "la-route-brancher-les-pieces-ensemble" },
+    { level: 2, text: "Ce que j'en retiens", id: "ce-que-j-en-retiens" },
+  ],
+};
+
+## Le pattern qui se répète partout
+
+Maintenant que le schéma de base de données et le système de tokens sont en place, on passe à la vraie logique métier : le register et le login.
+
+Ce qui m’a frappé en codant ces deux endpoints c’est que la structure est identique. Une fois qu’on a compris le pattern, on le répète. C’est valable pour l’auth, mais aussi pour tous les CRUDs qui viennent ensuite.
+
+Voilà comment ça s’articule sur Cerithe.
+
+## La chaîne complète : route, middleware, controller, service
+
+Sur Cerithe chaque requête passe par quatre couches dans l’ordre.
+
+La route identifie le verbe HTTP et l’URL et décide où envoyer la requête. Le middleware valide les données avant même d’entrer dans la logique métier. Le controller orchestre : il extrait les données, appelle les services, renvoie la réponse. Le service fait le vrai travail : appels en base, hashage, génération de tokens.
+
+Le controller ne sait pas comment hasher un mot de passe. Le service ne sait pas ce qu’est une réponse HTTP. Chacun fait une seule chose.
+
+```
+Route → Middleware Zod → Controller → Service → BDD
+```
+
+## Le service register
+
+Le service register fait trois choses dans l’ordre. Il vérifie que l’email n’existe pas déjà. Il hashe le mot de passe avec argon2. Il crée le user en base avec un select précis pour ne jamais retourner le mot de passe.
+
+```ts
+export const register = async (email: string, password: string) => {
+  const userExist = await prisma.user.findUnique({ where: { email } });
+  if (userExist) throw new Error("L'email est déjà utilisé");
+
+  const hashedPassword = await hashPassword(password);
+  return await prisma.user.create({
+    data: { email, password: hashedPassword },
+    select: { id: true, email: true, createdAt: true },
+  });
+};
+```
+
+Le select sur le create est important. Le mot de passe ne quitte jamais la base de données, même hashé. On choisit exactement ce qu’on retourne.
+
+## Le service login
+
+Le login c’est la même structure mais en lecture. On vérifie que l’email existe, on compare le mot de passe avec verifyPassword, on retourne le user sans le mot de passe via le destructuring.
+
+```ts
+export const login = async (email: string, password: string) => {
+  const userExist = await prisma.user.findUnique({ where: { email } });
+  if (!userExist) throw new Error("Identifiants incorrects");
+
+  const passwordIsCorrect = await verifyPassword(password, userExist.password);
+  if (!passwordIsCorrect) throw new Error("Identifiants incorrects");
+
+  const { password: _, ...userWithoutPassword } = userExist;
+  return userWithoutPassword;
+};
+```
+
+Deux détails importants. Le message d’erreur est identique pour un email inexistant et un mauvais mot de passe : on ne donne pas d’indication à un attaquant sur lequel des deux est faux. Et les early returns évitent les ifs imbriqués : on gère les cas d’erreur en premier, le happy path reste lisible.
+
+## Le controller : orchestrer sans logique métier
+
+Le controller ne hash rien, ne fait aucune requête en base. Il extrait les données de la requête, appelle les services dans l’ordre, place le refresh token dans un cookie httpOnly, et renvoie la réponse.
+
+```ts
+export const registerController = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    const newUser = await register(email, password);
+    const userTokens = await generateTokens(newUser.id);
+    res.cookie("refreshToken", userTokens.refreshToken, {
+      httpOnly: true,
+      secure: true,
+    });
+    return res.status(201).json({ user: newUser, accessToken: userTokens.accessToken });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Une erreur est survenue" });
+  }
+};
+```
+
+Le try/catch attrape toutes les erreurs et renvoie une 500 générique. On ne laisse jamais une erreur non gérée remonter jusqu’au client.
+
+## La route : brancher les pièces ensemble
+
+La route c’est la dernière pièce. Elle branche le middleware de validation et le controller sur le bon verbe HTTP et la bonne URL.
+
+```ts
+authRouter.post("/register", validate(registerSchema), registerController);
+authRouter.post("/login", validate(loginSchema), loginController);
+```
+
+validate(registerSchema) c’est une higher-order function : elle prend le schéma Zod et retourne un middleware configuré. Express l’appelle automatiquement avant le controller. Si la validation échoue, la requête s’arrête là et le controller n’est jamais appelé.
+
+## Ce que j'en retiens
+
+Ce pattern route/middleware/controller/service c’est la colonne vertébrale de l’API. Maintenant que je l’ai compris sur l’auth, chaque nouveau CRUD sera plus rapide. La structure est identique, seule la logique métier change.
+
+Ce qui m’a le plus aidé : écrire les commentaires en français avant le code. Pas pour documenter, pour réfléchir. Une fois que je sais ce que je veux faire, la syntaxe vient naturellement.

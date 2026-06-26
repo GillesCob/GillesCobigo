@@ -1,0 +1,140 @@
+export const frontmatter = {
+  title: "Analyse et optimisation du front généré par Claude Code",
+  date: "2026-06-05",
+  description:
+    "Analyse critique du code généré par l'IA : identifier les lacunes, optimiser la structure (SOLID) et définir des standards techniques via CLAUDE.md.",
+  tags: ["react", "ia agentique", "frontend", "chouxfleurs"],
+  headings: [
+    { level: 2, text: "Préambule", id: "preambule" },
+    { level: 2, text: "Analyser le résultat obtenu", id: "analyser-le-resultat-obtenu" },
+    { level: 2, text: "Zustand", id: "zustand" },
+    { level: 2, text: "Tanstack Query", id: "tanstack-query" },
+    { level: 2, text: "Radix et SHADCN", id: "radix-et-shadcn" },
+    { level: 2, text: "En déduire les règles de conception", id: "en-deduire-les-regles-de-conception" },
+  ],
+};
+
+## Préambule
+
+Ok on y est !
+
+Comme vu dans les précédents articles, notre objectif dans les prochains jours va être de disséquer ce qu’a pu nous créer Claude Code dans le cadre du projet ChouxFleurs2.
+
+En effet comme évoqué précedemment, nous ne souhaitons pas prendre pour acquis ce qu’il a pu générer mais plutôt analyser le rendu, identifier les éléments qui ne nous conviennent pas et les corriger, en déduire les règles à suivre pour les prochains projets ainsi que découvrir de nouvelles syntaxes, façons de faire, outils, …
+
+Il existe toujours une multitude de chemins possibles pour obtenir un résultat visuellement identique pour un utilisateur. Nous souhaitons cependant obtenir un code propre, maintenable, scalable et sécurisé. Nous allons donc faire le tour et essayer d’obtenir une structure la plus proche possible de ce que je maîtrise (cf mon dernier article et ma présentation orale).
+
+## Analyser le résultat obtenu
+
+Nous avions un prompt assez basique lors de la création de notre app côté Front : Utiliser Vite, React et c’est plus ou moins tout. Nous avons en effet souhaité lui laisser une autonomie totale afin qu’il puisse nous faire découvrir des façons de faire.
+
+Nous obtenons finalement une structure classique par type : tous les components, hooks ou pages sont regroupés dans des dossiers distincts. Ca tombe bien c’est pour le moment comme cela que je procède.
+
+Je vais voir dans le package.json et là plusieurs chose m’interpèlent :
+
+Pas de Zustand
+Pas de Tanstack Query
+Pas d’Axios
+Pas de JWT
+Je vois cependant la mention de Radix et je dois être honnête à ce moment : je ne sais pas ce que c’est (lien vers la doc).
+Enfin je vois l’utilisation de Context ce qui confirme mon analyse de départ : pas de Zustand dans le code proposé.
+
+Je continue mon exploration et je vois quelques modifications mineures à apporter comme la mise en place du BrowserRouter dans le main et non pas dans App, le fait de mieux identifier les interfaces via l’ajout d’un « I » dans leur nom (IUser ou IProject).
+Je vois enfin que les composants n’ont pas comme unique mission de display les éléments du front mais ont aussi des tâches annexes que l’on pourrait déplacer dans des fichiers spécifiques afin de respecter davantage les principes SOLID et notamment la Séparation des responsabilités.
+
+Ces premiers éléments sont mineurs voire peut-être anecdotiques pour certains mais avoir une structure claire et compréhensible me permettra de me concentrer sur les éléments qui comptent sans être pollué ou diverti par des détails.
+
+## Zustand
+
+Zustand est une bibliothèque qui va permettre de rendre accessible dans l’ensemble de mon code les états ainsi que les données de mon application.
+
+Cela est essentiel afin notamment d’éviter de remonter les données via l’utilisation massive de Props via ce qu’on appelle le Prop Drilling.
+
+D’autres solutions sont possibles comme par exemple l’utilisation de Context (ce qui est actuellement le cas dans mon code actuel). Zustand a cependant comme avantage de ne pas rerender l’ensemble des composants lors de la modification d’un état, est plus simple à configurer et peut également être appelé depuis n’importe où dans mon app, pas seulement depuis des composants React.
+
+Nous transformerons donc notre code dans les jours à venir afin de mettre en place proprement Zustand.
+
+## Tanstack query
+
+Tanstack Query est une des bibliothèques de Tanstack permettant de simplifier et optimiser la création de requêtes réseaux.
+
+Il possède notamment une gestion du cache ou encore des variables déjà utilisables afin d’éviter de les coder nous-même via de nombreux UseState (isLoading, isError, …).
+
+Comme évoqué, Tanstack Query n’est pas présent dans notre code de base. Il pourra être intéressant dans un prochain article de montrer de quelle manière nous avons fait évoluer notre code afin de le mettre en place dans notre application.
+
+## Radix et SHADCN
+
+Nous avons plusieurs fois évoqué l’un des intérêt d’utiliser l’IA : découvrir d’autres façons de faire, d’autres outils.
+
+Dans le cadre de ma formation, nous avons utilisé Tailwind et DaisyUI pour tout ce qui est mise en forme.
+
+Les utiliser permet d’obtenir rapidement et sans aucun effort des éléments graphiques que l’on peut simplement intégrer à notre application. C’est parfait pour avoir rapidement et simplement un premier visuel tout à fait satisfaisant dans le cadre du développement d’un app maison.
+
+Cependant je découvre aujourd’hui l’utilisation de Radix et Shadcn. Cela m’oblige alors à creuser sur ce sujet, sur leur utilisation et la différence avec les outils que j’utilisaient jusqu’à maintenant.
+
+### Radix
+
+Radix est une bibliothèque de primitives, de composants que l’on appelle de bas niveau.
+L’idée est de rendre disponible des composants fonctionnels, parfaitement bien codés et utilisables mais qui ne portent aucun élément stylistique en eux.
+
+### Shadcn
+
+SHADCN permet de télécharger le code de composants. Ces derniers sont issus des designs de Radix mais portent cette fois-ci des éléments de design. Ils sont donc nativement mis en forme ce qui permets de plus facilement se les approprier afin d’obtenir un design qui correspond à nos besoins.
+
+Je me suis retrouvé avec dans le dossier « components » face à des composants complexes et très bien structurés. Ce sont en réalité simplement des éléments téléchargés depuis Shadcn et sur lesquels il ne tient qu’à moi d’apporter des modifications.
+
+## En déduire les règles de conception
+
+Nous n’avons pas évoqué tous les manquements identifiés (il faut bien que j’en garde sous le pied pour le prochain article).
+
+Nous pouvons cependant en déduire des règles à inscrire dans le marbre afin que Claude, lors de mon prochain projet, corrige tous les éléments identifiés et fournisse dès la première génération de code, une app qui respecte ma façon de travailler et les outils avec lesquels je suis à l’aise.
+
+Au delà de l’aisance, l’objectif est surtout d’utiliser les outils les plus utilisés, efficaces et professionnels et ainsi travailler en suivant les meilleures pratiques du métier.
+
+Ce qui est pratique avec l’IA c’est qu’elle permet de reformuler et de mettre en place des choses structurées.
+A partir de mes constatations, mes souhaits, il est alors facile de lui demander de mettre à jour le fichier CLAUDE.md global et ainsi inscrire les règles à suivre. Voici donc une première version des règles que je lui demande de suivre pour notre prochain projet.
+
+```md
+## Front-end Rules (React + Vite)
+
+## Stack Technique
+
+- Vite, React, TanStack Query, Zustand, React Hook Form, Axios, shadcn/ui (Tailwind + Radix UI).
+
+## Architecture
+
+- **Configuration :** Injection des providers/configurations dans `main.tsx` (jamais dans `App.tsx`).
+- **Séparation des préoccupations :** Les composants UI ne doivent contenir que de la logique d'affichage. La logique métier est déléguée aux Custom Hooks.
+- **Un fichier = une responsabilité :** Le hook ne fait jamais les appels API directement. Structure obligatoire : composant > hook > service > Axios.
+
+## Gestion d'état (Zustand)
+
+- Utilisation exclusive de **Zustand**. Interdiction formelle de la `Context API` pour la logique métier.
+- **Accès hors React :** Pour les utilitaires ou intercepteurs Axios, utiliser `store.getState()`.
+
+## Formulaires (React Hook Form)
+
+- Utilisation systématique de `useForm` via `register` et `handleSubmit`.
+- Le `onSubmit` doit appeler un **Custom Hook** dédié qui encapsule la mutation via **TanStack Query**.
+
+## Communication API (Axios Client)
+
+- **Authentification :** Intercepteur qui injecte l'access token depuis Zustand dans chaque requête.
+- **Gestion des erreurs :** Interception automatique des 401 et rafraîchissement via `/refresh`.
+- **Pureté :** Axios dédié au transport uniquement, sans logique d'état interne.
+
+## Conventions & Organisation
+
+- **Interfaces TypeScript :** Préfixe `I` obligatoire (ex: `IUser`, `ICardProps`).
+- **Nommage des fichiers :** `camelCase` systématique (ex: `userProfile.tsx`, `useAuthData.ts`).
+- **Architecture :** Si une fonctionnalité dépasse 3 fichiers, créer un dossier dédié.
+
+## UI & Composants (shadcn/ui)
+
+- **Structure :** `React.forwardRef` pour le contrôle DOM par le parent.
+- **Flexibilité :** Prop spreading (`...props`) sur l'élément racine.
+- **Stylisation :** Fonction utilitaire `cn()` pour fusionner les classes Tailwind.
+- **Débogage :** `displayName` systématique correspondant au nom du composant.
+```
+
+Ce fichier CLAUDE.md agit comme le « cerveau » du projet, dictant à l’IA les standards techniques à respecter pour garantir la cohérence dès la première ligne de code. Nous ferons bien entendu évoluer ces règles au fil de notre compréhension et de notre progression en tant que développeur.

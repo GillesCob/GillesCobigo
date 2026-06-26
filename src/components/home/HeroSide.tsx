@@ -3,10 +3,12 @@ interface IProjectItem {
   name: string;
 }
 
+import type { ReactNode } from "react";
+
 interface IHeroSideProps {
   side: "btp" | "dev";
   dates: string;
-  title: string;
+  title: ReactNode;
   subtitle: string;
   tags: string[];
   projectItems: IProjectItem[]; // Ce sont ces items qui deviennent les boutons cliquables

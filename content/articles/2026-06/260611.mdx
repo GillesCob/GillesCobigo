@@ -1,0 +1,139 @@
+export const frontmatter = {
+  title: "Quand Prisma 7, ESM et TypeScript 6 se rencontrent",
+  date: "2026-06-11",
+  description:
+    "Retour d'expérience sur la configuration d'un projet Node moderne : les défis de l'ESM, l'utilisation de tsx, les imports de types stricts et l'adaptation à Prisma 7.",
+  tags: ["node.js", "prisma", "typescript", "cerithe"],
+  headings: [
+    { level: 2, text: "Le contexte", id: "le-contexte" },
+    { level: 2, text: "C'est quoi ESM ?", id: "c-est-quoi-esm" },
+    {
+      level: 2,
+      text: "Premier problème : ts-node ne fonctionne plus",
+      id: "premier-probleme-ts-node-ne-fonctionne-plus",
+    },
+    { level: 2, text: "Deuxième problème : les imports de types", id: "deuxieme-probleme-les-imports-de-types" },
+    { level: 2, text: "Troisième problème : Prisma 7 change tout", id: "troisieme-probleme-prisma-7-change-tout" },
+    {
+      level: 2,
+      text: "Quatrième problème : TypeScript est très (très) strict",
+      id: "quatrieme-probleme-typescript-est-tres-tres-strict",
+    },
+    { level: 2, text: "Ce que j'en retiens", id: "ce-que-j-en-retiens" },
+  ],
+};
+
+## Le contexte
+
+On avance sur Cerithe, mon carnet de santé numérique du bâtiment. Et avant d'écrire la moindre ligne de logique métier, il a fallu passer par la case que personne n'aime : la configuration.
+
+Je savais que ça allait piquer. Je ne savais pas à quel point.
+
+Prisma 7 est sorti récemment et la quasi-totalité des tutos en ligne sont encore sur Prisma 5. Si on combine ça avec TypeScript 6 et un projet en ESM, on obtient une combinaison que peu de gens ont documentée. Surtout en français.
+
+Alors voilà. Je le fais.
+
+## C'est quoi ESM ?
+
+ESM c'est le système de modules natif de JavaScript, celui qui utilise import et export plutôt que require. C'est le standard aujourd'hui, et c'est ce qu'on va utiliser sur Cerithe.
+
+Pour l'activer dans un projet Node, une seule ligne dans package.json :
+
+```json
+"type": "module"
+```
+
+Simple en apparence. En pratique, ça casse la compatibilité avec pas mal d'outils qui n'ont pas encore suivi.
+
+## Premier problème : ts-node ne fonctionne plus
+
+Classiquement, pour exécuter du TypeScript en développement, on utilise ts-node. C'est ce qu'on voit dans 90% des tutos.
+
+Sauf que ts-node et ESM + TypeScript 6, ça ne s'entend pas. Node ne trouve tout simplement plus les fichiers et cherche des .js là où on a des .ts. Conséquence ? : ça plante au démarrage.
+
+La solution ? Remplacer ts-node par tsx. C'est un outil plus récent qui gère nativement ESM sans configuration supplémentaire.
+
+```bash
+npm remove ts-node
+npm install -D tsx
+```
+
+Et dans package.json, on met à jour le script de démarrage :
+
+```json
+"scripts": {
+  "dev": "nodemon --exec tsx src/server.ts"
+}
+```
+
+## Deuxième problème : les imports de types
+
+Avec verbatimModuleSyntax activé dans tsconfig.json, un réglage par défaut dans les versions récentes de TypeScript, les types doivent s'importer explicitement avec « import type ».
+
+{/* SNIPPET OCRISÉ — À VÉRIFIER MANUELLEMENT */}
+
+```ts
+// Génère une erreur
+import { Application, Request, Response } from "express";
+// La bonne façon
+import express from "express";
+import type { Application, Request, Response } from "express";
+```
+
+La règle est simple : une valeur s'importe avec « import », un type s'importe avec « import type ».
+
+## Troisième problème : Prisma 7 change tout
+
+Jusqu'à Prisma 5, on initialisait le client Prisma comme ça :
+
+{/* SNIPPET OCRISÉ — À VÉRIFIER MANUELLEMENT */}
+
+```ts
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
+```
+
+Avec Prisma 7, cette façon de faire ne suffit plus. Le client attend maintenant un adapter. Il s'agit d'un objet qui lui dit comment se connecter à la base de données. C'est un changement architectural important !
+
+Pour PostgreSQL, l'adapter s'appelle PrismaPg. Nous avons donc commencé par l'installer :
+
+```bash
+npm install @prisma/adapter-pg
+```
+
+Et voilà comment le client s'initialise maintenant :
+
+```ts
+import { PrismaClient } from "../../prisma/generated/client.js";
+import { PrismaPg } from "@prisma/adapter-pg";
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+});
+
+const prisma = new PrismaClient({ adapter });
+
+export default prisma;
+```
+
+## Quatrième problème : TypeScript est très (très) strict
+
+TypeScript 6 active par défaut exactOptionalPropertyTypes dans tsconfig.json. Ce réglage refuse qu'une propriété optionnelle puisse valoir undefined si ce n'est pas explicitement prévu dans son type.
+
+En pratique, quand on utilise jsonwebtoken avec une valeur qui vient du .env, TypeScript bloque. La valeur vient d'une variable d'environnement donc elle pourrait théoriquement ne pas exister.
+
+La solution passe par un cast explicite :
+
+```ts
+import type { SignOptions } from "jsonwebtoken";
+
+const options: SignOptions = {
+  expiresIn: expiresIn as Exclude<SignOptions["expiresIn"], undefined>,
+};
+```
+
+## Ce que j'en retiens
+
+La configuration d'un projet moderne prend du temps. Pas parce qu'on est mauvais mais parce qu'on est souvent à la jonction d'outils qui n'ont pas encore tous suivi les évolutions récentes.
+
+Ce qui m'a le plus marqué : aucune de ces erreurs n'était insurmontable. Chacune avait une cause précise et une solution propre. La compétence ce n'est pas de connaître les solutions par cœur, c'est de savoir lire une erreur et trouver le bon outil pour la résoudre.

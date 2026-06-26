@@ -1,13 +1,14 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
+import { X, BookOpen } from "lucide-react";
 import { useThemeStore } from "@/store/themeStore";
+import SkillArticlesModal from "@/components/shared/SkillArticlesModal";
 
 interface ISkill {
   name: string;
   level: number;
   project: string;
+  tags?: string[];
 }
 
 interface ICategory {
@@ -21,42 +22,42 @@ const categories: ICategory[] = [
     label: "Backend",
     level: 76,
     skills: [
-      { name: "Express / Node.js", level: 75, project: "Cerithe (auth complète, CRUD, upload Supabase)" },
-      { name: "Auth JWT + argon2", level: 80, project: "Cerithe" },
-      { name: "Prisma + PostgreSQL", level: 78, project: "Cerithe" },
-      { name: "Zod (validation)", level: 72, project: "Cerithe" },
-      { name: "REST API design", level: 75, project: "Cerithe" },
+      { name: "Express / Node.js", level: 75, project: "Cerithe (auth complète, CRUD, upload Supabase)", tags: ["node.js", "express", "backend"] },
+      { name: "Auth JWT + argon2", level: 80, project: "Cerithe", tags: ["jwt", "sécurité", "authentification"] },
+      { name: "Prisma + PostgreSQL", level: 78, project: "Cerithe", tags: ["prisma", "postgresql", "base de données"] },
+      { name: "Zod (validation)", level: 72, project: "Cerithe", tags: ["architecture", "typescript"] },
+      { name: "REST API design", level: 75, project: "Cerithe", tags: ["architecture", "backend"] },
     ],
   },
   {
     label: "Frontend",
     level: 70,
     skills: [
-      { name: "React + TypeScript", level: 70, project: "Cerithe / Nexio" },
-      { name: "TanStack Query", level: 68, project: "Cerithe / Nexio (dashboard, kanban)" },
-      { name: "Zustand", level: 70, project: "ChouxFleurs / Nexio" },
-      { name: "React Hook Form", level: 70, project: "Cerithe / Nexio" },
-      { name: "Tailwind + shadcn/ui", level: 68, project: "Nexio / Portfolio" },
+      { name: "React + TypeScript", level: 70, project: "Cerithe / Nexio", tags: ["react", "typescript", "frontend"] },
+      { name: "TanStack Query", level: 68, project: "Cerithe / Nexio (dashboard, kanban)", tags: ["tanstack query"] },
+      { name: "Zustand", level: 70, project: "ChouxFleurs / Nexio", tags: ["zustand"] },
+      { name: "React Hook Form", level: 70, project: "Cerithe / Nexio", tags: ["react", "frontend"] },
+      { name: "Tailwind + shadcn/ui", level: 68, project: "Nexio / Portfolio", tags: ["frontend"] },
     ],
   },
   {
     label: "Agentique",
     level: 71,
     skills: [
-      { name: "Claude Code", level: 70, project: "Nexio (auth complète en 1 session)" },
-      { name: "CLAUDE.md + règles", level: 72, project: "Tous projets" },
-      { name: "Plan mode + review", level: 68, project: "Nexio" },
-      { name: "Prompting structuré", level: 74, project: "Portfolio / Nexio" },
+      { name: "Claude Code", level: 70, project: "Nexio (auth complète en 1 session)", tags: ["claude code", "ia agentique"] },
+      { name: "CLAUDE.md + règles", level: 72, project: "Tous projets", tags: ["ia agentique"] },
+      { name: "Plan mode + review", level: 68, project: "Nexio", tags: ["ia agentique"] },
+      { name: "Prompting structuré", level: 74, project: "Portfolio / Nexio", tags: ["ia", "ia agentique"] },
     ],
   },
   {
     label: "DevOps",
     level: 49,
     skills: [
-      { name: "Docker", level: 45, project: "VPS Hetzner" },
-      { name: "Nginx + Certbot", level: 50, project: "VPS Hetzner (en prod)" },
-      { name: "Linux / SSH", level: 52, project: "VPS Hetzner" },
-      { name: "PostgreSQL VPS", level: 48, project: "VPS Hetzner" },
+      { name: "Docker", level: 45, project: "VPS Hetzner", tags: ["devops", "déploiement"] },
+      { name: "Nginx + Certbot", level: 50, project: "VPS Hetzner (en prod)", tags: ["devops", "déploiement"] },
+      { name: "Linux / SSH", level: 52, project: "VPS Hetzner", tags: ["devops"] },
+      { name: "PostgreSQL VPS", level: 48, project: "VPS Hetzner", tags: ["postgresql", "devops"] },
     ],
   },
   {
@@ -73,20 +74,19 @@ const categories: ICategory[] = [
     label: "TypeScript",
     level: 62,
     skills: [
-      { name: "Types de base", level: 80, project: "Cerithe" },
-      { name: "Generics", level: 35, project: "en cours" },
-      { name: "Déclaration de module", level: 70, project: "Cerithe" },
-      { name: "Strict mode (exactOptionalPropertyTypes)", level: 65, project: "Cerithe" },
+      { name: "Types de base", level: 80, project: "Cerithe", tags: ["typescript"] },
+      { name: "Generics", level: 35, project: "en cours", tags: ["typescript"] },
+      { name: "Déclaration de module", level: 70, project: "Cerithe", tags: ["typescript"] },
+      { name: "Strict mode (exactOptionalPropertyTypes)", level: 65, project: "Cerithe", tags: ["typescript"] },
     ],
   },
 ];
 
-// #3 : viewBox élargi (W=580, H=500) + LABEL_R=175 > R=160 → labels toujours hors des traits de grille
 const W = 580;
 const H = 500;
 const cx = 290;
 const cy = 250;
-const R = 160;
+const R = 150;
 const LEVELS = 5;
 const LABEL_R = 175;
 
@@ -97,20 +97,209 @@ function getAngle(i: number, n: number): number {
   return (Math.PI * 2 * i) / n - Math.PI / 2;
 }
 
-function getPoint(i: number, val: number, n: number, maxR: number = R): [number, number] {
+function getPoint(i: number, val: number, n: number): [number, number] {
   const a = getAngle(i, n);
-  const r = maxR * (val / 100);
+  const r = R * (val / 100);
   return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
 }
 
-// #3 / #6 : labelR paramétrable — desktop=175, drawer mobile=155
-function getLabelPoint(i: number, n: number, labelR: number = LABEL_R): [number, number] {
+function getLabelPoint(i: number, n: number): [number, number] {
   const a = getAngle(i, n);
-  return [cx + labelR * Math.cos(a), cy + labelR * Math.sin(a)];
+  return [cx + LABEL_R * Math.cos(a), cy + LABEL_R * Math.sin(a)];
 }
 
-function toPolyPoints(values: number[], n: number, maxR: number = R): string {
-  return values.map((val, i) => getPoint(i, val, n, maxR).join(",")).join(" ");
+function toPolyPoints(values: number[], n: number): string {
+  return values.map((val, i) => getPoint(i, val, n).join(",")).join(" ");
+}
+
+// Desktop : tooltip via portal, affiché uniquement si le badge est réellement tronqué
+function ProjectBadge({ project }: { project: string }) {
+  const [isTruncated, setIsTruncated] = useState(false);
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
+  const spanRef = useRef<HTMLSpanElement>(null);
+
+  useLayoutEffect(() => {
+    function check() {
+      if (spanRef.current) {
+        setIsTruncated(spanRef.current.scrollWidth > spanRef.current.clientWidth);
+      }
+    }
+    check();
+    const ro = new ResizeObserver(check);
+    if (spanRef.current) ro.observe(spanRef.current);
+    return () => ro.disconnect();
+  }, [project]);
+
+  return (
+    <>
+      <span
+        ref={spanRef}
+        className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground shrink-0 max-w-[100px] truncate"
+        onMouseEnter={() => {
+          if (isTruncated && spanRef.current) {
+            const rect = spanRef.current.getBoundingClientRect();
+            setTooltipPos({ x: rect.left, y: rect.top });
+          }
+        }}
+        onMouseLeave={() => setTooltipPos(null)}
+      >
+        {project}
+      </span>
+      {tooltipPos !== null &&
+        createPortal(
+          <span
+            style={{
+              position: "fixed",
+              left: tooltipPos.x,
+              top: tooltipPos.y,
+              transform: "translateY(calc(-100% - 6px))",
+              zIndex: 50,
+              pointerEvents: "none",
+            }}
+            className="px-3 py-2 rounded-lg text-sm whitespace-nowrap border border-border bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 shadow-lg"
+          >
+            {project}
+          </span>,
+          document.body
+        )}
+    </>
+  );
+}
+
+// Desktop : même mécanique que ProjectBadge, style du nom de compétence
+function SkillNameLabel({ name }: { name: string }) {
+  const [isTruncated, setIsTruncated] = useState(false);
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
+  const spanRef = useRef<HTMLSpanElement>(null);
+
+  useLayoutEffect(() => {
+    function check() {
+      if (spanRef.current) {
+        setIsTruncated(spanRef.current.scrollWidth > spanRef.current.clientWidth);
+      }
+    }
+    check();
+    const ro = new ResizeObserver(check);
+    if (spanRef.current) ro.observe(spanRef.current);
+    return () => ro.disconnect();
+  }, [name]);
+
+  return (
+    <>
+      <span
+        ref={spanRef}
+        className="text-sm text-foreground shrink-0 min-w-[100px] max-w-[130px] truncate"
+        onMouseEnter={() => {
+          if (isTruncated && spanRef.current) {
+            const rect = spanRef.current.getBoundingClientRect();
+            setTooltipPos({ x: rect.left, y: rect.top });
+          }
+        }}
+        onMouseLeave={() => setTooltipPos(null)}
+      >
+        {name}
+      </span>
+      {tooltipPos !== null &&
+        createPortal(
+          <span
+            style={{
+              position: "fixed",
+              left: tooltipPos.x,
+              top: tooltipPos.y,
+              transform: "translateY(calc(-100% - 6px))",
+              zIndex: 50,
+              pointerEvents: "none",
+            }}
+            className="px-3 py-2 rounded-lg text-sm whitespace-nowrap border border-border bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 shadow-lg"
+          >
+            {name}
+          </span>,
+          document.body
+        )}
+    </>
+  );
+}
+
+interface IDetailContentProps {
+  cat: ICategory;
+  isMobile?: boolean;
+  onSkillClick: (skill: ISkill) => void;
+}
+
+function DetailContent({ cat, isMobile = false, onSkillClick }: IDetailContentProps) {
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const badgeRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const nameRefs = useRef<(HTMLSpanElement | null)[]>([]);
+
+  useEffect(() => {
+    setExpandedItem(null);
+  }, [cat]);
+
+  return (
+    <div className="p-5">
+      <p className="text-center text-xl font-bold mb-6">{cat.label}</p>
+      {cat.skills.map((s, idx) => (
+        <div key={idx} className="py-2 border-b border-border/50 last:border-0">
+          <div className="flex flex-nowrap items-center gap-2">
+            {isMobile ? (
+              <span
+                ref={(el) => { nameRefs.current[idx] = el; }}
+                className="text-sm text-foreground shrink-0 min-w-[100px] max-w-[130px] truncate"
+                onClick={() => {
+                  const el = nameRefs.current[idx];
+                  if (el && el.scrollWidth > el.clientWidth) {
+                    setExpandedItem(expandedItem === `skill-${idx}` ? null : `skill-${idx}`);
+                  }
+                }}
+              >
+                {s.name}
+              </span>
+            ) : (
+              <SkillNameLabel name={s.name} />
+            )}
+            {s.tags?.length ? (
+              <button
+                onClick={() => onSkillClick(s)}
+                className="shrink-0 hover:opacity-70 transition-opacity"
+                aria-label="Voir les articles liés"
+                style={{ color: PRACTICE_STROKE }}
+              >
+                <BookOpen size={12} />
+              </button>
+            ) : null}
+            <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden min-w-[32px]">
+              <div style={{ width: `${s.level}%`, height: "100%", background: PRACTICE_STROKE }} />
+            </div>
+            <span className="text-xs text-muted-foreground w-7 text-right tabular-nums shrink-0">
+              {s.level}
+            </span>
+            {isMobile ? (
+              <span
+                ref={(el) => { badgeRefs.current[idx] = el; }}
+                className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground max-w-[100px] truncate"
+                onClick={() => {
+                  const el = badgeRefs.current[idx];
+                  if (el && el.scrollWidth > el.clientWidth) {
+                    setExpandedItem(expandedItem === `project-${idx}` ? null : `project-${idx}`);
+                  }
+                }}
+              >
+                {s.project}
+              </span>
+            ) : (
+              <ProjectBadge project={s.project} />
+            )}
+          </div>
+          {isMobile && expandedItem === `skill-${idx}` && (
+            <p className="text-sm text-foreground mt-1.5 pl-1">{s.name}</p>
+          )}
+          {isMobile && expandedItem === `project-${idx}` && (
+            <p className="text-xs text-muted-foreground/80 mt-1 pl-1">{s.project}</p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function useIsMobile(): boolean {
@@ -124,170 +313,54 @@ function useIsMobile(): boolean {
   return isMobile;
 }
 
-// #1 : tooltip via createPortal + getBoundingClientRect → jamais clippé par overflow hidden parent
-function ProjectBadge({ project }: { project: string }) {
-  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
-  const spanRef = useRef<HTMLSpanElement>(null);
-
-  return (
-    <span
-      ref={spanRef}
-      className="relative shrink-0 cursor-default"
-      onMouseEnter={() => {
-        if (spanRef.current) {
-          const rect = spanRef.current.getBoundingClientRect();
-          setTooltipPos({ x: rect.left, y: rect.top });
-        }
-      }}
-      onMouseLeave={() => setTooltipPos(null)}
-    >
-      <span className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground max-w-[110px] truncate block">
-        {project}
-      </span>
-      {tooltipPos !== null &&
-        createPortal(
-          <span
-            style={{
-              position: "fixed",
-              left: tooltipPos.x,
-              top: tooltipPos.y,
-              transform: "translateY(calc(-100% - 6px))",
-              zIndex: 9999,
-              pointerEvents: "none",
-            }}
-            className="px-2 py-1 rounded text-xs whitespace-nowrap border border-border bg-popover text-popover-foreground shadow-md"
-          >
-            {project}
-          </span>,
-          document.body
-        )}
-    </span>
-  );
+interface ISkillsRadarProps {
+  reopenSkill?: { skillName: string; tags: string[] } | null;
 }
 
-// key={selected} dans le parent force le remount au changement de section → reset expandedSkill
-function DetailPanel({
-  cat,
-  onClose,
-  isMobile = false,
-}: {
-  cat: ICategory;
-  onClose: () => void;
-  isMobile?: boolean;
-}) {
-  // #6 mobile : clic sur ligne pour afficher le nom complet
-  const [expandedSkill, setExpandedSkill] = useState<number | null>(null);
-
-  return (
-    <div className="rounded-xl border border-border bg-card p-5">
-      <div className="flex justify-between items-center mb-3">
-        <p className="font-semibold text-sm">{cat.label}</p>
-        <button
-          onClick={onClose}
-          className="text-muted-foreground hover:text-foreground transition-colors"
-          aria-label="Fermer"
-        >
-          <X size={16} />
-        </button>
-      </div>
-
-      {cat.skills.map((s, idx) => {
-        const isExpanded = isMobile && expandedSkill === idx;
-        return (
-          <div
-            key={idx}
-            className={`flex gap-2 py-2 border-b border-border/50 last:border-0 ${
-              isExpanded ? "flex-wrap items-start" : "flex-nowrap items-center"
-            }`}
-            onClick={
-              isMobile ? () => setExpandedSkill(expandedSkill === idx ? null : idx) : undefined
-            }
-            style={isMobile ? { cursor: "pointer" } : undefined}
-          >
-            {/* #7 : truncate sur les noms en état collapsed (mobile et desktop) */}
-            <span
-              className={`text-sm text-foreground shrink-0 ${
-                isExpanded ? "whitespace-normal w-full" : "min-w-[110px] max-w-[130px] truncate"
-              }`}
-            >
-              {s.name}
-            </span>
-
-            {isExpanded ? (
-              // Ligne expandée : barre + score + badge en pleine largeur
-              <>
-                <div className="w-full flex items-center gap-2">
-                  <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-                    <div style={{ width: `${s.level}%`, height: "100%", background: PRACTICE_STROKE }} />
-                  </div>
-                  <span className="text-xs text-muted-foreground tabular-nums w-7 text-right shrink-0">
-                    {s.level}
-                  </span>
-                </div>
-                <span className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground w-full">
-                  {s.project}
-                </span>
-              </>
-            ) : (
-              // Ligne compacte : barre + score + badge projet
-              <>
-                <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden min-w-[40px]">
-                  <div style={{ width: `${s.level}%`, height: "100%", background: PRACTICE_STROKE }} />
-                </div>
-                <span className="text-xs text-muted-foreground w-7 text-right tabular-nums shrink-0">
-                  {s.level}
-                </span>
-                {/* Desktop : tooltip via portal. Mobile : badge tronqué, clic pour expand (#7) */}
-                {isMobile ? (
-                  <span className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground shrink-0 max-w-[90px] truncate">
-                    {s.project}
-                  </span>
-                ) : (
-                  <ProjectBadge project={s.project} />
-                )}
-              </>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-export default function SkillsRadar() {
+export default function SkillsRadar({ reopenSkill }: ISkillsRadarProps) {
   const [selected, setSelected] = useState<number | null>(null);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-  const isMobile = useIsMobile();
+  const [modalSkill, setModalSkill] = useState<ISkill | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
   const { theme } = useThemeStore();
-  const isDark = theme === "dark";
+
+  useEffect(() => {
+    if (!reopenSkill) return;
+    const catIdx = categories.findIndex((cat) =>
+      cat.skills.some(
+        (s) =>
+          s.name === reopenSkill.skillName ||
+          s.tags?.some((t) => reopenSkill.tags.includes(t))
+      )
+    );
+    if (catIdx === -1) return;
+    const skill = categories[catIdx].skills.find(
+      (s) =>
+        s.name === reopenSkill.skillName ||
+        s.tags?.some((t) => reopenSkill.tags.includes(t))
+    );
+    if (!skill?.tags?.length) return;
+    setSelected(catIdx);
+    if (isMobile) setMobileDrawerOpen(true);
+    setModalSkill(skill);
+  }, [reopenSkill, isMobile]);
+
+  const isDark = useMemo(
+    () => document.documentElement.classList.contains("dark"),
+    [theme]
+  );
   const gridColor = isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)";
   const textColor = isDark ? "#aaa" : "#555";
   const dotFill = isDark ? "#111" : "#fff";
   const n = categories.length;
   const levels = categories.map((c) => c.level);
 
-  // Masquer ScrollToTop quand radar actif
-  useEffect(() => {
-    const styleId = "radar-hide-scroll-btn";
-    const isActive = selected !== null || mobileDrawerOpen;
-    if (isActive) {
-      if (!document.getElementById(styleId)) {
-        const style = document.createElement("style");
-        style.id = styleId;
-        style.textContent =
-          'button[aria-label="Retour en haut"] { opacity: 0 !important; pointer-events: none !important; }';
-        document.head.appendChild(style);
-      }
-    } else {
-      document.getElementById(styleId)?.remove();
-    }
-    return () => document.getElementById(styleId)?.remove();
-  }, [selected, mobileDrawerOpen]);
+  const isOpen = selected !== null;
 
-  // Fermeture desktop au clic extérieur
+  // Close desktop panel on click outside the radar container
   useEffect(() => {
-    if (selected === null || isMobile) return;
+    if (!isOpen || isMobile) return;
     function handler(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setSelected(null);
@@ -295,42 +368,33 @@ export default function SkillsRadar() {
     }
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [selected, isMobile]);
+  }, [isOpen, isMobile]);
 
   function handleDesktopClick(idx: number): void {
     setSelected(selected === idx ? null : idx);
   }
-  function handleMobileClick(idx: number): void {
+
+  function handleMobileMainClick(idx: number): void {
     setSelected(idx);
     setMobileDrawerOpen(true);
   }
-  function handleDrawerSectionClick(idx: number): void {
-    setSelected(idx);
+
+  function handleMobileDrawerClick(idx: number): void {
+    setSelected(selected === idx ? null : idx);
   }
+
   function closeMobileDrawer(): void {
     setMobileDrawerOpen(false);
     setSelected(null);
   }
 
-  // #2 : zones cliquables élargies via rect et circle transparents
-  // #3 : getLabelPoint(i, n, labelR) avec labelR paramétrable
-  // #6 : maxR=120, labelR=155 dans le drawer → DevOps visible dans la zone 40%
-  function renderRadar(
-    onSectionClick: (idx: number) => void,
-    maxR: number = R,
-    labelR: number = LABEL_R
-  ) {
+  function renderSvg(onSectionClick: (idx: number) => void) {
     return (
-      <svg
-        key={theme}
-        viewBox={`0 0 ${W} ${H}`}
-        width="100%"
-        style={{ display: "block", cursor: "default" }}
-      >
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: "block" }}>
         {Array.from({ length: LEVELS }, (_, l) => (
           <polygon
             key={l}
-            points={toPolyPoints(Array(n).fill((l + 1) * 20), n, maxR)}
+            points={toPolyPoints(Array(n).fill((l + 1) * 20), n)}
             fill="none"
             stroke={gridColor}
             strokeWidth={0.8}
@@ -338,14 +402,14 @@ export default function SkillsRadar() {
         ))}
 
         {categories.map((_, i) => {
-          const [x2, y2] = getPoint(i, 100, n, maxR);
+          const [x2, y2] = getPoint(i, 100, n);
           return (
             <line key={i} x1={cx} y1={cy} x2={x2} y2={y2} stroke={gridColor} strokeWidth={0.8} />
           );
         })}
 
         <polygon
-          points={toPolyPoints(levels, n, maxR)}
+          points={toPolyPoints(levels, n)}
           fill={PRACTICE_FILL}
           stroke={PRACTICE_STROKE}
           strokeWidth={2}
@@ -353,28 +417,20 @@ export default function SkillsRadar() {
         />
 
         {categories.map((cat, i) => {
-          const [lx, ly] = getLabelPoint(i, n, labelR);
+          const [lx, ly] = getLabelPoint(i, n);
           const cosA = Math.cos(getAngle(i, n));
           const anchor: "middle" | "start" | "end" =
             cosA > 0.1 ? "start" : cosA < -0.1 ? "end" : "middle";
-          const [px, py] = getPoint(i, cat.level, n, maxR);
+          const [px, py] = getPoint(i, cat.level, n);
 
-          // #2 : hit area rect autour du label (approx 7.5px par char + marges)
           const labelW = cat.label.length * 7.5 + 12;
           const rectX =
-            anchor === "start"
-              ? lx - 4
-              : anchor === "end"
-              ? lx - labelW + 4
-              : lx - labelW / 2;
+            anchor === "start" ? lx - 4 : anchor === "end" ? lx - labelW + 4 : lx - labelW / 2;
 
           return (
             <g key={i} onClick={() => onSectionClick(i)} style={{ cursor: "pointer" }}>
-              {/* Hit area transparent sur le label */}
               <rect x={rectX} y={ly - 13} width={labelW} height={26} fill="transparent" />
-              {/* Hit area transparent sur le point — #2 */}
               <circle cx={px} cy={py} r={20} fill="transparent" />
-
               <text
                 x={lx}
                 y={ly}
@@ -402,111 +458,119 @@ export default function SkillsRadar() {
   }
 
   return (
-    <div ref={containerRef} className="font-sans">
+    <div className="font-sans" ref={containerRef}>
       {/* DESKTOP */}
       {!isMobile && (
-        <>
-          <motion.div layoutRoot className="flex items-center gap-6 min-h-[480px]">
-            <motion.div
-              layout
+        <div className={selected === null ? "max-w-[600px] mx-auto" : ""} style={{ position: "relative" }}>
+          {/* Radar — transitions from w-full to w-1/2 */}
+          <div
+            style={{
+              width: isOpen ? "50%" : "100%",
+              transition: "width 300ms ease-in-out",
+            }}
+          >
+            {renderSvg(handleDesktopClick)}
+          </div>
+
+          {/* Right panel — absolute, appears when a section is selected */}
+          {isOpen && (
+            <div
+              className="bg-card border border-border rounded-xl overflow-y-auto flex flex-col justify-center"
               style={{
-                flexShrink: 0,
-                width: selected !== null ? "45%" : "100%",
-                maxWidth: W,
-                aspectRatio: `${W}/${H}`,
-                margin: selected !== null ? "0" : "0 auto",
+                position: "absolute",
+                right: 0,
+                top: 0,
+                width: "50%",
+                height: "100%",
+                animation: "skillsRadarPanelIn 200ms ease-out 150ms both",
               }}
             >
-              {renderRadar(handleDesktopClick)}
-            </motion.div>
-
-            {/* #4 : mode="sync" → fermeture et expansion radar simultanées */}
-            <AnimatePresence mode="sync">
-              {selected !== null && (
-                <motion.div
-                  key="detail"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  style={{ flex: 1, minWidth: 0, maxHeight: 480, overflowY: "auto" }}
-                >
-                  <DetailPanel
-                    key={selected}
-                    cat={categories[selected]}
-                    onClose={() => setSelected(null)}
-                    isMobile={false}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-
-          <p className="text-sm text-muted-foreground/70 italic mt-3 text-center">
-            Cliquer sur une section pour le détail
-          </p>
-        </>
+              <DetailContent cat={categories[selected!]} isMobile={false} onSkillClick={setModalSkill} />
+            </div>
+          )}
+        </div>
       )}
+
+      <style>{`@keyframes skillsRadarPanelIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
 
       {/* MOBILE */}
       {isMobile && (
         <>
-          {renderRadar(handleMobileClick)}
+          {renderSvg(handleMobileMainClick)}
 
-          <p className="text-sm text-muted-foreground/70 italic mt-2 mb-1 text-center">
-            Cliquer sur une section pour le détail
-          </p>
+          {mobileDrawerOpen && (
+            <style>{`button[aria-label="Retour en haut"] { display: none !important; }`}</style>
+          )}
 
-          <AnimatePresence>
-            {mobileDrawerOpen && (
-              <>
-                <motion.div
-                  key="backdrop"
-                  className="fixed inset-0 bg-black/50 z-40"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={closeMobileDrawer}
-                />
-                {/* #5 : fixed bottom-0 h-[90vh] — vérifier que nul parent n'a transform ou overflow:hidden */}
-                <motion.div
-                  key="drawer"
-                  className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl bg-card border-t border-border h-[90vh] flex flex-col"
-                  initial={{ y: "100%" }}
-                  animate={{ y: 0 }}
-                  exit={{ y: "100%" }}
-                  transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                  drag="y"
-                  dragConstraints={{ top: 0 }}
-                  dragElastic={0.2}
-                  onDragEnd={(_, info) => {
-                    if (info.offset.y > 80) closeMobileDrawer();
-                  }}
-                >
-                  <div className="flex-none pt-3 pb-1 flex justify-center">
-                    <div className="w-10 h-1 bg-border rounded-full" />
-                  </div>
+          {/* Backdrop */}
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.5)",
+              zIndex: 40,
+              opacity: mobileDrawerOpen ? 1 : 0,
+              pointerEvents: mobileDrawerOpen ? "auto" : "none",
+              transition: "opacity 300ms ease-in-out",
+            }}
+            onClick={closeMobileDrawer}
+          />
 
-                  {/* #6 : maxR=120, labelR=155 → polygone compact, DevOps visible dans 40% de hauteur */}
-                  <div className="flex-none h-[40%] px-4">
-                    {renderRadar(handleDrawerSectionClick, 120, 155)}
-                  </div>
+          {/* Drawer */}
+          <div
+            className="bg-card border-t border-border rounded-t-2xl flex flex-col"
+            style={{
+              position: "fixed",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 50,
+              height: "85vh",
+              transform: mobileDrawerOpen ? "translateY(0)" : "translateY(100%)",
+              transition: "transform 300ms ease-in-out",
+            }}
+          >
+            {/* Header */}
+            <div className="flex-none flex justify-end px-4 pt-3 pb-1">
+              <button
+                onClick={closeMobileDrawer}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Fermer"
+              >
+                <X size={18} />
+              </button>
+            </div>
 
-                  <div className="flex-1 overflow-y-auto px-4 pb-6">
-                    {selected !== null && (
-                      <DetailPanel
-                        key={selected}
-                        cat={categories[selected]}
-                        onClose={closeMobileDrawer}
-                        isMobile={true}
-                      />
-                    )}
-                  </div>
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
+            {/* Content split in two equal halves */}
+            <div className="flex-1 flex flex-col overflow-hidden">
+              {/* Top half — radar */}
+              <div className="h-1/2 px-4">
+                {renderSvg(handleMobileDrawerClick)}
+              </div>
+
+              {/* Bottom half — detail content */}
+              <div className="h-1/2 px-4 pb-4">
+                <div className="bg-card border border-border rounded-xl h-full overflow-y-auto">
+                  {selected !== null ? (
+                    <DetailContent cat={categories[selected]} isMobile={true} onSkillClick={setModalSkill} />
+                  ) : (
+                    <p className="text-sm text-muted-foreground/60 text-center pt-6">
+                      Sélectionner une section
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </>
+      )}
+
+      {modalSkill?.tags && (
+        <SkillArticlesModal
+          skillName={modalSkill.name}
+          tags={modalSkill.tags}
+          onClose={() => setModalSkill(null)}
+        />
       )}
     </div>
   );

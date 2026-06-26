@@ -1,0 +1,101 @@
+export const frontmatter = {
+  title: "Ce que j'ai appris en uploadant mon premier fichier",
+  date: "2026-06-17",
+  description:
+    "Guide pratique de l'upload de fichiers avec Express et Supabase Storage : gestion du multipart/form-data avec Multer, choix technologique et séparation des responsabilités entre services.",
+  tags: ["cerithe", "backend"],
+  headings: [
+    {
+      level: 2,
+      text: "Pourquoi uploader un fichier c'est différent d'envoyer du JSON",
+      id: "pourquoi-uploader-un-fichier-c-est-different-d-envoyer-du-json",
+    },
+    {
+      level: 2,
+      text: "Multer : le middleware qui parse les fichiers",
+      id: "multer-le-middleware-qui-parse-les-fichiers",
+    },
+    {
+      level: 2,
+      text: "Pourquoi Supabase Storage plutôt que Wasabi S3",
+      id: "pourquoi-supabase-storage-plutot-que-wasabi-s3",
+    },
+    { level: 2, text: "Deux services, deux responsabilités", id: "deux-services-deux-responsabilites" },
+    { level: 2, text: "Le backend MVP est terminé", id: "le-backend-mvp-est-termine" },
+  ],
+};
+
+## Pourquoi uploader un fichier c'est différent d'envoyer du JSON
+
+Sur Cerithe, les propriétaires doivent pouvoir attacher des documents à leurs biens : factures, devis, plans, photos de chantier. Implémenter ça m’a obligé à comprendre quelque chose que j’avais toujours évité : comment un fichier voyage vraiment dans une requête HTTP.
+
+Quand tu envoies du JSON, le corps de la requête ressemble à ça :
+
+```json
+{ "name": "Ma maison", "surface": 120 }
+```
+
+Quand tu envoies un fichier, le corps ressemble à quelque chose de complètement différent. On parle de multipart/form-data, un format qui découpe la requête en plusieurs parties pour pouvoir mélanger du texte et des données binaires dans le même envoi.
+
+Express ne sait pas parser ça nativement. Il faut un middleware dédié.
+
+## Multer : le middleware qui parse les fichiers
+
+Multer c’est le middleware Express qui intercepte les requêtes multipart, lit le fichier, et le met à disposition dans req.file. Sans lui, req.file est undefined et tu n’as rien.
+
+La configuration est simple. J’ai créé un fichier dédié dans le dossier middlewares :
+
+```ts
+import multer from "multer";
+
+export const upload = multer({ storage: multer.memoryStorage() });
+```
+
+memoryStorage() dit à multer de garder le fichier en mémoire sous forme de Buffer plutôt que de l’écrire sur le disque. C’est le bon choix quand on veut envoyer le fichier ailleurs juste après, comme vers Supabase Storage.
+
+Le middleware s’ajoute ensuite dans la route comme n’importe quel autre middleware :
+
+```ts
+documentRouter.post(
+  "/",
+  verifyAccessToken,
+  upload.single("file"),
+  createDocumentController
+);
+```
+
+upload.single("file") dit « je n’attends qu’un seul fichier, dans le champ nommé file« . Après ça, req.file contient le buffer, le nom original et le type MIME du fichier.
+
+## Pourquoi Supabase Storage plutôt que Wasabi S3
+
+J’avais prévu d’utiliser Wasabi S3 sur Cerithe depuis le début. C’est un outil que j’avais utilisé dans le premier projet ChouxFleurs que j’avais réalisé il y a maintenant 2 ans. Quand est venu le moment de l’implémenter, j’ai reconsidéré.
+
+Supabase Storage était déjà dans ma stack pour la base de données. Même projet, même dashboard, même connexion. Pas de nouvelle dépendance, pas de nouvelle configuration AWS, pas de nouveau compte à gérer.
+
+Pour un MVP dont l’objectif est d’être en prod le 17 juillet, c’est le bon choix. Migrer vers du S3 dédié si Cerithe prend de l’ampleur, c’est une heure de travail. Ajouter Wasabi maintenant, c’est de la complexité inutile.
+
+La règle que j’ai appliquée : ne pas ajouter une dépendance si une solution déjà en place fait le travail.
+
+## Deux services, deux responsabilités
+
+Pour gérer l’upload de document, j’ai créé deux services distincts plutôt qu’un seul.
+
+storage.service.ts fait une seule chose : uploader le fichier vers Supabase Storage et retourner le path.
+
+document.service.ts fait une seule chose : créer l’entrée en BDD avec le titre, le type et l’URL du fichier.
+
+Le controller appelle les deux dans l’ordre. Chaque service ne connaît pas l’existence de l’autre.
+
+```ts
+// Le controller orchestre
+const newDocument = await uploadDocument(buffer, originalname, mimetype);
+const newDbEntry = await createDocument(originalname, type, newDocument.path, propertyId);
+```
+
+Cette séparation n’est pas du perfectionnisme. C’est de la maintenabilité. Si demain je veux migrer de Supabase vers Azure Blob Storage, je ne touche qu’à storage.service.ts. La logique BDD dans document.service.ts reste intacte.
+
+## Le backend MVP est terminé
+
+Ce matin clôture la partie backend de Cerithe. Auth complète, middleware JWT, CRUD des biens, upload de documents vers Supabase Storage avec sauvegarde en BDD.
+
+Le prochain article parlera du frontend : comment je vais construire l’interface React qui consomme tout ça.
