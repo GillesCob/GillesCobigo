@@ -55,7 +55,7 @@ export default function HeroSplit() {
       {/* Scroll container - horizontal carousel on mobile, standard flex on desktop */}
       <div
         ref={scrollRef}
-        className="flex overflow-x-auto snap-x snap-mandatory md:overflow-visible md:snap-none h-full"
+        className="flex overflow-x-auto snap-x snap-mandatory overscroll-x-contain md:overflow-visible md:snap-none h-full"
       >
         {/* Dev panel - first in DOM (mobile default), right side on desktop via md:order-2 */}
         <HeroSide
