@@ -1,10 +1,10 @@
-import { ExternalLink, Github } from 'lucide-react'
-import type { IDevProject } from '@/data/devProjects'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { ExternalLink, Github } from "lucide-react";
+import type { IDevProject } from "@/data/devProjects";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface IProjectCardProps {
-  project: IDevProject
+  project: IDevProject;
 }
 
 export default function ProjectCard({ project }: IProjectCardProps) {
@@ -26,7 +26,7 @@ export default function ProjectCard({ project }: IProjectCardProps) {
           </Badge>
         ))}
       </div>
-      {(project.links.github || project.links.live) && (
+      {(project.links.github || project.links.live || project.links.demo) && (
         <div className="flex gap-2 mt-auto pt-2">
           {project.links.github && (
             <Button asChild variant="outline" size="sm">
@@ -42,8 +42,15 @@ export default function ProjectCard({ project }: IProjectCardProps) {
               </a>
             </Button>
           )}
+          {project.links.demo && (
+            <Button asChild variant="outline" size="sm">
+              <a href={project.links.demo} target="_blank" rel="noopener noreferrer">
+                <ExternalLink size={14} className="mr-1" /> Voir
+              </a>
+            </Button>
+          )}
         </div>
       )}
     </div>
-  )
+  );
 }
