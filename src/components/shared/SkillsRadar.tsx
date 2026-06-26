@@ -22,7 +22,12 @@ const categories: ICategory[] = [
     label: "Backend",
     level: 76,
     skills: [
-      { name: "Express / Node.js", level: 75, project: "Cerithe (auth complète, CRUD, upload Supabase)", tags: ["node.js", "express", "backend"] },
+      {
+        name: "Express / Node.js",
+        level: 75,
+        project: "Cerithe (auth complète, CRUD, upload Supabase)",
+        tags: ["node.js", "express", "backend"],
+      },
       { name: "Auth JWT + argon2", level: 80, project: "Cerithe", tags: ["jwt", "sécurité", "authentification"] },
       { name: "Prisma + PostgreSQL", level: 78, project: "Cerithe", tags: ["prisma", "postgresql", "base de données"] },
       { name: "Zod (validation)", level: 72, project: "Cerithe", tags: ["architecture", "typescript"] },
@@ -44,7 +49,12 @@ const categories: ICategory[] = [
     label: "Agentique",
     level: 71,
     skills: [
-      { name: "Claude Code", level: 70, project: "Nexio (auth complète en 1 session)", tags: ["claude code", "ia agentique"] },
+      {
+        name: "Claude Code",
+        level: 70,
+        project: "Nexio (auth complète en 1 session)",
+        tags: ["claude code", "ia agentique"],
+      },
       { name: "CLAUDE.md + règles", level: 72, project: "Tous projets", tags: ["ia agentique"] },
       { name: "Plan mode + review", level: 68, project: "Nexio", tags: ["ia agentique"] },
       { name: "Prompting structuré", level: 74, project: "Portfolio / Nexio", tags: ["ia", "ia agentique"] },
@@ -160,7 +170,7 @@ function ProjectBadge({ project }: { project: string }) {
           >
             {project}
           </span>,
-          document.body
+          document.body,
         )}
     </>
   );
@@ -214,7 +224,7 @@ function SkillNameLabel({ name }: { name: string }) {
           >
             {name}
           </span>,
-          document.body
+          document.body,
         )}
     </>
   );
@@ -243,7 +253,9 @@ function DetailContent({ cat, isMobile = false, onSkillClick }: IDetailContentPr
           <div className="flex flex-nowrap items-center gap-2">
             {isMobile ? (
               <span
-                ref={(el) => { nameRefs.current[idx] = el; }}
+                ref={(el) => {
+                  nameRefs.current[idx] = el;
+                }}
                 className="text-sm text-foreground shrink-0 min-w-[100px] max-w-[130px] truncate"
                 onClick={() => {
                   const el = nameRefs.current[idx];
@@ -270,12 +282,12 @@ function DetailContent({ cat, isMobile = false, onSkillClick }: IDetailContentPr
             <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden min-w-[32px]">
               <div style={{ width: `${s.level}%`, height: "100%", background: PRACTICE_STROKE }} />
             </div>
-            <span className="text-xs text-muted-foreground w-7 text-right tabular-nums shrink-0">
-              {s.level}
-            </span>
+            <span className="text-xs text-muted-foreground w-7 text-right tabular-nums shrink-0">{s.level}</span>
             {isMobile ? (
               <span
-                ref={(el) => { badgeRefs.current[idx] = el; }}
+                ref={(el) => {
+                  badgeRefs.current[idx] = el;
+                }}
                 className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground max-w-[100px] truncate"
                 onClick={() => {
                   const el = badgeRefs.current[idx];
@@ -328,17 +340,11 @@ export default function SkillsRadar({ reopenSkill }: ISkillsRadarProps) {
   useEffect(() => {
     if (!reopenSkill) return;
     const catIdx = categories.findIndex((cat) =>
-      cat.skills.some(
-        (s) =>
-          s.name === reopenSkill.skillName ||
-          s.tags?.some((t) => reopenSkill.tags.includes(t))
-      )
+      cat.skills.some((s) => s.name === reopenSkill.skillName || s.tags?.some((t) => reopenSkill.tags.includes(t))),
     );
     if (catIdx === -1) return;
     const skill = categories[catIdx].skills.find(
-      (s) =>
-        s.name === reopenSkill.skillName ||
-        s.tags?.some((t) => reopenSkill.tags.includes(t))
+      (s) => s.name === reopenSkill.skillName || s.tags?.some((t) => reopenSkill.tags.includes(t)),
     );
     if (!skill?.tags?.length) return;
     setSelected(catIdx);
@@ -346,10 +352,7 @@ export default function SkillsRadar({ reopenSkill }: ISkillsRadarProps) {
     setModalSkill(skill);
   }, [reopenSkill, isMobile]);
 
-  const isDark = useMemo(
-    () => document.documentElement.classList.contains("dark"),
-    [theme]
-  );
+  const isDark = useMemo(() => document.documentElement.classList.contains("dark"), [theme]);
   const gridColor = isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)";
   const textColor = isDark ? "#aaa" : "#555";
   const dotFill = isDark ? "#111" : "#fff";
@@ -403,9 +406,7 @@ export default function SkillsRadar({ reopenSkill }: ISkillsRadarProps) {
 
         {categories.map((_, i) => {
           const [x2, y2] = getPoint(i, 100, n);
-          return (
-            <line key={i} x1={cx} y1={cy} x2={x2} y2={y2} stroke={gridColor} strokeWidth={0.8} />
-          );
+          return <line key={i} x1={cx} y1={cy} x2={x2} y2={y2} stroke={gridColor} strokeWidth={0.8} />;
         })}
 
         <polygon
@@ -419,13 +420,11 @@ export default function SkillsRadar({ reopenSkill }: ISkillsRadarProps) {
         {categories.map((cat, i) => {
           const [lx, ly] = getLabelPoint(i, n);
           const cosA = Math.cos(getAngle(i, n));
-          const anchor: "middle" | "start" | "end" =
-            cosA > 0.1 ? "start" : cosA < -0.1 ? "end" : "middle";
+          const anchor: "middle" | "start" | "end" = cosA > 0.1 ? "start" : cosA < -0.1 ? "end" : "middle";
           const [px, py] = getPoint(i, cat.level, n);
 
           const labelW = cat.label.length * 7.5 + 12;
-          const rectX =
-            anchor === "start" ? lx - 4 : anchor === "end" ? lx - labelW + 4 : lx - labelW / 2;
+          const rectX = anchor === "start" ? lx - 4 : anchor === "end" ? lx - labelW + 4 : lx - labelW / 2;
 
           return (
             <g key={i} onClick={() => onSectionClick(i)} style={{ cursor: "pointer" }}>
@@ -462,7 +461,7 @@ export default function SkillsRadar({ reopenSkill }: ISkillsRadarProps) {
       {/* DESKTOP */}
       {!isMobile && (
         <div className={selected === null ? "max-w-[600px] mx-auto" : ""} style={{ position: "relative" }}>
-          {/* Radar — transitions from w-full to w-1/2 */}
+          {/* Radar - transitions from w-full to w-1/2 */}
           <div
             style={{
               width: isOpen ? "50%" : "100%",
@@ -472,7 +471,7 @@ export default function SkillsRadar({ reopenSkill }: ISkillsRadarProps) {
             {renderSvg(handleDesktopClick)}
           </div>
 
-          {/* Right panel — absolute, appears when a section is selected */}
+          {/* Right panel - absolute, appears when a section is selected */}
           {isOpen && (
             <div
               className="bg-card border border-border rounded-xl overflow-y-auto flex flex-col justify-center"
@@ -498,9 +497,7 @@ export default function SkillsRadar({ reopenSkill }: ISkillsRadarProps) {
         <>
           {renderSvg(handleMobileMainClick)}
 
-          {mobileDrawerOpen && (
-            <style>{`button[aria-label="Retour en haut"] { display: none !important; }`}</style>
-          )}
+          {mobileDrawerOpen && <style>{`button[aria-label="Retour en haut"] { display: none !important; }`}</style>}
 
           {/* Backdrop */}
           <div
@@ -543,20 +540,16 @@ export default function SkillsRadar({ reopenSkill }: ISkillsRadarProps) {
 
             {/* Content split in two equal halves */}
             <div className="flex-1 flex flex-col overflow-hidden">
-              {/* Top half — radar */}
-              <div className="h-1/2 px-4">
-                {renderSvg(handleMobileDrawerClick)}
-              </div>
+              {/* Top half - radar */}
+              <div className="h-1/2 px-4">{renderSvg(handleMobileDrawerClick)}</div>
 
-              {/* Bottom half — detail content */}
+              {/* Bottom half - detail content */}
               <div className="h-1/2 px-4 pb-4">
                 <div className="bg-card border border-border rounded-xl h-full overflow-y-auto">
                   {selected !== null ? (
                     <DetailContent cat={categories[selected]} isMobile={true} onSkillClick={setModalSkill} />
                   ) : (
-                    <p className="text-sm text-muted-foreground/60 text-center pt-6">
-                      Sélectionner une section
-                    </p>
+                    <p className="text-sm text-muted-foreground/60 text-center pt-6">Sélectionner une section</p>
                   )}
                 </div>
               </div>
@@ -566,11 +559,7 @@ export default function SkillsRadar({ reopenSkill }: ISkillsRadarProps) {
       )}
 
       {modalSkill?.tags && (
-        <SkillArticlesModal
-          skillName={modalSkill.name}
-          tags={modalSkill.tags}
-          onClose={() => setModalSkill(null)}
-        />
+        <SkillArticlesModal skillName={modalSkill.name} tags={modalSkill.tags} onClose={() => setModalSkill(null)} />
       )}
     </div>
   );

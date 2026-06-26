@@ -27,7 +27,7 @@ export default function HeroSplit() {
           }
         });
       },
-      { root: container, threshold: 0.5 }
+      { root: container, threshold: 0.5 },
     );
 
     if (devRef.current) observer.observe(devRef.current);
@@ -52,12 +52,12 @@ export default function HeroSplit() {
 
   return (
     <section className="relative w-full h-screen">
-      {/* Scroll container — horizontal carousel on mobile, standard flex on desktop */}
+      {/* Scroll container - horizontal carousel on mobile, standard flex on desktop */}
       <div
         ref={scrollRef}
         className="flex overflow-x-auto snap-x snap-mandatory md:overflow-visible md:snap-none h-full"
       >
-        {/* Dev panel — first in DOM (mobile default), right side on desktop via md:order-2 */}
+        {/* Dev panel - first in DOM (mobile default), right side on desktop via md:order-2 */}
         <HeroSide
           ref={devRef}
           side="dev"
@@ -71,12 +71,16 @@ export default function HeroSplit() {
           className="order-1 md:order-2"
         />
 
-        {/* BIM panel — second in DOM, left side on desktop via md:order-1 */}
+        {/* BIM panel - second in DOM, left side on desktop via md:order-1 */}
         <HeroSide
           ref={btpRef}
           side="btp"
           dates="2008 - 2022 · BTP"
-          title={<><BIMTerm>BIM</BIMTerm> Manager</>}
+          title={
+            <>
+              <BIMTerm>BIM</BIMTerm> Manager
+            </>
+          }
           subtitle="Bouygues Construction"
           tags={["Maquette numérique", "100+ modèles", "2 milliards €"]}
           projectItems={btpProjects.map((p) => ({ id: p.id, name: p.name }))}
@@ -87,7 +91,7 @@ export default function HeroSplit() {
       </div>
 
       {/*
-        Navigation dots — mobile only.
+        Navigation dots - mobile only.
         Left dot = BIM (desktop mental model: BIM is on the left).
         Right dot = Dev (desktop mental model: Dev is on the right).
         Default: Dev is visible → right dot active.

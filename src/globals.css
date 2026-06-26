@@ -61,7 +61,7 @@
   }
 }
 
-/* ── Syntax highlighting — rehype-pretty-code ───────────────────────────── */
+/* ── Syntax highlighting - rehype-pretty-code ───────────────────────────── */
 
 [data-rehype-pretty-code-figure] {
   margin: 1.5rem 0;
@@ -78,16 +78,15 @@
 }
 
 [data-rehype-pretty-code-figure] code {
-  font-family: ui-monospace, 'Cascadia Code', 'JetBrains Mono', 'Fira Code',
-    SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family:
+    ui-monospace, "Cascadia Code", "JetBrains Mono", "Fira Code", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: inherit;
   background: transparent;
 }
 
 /* Inline code */
 :not(pre) > code {
-  font-family: ui-monospace, 'Cascadia Code', 'JetBrains Mono', SFMono-Regular,
-    Menlo, Monaco, Consolas, monospace;
+  font-family: ui-monospace, "Cascadia Code", "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.875em;
   padding: 0.15em 0.4em;
   border-radius: 0.25rem;

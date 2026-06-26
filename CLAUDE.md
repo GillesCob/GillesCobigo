@@ -1,4 +1,4 @@
-# CLAUDE.md — GillesCobigo (Site portfolio)
+# CLAUDE.md - GillesCobigo (Site portfolio)
 
 > Ce fichier définit les règles de travail pour Claude Code sur ce projet.
 > Il complète le CLAUDE.md global sans le dupliquer.
@@ -23,7 +23,7 @@ Objectif : qu'ils repartent avec une réponse claire à "est-ce que ce profil co
 - React 18 + TypeScript + Vite
 - Tailwind + shadcn/ui
 - Framer Motion (animations scroll + modales)
-- Pas de backend — tout est statique ou appels API externes
+- Pas de backend - tout est statique ou appels API externes
 - Déploiement : Vercel sur `gillescobigo.com`
 
 ---
@@ -38,38 +38,38 @@ Objectif : qu'ils repartent avec une réponse claire à "est-ce que ce profil co
 
 ## Pages
 
-- `/` — Home : hero split, stats GitHub live, section projets, section articles, contact
-- `/projects` — liste complète des projets
-- `/articles` — articles depuis WordPress API
-- `/contact` — formulaire, liens LinkedIn + GitHub, disponibilité + mobilité
+- `/` - Home : hero split, stats GitHub live, section projets, section articles, contact
+- `/projects` - liste complète des projets
+- `/articles` - articles depuis WordPress API
+- `/contact` - formulaire, liens LinkedIn + GitHub, disponibilité + mobilité
 
 ---
 
-## Design — Split identity (obligatoire, pas de variation)
+## Design - Split identity (obligatoire, pas de variation)
 
 La hero section est divisée en deux moitiés côte à côte :
 
-**Gauche — BTP** (fond #2C1810, tons ocre/terre)
+**Gauche - BTP** (fond #2C1810, tons ocre/terre)
 
-- Dates : 2011 — 2022
+- Dates : 2011 - 2022
 - Titre : BIM Manager
 - Projets cliquables : Mareterra Monaco, TPR2 Marseille, MRS3
 - Tags : Maquette numérique, 100+ modèles, Bouygues
 - Chaque projet ouvre une modale Framer Motion avec image de fond semi-transparente + texte
 
-**Droite — Dev** (fond #0A0A0A, tons blanc/gris)
+**Droite - Dev** (fond #0A0A0A, tons blanc/gris)
 
-- Dates : 2022 — aujourd'hui
+- Dates : 2022 - aujourd'hui
 - Titre : Développeur
 - Projets cliquables : Cerithe, Nexio, ChouxFleurs, VPS Hetzner
 - Tags : TypeScript, Node.js, React, Claude Code, Docker, Nginx
 - Chaque projet ouvre une modale avec description + stack + liens
 
-**Sous le split** — section headline fond clair (#F8F5F0) :
+**Sous le split** - section headline fond clair (#F8F5F0) :
 "La rigueur du terrain, la précision du code."
 Sous-texte court + deux boutons : "Voir mes projets" et "Télécharger le CV"
 
-**Navbar** — sticky, fond #0A0A0A, logo "Gilles Cobigo" à gauche, liens Projets / Articles / Contact, bouton "Me contacter" avec bordure corail (#D85A30). Toggle dark/light mode. Dark par défaut.
+**Navbar** - sticky, fond #0A0A0A, logo "Gilles Cobigo" à gauche, liens Projets / Articles / Contact, bouton "Me contacter" avec bordure corail (#D85A30). Toggle dark/light mode. Dark par défaut.
 
 ---
 
@@ -103,7 +103,7 @@ Images des modales BTP = placeholders pour l'instant. Gilles les remplacera manu
 
 ### SkillsRadar.tsx
 
-Déjà codé — ne pas recréer. Prévoir un emplacement `<SkillsRadar />` dans la Home.
+Déjà codé - ne pas recréer. Prévoir un emplacement `<SkillsRadar />` dans la Home.
 Radar SVG interactif, 6 sections de compétences, données hardcodées pour l'instant.
 
 ### Score de matching stack
@@ -120,8 +120,8 @@ Résultat : score + message contextuel.
 
 ## Règles de workflow
 
-- `main` est protégée — PR obligatoire avant merge
-- Tout le dev sur `dev` — preview Vercel auto sur chaque push
+- `main` est protégée - PR obligatoire avant merge
+- Tout le dev sur `dev` - preview Vercel auto sur chaque push
 - Plan mode avant toute génération
 - Un seul sujet par session CC
 - Périmètre strict : CC ne modifie que les fichiers du plan validé
@@ -139,8 +139,8 @@ Résultat : score + message contextuel.
 
 ## Journal des décisions (ADR)
 
-- [2026-06-18] Design : Split identity BTP/Dev — fond ocre gauche, fond noir droite
-- [2026-06-18] Pas de backend dédié — tout statique ou API externes
+- [2026-06-18] Design : Split identity BTP/Dev - fond ocre gauche, fond noir droite
+- [2026-06-18] Pas de backend dédié - tout statique ou API externes
 - [2026-06-18] WordPress conservé pour les articles pendant la migration MDX
 - [2026-06-18] Déploiement sur gillescobigo.com (domaine principal, pas un sous-domaine)
-- [2026-06-18] Projets retenus : Cerithe, Nexio, ChouxFleurs — Labelr et Baticoop retirés
+- [2026-06-18] Projets retenus : Cerithe, Nexio, ChouxFleurs - Labelr et Baticoop retirés
