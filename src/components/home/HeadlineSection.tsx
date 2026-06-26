@@ -16,8 +16,8 @@ export default function HeadlineSection() {
         <span className="text-gray-900">.</span>
       </h2>
       <p className="text-gray-600 text-lg max-w-xl mx-auto mb-10">
-        10 ans de <BIMTerm>BIM</BIMTerm>, dont l&apos;extension de Monaco à 2 milliards. Depuis
-        2022, le même soin appliqué au code. Une reconversion qui n&apos;en est pas une.
+        10 ans dans le bâtiment, <BIMTerm>BIM</BIMTerm> Manager sur l&apos;extension en mer de la ville de Monaco.
+        Depuis 2022, le même soin appliqué au code. Une reconversion qui n&apos;en est pas une.
       </p>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Button asChild size="lg" className="bg-gray-900 text-white hover:bg-gray-800">

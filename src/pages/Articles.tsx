@@ -117,7 +117,13 @@ export default function Articles() {
                 <article key={article.slug} className="py-8 first:pt-0">
                   <Link
                     to={`/articles/${article.slug}`}
-                    state={from === 'skills' ? { from: 'filtered', skillName, tags: skillTags } : undefined}
+                    state={
+                      from === 'skills'
+                        ? { from: 'filtered', skillName, tags: skillTags }
+                        : activeTags.length > 0
+                        ? { from: 'tag-filtered', tags: activeTags }
+                        : undefined
+                    }
                     className="group block"
                   >
                     <time className="text-xs font-mono text-muted-foreground/70 uppercase tracking-widest">

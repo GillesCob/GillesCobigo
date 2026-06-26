@@ -3,7 +3,9 @@ interface IProjectItem {
   name: string;
 }
 
+import { forwardRef } from "react";
 import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 interface IHeroSideProps {
   side: "btp" | "dev";
@@ -11,15 +13,21 @@ interface IHeroSideProps {
   title: ReactNode;
   subtitle: string;
   tags: string[];
-  projectItems: IProjectItem[]; // Ce sont ces items qui deviennent les boutons cliquables
+  projectItems: IProjectItem[];
   bgColor: string;
   onProjectClick: (id: string) => void;
+  className?: string;
 }
 
-export default function HeroSide({ dates, title, subtitle, projectItems, bgColor, onProjectClick }: IHeroSideProps) {
+const HeroSide = forwardRef<HTMLDivElement, IHeroSideProps>(
+  ({ dates, title, subtitle, projectItems, bgColor, onProjectClick, className }, ref) => {
   return (
     <div
-      className="relative flex flex-col w-full md:w-1/2 min-h-screen md:h-screen pt-24 md:pt-96 pb-16 px-8 md:px-16 md:overflow-hidden"
+      ref={ref}
+      className={cn(
+        "relative flex flex-col shrink-0 w-screen snap-start md:w-1/2 md:shrink h-screen pt-24 md:pt-96 pb-16 px-8 md:px-16 md:overflow-hidden",
+        className
+      )}
       style={{ backgroundColor: bgColor }}
     >
       <div className="w-full max-w-xl">
@@ -46,4 +54,8 @@ export default function HeroSide({ dates, title, subtitle, projectItems, bgColor
       </div>
     </div>
   );
-}
+});
+
+HeroSide.displayName = "HeroSide";
+
+export default HeroSide;
