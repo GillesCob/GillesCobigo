@@ -20,7 +20,7 @@ export default function StackMatcher() {
   return (
     <section className="py-16 px-4 border-b border-border">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-2xl font-bold mb-2">Ma stack, la tienne.</h2>
+        <h2 className="text-2xl font-bold mb-2">Ma stack, la tienne</h2>
         <p className="text-muted-foreground mb-8">
           Coche les technos de ta stack, je calcule notre degré de compatibilité.
         </p>

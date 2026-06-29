@@ -62,10 +62,7 @@ export default function Timeline() {
   return (
     <section className="py-16 px-4 border-b border-border">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-2xl font-bold mb-2">Le parcours.</h2>
-        <p className="text-muted-foreground mb-12">
-          10 ans dans le bâtiment, 4 ans de code. Pas une reconversion, une extension.
-        </p>
+        <h2 className="text-2xl font-bold mb-2">Mon parcours</h2>
 
         <div className="relative">
           {/* Ligne verticale desktop */}
