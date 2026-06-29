@@ -13,7 +13,7 @@ export default function Projects() {
 
       <section>
         <div className="mb-8">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">2022 - Aujourd&apos;hui · Dev</p>
+          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">2022 — Aujourd&apos;hui · Dev</p>
           <h2 className="text-2xl font-bold">Développeur</h2>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -25,7 +25,7 @@ export default function Projects() {
 
       <section>
         <div className="mb-8">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">2008 - 2022 · BTP</p>
+          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">2008 — 2022 · BTP</p>
           <h2 className="text-2xl font-bold">
             <BIMTerm>BIM</BIMTerm> Manager
           </h2>
