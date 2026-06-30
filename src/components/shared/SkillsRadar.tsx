@@ -17,37 +17,34 @@ interface ICategory {
   skills: ISkill[];
 }
 
-const categories: ICategory[] = [
+const rawCategories: Omit<ICategory, "level">[] = [
   {
     label: "Backend",
-    level: 76,
     skills: [
       {
         name: "Express / Node.js",
-        level: 75,
+        level: 65,
         project: "Cerithe (auth complète, CRUD, upload Supabase)",
         tags: ["node.js", "express", "backend"],
       },
-      { name: "Auth JWT + argon2", level: 80, project: "Cerithe", tags: ["jwt", "sécurité", "authentification"] },
-      { name: "Prisma + PostgreSQL", level: 78, project: "Cerithe", tags: ["prisma", "postgresql", "base de données"] },
-      { name: "Zod (validation)", level: 72, project: "Cerithe", tags: ["architecture", "typescript"] },
-      { name: "REST API design", level: 75, project: "Cerithe", tags: ["architecture", "backend"] },
+      { name: "Auth JWT + argon2", level: 75, project: "Cerithe", tags: ["jwt", "sécurité", "authentification"] },
+      { name: "Prisma + PostgreSQL", level: 62, project: "Cerithe", tags: ["prisma", "postgresql", "base de données"] },
+      { name: "Zod (validation)", level: 70, project: "Cerithe", tags: ["architecture", "typescript"] },
+      { name: "REST API design", level: 60, project: "Cerithe", tags: ["architecture", "backend"] },
     ],
   },
   {
     label: "Frontend",
-    level: 70,
     skills: [
-      { name: "React + TypeScript", level: 70, project: "Cerithe / Nexio", tags: ["react", "typescript", "frontend"] },
-      { name: "TanStack Query", level: 68, project: "Cerithe / Nexio (dashboard, kanban)", tags: ["tanstack query"] },
-      { name: "Zustand", level: 70, project: "ChouxFleurs / Nexio", tags: ["zustand"] },
-      { name: "React Hook Form", level: 70, project: "Cerithe / Nexio", tags: ["react", "frontend"] },
+      { name: "React + TypeScript", level: 60, project: "Cerithe / Nexio", tags: ["react", "typescript", "frontend"] },
+      { name: "TanStack Query", level: 65, project: "Cerithe / Nexio (dashboard, kanban)", tags: ["tanstack query"] },
+      { name: "Zustand", level: 58, project: "ChouxFleurs / Nexio", tags: ["zustand"] },
+      { name: "React Hook Form", level: 65, project: "Cerithe / Nexio", tags: ["react", "frontend"] },
       { name: "Tailwind + shadcn/ui", level: 68, project: "Nexio / Portfolio", tags: ["frontend"] },
     ],
   },
   {
     label: "Agentique",
-    level: 71,
     skills: [
       {
         name: "Claude Code",
@@ -62,35 +59,39 @@ const categories: ICategory[] = [
   },
   {
     label: "DevOps",
-    level: 49,
     skills: [
-      { name: "Docker", level: 45, project: "VPS Hetzner", tags: ["devops", "déploiement"] },
-      { name: "Nginx + Certbot", level: 50, project: "VPS Hetzner (en prod)", tags: ["devops", "déploiement"] },
-      { name: "Linux / SSH", level: 52, project: "VPS Hetzner", tags: ["devops"] },
-      { name: "PostgreSQL VPS", level: 48, project: "VPS Hetzner", tags: ["postgresql", "devops"] },
+      { name: "Docker", level: 35, project: "VPS Hetzner", tags: ["devops", "déploiement"] },
+      { name: "Nginx + Certbot", level: 45, project: "VPS Hetzner (en prod)", tags: ["devops", "déploiement"] },
+      { name: "Linux / SSH", level: 50, project: "VPS Hetzner", tags: ["devops"] },
+      { name: "PostgreSQL VPS", level: 45, project: "VPS Hetzner", tags: ["postgresql", "devops"] },
     ],
   },
   {
     label: "Métier",
-    level: 92,
     skills: [
-      { name: "Vision produit / BIM", level: 95, project: "Mareterra Monaco, Bouygues" },
-      { name: "Gestion de projet", level: 92, project: "Mareterra Monaco (2 milliards €)" },
+      { name: "Vision produit / BIM", level: 85, project: "Mareterra Monaco, Bouygues" },
+      { name: "Gestion de projet", level: 86, project: "Mareterra Monaco (2 milliards €)" },
       { name: "Communication", level: 90, project: "Bouygues Construction" },
       { name: "Analyse des besoins", level: 92, project: "Tous projets" },
     ],
   },
   {
     label: "TypeScript",
-    level: 62,
     skills: [
-      { name: "Types de base", level: 80, project: "Cerithe", tags: ["typescript"] },
+      { name: "Types de base", level: 75, project: "Cerithe", tags: ["typescript"] },
       { name: "Generics", level: 35, project: "en cours", tags: ["typescript"] },
-      { name: "Déclaration de module", level: 70, project: "Cerithe", tags: ["typescript"] },
-      { name: "Strict mode (exactOptionalPropertyTypes)", level: 65, project: "Cerithe", tags: ["typescript"] },
+      { name: "Déclaration de module", level: 60, project: "Cerithe", tags: ["typescript"] },
+      { name: "Strict mode (exactOptionalPropertyTypes)", level: 50, project: "Cerithe", tags: ["typescript"] },
     ],
   },
 ];
+
+// Niveau de l'axe = moyenne arrondie des sous-compétences.
+// Tu mets à jour uniquement les notes des skills dans rawCategories, le niveau de l'axe se recalcule tout seul.
+const categories: ICategory[] = rawCategories.map((cat) => ({
+  ...cat,
+  level: Math.round(cat.skills.reduce((sum, s) => sum + s.level, 0) / cat.skills.length),
+}));
 
 const W = 580;
 const H = 500;

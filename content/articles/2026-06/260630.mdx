@@ -1,0 +1,91 @@
+export const frontmatter = {
+  title: "Pourquoi j'ai quitté WordPress pour coder mon portfolio",
+  date: "2026-06-30",
+  description:
+    "Quatre jours sans article publié, et pour une bonne raison : j'en ai profité pour refondre intégralement mon site. Voilà pourquoi j'ai quitté WordPress et ce que j'ai mis à la place.",
+  tags: ["portfolio", "react", "wordpress"],
+  headings: [
+    { level: 2, text: "Une parenthèse courte mais utile", id: "section-1" },
+    { level: 2, text: "Pourquoi quitter WordPress", id: "section-2" },
+    { level: 2, text: "Le ton que je voulais", id: "section-3" },
+    { level: 2, text: "Ce qu'on trouve sur gillescobigo.com", id: "section-4" },
+    { level: 2, text: "La pile technique", id: "section-5" },
+    { level: 2, text: "Ce que ça change pour la suite", id: "section-6" },
+  ],
+};
+
+## Une parenthèse courte mais utile
+
+Quatre jours sans nouvel article publié. Pas parce que j'avais arrêté de coder, au contraire. J'avais quelques articles d'avance, et j'en ai profité pour faire une chose que je repoussais depuis longtemps : refondre intégralement mon site.
+
+L'ancien portfolio tournait sur WordPress. Un thème acheté, deux ou trois plugins, et beaucoup de bricolage pour le faire ressembler à ce que je voulais. Ça marchait, mais à chaque fois que je voulais y ajouter quelque chose, je passais plus de temps à me battre avec l'éditeur Gutenberg qu'à écrire le contenu.
+
+J'ai décidé de tout reprendre avec React, TypeScript, Vite, Tailwind. Tout coder à la main, comme une vitrine de ce que je sais faire.
+
+## Pourquoi quitter WordPress
+
+WordPress est un outil puissant pour ceux qui ne veulent/savent pas coder. C'est précisément pour ça qu'il ne me convenait plus.
+
+Trois raisons concrètes :
+
+La première, c'est le **fossé entre ce que je faisais dans la journée et ce que je présentais le soir**. Pendant que je construisais _Cerithe_ et _Nexio_ avec une stack moderne, mon portfolio tournait sur du PHP préfabriqué. Il y avait un décalage que je ne pouvais plus assumer face à un recruteur technique.
+
+La deuxième, c'est la **lenteur des modifications**. Ajouter une section ou changer un layout, c'était toujours un parcours du combattant. Soit je passais par le builder visuel et je n'avais pas le contrôle fin, soit j'éditais le thème enfant et je risquais de tout casser.
+
+La troisième, c'est le **coût du contrôle**. Sur un site codé à la main, ce que je veux apparaît exactement où je veux. Pas de compromis avec les choix de quelqu'un d'autre, pas de bataille contre un éditeur qui décide à ma place.
+
+## Le ton que je voulais
+
+Avant de coder une seule ligne, j'ai posé une signature visuelle : "La rigueur du terrain, la précision du code."
+
+Le sous-titre va dans le même sens : "10 ans dans le bâtiment, BIM Manager sur l'extension en mer de la ville de Monaco. Depuis 2022, le même soin appliqué au code. Une reconversion qui n'en est pas une."
+
+Je voulais que la première impression soit claire : ce n'est pas un site de débutant qui découvre le dev, c'est un site de quelqu'un qui construit avec rigueur et qui a quelque chose à montrer.
+
+## Ce qu'on trouve sur gillescobigo.com
+
+Cinq sections, accessibles depuis la navbar.
+
+**La home** présente l'accroche, un split BTP/Dev qui montre les deux faces du profil, une timeline de reconversion, et un radar de compétences interactif. Chaque branche du radar mène directement aux articles relatifs à la compétence.
+
+**La page Projets** réunit tout : les projets BTP d'un côté (Mareterra, TPR2, MRS3) et les projets dev de l'autre (_Cerithe_, _Nexio_, _ChouxFleurs_, Labelr, et même le VPS Hetzner que j'ai monté). Chaque card a ses boutons : code GitHub, démo live, et un bouton "Articles" qui filtre tous les articles taggués sur ce projet.
+
+**La page Articles** liste tout ce que j'ai publié depuis le début. Filtrable par tag via l'URL, lisible sur mobile avec un drawer flottant pour la table des matières.
+
+**La page Contact** avec formulaire et liens directs.
+
+**Une page 404 customisée** parce que les détails comptent.
+
+## La stack
+
+Côté outils :
+
+- **React 18 + TypeScript + Vite** pour le frontend
+- **Tailwind + shadcn/ui** pour le styling
+- **MDX local** pour les articles, compilés au build via `@mdx-js/rollup`
+- **rehype-pretty-code + Shiki** pour le syntax highlighting
+- **vaul** pour le drawer mobile via shadcn
+- **API GitHub publique** pour récupérer mes commits en live
+- **Formspree** pour le formulaire de contact
+- **Vercel** pour l'hébergement, branche `main` protégée, preview auto sur `dev`
+
+Pas de backend dédié. Tout est statique ou via API externe. Ce choix simplifie le déploiement, garantit des performances correctes, et me permet de me concentrer sur le contenu plutôt que sur l'infra de mon propre site.
+
+Pour les articles, j'ai remplacé les anciennes images Carbon par des vrais blocs de code MDX :
+
+```typescript
+export const frontmatter = {
+  title: "...",
+  date: "2026-06-30",
+  tags: ["portfolio", "react"],
+  headings: [{ level: 2, text: "Section 1", id: "section-1" }],
+};
+```
+
+Avantages immédiats : code sélectionnable, recherchable par les moteurs, copiable d'un clic. Le syntax highlighting fait au build sert exactement le même rendu visuel qu'une image, sans les inconvénients.
+
+## Ce que ça change pour la suite
+
+Le portfolio est maintenant aligné avec ce que je construis au quotidien. Quand un recruteur ouvre gillescobigo.com, il voit un site codé à la main, et il peut directement cliquer sur les liens des projets pour aller voir le code, lire les articles techniques, ou tester les démos.
+
+Quatre jours d'absence, mais une refonte complète derrière. Honnêtement, je le referais demain.
