@@ -15,6 +15,11 @@ function formatDate(dateStr: string): string {
   });
 }
 
+function formatTime(dateStr: string): string {
+  const d = new Date(dateStr);
+  return `${String(d.getHours()).padStart(2, "0")}h${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
 export default function ArticlePage() {
   const { slug, "*": rest } = useParams<{ slug: string; "*": string }>();
   const fullSlug = rest ? `${slug}/${rest}` : slug;
@@ -96,7 +101,7 @@ export default function ArticlePage() {
             </Link>
             <h1 className="text-3xl font-bold mb-3">{existingMeta.title}</h1>
             <p className="text-muted-foreground">
-              Article programmé pour le {formatDate(existingMeta.date)}.
+              Article programmé pour le {formatDate(existingMeta.date)} à {formatTime(existingMeta.date)}.
             </p>
           </div>
         </main>
@@ -158,7 +163,7 @@ export default function ArticlePage() {
               <span>{formatDate(meta.date)}</span>
               {isPreview && isScheduled(meta.date) && (
                 <span className="text-xs font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#E8734A]/10 text-[#E8734A]">
-                  Programmé
+                  Programmé · {formatTime(meta.date)}
                 </span>
               )}
               {meta.tags.map((tag) => (

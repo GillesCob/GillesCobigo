@@ -12,6 +12,11 @@ function formatDate(dateStr: string): string {
   })
 }
 
+function formatTime(dateStr: string): string {
+  const d = new Date(dateStr)
+  return `${String(d.getHours()).padStart(2, '0')}h${String(d.getMinutes()).padStart(2, '0')}`
+}
+
 function scrollToTop() {
   window.scrollTo(0, 0);
   document.documentElement.scrollTo(0, 0);
@@ -150,7 +155,7 @@ export default function Articles({ scheduledOnly = false }: IArticlesProps) {
                       </time>
                       {isPreview && isScheduled(article.date) && (
                         <span className="text-xs font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#E8734A]/10 text-[#E8734A]">
-                          Programmé
+                          Programmé · {formatTime(article.date)}
                         </span>
                       )}
                     </div>
