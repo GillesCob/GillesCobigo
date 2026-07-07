@@ -1,0 +1,67 @@
+export const frontmatter = {
+  title: "Confirmer ou annuler une transmission : deux permissions qui ne se ressemblent pas",
+  date: "2026-07-08T09:00:00",
+  description:
+    "Sur Cerithe, confirmer et annuler une transmission de bien semblent symétriques. Ils ne le sont ni dans les droits, ni dans ce qu'ils écrivent en base.",
+  tags: ["sécurité", "architecture", "prisma", "cerithe"],
+  headings: [
+    { level: 2, text: "Premier problème : deux actions qui se ressemblent, deux logiques différentes", id: "section-1" },
+    { level: 2, text: "Deuxième problème : vérifier le bon propriétaire, pas le bon email", id: "section-2" },
+    { level: 2, text: "Troisième problème : une transaction qui fait tout, ou rien", id: "section-3" },
+    { level: 2, text: "Ce que j'en retiens", id: "section-4" },
+  ],
+};
+
+Le flow de transmission de _Cerithe_ avance bien : un propriétaire transmet son bien, un destinataire clique, accepte. Restait deux cas à couvrir côté vendeur : confirmer le transfert, ou l'annuler. Deux boutons, deux routes, l'air de rien.
+
+Sauf qu'en creusant les règles produit, ces deux actions n'ont presque rien en commun. Voilà ce que j'en ai tiré.
+
+## Premier problème : deux actions qui se ressemblent, deux logiques différentes
+
+`confirm` et `cancel` interviennent au même endroit du flow, déclenchées par la même personne (le vendeur), sur le même token. La tentation, c'était de les traiter comme deux variantes d'une seule route : `POST /transmissions/:token/respond` avec un champ `action` en body.
+
+On a tranché pour deux routes séparées. Raison actée dans l'ADR du projet : une route dédiée par action métier plutôt qu'une route générique avec un discriminant, pattern qu'on retrouve chez Stripe ou GitHub. Un controller à branches multiples (`if action === 'confirm' ... else if action === 'cancel'`) devient vite difficile à tester isolément, et masque le fait que les deux actions ont des conditions d'entrée complètement différentes.
+
+`confirm` n'est autorisé que si le token est `accepted`. `cancel`, lui, marche sur `pending`, `clicked` ou `accepted`, mais jamais sur `confirmed` : une fois le bien transféré, il n'y a plus rien à annuler. Deux routes, deux jeux de règles, deux tests séparés.
+
+## Deuxième problème : vérifier le bon propriétaire, pas le bon email
+
+Sur `accept`, la vérification d'identité passe par l'email : l'utilisateur connecté doit correspondre à `recipientEmail`. Simple, parce que le destinataire est défini par son adresse au moment de la création du token.
+
+Pour `confirm` et `cancel`, cette logique ne marche plus. C'est le vendeur qui agit, et le vendeur n'est pas stocké comme un email sur le token : c'est le propriétaire du bien concerné. Le contrôle se fait donc sur une relation, pas sur un champ :
+
+```ts
+const property = await prisma.property.findUnique({
+  where: { id: propertyId },
+  include: { profile: true },
+});
+if (!property || property.profile.userId !== userId) throw new Error("Non autorisé");
+```
+
+Le détail qui compte : `property.profile.userId`, pas `property.userId`. Le lien passe par le profil, pas directement par l'utilisateur. Oublier ce niveau intermédiaire, c'est un contrôle d'accès qui compile très bien et qui laisse n'importe quel profil valider n'importe quel bien.
+
+## Troisième problème : une transaction qui fait tout, ou rien
+
+`cancel` est simple : un update de statut, rien d'autre. `confirm` est une autre histoire. Confirmer une transmission, c'est transférer la propriété du bien, ce qui touche trois choses en même temps : le `Property.profileId` doit changer de propriétaire, une ligne `Transmission` doit garder une trace de l'historique, et le token doit passer à `confirmed`.
+
+Si l'une de ces trois écritures réussit sans les autres, la base ment. D'où la transaction Prisma :
+
+```ts
+await prisma.$transaction([
+  prisma.property.update({ where: { id }, data: { profileId: newOwnerId } }),
+  prisma.transmission.create({ data: { propertyId, previousOwnerId, newOwnerId } }),
+  prisma.transmissionToken.update({ where: { token }, data: { status: "confirmed" } }),
+]);
+```
+
+Honnêtement, c'est le genre de détail qu'on oublie facilement quand on code vite : trois `await` séquentiels auraient l'air de marcher en développement, jusqu'au jour où l'un des trois échoue en prod et laisse un bien à moitié transféré.
+
+Petit à-côté qui m'a évité un champ en trop : pas de `confirmedAt` sur le token. La ligne `Transmission` n'est créée qu'au moment de la confirmation, donc son `createdAt` fait déjà office de date de confirmation. Un champ de plus aurait dupliqué une information déjà disponible ailleurs.
+
+## Ce que j'en retiens
+
+Deux actions qui partagent un acteur (le vendeur) et un contexte (le même token) peuvent quand même avoir des permissions, des conditions d'entrée et des effets de bord entièrement différents. Les traiter comme des variantes l'une de l'autre aurait produit un controller fragile pour économiser deux fichiers.
+
+Reste un point que je n'ai pas tranché : une fois que le destinataire a accepté, il perd toute prise sur la suite, le vendeur garde confirm et cancel pendant 48h. C'est une asymétrie identifiée, pas encore un problème vécu. Je préfère attendre un retour d'usage réel avant de la corriger plutôt que de deviner.
+
+_Cerithe_ avance. Prochaine étape : la modale de choix de profil destinataire côté frontend.

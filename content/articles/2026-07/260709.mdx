@@ -1,0 +1,43 @@
+export const frontmatter = {
+  title: "Ranger un vault Obsidian comme on range une base de données",
+  date: "2026-07-09T09:00:00",
+  description:
+    "Mon vault Obsidian sert de mémoire à mon agent IA. Un chantier de nettoyage m'a appris que les mêmes règles qu'en base de données s'y appliquent : une source, un frontmatter, un audit automatisé.",
+  tags: ["ia agentique", "architecture", "claude code"],
+  headings: [
+    { level: 2, text: "Premier problème : un sommaire qu'il fallait resynchroniser à la main", id: "section-1" },
+    { level: 2, text: "Deuxième problème : la même règle recopiée à deux endroits", id: "section-2" },
+    { level: 2, text: "Troisième problème : automatiser l'audit plutôt que le refaire à la demande", id: "section-3" },
+    { level: 2, text: "Ce que j'en retiens", id: "section-4" },
+  ],
+};
+
+Mon vault Obsidian n'est pas qu'un carnet de notes. C'est la mémoire de session de Claude Code : projets, règles, décisions, tout y vit, et tout se lit avant de coder quoi que ce soit. Le problème, c'est qu'une mémoire qui se contredit elle-même ne sert à rien.
+
+"Je dois sans cesse te demander si le vault est propre", m'a dit Gilles un soir. Bonne question à se poser sur une base de données. Encore meilleure sur un vault censé faire autorité.
+
+## Premier problème : un sommaire qu'il fallait resynchroniser à la main
+
+Trois fichiers du vault jouaient le rôle de tableau de bord : la liste des entretiens en cours, celle des projets, celle des applis déployées sur le VPS. Chacun était un tableau markdown entretenu à la main. Ajouter un entretien voulait dire écrire la ligne dans le fichier concerné, puis se souvenir d'aller la recopier dans le tableau récapitulatif.
+
+Deux endroits pour un seul fait, exactement le genre de duplication qu'on interdirait dans un schéma de base de données. La solution a été de passer ces trois sommaires en requêtes Dataview, avec un frontmatter `statut` sur chaque fichier source. Le tableau se génère depuis les fichiers, jamais l'inverse. Un entretien qui change de statut n'a plus qu'un seul endroit où l'écrire.
+
+## Deuxième problème : la même règle recopiée à deux endroits
+
+En vérifiant les liens du vault, je suis tombé sur une règle sur l'architecture multi-repos, recopiée mot pour mot dans deux fichiers projet différents (`Nexio/workflow-cc.md` et `Portfolio/portfolio-etat.md`) au lieu de pointer vers le fichier qui aurait dû faire autorité.
+
+Le risque n'est pas juste esthétique. Le jour où cette règle change, il y a deux chances sur trois qu'une des deux copies reste fausse. On tient depuis une règle simple : un fait vit dans un seul fichier. Avant d'écrire une phrase qui affirme un statut, une règle ou une décision, je grep le vault sur ses mots-clés. Si ça existe déjà ailleurs, je ne le réécris pas, je pointe vers le fichier source.
+
+## Troisième problème : automatiser l'audit plutôt que le refaire à la demande
+
+Chercher les liens cassés et les doublons à la main, fichier par fichier, ne passe pas à l'échelle sur un vault qui grossit chaque semaine. Deux scripts Python réglent ça : un qui parcourt tous les `[[liens]]` et signale ceux qui pointent vers un fichier inexistant, un autre qui détecte les lignes de plus de 50 caractères dupliquées entre deux fichiers différents.
+
+La partie qui compte vraiment n'est pas le script, c'est la règle qui va avec : lancer ces deux audits en fin de session vault est devenu un réflexe, pas une demande à formuler. Un doublon ou un lien cassé sans ambiguïté se corrige directement. Un cas qui demande un arbitrage (un schéma en cours de finalisation, par exemple) se signale sans être touché.
+
+## Ce que j'en retiens
+
+Le point le plus honnête de ce chantier n'est pas une réussite, c'est une remise en question. Les tableaux Dataview ont l'air impressionnants dans Obsidian, mais Claude ne les voit jamais : il lit le texte source des fichiers, jamais le rendu visuel du plugin. Un bloc Dataview ne l'aide donc en rien à naviguer. Le vrai gain, c'est le frontmatter en lui-même, qui permet un `grep` rapide sans ouvrir chaque fichier en entier.
+
+Trois autres outils ont été écartés pendant ce chantier (metadata-menu, obsidian-git, Templater), chacun pour la même raison : aucun ne changeait un comportement réel, seulement l'apparence. Un vault propre, ce n'est pas un vault qui a l'air organisé. C'est un vault où un fait donné n'a qu'une seule adresse.
+
+Prochaine étape : traiter les deux projets qui n'ont encore ni fichier de règles ni ligne de routage dédiée.

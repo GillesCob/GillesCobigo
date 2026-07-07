@@ -1,0 +1,53 @@
+export const frontmatter = {
+  title: "Le fix qui a supprimé le scroll fluide : une leçon sur les effets de bord",
+  date: "2026-07-10T09:00:00",
+  description:
+    "Sur mon portfolio, un correctif de navigation avait discrètement tué le scroll fluide du sommaire d'article. Deux semaines pour s'en rendre compte, quelques minutes pour comprendre pourquoi.",
+  tags: ["react", "frontend", "architecture", "portfolio"],
+  headings: [
+    { level: 2, text: "Premier problème : un sommaire qui saute au lieu de scroller", id: "section-1" },
+    { level: 2, text: "Deuxième problème : une règle globale qui corrige un bug en en cassant un autre", id: "section-2" },
+    { level: 2, text: "Troisième problème : cibler le fix plutôt que le généraliser", id: "section-3" },
+    { level: 2, text: "Ce que j'en retiens", id: "section-4" },
+  ],
+};
+
+Sur la page d'un article de mon portfolio, un clic sur le sommaire à droite est censé faire défiler la page en douceur jusqu'au bon titre. Un jour, sans que j'aie touché à ce composant, le clic s'est mis à sauter directement au titre. Pas de transition, pas d'animation. Un comportement en moins, sans commit récent qui l'explique.
+
+Ce genre de régression silencieuse est le pire à traquer : rien n'a planté, rien n'affiche d'erreur, le site fonctionne. Juste un détail d'expérience qui a disparu sans prévenir.
+
+## Premier problème : un sommaire qui saute au lieu de scroller
+
+Le composant du sommaire n'avait pas changé, ni ses props, ni son markup. Le suspect logique devenait donc une règle plus globale, quelque chose qui influence le scroll sans faire partie du composant lui-même. Plutôt que de relire tout `globals.css` ligne par ligne à la recherche d'un changement récent, `git log -S` (recherche par contenu ajouté ou retiré, pas par message de commit) sur le mot-clé `scroll-behavior` a fait le travail en une commande.
+
+Deux commits sont remontés, datés du même jour, à quelques heures d'écart : l'un ajoutait `html { scroll-behavior: smooth }`, l'autre le retirait, dans un commit au message générique ("fix: og-image and home improvements") qui ne mentionnait ni scroll ni sommaire nulle part. Sans `-S`, ce retrait serait resté invisible dans la masse des autres changements du même commit.
+
+## Deuxième problème : une règle globale qui corrige un bug en en cassant un autre
+
+En creusant le contexte de ce retrait, la raison est devenue claire. `scroll-behavior: smooth` en CSS anime absolument tout scroll programmatique de la page, y compris le retour en haut après une navigation React Router. Or un composant dédié (`ScrollReset`) force déjà ce retour en haut de façon instantanée à chaque changement de route :
+
+```ts
+useEffect(() => {
+  window.scrollTo({ top: 0, behavior: 'instant' })
+}, [pathname])
+```
+
+Sauf que ce jour-là, quelqu'un naviguait depuis le bas de la page d'accueil vers un article, et la transition affichait un scroll visible remontant depuis le bas de la nouvelle page. Plutôt que de comprendre pourquoi l'instant explicite ne suffisait pas à bloquer l'effet du CSS global, la correction a été de supprimer purement `scroll-behavior: smooth`. Radical, efficace sur le bug visé, et silencieusement destructeur pour tout le reste : le sommaire d'article, qui dépendait du même réglage CSS global pour son scroll fluide, s'est retrouvé cassé au passage.
+
+## Troisième problème : cibler le fix plutôt que le généraliser
+
+La bonne réparation n'était pas de remettre la règle globale. C'était de rendre le scroll fluide du sommaire indépendant d'elle. La solution passe par du JavaScript explicite au clic, exactement comme le faisait déjà le tiroir mobile du même composant :
+
+```ts
+document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+```
+
+Un `scrollIntoView` avec un `behavior` explicite ne dépend d'aucune règle CSS globale. Le sommaire retrouve son animation, `ScrollReset` continue de gérer le retour en haut de page sans qu'aucune des deux logiques n'interfère avec l'autre.
+
+## Ce que j'en retiens
+
+Une règle globale (CSS, config, middleware partagé) a un rayon d'action qu'on sous-estime facilement au moment de corriger un bug précis. Elle règle le problème qu'on regarde et en déplace un autre, invisible tant que personne ne clique au bon endroit.
+
+Ce qui m'a le plus marqué, honnêtement, c'est que la vraie réparation demandait moins de code que la suppression brutale qui l'avait précédée : quelques lignes ciblées contre une ligne globale retirée d'un coup. Le réflexe du chemin le plus court n'est pas toujours le bon. Depuis, une règle simple s'applique chez moi : un fix ne retire jamais une fonctionnalité pour en réparer une autre sans le dire. Soit on trouve une solution qui ne supprime rien, soit on liste explicitement ce qui va casser avant d'appuyer sur entrée.
+
+Le portfolio avance. Prochaine étape : un vrai suivi de l'avancement du MVP _Cerithe_, sans chiffre qui dérive en silence.

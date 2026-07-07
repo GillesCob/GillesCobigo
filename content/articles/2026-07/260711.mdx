@@ -1,0 +1,50 @@
+export const frontmatter = {
+  title: "Un pourcentage qui ment : comment mon suivi de projet a dérivé sans que je le voie",
+  date: "2026-07-11T09:00:00",
+  description:
+    "Un chiffre d'avancement affiché dans mes récaps de session avait silencieusement reculé de 15 points sur le MVP Cerithe. Voici où ça a planté, et comment j'ai rendu ce chiffre impossible à tricher.",
+  tags: ["ia agentique", "architecture", "claude code", "cerithe"],
+  headings: [
+    { level: 2, text: "Premier problème : un chiffre qui contredit sa propre légende", id: "section-1" },
+    { level: 2, text: "Deuxième problème : trouver l'origine exacte plutôt que corriger à l'aveugle", id: "section-2" },
+    { level: 2, text: "Troisième problème : remplacer une estimation recopiée par une source vérifiable", id: "section-3" },
+    { level: 2, text: "Ce que j'en retiens", id: "section-4" },
+  ],
+};
+
+Chaque session de travail sur _Cerithe_ se termine par un récap qui affiche, entre autres, un pourcentage d'avancement du MVP. Un chiffre pratique : d'un coup d'œil, je sais où j'en suis. Sauf qu'un jour, ce chiffre est descendu de 70% à 55% sans qu'aucun code n'ait reculé.
+
+Personne n'avait touché à Cerithe ce jour-là. La session en question était entièrement consacrée à autre chose. Un chiffre qui baisse tout seul, ça n'existe pas. Il fallait comprendre où.
+
+## Premier problème : un chiffre qui contredit sa propre légende
+
+Le récap du jour affichait 55%, avec une légende qui disait explicitement "inchangé depuis la session précédente". Sauf que la session précédente affichait 70%. Le texte et le chiffre se contredisaient dans le même document, ce qui est en soi un signal fort : une incohérence interne, pas une évolution réelle.
+
+En comparant tous les récaps générés depuis le début du projet, le chiffre suivait une trajectoire cohérente (55%, 65%, 70%) jusqu'à ce fameux jour, où il retombe brutalement à 55%, exactement la valeur d'une session bien plus ancienne.
+
+## Deuxième problème : trouver l'origine exacte plutôt que corriger à l'aveugle
+
+Corriger le chiffre du jour n'aurait réglé qu'un symptôme. La vraie question : d'où venait ce 55% recyclé ? Le fichier modèle utilisé pour générer chaque récap contenait un exemple de gauge avec des valeurs figées, servant de point de départ visuel. En comparant ce modèle section par section avec les récaps réels, la coïncidence a sauté aux yeux : la gauge d'exemple du modèle était identique, au caractère près, à celle d'un récap généré plusieurs jours auparavant.
+
+Le modèle avait été construit à partir d'un vrai récap ancien, comme point de départ pratique pour ne pas repartir de zéro à chaque fois. Une session plus récente a généré un nouveau récap probablement en partant de ce modèle plutôt que du dernier état réel, et a oublié de recalculer le chiffre avant de le publier. Le bug n'était donc pas dans le calcul du pourcentage lui-même : la formule était juste, appliquée au mauvais moment, sur un vieux jeu de données. Il était dans l'absence de vérification qu'un nombre recopié correspondait encore à la réalité du jour.
+
+## Troisième problème : remplacer une estimation recopiée par une source vérifiable
+
+Le vrai défaut structurel, c'est qu'aucun fichier ne listait les tâches comptées dans ce pourcentage. Le nombre total et le nombre fait n'existaient que sous forme de phrase, recopiée de récap en récap, jamais recalculée depuis une liste concrète.
+
+La correction a été de construire cette liste, une bonne fois : une checklist markdown avec une case à cocher par tâche, alignée sur le planning jour par jour du projet.
+
+```md
+- [x] Transmission : `POST /transmissions/:token/confirm`
+- [ ] Transmission frontend (1/3, écrans)
+```
+
+Le pourcentage se déduit maintenant en comptant les cases cochées. Impossible de le recopier sans le recalculer, puisqu'il n'existe plus indépendamment de cette liste.
+
+## Ce que j'en retiens
+
+Un chiffre qui a l'air précis n'est pas forcément fiable. 70%, 64%, 55%, ces valeurs sonnent toutes également crédibles tant qu'on ne les confronte pas à une source vérifiable. Le vrai problème n'était pas une erreur de calcul ponctuelle, c'était l'absence d'un endroit unique où ce calcul pouvait se faire.
+
+Ce qui m'a le plus marqué : la solution n'a rien de sophistiqué. Une liste à cocher bat une estimation recopiée, simplement parce qu'elle ne peut pas mentir sans qu'on le voie. La rigueur ne vient pas toujours d'un outil plus intelligent, parfois juste d'un endroit où un fait ne peut vivre qu'une seule fois.
+
+_Cerithe_ avance, à 64% très exactement, et cette fois je peux le prouver.
