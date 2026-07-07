@@ -72,7 +72,7 @@ export default function ArticleSidebar({ articles, activeSlug }: IArticleSidebar
   }
 
   return (
-    <aside className="hidden md:flex flex-col w-64 shrink-0 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto border-r border-border py-8 px-4 gap-6">
+    <aside className="hidden md:flex flex-col w-64 shrink-0 fixed top-16 left-0 h-[calc(100vh-4rem)] overflow-y-auto border-r border-border bg-background py-8 px-4 gap-6">
       {/* Tag filters */}
       <div>
         <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">Filtrer</p>

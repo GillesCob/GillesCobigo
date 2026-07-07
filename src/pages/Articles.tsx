@@ -56,7 +56,7 @@ export default function Articles({ scheduledOnly = false }: IArticlesProps) {
     <div className="flex min-h-screen pt-16">
       <ArticleSidebar articles={articles} />
 
-      <main className="flex-1 min-w-0 px-6 lg:px-12 py-12">
+      <main className="flex-1 min-w-0 md:ml-64 px-6 lg:px-12 py-12">
         <div className="max-w-3xl mx-auto">
           {from === 'skills' && (
             <button

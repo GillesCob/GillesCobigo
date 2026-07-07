@@ -18,17 +18,20 @@ export default function ArticleToc({ headings }: IArticleTocProps) {
 
   if (headings.length === 0) return null;
 
-  function handleHeadingClick(id: string) {
-    setOpen(false);
-    setTimeout(() => {
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 200);
+  function handleHeadingClick(id: string, closeDrawer = false) {
+    if (closeDrawer) setOpen(false);
+    setTimeout(
+      () => {
+        document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      },
+      closeDrawer ? 200 : 0,
+    );
   }
 
   return (
     <>
       {/* Desktop sidebar — xl+ only */}
-      <aside className="hidden xl:flex flex-col w-56 shrink-0 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto py-8 px-4 gap-3">
+      <aside className="hidden xl:flex flex-col w-56 shrink-0 fixed top-16 right-0 h-[calc(100vh-4rem)] overflow-y-auto bg-background py-8 px-4 gap-3">
         <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-1 underline">
           Dans cet article
         </p>
@@ -37,6 +40,10 @@ export default function ArticleToc({ headings }: IArticleTocProps) {
             <a
               key={heading.id}
               href={`#${heading.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                handleHeadingClick(heading.id);
+              }}
               className={`text-sm mb-2 text-muted-foreground hover:text-foreground transition-colors leading-snug ${
                 heading.level === 3 ? "pl-4" : ""
               }`}
@@ -66,7 +73,7 @@ export default function ArticleToc({ headings }: IArticleTocProps) {
             {headings.map((heading) => (
               <DrawerClose asChild key={heading.id}>
                 <button
-                  onClick={() => handleHeadingClick(heading.id)}
+                  onClick={() => handleHeadingClick(heading.id, true)}
                   className={`text-left text-sm py-2.5 px-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors leading-snug ${
                     heading.level === 3 ? "pl-6" : ""
                   }`}
