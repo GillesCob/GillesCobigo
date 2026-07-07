@@ -1,11 +1,20 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import ArticleCard from '@/components/articles/ArticleCard'
-import { useArticles } from '@/hooks/useArticles'
+import { getArticles } from '@/lib/articles'
+
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
 
 export default function ArticlesSection() {
-  const { data: articles, isLoading, isError } = useArticles(1, 3)
+  const articles = getArticles().slice(0, 3)
+
+  if (articles.length === 0) return null
 
   return (
     <section className="py-16 px-4 bg-muted/20">
@@ -18,25 +27,23 @@ export default function ArticlesSection() {
             </Link>
           </Button>
         </div>
-        {isLoading && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-48 rounded-xl bg-muted animate-pulse" />
-            ))}
-          </div>
-        )}
-        {isError && (
-          <p className="text-muted-foreground text-sm text-center py-8">
-            Les articles ne sont pas disponibles pour l&apos;instant.
-          </p>
-        )}
-        {articles && articles.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {articles.map((article) => (
-              <ArticleCard key={article.id} article={article} />
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {articles.map((article) => (
+            <Link
+              key={article.slug}
+              to={`/articles/${article.slug}`}
+              className="group flex flex-col rounded-xl border border-border overflow-hidden hover:border-border/60 transition-colors bg-card p-5"
+            >
+              <time className="text-xs font-mono text-muted-foreground/70 uppercase tracking-widest">
+                {formatDate(article.date)}
+              </time>
+              <h3 className="font-medium text-sm leading-snug mt-2 line-clamp-2 group-hover:text-muted-foreground transition-colors">
+                {article.title}
+              </h3>
+              <p className="text-xs text-muted-foreground line-clamp-3 mt-2">{article.description}</p>
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   )

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useSearchParams, useLocation, useNavigate } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, X } from 'lucide-react'
-import { getArticles } from '@/lib/articles'
+import { getArticles, isScheduled } from '@/lib/articles'
 import ArticleSidebar from '@/components/articles/ArticleSidebar'
 
 function formatDate(dateStr: string): string {
@@ -18,9 +18,15 @@ function scrollToTop() {
   document.body.scrollTo(0, 0);
 }
 
-export default function Articles() {
-  const articles = getArticles()
+interface IArticlesProps {
+  scheduledOnly?: boolean
+}
+
+export default function Articles({ scheduledOnly = false }: IArticlesProps) {
   const [searchParams, setSearchParams] = useSearchParams()
+  const isPreview = scheduledOnly || searchParams.get('preview') === '1'
+  const allArticles = getArticles(isPreview ? { includeScheduled: true } : undefined)
+  const articles = scheduledOnly ? allArticles.filter((a) => isScheduled(a.date)) : allArticles
   const activeTags = searchParams.getAll('tag')
   const location = useLocation()
   const navigate = useNavigate()
@@ -28,6 +34,12 @@ export default function Articles() {
     (location.state ?? {}) as { from?: string; skillName?: string; tags?: string[] }
   )
   const { from, skillName, tags: skillTags } = navState
+
+  function withPreview(params: URLSearchParams): URLSearchParams {
+    if (isPreview) params.set('preview', '1')
+    return params
+  }
+
   const filtered = activeTags.length > 0
     ? articles.filter((a) => a.tags.some((t) => activeTags.some((tag) => t.toLowerCase() === tag.toLowerCase())))
     : articles
@@ -55,15 +67,17 @@ export default function Articles() {
             </button>
           )}
 
-          <h1 className="text-3xl font-bold mb-2">Journal</h1>
+          <h1 className="text-3xl font-bold mb-2">{scheduledOnly ? 'Articles programmés' : 'Journal'}</h1>
           <p className="text-muted-foreground mb-6">
-            Notes de parcours, retours d&apos;experience, explorations techniques.
+            {scheduledOnly
+              ? 'Articles écrits en avance, pas encore visibles publiquement.'
+              : "Notes de parcours, retours d'experience, explorations techniques."}
           </p>
 
           {/* Mobile tag filter — hidden on md+ where the sidebar handles it */}
           <div className="flex gap-1.5 overflow-x-auto pb-1 mb-6 md:hidden">
             <button
-              onClick={() => { setSearchParams({}); scrollToTop() }}
+              onClick={() => { setSearchParams(withPreview(new URLSearchParams())); scrollToTop() }}
               className={`text-xs px-2.5 py-1.5 rounded-md border whitespace-nowrap flex-shrink-0 transition-colors ${
                 activeTags.length === 0
                   ? 'bg-foreground text-background border-foreground'
@@ -75,7 +89,7 @@ export default function Articles() {
             {allTags.map((tag) => (
               <button
                 key={tag}
-                onClick={() => { setSearchParams({ tag: tag.toLowerCase() }); scrollToTop() }}
+                onClick={() => { setSearchParams(withPreview(new URLSearchParams({ tag: tag.toLowerCase() }))); scrollToTop() }}
                 className={`text-xs px-2.5 py-1.5 rounded-md border whitespace-nowrap flex-shrink-0 transition-colors ${
                   activeTags.some((t) => t.toLowerCase() === tag.toLowerCase())
                     ? 'bg-foreground text-background border-foreground'
@@ -97,7 +111,7 @@ export default function Articles() {
                     const remaining = activeTags.filter((t) => t !== tag);
                     const params = new URLSearchParams();
                     remaining.forEach((t) => params.append('tag', t));
-                    setSearchParams(params);
+                    setSearchParams(withPreview(params));
                   }}
                   className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md bg-[#E8734A]/10 text-[#E8734A] hover:bg-[#E8734A]/20 transition-colors"
                 >
@@ -109,14 +123,18 @@ export default function Articles() {
 
           {filtered.length === 0 ? (
             <p className="text-muted-foreground">
-              {activeTags.length > 0 ? 'Aucun article pour ce tag.' : "Aucun article pour l'instant."}
+              {activeTags.length > 0
+                ? 'Aucun article pour ce tag.'
+                : scheduledOnly
+                ? 'Aucun article programmé pour le moment.'
+                : "Aucun article pour l'instant."}
             </p>
           ) : (
             <div className="flex flex-col divide-y divide-border">
               {filtered.map((article) => (
                 <article key={article.slug} className="py-8 first:pt-0">
                   <Link
-                    to={`/articles/${article.slug}`}
+                    to={`/articles/${article.slug}${isPreview ? '?preview=1' : ''}`}
                     state={
                       from === 'skills'
                         ? { from: 'filtered', skillName, tags: skillTags }
@@ -126,9 +144,16 @@ export default function Articles() {
                     }
                     className="group block"
                   >
-                    <time className="text-xs font-mono text-muted-foreground/70 uppercase tracking-widest">
-                      {formatDate(article.date)}
-                    </time>
+                    <div className="flex items-center gap-2">
+                      <time className="text-xs font-mono text-muted-foreground/70 uppercase tracking-widest">
+                        {formatDate(article.date)}
+                      </time>
+                      {isPreview && isScheduled(article.date) && (
+                        <span className="text-xs font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#E8734A]/10 text-[#E8734A]">
+                          Programmé
+                        </span>
+                      )}
+                    </div>
                     <h2 className="text-xl font-semibold mt-2 mb-2 group-hover:text-muted-foreground transition-colors leading-snug">
                       {article.title}
                     </h2>
@@ -143,7 +168,7 @@ export default function Articles() {
                             onClick={(e) => {
                               e.preventDefault()
                               e.stopPropagation()
-                              setSearchParams({ tag: tag.toLowerCase() })
+                              setSearchParams(withPreview(new URLSearchParams({ tag: tag.toLowerCase() })))
                               scrollToTop()
                             }}
                             className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground hover:bg-muted/70 transition-colors cursor-pointer"

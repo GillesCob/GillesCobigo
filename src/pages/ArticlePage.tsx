@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, type ComponentType } from "react";
-import { useParams, Navigate, Link, useLocation, useNavigate } from "react-router-dom";
+import { useParams, Navigate, Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { getArticles, getArticleBySlug, slugify } from "@/lib/articles";
+import { getArticles, getArticleBySlug, isScheduled, slugify } from "@/lib/articles";
 import ArticleSidebar from "@/components/articles/ArticleSidebar";
 import ArticleToc from "@/components/articles/ArticleToc";
 
@@ -20,10 +20,13 @@ export default function ArticlePage() {
   const fullSlug = rest ? `${slug}/${rest}` : slug;
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isPreview = searchParams.get("preview") === "1";
   const { from, skillName, tags: skillTags } = (location.state ?? {}) as { from?: string; skillName?: string; tags?: string[] };
   const [Content, setContent] = useState<ComponentType<{ components?: Record<string, ComponentType> }> | null>(null);
-  const articles = getArticles();
-  const meta = fullSlug ? getArticleBySlug(fullSlug) : undefined;
+  const articles = getArticles(isPreview ? { includeScheduled: true } : undefined);
+  const existingMeta = fullSlug ? getArticleBySlug(fullSlug, { includeScheduled: true }) : undefined;
+  const meta = fullSlug ? getArticleBySlug(fullSlug, isPreview ? { includeScheduled: true } : undefined) : undefined;
 
   const headingIdMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -68,16 +71,38 @@ export default function ArticlePage() {
   );
 
   useEffect(() => {
-    if (!fullSlug) return;
+    if (!fullSlug || !meta) return;
     setContent(null);
     const path = `/content/articles/${fullSlug}.mdx`;
     const loader = mdxModules[path];
     if (loader) {
       loader().then((mod) => setContent(() => (mod as { default: ComponentType }).default));
     }
-  }, [fullSlug]);
+  }, [fullSlug, meta]);
 
-  if (!meta) return <Navigate to="/articles" replace />;
+  if (!existingMeta) return <Navigate to="/articles" replace />;
+
+  if (!meta) {
+    return (
+      <div className="flex min-h-screen pt-16">
+        <ArticleSidebar articles={articles} activeSlug={fullSlug} />
+        <main className="flex-1 min-w-0 px-6 lg:px-12 py-12">
+          <div className="max-w-3xl mx-auto">
+            <Link
+              to="/articles"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
+            >
+              <ArrowLeft size={14} /> Tous les articles
+            </Link>
+            <h1 className="text-3xl font-bold mb-3">{existingMeta.title}</h1>
+            <p className="text-muted-foreground">
+              Article programmé pour le {formatDate(existingMeta.date)}.
+            </p>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen pt-16">
@@ -131,6 +156,11 @@ export default function ArticlePage() {
             <h1 className="text-3xl font-bold leading-tight mb-3">{meta.title}</h1>
             <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
               <span>{formatDate(meta.date)}</span>
+              {isPreview && isScheduled(meta.date) && (
+                <span className="text-xs font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#E8734A]/10 text-[#E8734A]">
+                  Programmé
+                </span>
+              )}
               {meta.tags.map((tag) => (
                 <span key={tag} className="px-2 py-0.5 rounded-md bg-muted text-xs">
                   {tag}

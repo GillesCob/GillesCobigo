@@ -1,0 +1,77 @@
+export const frontmatter = {
+  title: "Un destinataire, plusieurs profils : l'endpoint qui débloquait accept sur Cerithe",
+  date: "2026-07-07T12:00:00",
+  description:
+    "Sur Cerithe, un destinataire de transmission peut avoir plusieurs profils utilisateur. Retour sur l'endpoint qui débloque l'acceptation, et sur la différence entre validation Zod et contrôle d'ownership.",
+  tags: ["sécurité", "architecture", "node.js", "cerithe"],
+  headings: [
+    { level: 2, text: "Premier problème : un destinataire peut avoir plusieurs profils", id: "section-1" },
+    { level: 2, text: "Deuxième problème : la validation ne remplace pas le contrôle d'accès", id: "section-2" },
+    { level: 2, text: "Troisième problème : ne pas dupliquer la logique de lecture", id: "section-3" },
+    { level: 2, text: "Ce que j'en retiens", id: "section-4" },
+  ],
+};
+
+On avance sur _Cerithe_, mon carnet de santé numérique du bâtiment. Le MVP doit être prêt le 17 juillet, et cette semaine c'est le flux de transmission d'un bien qui occupe le gros du planning : un propriétaire transmet son bien à un acheteur, qui doit confirmer qu'il l'accepte.
+
+Tout fonctionnait bien jusqu'à un cas particulier. Et si le destinataire de la transmission a plusieurs profils sur _Cerithe_ ? Impossible de deviner tout seul lequel doit recevoir le bien. Il fallait un endpoint dédié pour le laisser choisir.
+
+Voilà ce que j'en ai tiré.
+
+## Premier problème : un destinataire peut avoir plusieurs profils
+
+Quand un propriétaire crée une transmission, le backend essaie de résoudre automatiquement le profil du destinataire à partir de son email. Si un seul profil correspond, son id est stocké directement sur le token de transmission. Simple, rapide, aucune interaction nécessaire côté destinataire.
+
+Sauf que rien n'empêche un utilisateur d'avoir plusieurs profils sur _Cerithe_. Dans ce cas, impossible de choisir à sa place, et le champ `recipientProfileId` reste à `null`. L'étape d'acceptation le bloque explicitement depuis le 04/07 :
+
+```ts
+if (!transmissionToken.recipientProfileId)
+  throw new Error("Impossible de déterminer le profil du destinataire.");
+```
+
+Ce garde-fou existait déjà. Ce qui manquait, c'était le moyen d'en sortir : un endpoint où le destinataire choisit lui-même son profil avant d'accepter.
+
+## Deuxième problème : la validation ne remplace pas le contrôle d'accès
+
+Première tentation en écrivant le validator Zod : se dire que puisque le profil vient forcément d'une liste déroulante côté front, la validation de forme suffit. Faux, et c'est le point qui m'a le plus marqué sur cette feature.
+
+Le schema Zod garantit que `profileId` a la forme d'un UUID, rien de plus :
+
+```ts
+export const selectRecipientProfileSchema = z.object({
+  profileId: z.string().uuid({ message: "profileId invalide" }),
+});
+```
+
+Un UUID parfaitement valide peut très bien appartenir à quelqu'un d'autre. Rien n'empêche un appel direct à l'API, en dehors du front, avec l'id de profil de n'importe qui. La vraie question de sécurité se joue dans le service, avec un contrôle d'ownership explicite :
+
+```ts
+const profile = await prisma.profile.findUnique({ where: { id: profileId } });
+if (!profile || profile.userId !== userId) throw new Error("Non autorisé");
+```
+
+Deux gardes, deux rôles différents. Zod filtre la forme avant même de toucher la base. Le service vérifie le droit. Confondre les deux, c'est laisser une porte ouverte que le front n'utilisera jamais, mais qu'un simple appel curl trouvera sans problème.
+
+## Troisième problème : ne pas dupliquer la logique de lecture
+
+Une fois le profil validé et enregistré, il fallait renvoyer une réponse au front. Réécrire le formatage de cette réponse aurait dupliqué une logique déjà en place dans `getTransmissionTokenInfos`, le service qui gère la lecture du token à chaque étape du flux de transmission.
+
+Plutôt que ça, le nouveau service met à jour le token puis rappelle ce service existant :
+
+```ts
+await prisma.transmissionToken.update({
+  where: { token },
+  data: { recipientProfileId: profileId },
+});
+return getTransmissionTokenInfos(token, userId);
+```
+
+Le front reçoit exactement la même forme de réponse qu'un `GET` classique, avec `recipientKnown` passé à `true` cette fois. Aucun cas particulier à gérer côté client, aucune duplication à maintenir côté back.
+
+## Ce que j'en retiens
+
+Cette feature tient dans une soixantaine de lignes réparties sur quatre fichiers : validator, service, controller, route. Rien de spectaculaire, honnêtement. Ce qui rend ça possible, c'est l'architecture en couches qu'on tient depuis le début du projet : route, middleware, validator, controller, service, chacun avec un rôle et un seul.
+
+Zod valide la forme, jamais le droit. Le controller extrait des données, jamais de la logique métier. Le service applique les règles et rien d'autre. Quand cette discipline tient, ajouter un cas qu'on n'avait pas prévu au départ redevient mécanique plutôt que risqué. C'est exactement ce qui s'est passé ici : un cas identifié le 4 juillet, traité proprement trois jours plus tard, sans rien casser dans le flux existant.
+
+_Cerithe_ avance. Prochaine étape : la modale qui affiche ce choix côté frontend.

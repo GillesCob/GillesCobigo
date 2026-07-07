@@ -37,7 +37,16 @@ const mdxModules = import.meta.glob("/content/articles/**/*.mdx", {
   eager: true,
 }) as Record<string, { frontmatter: IFrontmatterExport }>;
 
-export function getArticles(): IArticleMeta[] {
+export function isScheduled(dateStr: string): boolean {
+  return new Date(dateStr) > new Date();
+}
+
+interface IGetArticlesOptions {
+  includeScheduled?: boolean;
+}
+
+export function getArticles(options?: IGetArticlesOptions): IArticleMeta[] {
+  const includeScheduled = options?.includeScheduled ?? false;
   return Object.entries(mdxModules)
     .map(([path, mod]) => {
       const slug = path.replace("/content/articles/", "").replace(".mdx", "");
@@ -51,9 +60,10 @@ export function getArticles(): IArticleMeta[] {
         headings: fm.headings ?? [],
       };
     })
+    .filter((article) => includeScheduled || !isScheduled(article.date))
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
-export function getArticleBySlug(slug: string): IArticleMeta | undefined {
-  return getArticles().find((a) => a.slug === slug);
+export function getArticleBySlug(slug: string, options?: IGetArticlesOptions): IArticleMeta | undefined {
+  return getArticles(options).find((a) => a.slug === slug);
 }
