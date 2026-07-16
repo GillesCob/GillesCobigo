@@ -9,7 +9,7 @@ export const devProjects: IProjectCard[] = [
     description:
       "Carnet de santé numérique du bâtiment. Suivi des interventions, des équipements et de la conformité réglementaire sur le cycle de vie d'un bâtiment.",
     stack: ["TypeScript", "Node.js", "Express", "Prisma", "PostgreSQL", "React"],
-    status: "MVP le 17 juillet 2026",
+    status: "En production",
     image: "/images/cerithe-placeholder.png",
     links: { github: "https://github.com/GillesCob/Cerithe", live: `${import.meta.env.VITE_CERITHE_URL}` },
   },
