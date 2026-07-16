@@ -18,12 +18,14 @@ export default function App() {
   // Les pages articles ont une sidebar + un sommaire en position fixed sur toute la hauteur
   // de l'écran : un footer en dessous se ferait toujours recouvrir par ces deux panneaux.
   const hideFooter = location.pathname.startsWith("/articles") || isVideoLanding;
+  // Contenu court : sans ça le footer remonte juste sous le formulaire au lieu de rester en bas d'écran.
+  const isContactPage = location.pathname === "/contact";
 
   return (
-    <>
+    <div className={isContactPage ? "min-h-dvh flex flex-col" : undefined}>
       <ScrollReset />
       {!isVideoLanding && <Navbar />}
-      <main>
+      <main className={isContactPage ? "flex-1" : undefined}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/projects" element={<Projects />} />
@@ -37,6 +39,6 @@ export default function App() {
       </main>
       {!hideFooter && <Footer />}
       <ScrollToTop />
-    </>
+    </div>
   );
 }
