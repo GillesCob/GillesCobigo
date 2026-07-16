@@ -54,7 +54,7 @@ export default function VideoLanding() {
               <img
                 src="/images/logo-gc-white.png"
                 alt=""
-                className="absolute inset-0 m-auto h-20 md:h-28 w-auto opacity-20"
+                className="absolute inset-0 m-auto h-36 md:h-52 w-auto opacity-20"
               />
               <span className="relative w-14 h-14 rounded-full bg-orange-600 flex items-center justify-center transition-transform group-hover:scale-105 group-disabled:opacity-40 group-disabled:group-hover:scale-100">
                 <Play size={22} className="text-white ml-0.5" fill="white" />
