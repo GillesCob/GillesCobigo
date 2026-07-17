@@ -29,9 +29,18 @@ export default function ArticlePage() {
   const isPreview = searchParams.get("preview") === "1";
   const { from, skillName, tags: skillTags } = (location.state ?? {}) as { from?: string; skillName?: string; tags?: string[] };
   const [Content, setContent] = useState<ComponentType<{ components?: Record<string, ComponentType> }> | null>(null);
-  const articles = getArticles(isPreview ? { includeScheduled: true } : undefined);
-  const existingMeta = fullSlug ? getArticleBySlug(fullSlug, { includeScheduled: true }) : undefined;
-  const meta = fullSlug ? getArticleBySlug(fullSlug, isPreview ? { includeScheduled: true } : undefined) : undefined;
+  const articles = useMemo(
+    () => getArticles(isPreview ? { includeScheduled: true } : undefined),
+    [isPreview],
+  );
+  const existingMeta = useMemo(
+    () => (fullSlug ? getArticleBySlug(fullSlug, { includeScheduled: true }) : undefined),
+    [fullSlug],
+  );
+  const meta = useMemo(
+    () => (fullSlug ? getArticleBySlug(fullSlug, isPreview ? { includeScheduled: true } : undefined) : undefined),
+    [fullSlug, isPreview],
+  );
 
   const headingIdMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -71,6 +80,12 @@ export default function ArticlePage() {
           </h3>
         );
       },
+      img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
+        // max-height evite qu'une capture au format portrait (ex. un formulaire centre sur une
+        // page vide) s'affiche demesurement grande ; les captures deja larges/paysage restent
+        // sous ce plafond et gardent leur taille actuelle (w-auto laisse le ratio decider)
+        <img {...props} className="max-h-[700px] w-auto mx-auto" />
+      ),
     }),
     [headingIdMap],
   );
