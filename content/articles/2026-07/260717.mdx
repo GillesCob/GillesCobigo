@@ -1,0 +1,58 @@
+export const frontmatter = {
+  title: "Cerithe est en prod : créer un bien, le transmettre, rien de plus",
+  date: "2026-07-17T14:00:00",
+  description:
+    "Le MVP de Cerithe est en ligne, dans les temps. Pourquoi je suis resté sur un visuel volontairement minimaliste, ce qu'on peut déjà faire dessus, et ce qui arrive ensuite.",
+  tags: ["cerithe", "architecture", "sécurité", "frontend"],
+  headings: [
+    { level: 2, text: "La deadline du 17 juillet", id: "la-deadline-du-17-juillet" },
+    { level: 2, text: "Pourquoi pas d'identité visuelle pour l'instant", id: "pourquoi-pas-d-identite-visuelle-pour-l-instant" },
+    { level: 2, text: "Ce qu'on peut faire aujourd'hui sur Cerithe", id: "ce-qu-on-peut-faire-aujourd-hui-sur-cerithe" },
+    { level: 2, text: "La propreté qu'on ne voit pas", id: "la-proprete-qu-on-ne-voit-pas" },
+    { level: 2, text: "Ce qui arrive après", id: "ce-qui-arrive-apres" },
+  ],
+};
+
+Six semaines. C'est le temps que je m'étais donné mi-mai pour poser un MVP en ligne sur _Cerithe_. Aujourd'hui il est en prod sur cerithe.gillescobigo.com.
+
+Je ne vais pas vous mentir : le visuel reste volontairement minimaliste. Propre, mais sans charte graphique poussée, sans animations, sans storytelling léché sur la page d'accueil. Ce choix n'a rien d'un manque de temps. C'est une décision.
+
+## La deadline du 17 juillet
+
+Mi-mai, j'ai posé une date sur le calendrier et un planning semaine par semaine. Personne ne me l'imposait, aucun client n'attendait la livraison. Je voulais tester ma capacité à tenir un engagement technique sur plusieurs semaines, avec la même rigueur qu'un chantier avec une date de réception.
+
+Le planning a bougé plusieurs fois en interne, une semaine de retard récupérée ailleurs, un bloc avancé plus vite que prévu. Mais la date de sortie, elle, n'a jamais bougé. Ces derniers jours, le mot d'ordre a été simple : terminer, pas ajouter.
+
+## Pourquoi pas d'identité visuelle pour l'instant
+
+J'ai monté un projet entrepreneurial avant _Cerithe_. Sur-scope dès le départ : une vision trop large, l'envie de coder des fonctionnalités avancées avant même que la base fonctionne. Une des raisons de son échec.
+
+Cette fois, j'ai voulu inverser l'ordre. D'abord une version stable, épurée, qui fonctionne du début à la fin. Créer un bien, le transmettre. La charte graphique poussée, les animations, une vraie identité de marque, tout ça viendra après, une fois que le socle tient vraiment.
+
+![La landing de Cerithe, volontairement épurée](/imagesArticles/2026/07/17/1.png)
+
+C'est un pari assumé : mieux vaut un MVP sobre qui fonctionne sans accroc qu'une landing léchée posée sur des fondations fragiles.
+
+## Ce qu'on peut faire aujourd'hui sur Cerithe
+
+Deux parcours complets tournent en prod. Le premier : créer un bien, avec son adresse, son type, sa surface, et y attacher des documents (diagnostics, factures, photos) au fil du temps.
+
+![Le formulaire de création d'un bien sur Cerithe](/imagesArticles/2026/07/17/2.png)
+
+Le deuxième, la fonctionnalité qui donne son sens au projet : transmettre l'intégralité de cet historique à un nouveau propriétaire. Le vendeur envoie un lien de transmission. Le destinataire, connecté ou non, accepte ou refuse. Une fois accepté, le vendeur confirme définitivement et l'historique change de main. Simple à décrire, mais chaque étape (jusqu'à cinq statuts différents, plusieurs profils possibles côté destinataire) a dû être pensée avant d'être codée.
+
+![La modale de transmission, une fois le destinataire renseigné](/imagesArticles/2026/07/17/3.png)
+
+## La propreté qu'on ne voit pas
+
+Ce qui a pris le plus de temps ces derniers jours n'est pas visible à l'écran. Un mauvais mot de passe qui affichait "Non autorisé" au lieu de "Identifiants incorrects". Une session perdue à chaque fermeture du navigateur parce qu'un cookie n'avait pas de durée de vie définie. Un zoom automatique permanent sur iOS parce que mes champs de formulaire faisaient 14px au lieu de 16 (allez comprendre l'utilisateur qui zoome tout seul).
+
+Chacun de ces bugs a été trouvé en testant réellement l'app, pas en la relisant. Chacun a une cause précise et une correction vérifiée, souvent rejouée en prod juste après le fix. C'est cette propreté-là que je voulais prioriser : un formulaire qui ne casse jamais silencieusement, une erreur qui dit vraiment ce qui s'est passé, une carte qui reste lisible sur un écran de téléphone.
+
+## Ce qui arrive après
+
+_Cerithe_ ne s'arrête pas au 17 juillet. La suite est déjà posée : la gestion des pièces d'un bien, le suivi des travaux, puis plus tard la gestion de chantiers complets et la communication directe avec les professionnels qui interviennent dessus. Chaque brique s'ajoutera une fois la précédente stabilisée, jamais l'inverse.
+
+À partir du prochain article, le format change. Chaque nouvelle publication sur _Cerithe_ détaillera une fonctionnalité précise, du problème rencontré jusqu'à la solution retenue. Une brique à la fois, plus de récap global.
+
+Tenir une deadline, ça veut souvent dire savoir quoi couper à temps, pas cocher toutes les cases qu'on avait rêvées au départ. Le MVP est en ligne. La suite commence maintenant.
