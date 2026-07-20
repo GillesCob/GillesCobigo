@@ -3,6 +3,7 @@ export interface IArticleFrontmatter {
   date: string;
   description: string;
   tags: string[];
+  post?: string;
 }
 
 export interface IHeading {
@@ -22,6 +23,7 @@ interface IFrontmatterExport {
   description: string;
   tags: string[];
   headings?: IHeading[];
+  post?: string;
 }
 
 export function slugify(text: string): string {
@@ -58,6 +60,7 @@ export function getArticles(options?: IGetArticlesOptions): IArticleMeta[] {
         description: fm.description,
         tags: fm.tags ?? [],
         headings: fm.headings ?? [],
+        post: fm.post,
       };
     })
     .filter((article) => includeScheduled || !isScheduled(article.date))
