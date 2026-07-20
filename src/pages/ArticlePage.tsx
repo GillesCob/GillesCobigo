@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, type ComponentType } from "react";
 import { useParams, Navigate, Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Copy, Check } from "lucide-react";
 import { getArticles, getArticleBySlug, isScheduled, slugify } from "@/lib/articles";
 import ArticleSidebar from "@/components/articles/ArticleSidebar";
 import ArticleToc from "@/components/articles/ArticleToc";
@@ -18,6 +18,31 @@ function formatDate(dateStr: string): string {
 function formatTime(dateStr: string): string {
   const d = new Date(dateStr);
   return `${String(d.getHours()).padStart(2, "0")}h${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
+function CopyableLine({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopy() {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      className="flex w-full items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-left text-sm font-mono transition-colors hover:border-[#E8734A]/50"
+    >
+      <span className="flex-1 select-all break-all">{text}</span>
+      {copied ? (
+        <Check size={14} className="flex-shrink-0 text-[#E8734A]" />
+      ) : (
+        <Copy size={14} className="flex-shrink-0 text-muted-foreground" />
+      )}
+    </button>
+  );
 }
 
 export default function ArticlePage() {
@@ -188,6 +213,17 @@ export default function ArticlePage() {
               ))}
             </div>
           </header>
+
+          {meta.post && isScheduled(meta.date) && (
+            <section className="mb-10 rounded-lg border border-[#E8734A]/30 bg-[#E8734A]/5 p-4">
+              <p className="text-xs font-mono uppercase tracking-widest text-[#E8734A] mb-2">
+                Post LinkedIn (visible tant que l'article n'est pas publié)
+              </p>
+              <p className="whitespace-pre-wrap text-sm text-muted-foreground mb-4">{meta.post}</p>
+              <p className="text-xs text-muted-foreground mb-1">À coller en 1er commentaire :</p>
+              <CopyableLine text={`Lien vers l'article : https://gillescobigo.com/articles/${fullSlug}`} />
+            </section>
+          )}
 
           {Content ? (
             <article className="prose prose-neutral dark:prose-invert max-w-none">

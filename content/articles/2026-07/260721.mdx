@@ -1,0 +1,62 @@
+export const frontmatter = {
+  title: "Ma checklist V1 native : quand un bug sur Cerithe évite le même bug ailleurs",
+  date: "2026-07-21T12:00:00",
+  description:
+    "Le même bug (zoom iOS, favicon transparent, 100vh qui déborde) revenait projet après projet avant que je le consigne quelque part de générique. Comment j'ai transformé des incidents Cerithe en checklist réutilisable pour toute nouvelle app, et pourquoi elle vit dans mon CLAUDE.md global, pas dans le projet.",
+  tags: ["ia agentique", "claude code", "architecture"],
+  post: `Un bug résolu sur un projet ne sert à rien s'il revient à l'identique sur le suivant.
+
+C'est ce qui m'est arrivé plusieurs fois avant que je change de méthode : le même zoom iOS sur mes formulaires, le même favicon invisible, le même scroll fantôme en mobile, sur des projets différents. Le fix existait déjà, juste pas au bon endroit.
+
+Dans l'article, je documente :
+- Les incidents précis qui ont déclenché la règle (dates, causes, correction)
+- Pourquoi une leçon générique vit dans mon CLAUDE.md global, pas dans le fichier du projet
+- Comment ça change ce que je livre dès le premier jour d'un nouveau scaffold
+
+L'article dans le 1er commentaire.
+
+#dev #claudecode #agentique #architecture #reconversion`,
+  headings: [
+    { level: 2, text: "Le problème que je répétais sans le voir", id: "le-probleme-que-je-repetais-sans-le-voir" },
+    { level: 2, text: "De l'incident à la règle générique", id: "de-l-incident-a-la-regle-generique" },
+    { level: 2, text: "Pourquoi ça vit dans le global, pas dans le projet", id: "pourquoi-ca-vit-dans-le-global-pas-dans-le-projet" },
+    { level: 2, text: "Ce que j'en retiens", id: "ce-que-j-en-retiens" },
+  ],
+};
+
+Sur _Cerithe_, un formulaire zoomait tout seul sur iOS au focus d'un champ. Rien de nouveau : j'avais déjà corrigé exactement ce bug sur un projet précédent. Sauf que la correction n'existait nulle part en dehors de ce projet-là. Je l'ai réécrite depuis zéro, retrouvée par le même diagnostic, la même incompréhension au départ.
+
+Ce jour-là j'ai arrêté de considérer un bug corrigé comme une affaire classée. Un bug corrigé sans être généralisé, c'est un bug qui va revenir.
+
+## Le problème que je répétais sans le voir
+
+Chaque projet a son fichier de leçons : ce qui a cassé, pourquoi, comment ça a été réparé. Utile pour ne pas refaire la même erreur sur _ce_ projet. Inutile pour le suivant, puisque personne ne va relire les leçons de _Cerithe_ en démarrant _ChouxFleurs2_.
+
+Résultat : le `100vh` qui déborde en mobile parce que la barre d'adresse Safari n'est pas comptée, le favicon blanc sur fond transparent invisible dans l'onglet, les champs de formulaire à 14px qui déclenchent le zoom automatique iOS. Trois bugs, trois projets, trois fois la même découverte, le même temps de diagnostic perdu à chercher une cause qui n'était pourtant pas nouvelle.
+
+## De l'incident à la règle générique
+
+La bascule : au lieu de refermer un bug une fois corrigé, se demander s'il se reproduira sur un futur projet qui n'a rien à voir avec celui-ci. Si oui, il ne va pas dans le fichier de leçons du projet. Il va dans une checklist V1 native, générique, à appliquer dès le scaffold de n'importe quelle nouvelle app.
+
+Concrètement, ça donne des règles précises, pas des principes vagues :
+
+```css
+/* jamais min-h-screen (100vh) sur un conteneur plein écran mobile */
+.hero {
+  min-height: 100dvh; /* calcule la hauteur réellement visible, barre d'adresse comprise */
+}
+```
+
+Chaque ligne de la checklist a une origine identifiable. Le `100dvh` vient d'un incident du 15 juillet sur _Cerithe_, dix fichiers concernés, tous corrigés d'un coup une fois la vraie cause trouvée. Le favicon opaque sur `apple-touch-icon` vient de deux incidents séparés à deux jours d'écart, sur deux projets différents, avant que je comprenne que c'était le même problème habillé différemment.
+
+## Pourquoi ça vit dans le global, pas dans le projet
+
+Cette checklist n'est pas dans le CLAUDE.md de _Cerithe_. Elle est dans mon CLAUDE.md global, celui que Claude Code lit sur tous mes projets, aucune exception. La règle qui la porte est simple : un fait vit dans un seul fichier, et une leçon généralisable vit au niveau qui correspond à sa portée réelle, pas au niveau où elle a été découverte.
+
+Ça change concrètement ce que je livre. Sur mon prochain scaffold, la limite de taille d'upload sera posée aux deux niveaux (proxy et applicatif) avant même le premier test utilisateur, pas après le premier upload de fichier trop lourd qui plante silencieusement. Le `ProtectedRoute` sera monté avant la première page authentifiée, pas ajouté après avoir vu une page charger dans le vide en attendant une redirection.
+
+## Ce que j'en retiens
+
+Un bug résolu une fois ne vaut rien la deuxième fois où il revient, sur un projet qui n'a jamais entendu parler du premier. Une règle écrite au bon endroit, si.
+
+Ce que ça change vraiment, ce n'est pas le nombre de bugs. C'est le moment où ils apparaissent : avant, je les découvrais en testant une fonctionnalité qui marchait mal. Maintenant, une partie d'entre eux n'existe simplement plus au moment où j'écris la première ligne. La compétence ne s'est pas ajoutée en lisant une documentation, elle s'est ajoutée en refusant de refermer un incident sans se demander où il devait vraiment vivre.

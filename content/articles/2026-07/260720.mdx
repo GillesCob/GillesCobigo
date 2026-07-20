@@ -1,0 +1,70 @@
+export const frontmatter = {
+  title: "Ce que la prépa aux entretiens techniques m'a appris sur mon point faible",
+  date: "2026-07-20T15:00:00",
+  description:
+    "Une opportunité en cours peut me tester aussi bien sur du React/JavaScript que sur du Python. En m'y préparant, j'ai fini par nommer un écart que je sentais sans l'avoir posé : comprendre du code et l'écrire from scratch sont deux compétences distinctes. Comment mon vault et un programme de katas m'aident à combler celle-ci.",
+  tags: ["ia agentique", "claude code", "ia", "cerithe"],
+  post: `Je comprends du code mieux que je ne sais en écrire from scratch. Un vrai point faible pour un entretien technique.
+
+Une opportunité en cours peut me tester aussi bien sur du React/JavaScript que sur du Python, sans que je sache lequel à l'avance. En m'y préparant, j'ai fini par nommer un écart que je sentais sans l'avoir posé. Lire une base de code et l'expliquer, ce n'est pas la même compétence qu'écrire une fonction seul, sans référence, sans IA.
+
+Dans l'article, je documente :
+- Pourquoi un entretien technique classique ne teste pas le travail réel d'un dev
+- Comment mon vault + Claude Code transforment cet écart en plan concret plutôt qu'en panique
+- Le programme de katas sans IA que j'ai mis en place en parallèle de la recherche d'emploi et de Cerithe
+
+L'article dans le 1er commentaire.
+
+#dev #reconversion #IA #entretientechnique #react #python`,
+  headings: [
+    { level: 2, text: "Le point faible que je n'avais pas mesuré", id: "le-point-faible-que-je-n-avais-pas-mesure" },
+    { level: 2, text: "Lire du code et l'écrire : deux compétences distinctes", id: "lire-du-code-et-l-ecrire-deux-competences-distinctes" },
+    { level: 2, text: "Ce que teste vraiment un entretien technique", id: "ce-que-teste-vraiment-un-entretien-technique" },
+    { level: 2, text: "Le vault et les katas comme réponse", id: "le-vault-et-les-katas-comme-reponse" },
+    { level: 2, text: "Ce que j'en retiens", id: "ce-que-j-en-retiens" },
+  ],
+};
+
+Une opportunité de poste est en cours de discussion, avec un test technique à la clé sur une date encore incertaine. Il touchera à la fois du front (React, JavaScript) et un peu de Python côté serveur, sans que je sache aujourd'hui lequel des deux sera vraiment testé.
+
+Je pars du principe qu'il vaut mieux imaginer que l'échéance tombe demain plutôt que d'attendre une convocation pour s'organiser. En creusant l'hypothèse d'un exercice "page blanche" (écrire du code seul, sans assistance, format classique en ESN, ces entreprises de services numériques qui placent des développeurs chez leurs clients), j'ai fini par nommer un écart que je sentais sans l'avoir vraiment posé. Pas un manque de connaissance, mais un écart précis entre ce que je sais faire au quotidien et ce qu'un recruteur peut me demander devant lui, sans rien d'autre qu'un éditeur vide.
+
+## Le point faible que je n'avais pas mesuré
+
+Sur _Cerithe_, mon carnet de santé numérique du bâtiment que je développe avec l'aide d'un assistant IA (Claude Code), je passe mes journées à lire du code, comprendre une architecture, expliquer une décision technique. Ça, je sais faire. Écrire une fonction _from scratch_, sans référence sous les yeux, sans pouvoir relire un exemple similaire deux fichiers plus loin, c'est une autre histoire.
+
+Le constat n'est pas venu d'un échec en entretien, mais d'une question simple : qu'est-ce qui serait le plus risqué si le rendez-vous tombait dans deux semaines plutôt que deux mois ? Ni la syntaxe Python ni les hooks React pris isolément. C'était de me remettre à écrire du code seul, sans filet, chose que je n'ai plus vraiment pratiquée depuis ma période de freelance sur mon propre projet, _ChouxFleurs_. Depuis, l'essentiel de mon code passe par un assistant IA, ce qui muscle d'autres compétences (comprendre, architecturer, corriger) mais pas celle-là.
+
+## Lire du code et l'écrire : deux compétences distinctes
+
+React fait justement partie de ce qui pourrait être testé, et c'est un terrain que je maîtrise bien mieux que Python. Le même écart s'y retrouve pourtant. Je lis un `useState` (une valeur qui redéclenche l'affichage quand elle change) ou un `useEffect` (du code qui se déclenche automatiquement à un moment de la vie d'un composant) sans effort, je sais expliquer ce qu'ils font. Je ne suis pas toujours capable de les écrire de tête, sans rien sous les yeux. Deux compétences, pas une qui engloberait automatiquement l'autre.
+
+Venant du BIM (la modélisation numérique du bâtiment, mon métier avant le développement), la bascule m'est familière : comprendre une maquette et y repérer une incohérence s'apprend vite, la modéliser soi-même à la main demande des centaines d'heures de pratique avant de devenir un réflexe. Le code n'échappe pas à la règle.
+
+## Ce que teste vraiment un entretien technique
+
+Le travail réel d'un dev, c'est savoir quoi construire, repérer quand c'est faux, comprendre assez une base de code pour l'expliquer et la faire évoluer. C'est ce que je pratique tous les jours sur _Cerithe_. Un entretien technique classique, en Python comme en JavaScript, n'évalue presque rien de tout ça. Il teste un socle sans assistance, boucles, structures de données, petites fonctions, comme un proxy de la compréhension sous les outils, pas comme un reflet du métier.
+
+Ça ne rend pas l'exercice illégitime. Ça veut juste dire que ce socle mérite un entraînement à part.
+
+## Le vault et les katas comme réponse
+
+Une fois l'écart posé sur les deux fronts, restait la question de le combler sans sacrifier le reste : la prospection, _Cerithe_. J'ai un vault Obsidian, mon système de notes personnelles, où tient tout mon suivi de progression technique. Je m'en sers avec Claude Code pour transformer une intuition, "je ne suis pas à l'aise sur du code from scratch", en un plan concret, priorisé, daté : fondamentaux d'abord, katas sans IA ensuite, lecture de code existant en dernier parce qu'elle suppose déjà de savoir écrire seul.
+
+Une session a suffi pour générer une banque de plusieurs centaines d'exercices Python et React. Le rôle de l'IA ici n'est pas d'écrire le code à ma place, mais de tenir la structure : choisir les thèmes à attaquer selon l'urgence, ajuster le rythme à ma vitesse réelle plutôt qu'à un plan figé, corriger après coup plutôt que bloquer à chaque ligne.
+
+Un kata typique tient en une consigne courte, quinze à vingt minutes, sans recherche ni assistance :
+
+```python
+def compte_voyelles(mot: str) -> int:
+    # à écrire seul, sans documentation, en 15 minutes
+    ...
+```
+
+La correction vient après, jamais pendant.
+
+## Ce que j'en retiens
+
+La page blanche n'est pas la preuve d'un manque de niveau. C'est un muscle que je sollicite peu dans mon quotidien de dev assisté, et qui a besoin d'un entraînement à part, quel que soit le langage. Le nommer a changé ma façon d'aborder la prépa : pas dans l'urgence la veille d'une convocation, mais avec un programme qui tourne en parallèle de tout le reste depuis plusieurs semaines.
+
+Honnêtement, j'aurais gagné du temps à séparer plus tôt "je comprends" de "je sais écrire". Deux compétences, deux entraînements. La prépa continue, front et Python en parallèle, en attendant une date que je ne connais toujours pas.
