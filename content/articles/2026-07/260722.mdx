@@ -1,0 +1,56 @@
+export const frontmatter = {
+  title: "Après le MVP, Cerithe passe en pilotage d'agent (mais pas tout de suite)",
+  date: "2026-07-22T15:30:00",
+  description:
+    "Le MVP de Cerithe, mon carnet de santé numérique du bâtiment, est livré et testé en prod. Ce point d'étape, combiné à des échanges récents dans le cadre de ma recherche d'emploi, me pousse à faire évoluer mon organisation de travail : Cerithe passe à son tour en pilotage d'agent, mais seulement après avoir posé un vrai cadre de revue.",
+  tags: ["ia agentique", "claude code", "architecture", "cerithe"],
+  post: `Après le MVP, Cerithe passe en pilotage d'agent. Mais pas tout de suite.
+
+Le MVP de Cerithe, mon carnet de santé numérique du bâtiment, est livré et testé en prod. Ce point d'étape, combiné à des échanges récents dans le cadre de ma recherche d'emploi, me pousse à faire évoluer mon organisation de travail.
+
+Dans l'article, je documente :
+- Ce que ces échanges m'ont confirmé sur l'évolution du métier de développeur
+- Pourquoi le MVP livré est l'occasion de faire bouger mon organisation
+- Le cadre que je pose avant de laisser l'agent toucher à une seule fonctionnalité neuve
+
+L'article dans le 1er commentaire.
+
+#dev #claudecode #agentique #architecture #cerithe`,
+  headings: [
+    { level: 2, text: "Ce que des échanges récents m'ont confirmé", id: "ce-que-des-echanges-recents-m-ont-confirme" },
+    { level: 2, text: "Le MVP en prod, l'occasion de faire évoluer l'organisation", id: "le-mvp-en-prod-l-occasion-de-faire-evoluer-l-organisation" },
+    { level: 2, text: "D'abord poser le cadre, pas coder", id: "d-abord-poser-le-cadre-pas-coder" },
+    { level: 2, text: "Les nouvelles fonctionnalités attendront la dette", id: "les-nouvelles-fonctionnalites-attendront-la-dette" },
+    { level: 2, text: "Ce que j'en retiens", id: "ce-que-j-en-retiens" },
+  ],
+};
+
+Le MVP de <a href="https://cerithe.gillescobigo.com" target="_blank" rel="noopener"><em>Cerithe</em></a>, mon carnet de santé numérique du bâtiment, est sorti. Trente blocs sur trente cochés, backend et frontend déployés sur mon VPS, flux testés en conditions réelles jusqu'en prod. Après six semaines à le coder à la main tous les matins, c'est un vrai point d'étape, l'occasion de regarder ce qui doit changer dans ma façon de travailler dessus.
+
+Depuis la fin de ma formation en juin, mon organisation tient en deux blocs, détaillés dans [un article précédent](/articles/2026-06/260610) : _Cerithe_ à la main le matin pour comprendre chaque ligne, _ChouxFleurs2_ puis _Nexio_ en pilotage d'agent l'après-midi pour apprendre à déléguer. Le MVP en prod, cette organisation doit évoluer elle aussi.
+
+## Ce que des échanges récents m'ont confirmé
+
+Dans le cadre de ma recherche d'emploi, plusieurs échanges récents m'ont confirmé une lecture que j'avais déjà, sans l'avoir formulée aussi nettement : le métier de développeur change de nature. Produire du code n'est plus le cœur du travail, un agent en sort à la chaîne, plus vite que je ne pourrais jamais taper. Ce qui devient rare, c'est de savoir vérifier ce qu'on livre, comprendre pourquoi on construit ce qu'on construit et rester capable de défendre une décision d'architecture plutôt que d'empiler des fonctionnalités qui marchent sans qu'on sache vraiment pourquoi.
+
+Ça correspond à ce que je pratique déjà sur _ChouxFleurs2_ et _Nexio_ depuis juin. Ce qui manquait, c'était de l'appliquer aussi à _Cerithe_.
+
+## Le MVP en prod, l'occasion de faire évoluer l'organisation
+
+Jusqu'ici, _Cerithe_ restait le seul projet où je refusais tout code généré : Claude explique, on échange, je challenge, je tape, il relit, je corrige. Cette règle avait un sens tant que je construisais les fondations. Le MVP terminé change la donne : _Cerithe_ passe à son tour en pilotage d'agent mais pas tout de suite, pas sans préparation.
+
+## D'abord poser le cadre, pas coder
+
+Avant de laisser l'agent écrire une seule ligne de fonctionnalité neuve, je pose l'organisation qui me permettra de l'utiliser intelligemment : relire chaque diff en entier, jamais un "ça a l'air bon" en survolant et challenger ce qu'il propose plutôt que le prendre pour acquis. Concrètement, chaque fonctionnalité livrée par l'agent passera par une boucle en plusieurs étapes avant le commit, de la spec au plan validé jusqu'à la vérification, pas un prompt suivi d'un commit direct.
+
+Challenger le code fourni veut dire vérifier des points précis, pas juste lire en diagonale : est-ce que l'implémentation correspond exactement à ce qui était demandé, est-ce que les cas particuliers ont vraiment été envisagés, est-ce que ce qui est utilisé correspond bien à ce qui existe réellement dans le projet plutôt qu'à quelque chose de plausible mais inventé. Le code généré est bien formaté par défaut, ce qui ne dit rien sur le fait qu'il fasse ce qu'il doit faire.
+
+Ces revues vont aussi me servir à autre chose : elles vont révéler mes propres angles morts, ce que je ne maîtrise pas encore assez pour le repérer du premier coup. C'est justement pour ça que je garde une session quotidienne de pratique, du code écrit à la main afin de combler mes manques au fur et à mesure qu'ils apparaissent. Mes katas, ces exercices courts que je fais en dehors de tout projet, continuent dans cette logique : savoir écrire du code et savoir le lire, le challenger, le corriger, ce sont deux compétences distinctes, la seconde ne s'apprend pas en lisant, elle s'entraîne.
+
+## Les nouvelles fonctionnalités attendront la dette
+
+Cette organisation posée, la tentation serait de foncer directement sur de nouvelles fonctionnalités. Je ne le fais pas tout de suite. D'abord, la dette déjà identifiée sur _Cerithe_ doit être résolue dans ce nouveau cadre : tests automatisés absents, déploiement backend encore manuel, workflow Git qui laissait jusqu'ici commiter directement sur la branche de prod. Une fois cette base saine, les nouvelles fonctionnalités arriveront brique par brique, en pilotage d'agent.
+
+## Ce que j'en retiens
+
+Ce que je retiens de cette étape : un MVP livré n'est pas la fin d'un chantier, c'est l'occasion de faire évoluer la façon dont je travaille dessus. Le métier change, je le savais déjà. Ce qui restait à faire, c'était construire le cadre qui me permette d'en profiter sur _Cerithe_ sans rien lâcher sur la rigueur qui m'a permis de livrer ce MVP en premier lieu.
