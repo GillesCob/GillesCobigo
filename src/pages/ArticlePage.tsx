@@ -20,6 +20,34 @@ function formatTime(dateStr: string): string {
   return `${String(d.getHours()).padStart(2, "0")}h${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
+function CopyButton({ text, label }: { text: string; label: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopy() {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 text-xs transition-colors hover:border-[#E8734A]/50"
+    >
+      {copied ? (
+        <>
+          <Check size={12} className="text-[#E8734A]" /> Copié
+        </>
+      ) : (
+        <>
+          <Copy size={12} className="text-muted-foreground" /> {label}
+        </>
+      )}
+    </button>
+  );
+}
+
 function CopyableLine({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
 
@@ -216,9 +244,12 @@ export default function ArticlePage() {
 
           {meta.post && isScheduled(meta.date) && (
             <section className="mb-10 rounded-lg border border-[#E8734A]/30 bg-[#E8734A]/5 p-4">
-              <p className="text-xs font-mono uppercase tracking-widest text-[#E8734A] mb-2">
-                Post LinkedIn (visible tant que l'article n'est pas publié)
-              </p>
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <p className="text-xs font-mono uppercase tracking-widest text-[#E8734A]">
+                  Post LinkedIn (visible tant que l'article n'est pas publié)
+                </p>
+                <CopyButton text={meta.post} label="Copier le post" />
+              </div>
               <p className="whitespace-pre-wrap text-sm text-muted-foreground mb-4">{meta.post}</p>
               <p className="text-xs text-muted-foreground mb-1">À coller en 1er commentaire :</p>
               <CopyableLine text={`Lien vers l'article : https://gillescobigo.com/articles/${fullSlug}`} />
