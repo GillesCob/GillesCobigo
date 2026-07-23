@@ -1,0 +1,59 @@
+export const frontmatter = {
+  title: "J'ai mis en place une branche dev. Je l'ai retirée le jour même.",
+  date: "2026-07-24T16:00:00",
+  description:
+    "Retour sur la mise en place du workflow Git de Cerithe : le modèle main/dev classique posé en une matinée, un fix perdu entre deux pull requests pourtant propres et pourquoi j'ai fini par retirer dev du circuit le jour même.",
+  tags: ["architecture", "devops", "claude code", "cerithe"],
+  post: `J'ai mis en place une branche dev sur Cerithe. Je l'ai retirée le jour même.
+
+Le modèle main/dev/branche de feature semblait la bonne pratique évidente. En voulant faire remonter un fix vers main, j'ai découvert qu'il manquait, perdu entre deux pull requests pourtant propres.
+
+Dans l'article, je documente :
+- L'incident qui motivait ce chantier Git
+- Comment un fix peut se perdre sans qu'aucune PR ne soit fautive
+- Pourquoi dev ne servait à rien dans mon cas précis
+
+L'article dans le 1er commentaire.
+
+#dev #git #devops #claudecode #cerithe`,
+  headings: [
+    { level: 2, text: "Le problème que je voulais fermer", id: "le-probleme-que-je-voulais-fermer" },
+    { level: 2, text: "Un fix perdu entre deux PR propres", id: "un-fix-perdu-entre-deux-pr-propres" },
+    { level: 2, text: "Ce que dev m'apportait vraiment", id: "ce-que-dev-m-apportait-vraiment" },
+    { level: 2, text: "Ce que j'en retiens", id: "ce-que-j-en-retiens" },
+  ],
+};
+
+Ce matin, [j'ai raconté comment un premier bug corrigé en pilotage d'agent m'a fait renoncer à une solution trop maligne](/articles/2026-07/260723). L'après-midi, j'ai enchaîné sur l'item suivant de la liste : remettre de l'ordre dans le Git de _Cerithe_.
+
+L'incident qui motivait ce chantier remonte au 14 juillet. `main` s'était retrouvée dix-sept commits en retard sur `dev`, plusieurs semaines de fonctionnalités jamais réellement en ligne, découvertes seulement parce que j'ai fini par tester à la main. Le genre d'erreur qu'une vraie discipline Git empêche.
+
+J'ai donc posé le modèle classique. `main` en prod, `dev` en intégration, une branche par tâche, une pull request obligatoire pour merger. Je l'ai retiré le jour même.
+
+## Le problème que je voulais fermer
+
+L'idée derrière `main`/`dev` est simple : `dev` sert de sas avant que le code n'atteigne la production, un endroit où les changements se croisent et se testent ensemble avant d'être promus. Sur _Cerithe_, ça aurait dû empêcher exactement l'incident du 14 juillet.
+
+Première étape, activer la protection de branche sur GitHub : plus aucun push direct sur `main` ou `dev`, tout passe par une pull request. Concrètement, ça veut dire qu'aucun push direct n'y arrive plus, moi y compris en tant qu'admin du repo. Le seul chemin possible passe par une pull request, quel que soit qui l'écrit. Deuxième étape, l'appliquer en vrai sur un correctif du jour, une race condition sur la transmission d'un bien. Branche dédiée, PR vers `dev`, revue, merge.
+
+## Un fix perdu entre deux PR propres
+
+En voulant faire remonter ce correctif vers `main`, j'ai découvert que `main` ne l'avait pas. Pas d'erreur visible, pas de conflit, rien qui saute aux yeux. Juste deux pull requests mergées dans le mauvais ordre : la première a rattrapé `main` sur l'état de `dev` d'avant le correctif, la seconde a ajouté le correctif seulement sur `dev`. Chaque merge, pris isolément, était irréprochable. Ensemble, ils laissaient le fix coincé sur une branche que je ne regardais plus.
+
+Aucune des deux PR n'était fausse. C'est l'existence même de la branche intermédiaire qui a créé la faille.
+
+## Ce que dev m'apportait vraiment
+
+Je me suis reposé la question que j'aurais dû me poser avant de tout mettre en place : à quoi sert concrètement `dev` chez moi ? Je teste en local, sur la branche, avant même d'ouvrir une pull request. Il n'existe aucun environnement `dev` déployé à côté de la prod. Une fois la PR mergée, `dev` contient donc exactement le même code que la branche, au commit près.
+
+Le sas d'intégration ne sert que s'il se passe quelque chose entre l'arrivée du code dessus et sa promotion vers la prod. Chez moi, il ne se passait rien. Juste un étage de plus à traverser et une occasion de plus de mélanger l'ordre des choses, comme je venais de le vivre.
+
+La branche de feature et la pull request, elles, gardent leur intérêt même seul. Un historique clair, un diff isolé à relire d'un coup plutôt que noyé dans le reste, la possibilité de revenir sur un changement précis sans toucher aux autres. Ces pratiques viennent du travail en équipe, mais elles restent utiles seul. `dev`, lui, n'apportait que la couche en plus, sans le bénéfice qui la justifie ailleurs.
+
+## Ce que j'en retiens
+
+J'ai retiré `dev` du circuit. `main` protégée, une branche par tâche, une pull request qui va directement dessus. Ce qui reste utile seul, je le garde : la branche isolée, la revue avant merge, l'impossibilité de pousser en direct sur ce qui tourne en prod. Ce qui ne servait qu'en équipe, je l'ai laissé de côté.
+
+Une pratique n'est ni bonne ni mauvaise en soi. Elle résout un problème précis, dans un contexte précis. Avant de l'adopter parce que c'est "la bonne pratique", vérifier que le problème qu'elle résout est bien le mien.
+
+Prochain sujet de la dette : des tests qui n'existent toujours pas.

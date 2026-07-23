@@ -1,0 +1,80 @@
+export const frontmatter = {
+  title: "Sur Cerithe, j'ai refusé la solution la plus élégante",
+  date: "2026-07-23T16:00:00",
+  description:
+    "Premier vrai test du cadre de pilotage d'agent posé sur Cerithe : une race condition dans la transmission d'un bien, une solution technique séduisante mais fragile, écartée deux fois avant de trouver la bonne.",
+  tags: ["prisma", "postgresql", "claude code", "cerithe"],
+  post: `Sur Cerithe, j'ai refusé la solution la plus élégante. Voilà pourquoi.
+
+Première tâche passée par le cadre de pilotage d'agent posé hier : une race condition dans la transmission d'un bien. La solution technique la plus fine s'est révélée fragile, deux fois.
+
+Dans l'article, je documente :
+- Le bug trouvé dans la dette technique de Cerithe
+- Pourquoi la première solution proposée n'a pas tenu
+- Le choix qui a fait la différence et pourquoi
+
+L'article dans le 1er commentaire.
+
+#dev #claudecode #agentique #prisma #cerithe`,
+  headings: [
+    { level: 2, text: "Le problème : deux transmissions en même temps sur le même bien", id: "le-probleme-deux-transmissions-en-meme-temps-sur-le-meme-bien" },
+    { level: 2, text: "Une solution élégante, qui n'a pas tenu", id: "une-solution-elegante-qui-n-a-pas-tenu" },
+    { level: 2, text: "Le réflexe qui a fait la différence", id: "le-reflexe-qui-a-fait-la-difference" },
+    { level: 2, text: "Ce que j'en retiens", id: "ce-que-j-en-retiens" },
+  ],
+};
+
+Hier, [j'expliquais pourquoi _Cerithe_ passait en pilotage d'agent, mais pas tout de suite](/articles/2026-07/260722). Le cadre restait à poser avant de laisser l'agent toucher au code : la boucle spec, plan, implémentation, vérification, revue. Le plan posé était précis : expérimenter d'abord ce pilotage sur la dette technique déjà identifiée, avant de l'ouvrir aux nouvelles fonctionnalités.
+
+Ce cadre a servi pour la première fois sur un point de cette dette : une race condition dans le flux de transmission d'un bien sur <a href="https://cerithe.gillescobigo.com" target="_blank" rel="noopener"><em>Cerithe</em></a>, mon carnet de santé numérique du bâtiment.
+
+Ce que je retiens de cette première session n'est pas le bug en lui-même. C'est ce qui s'est passé quand la solution proposée n'a pas tenu la route. Deux fois.
+
+## Le problème : deux transmissions en même temps sur le même bien
+
+Sur _Cerithe_, transmettre un bien crée un token unique envoyé au destinataire. Avant de le créer, le code vérifie qu'aucune transmission n'est déjà en cours pour ce bien. Simple, sauf que cette vérification et l'écriture qui suit ne sont pas une seule opération. Entre les deux, il y a un délai, court, mais réel.
+
+Si deux demandes de transmission arrivent presque en même temps sur le même bien, les deux peuvent passer la vérification avant qu'aucune des deux n'ait encore écrit quoi que ce soit. Résultat : deux transmissions actives sur le même bien, ce que la vérification était censée empêcher. Ce genre de bug a un nom (race condition) et une cause précise : le temps qui sépare "je vérifie" de "j'agis" laisse une fenêtre où l'état a changé sans qu'on le revérifie.
+
+Improbable en usage normal, mais réel. Et surtout, pas quelque chose qu'un simple test manuel révèle facilement.
+
+## Une solution élégante, qui n'a pas tenu
+
+La première proposition de Claude Code consistait à porter la garantie par la base de données plutôt que par le code applicatif : un index unique, actif uniquement quand une transmission est en cours. Techniquement solide, mais qui repose sur des outils encore expérimentaux du côté de Prisma, l'ORM utilisé sur le projet, pour agir sur le schéma de cette façon. Deux tentatives dans cette direction, chacune essayant de contourner le problème de la précédente, ont toutes les deux fini par se heurter au même mur : un comportement encore instable de l'outil, pas fiable pour une protection censée tenir dans la durée.
+
+Difficile à appréhender à mon niveau, et c'est précisément ce qui m'a fait réfléchir autrement : plutôt que de continuer à chercher comment faire tenir une solution que je ne maîtrisais pas vraiment, trouver quelque chose que je puisse comprendre moi-même, et reprendre sans effort dans six mois.
+
+## Le réflexe qui a fait la différence
+
+À ce stade, la question n'était plus technique, elle était de méthode. Continuer à chercher une façon de faire fonctionner une fonctionnalité expérimentale, ou revenir à quelque chose de standard.
+
+C'est ma propre lecture des deux tentatives précédentes, et de ce que j'avais compris de leurs pièges, qui m'a fait proposer autre chose : pas un mécanisme conditionnel côté base, mais un champ classique sur la table qui vaut l'identifiant du bien tant qu'une transmission est active et rien sinon.
+
+```prisma
+activePropertyId String? @unique
+```
+
+Postgres autorise plusieurs valeurs vides dans une contrainte unique, donc les transmissions terminées ne se bloquent jamais entre elles. Aucune fonctionnalité expérimentale, aucun comportement à documenter pour ne pas être oublié dans six mois.
+
+Concrètement : je vérifie qu'aucune transmission n'est en cours, puis j'inscris tout de suite en base dès que c'est le cas. Si une deuxième demande arrive au même moment, elle retrouve cette trace fraîchement écrite et est bloquée à son tour, même si les deux vérifications sont passées en même temps : la base ne laisse jamais deux inscriptions identiques coexister.
+
+L'argument qui a tranché n'était pas technique, il était pratique : je serai seul à relire ce code plus tard et un champ que je comprends en cinq secondes vaut mieux qu'une solution plus fine que je devrai recomprendre à chaque relecture.
+
+## Ce que j'en retiens
+
+Le bug corrigé n'est pas ce qui compte ici. Ce qui compte, c'est que le cadre posé hier a fait exactement ce qu'il devait faire : arrêter une solution séduisante avant qu'elle n'entre en production. Pas une fois. Deux fois.
+
+Le code le plus malin techniquement n'est pas toujours le bon choix. Celui qu'on comprend encore dans six mois, si.
+
+Les corrections de la dette continuent, brique par brique.
+
+<div class="flex flex-wrap gap-3 mt-8">
+  <a href="https://cerithe.gillescobigo.com" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+    <img src="/images/cerithe-logo.png" alt="" width="32" height="32" class="rounded-full border border-input bg-white p-0.5" />
+    Voir Cerithe en ligne
+  </a>
+  <a href="https://github.com/GillesCob/Cerithe" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.79-.25.79-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.36-3.87-1.36-.53-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.72-1.53-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.08.78 2.17 0 1.57-.01 2.83-.01 3.22 0 .3.21.66.8.55A11.5 11.5 0 0 0 23.5 12c0-6.35-5.15-11.5-11.5-11.5Z"/></svg>
+    Voir le code sur GitHub
+  </a>
+</div>
