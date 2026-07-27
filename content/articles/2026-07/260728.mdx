@@ -1,0 +1,86 @@
+export const frontmatter = {
+  title: "Sur Cerithe, avant d'automatiser le déploiement, j'ai reposé les bases du CI/CD",
+  date: "2026-07-28T15:00:00",
+  description:
+    "CI, CD, Delivery, Deployment : quatre mots que j'employais sans distinguer précisément. Avant d'écrire la moindre ligne de pipeline pour Cerithe, une session entière pour comprendre ce qu'on automatise vraiment.",
+  tags: ["devops", "architecture", "claude code", "cerithe"],
+  post: `CI, CD, Delivery, Deployment. Je m'en servais sans distinguer clairement les quatre.
+
+Avant de toucher au moindre fichier de pipeline sur Cerithe, j'ai pris le temps de remettre ces mots à leur place. La pratique arrive demain.
+
+Dans l'article, je documente :
+- La vraie différence entre livraison continue et déploiement continu
+- Pourquoi une image Docker ne part jamais directement sur un serveur
+- Pourquoi je choisis le déploiement le plus simple pour Cerithe, pas le plus impressionnant
+
+L'article dans le 1er commentaire.
+
+#dev #devops #cicd #claudecode #cerithe`,
+  headings: [
+    { level: 2, text: "Le problème : je ne voulais pas automatiser un mécanisme que je ne maîtrisais pas", id: "le-probleme-je-ne-voulais-pas-automatiser-un-mecanisme-que-je-ne-maitrisais-pas" },
+    { level: 2, text: "CI, CD, Delivery, Deployment : remettre les mots à leur place", id: "ci-cd-delivery-deployment-remettre-les-mots-a-leur-place" },
+    { level: 2, text: "Le pipeline visé pour Cerithe", id: "le-pipeline-vise-pour-cerithe" },
+    { level: 2, text: "Deux façons de déployer et pourquoi je reste sur la plus simple", id: "deux-facons-de-deployer-et-pourquoi-je-reste-sur-la-plus-simple" },
+    { level: 2, text: "Ce que j'en retiens", id: "ce-que-j-en-retiens" },
+  ],
+};
+
+Le dernier article se terminait sur une annonce : faire tourner les tests automatiquement à chaque push, avant que le code n'atteigne le VPS. Sauf qu'avant de toucher au moindre fichier de configuration, une session entière est passée à reposer les bases du CI/CD. Un des termes les plus employés et les moins définis avec précision du métier, je m'en servais moi-même sans tracer la frontière exacte entre ses morceaux.
+
+## Le problème : je ne voulais pas automatiser un mécanisme que je ne maîtrisais pas
+
+Le déploiement de _Cerithe_ tient aujourd'hui en deux commandes tapées à la main sur le VPS : un `rsync` qui copie le code, un rebuild Docker qui le fait tourner. Ça fonctionne, mais rien ne garantit que le code copié est sain avant qu'il ne tourne en prod. Le prochain item de la dette technique, c'est justement ça : un pipeline qui bloque le déploiement si les tests échouent, plutôt qu'un déploiement aveugle.
+
+Écrire cette configuration sans comprendre chaque étape reviendrait à automatiser à l'aveugle plutôt que déployer à la main à l'aveugle.
+
+## CI, CD, Delivery, Deployment : remettre les mots à leur place
+
+Le CI, l'intégration continue, est la partie la plus simple à cerner. À chaque push, une machine récupère le code, installe les dépendances et fait tourner les vérifications automatiques, les tests en premier lieu. Son seul rôle est de rendre un verdict : ça passe ou ça casse.
+
+La confusion commence avec le CD, deux pratiques distinctes sous un seul nom. La livraison continue prépare tout automatiquement jusqu'à un artefact prêt à partir en prod, une image Docker par exemple, mais laisse un humain décider du moment. Le déploiement continu va plus loin : dès que les tests passent, l'artefact part en prod sans validation humaine, un sur-ensemble de la livraison plutôt qu'une pratique concurrente.
+
+## Le pipeline visé pour Cerithe
+
+Seul développeur sur _Cerithe_, main déjà branchée en direct sur la prod, le déploiement continu a plus de sens que la livraison continue : rien ne justifie un clic manuel entre des tests qui passent et la mise en prod.
+
+Le schéma ci-dessous, produit pour mon rapport de fin de formation, illustre le mécanisme canonique du CI/CD par image. Il est bâti sur GitLab CI/CD, _Cerithe_ tournera sur GitHub Actions, mais les concepts derrière sont identiques, seul l'outil change.
+
+![Schéma CI/CD : intégration continue à gauche (build, tests, construction des images), déploiement continu à droite (registre, service de déploiement)](/imagesArticles/2026/07/28/1.png)
+
+Détail à souligner : une image ne part jamais directement de la machine qui la construit vers le serveur, elle transite d'abord par un registre. Et le point qui structure tout le reste, le job qui construit et déploie ne se déclenche que si celui des tests a réussi.
+
+```yaml
+jobs:
+  test:
+    # installe les dependances, fait tourner npm run test
+  deploy:
+    needs: test
+    # ne demarre que si le job test a reussi
+```
+
+## Deux façons de déployer et pourquoi je reste sur la plus simple
+
+Le schéma plus haut illustre un déploiement par registre : une fois les tests passés, GitHub Actions construit l'image, la pousse vers un registre, puis le VPS la récupère et bascule dessus. Le serveur qui sert le trafic réel ne construit jamais rien lui-même.
+
+L'autre option, plus proche de ce qui se fait déjà à la main sur _Cerithe_ : GitHub Actions se connecte en SSH au VPS une fois les tests passés et y relance le rebuild déjà pratiqué manuellement. La différence qui compte le plus : dans la première option, le serveur de prod ne fait jamais tourner de compilation, seulement un téléchargement et un redémarrage de conteneur. Dans la seconde, la construction se déroule sur la machine qui sert aussi le trafic réel.
+
+Je pars sur la seconde option, pour l'instant. Pas parce qu'elle est la plus aboutie, mais parce qu'elle applique [le principe posé en retirant la branche `dev` du circuit Git](/articles/2026-07/260724) : une pratique se justifie par un problème réel qu'elle résout, pas par sa réputation. Le VPS n'a jamais montré le moindre signe de saturation pendant un déploiement et _Cerithe_ reste un projet mono-instance à faible trafic.
+
+Deux signaux feraient basculer ce choix plus tard : un déploiement qui ralentit visiblement le site en prod, ou le besoin de faire tourner _Cerithe_ sur plusieurs serveurs à la fois.
+
+## Ce que j'en retiens
+
+Reposer ces bases avant d'écrire le moindre fichier de configuration a changé une chose : je sais maintenant ce que chaque étape du pipeline doit garantir, pas seulement ce qu'elle doit faire tourner. Comprendre la théorie ne suffit pas à faire tourner un pipeline, mais foncer sans elle revient à débugger à l'aveugle le jour où quelque chose casse.
+
+La pratique arrive demain : connecter GitHub Actions au VPS en SSH et écrire le premier fichier de workflow qui fait vraiment tourner ce qu'on vient de décrire ici sur le papier.
+
+<div class="flex flex-wrap gap-3 mt-8">
+  <a href="https://cerithe.gillescobigo.com" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+    <img src="/images/cerithe-logo.png" alt="" width="32" height="32" class="rounded-full border border-input bg-white p-0.5" />
+    Voir Cerithe en ligne
+  </a>
+  <a href="https://github.com/GillesCob/Cerithe" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.79-.25.79-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.36-3.87-1.36-.53-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.72-1.53-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.08.78 2.17 0 1.57-.01 2.83-.01 3.22 0 .3.21.66.8.55A11.5 11.5 0 0 0 23.5 12c0-6.35-5.15-11.5-11.5-11.5Z"/></svg>
+    Voir le code sur GitHub
+  </a>
+</div>
