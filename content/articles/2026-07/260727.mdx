@@ -1,0 +1,80 @@
+export const frontmatter = {
+  title: "Sur Cerithe, avant d'écrire le premier test, il a fallu répondre à une autre question",
+  date: "2026-07-27T15:00:00",
+  description:
+    "Premiers tests automatisés sur Cerithe : pourquoi la liste des cas à garantir compte plus que l'outil choisi. Vitest s'est imposé par cohérence technique, l'isolation totale du test par principe.",
+  tags: ["backend", "claude code", "ia agentique", "cerithe"],
+  post: `Premiers tests automatisés sur Cerithe, aujourd'hui. Le vrai travail : lister ce qu'un test doit garantir avant d'en écrire un seul.
+
+Dans l'article, je documente :
+- Les cas trouvés en creusant au delà du scénario évident
+- Pourquoi Vitest plutôt que Jest sur ce projet
+- Pourquoi un test unitaire ne doit jamais toucher la vraie base de données
+
+L'article dans le 1er commentaire.
+
+#dev #claudecode #tests #cerithe`,
+  headings: [
+    { level: 2, text: "Le problème : personne n'avait encore dit ce qu'un test devait garantir", id: "le-probleme-personne-n-avait-encore-dit-ce-qu-un-test-devait-garantir" },
+    { level: 2, text: "Lister ce qui peut casser avant la moindre ligne de test", id: "lister-ce-qui-peut-casser-avant-la-moindre-ligne-de-test" },
+    { level: 2, text: "Deux choix techniques, deux justifications à assumer", id: "deux-choix-techniques-deux-justifications-a-assumer" },
+    { level: 2, text: "Ce que j'en retiens", id: "ce-que-j-en-retiens" },
+  ],
+};
+
+Après le week-end, retour à la liste de dette technique de _Cerithe_ posée après la livraison du MVP. [Le dernier article de la série se terminait sur une phrase simple](/articles/2026-07/260724) : le prochain sujet, ce sont des tests qui n'existent toujours pas.
+
+Sauf qu'avant d'écrire le premier, j'ai buté sur une question à laquelle je n'avais pas de réponse toute faite : tester quoi, exactement, sur une fonction que je n'ai pas écrite ligne par ligne moi-même ?
+
+Toute la validation faite sur _Cerithe_ jusque-là s'est passée à la main, en conditions réelles, sur mon téléphone ou dans le navigateur. Ça a marché, jusqu'à un certain point. Mais un test manuel ne se rejoue pas tout seul à chaque changement. Et le pipeline de déploiement automatique prévu plus loin dans la liste n'aura rien à bloquer sans un vrai filet dessous.
+
+## Le problème : personne n'avait encore dit ce qu'un test devait garantir
+
+La tentation, en découvrant qu'une fonction n'est pas testée, c'est de se dire "il faut la tester" et de foncer. Sauf qu'un test, c'est une affirmation sur ce que le code doit faire. Si je choisis seul quoi vérifier, je vais couvrir ce qui me saute aux yeux à moi, en tant que dev, pas forcément ce qui compte vraiment côté métier.
+
+La fonction visée en premier gère la création d'une transmission, l'action qui déclenche tout le processus de vente d'un bien sur _Cerithe_. Avant d'écrire quoi que ce soit, il a donc fallu répondre à une question plus large : qu'est-ce qui doit rester vrai, dans tous les cas, pour que cette fonctionnalité reste fiable ?
+
+## Lister ce qui peut casser avant la moindre ligne de test
+
+J'ai listé le scénario nominal et les cas qui me semblaient évidents : le destinataire avec plusieurs profils, le refus possible, l'annulation à tout moment côté propriétaire, une seule transmission active par bien. En relisant cette liste avec Claude Code, plusieurs cas supplémentaires sont apparus, déjà présents dans le code mais que je n'avais pas identifiés comme des cas à part entière : l'impossibilité de se transmettre un bien à soi-même, la vérification que l'appelant est bien le propriétaire du bien, deux messages d'erreur différents selon l'état bloquant et surtout un vrai bug déjà corrigé en juillet, où le profil du destinataire restait introuvable s'il s'inscrivait après coup.
+
+Ce dernier point, c'était le plus important à couvrir. Un bug déjà survenu une fois en prod, jamais protégé depuis par un test qui empêcherait qu'il revienne un jour sans qu'on s'en aperçoive.
+
+## Deux choix techniques, deux justifications à assumer
+
+Une fois la liste posée, restaient deux décisions à prendre avant d'écrire quoi que ce soit. La première : quel outil pour faire tourner ces tests. _Cerithe_ tourne entièrement en ESM, le système de modules natif de JavaScript, un choix déjà fait depuis juin pour éviter les frictions avec des outils plus anciens. Vitest colle nativement à ce fonctionnement, sans configuration à rajouter. Jest, l'alternative la plus connue, aurait demandé un ajustement spécifique pour s'en accommoder.
+
+La deuxième décision compte plus que la première : un test unitaire ne doit dépendre de rien d'autre que le code qu'il vérifie, ni base de données, ni réseau. Toutes les requêtes vers la base sont donc entièrement simulées.
+
+```ts
+vi.mock("../lib/prisma", () => ({ default: mockDeep<PrismaClient>() }));
+```
+
+Le mécanisme exact de cette simulation, je le laisse pour l'instant à Claude Code : la priorité est ailleurs. Ce qui compte, c'est le principe. Un test qui touche à la base réelle change de nature : ça devient un test d'intégration, un exercice différent, déjà prévu plus loin dans la liste.
+
+Résultat, dix tests qui isolent chacun un seul cas, du genre le plus lisible possible :
+
+```ts
+await expect(createTransmissionToken(ownerEmail, ownerId, propertyId)).rejects.toThrow(
+  "L'email du destinataire est le même que le propriétaire actuel du bien.",
+);
+```
+
+## Ce que j'en retiens
+
+Dix tests qui passent, sur une seule fonction parmi sept. Loin d'être fini. Ce qui compte aujourd'hui : la liste des cas est venue de moi avant la moindre ligne de test et chaque test dit exactement ce qu'il garantit, sans ambiguïté.
+
+Un test mal pensé donne une fausse confiance, pire qu'aucun test du tout. Avant de se demander comment tester, il faut toujours se demander quoi et pourquoi celui-là plutôt qu'un autre.
+
+La suite de la dette : faire tourner ces tests automatiquement à chaque push, avant que le code n'atteigne le VPS.
+
+<div class="flex flex-wrap gap-3 mt-8">
+  <a href="https://cerithe.gillescobigo.com" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+    <img src="/images/cerithe-logo.png" alt="" width="32" height="32" class="rounded-full border border-input bg-white p-0.5" />
+    Voir Cerithe en ligne
+  </a>
+  <a href="https://github.com/GillesCob/Cerithe" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.79-.25.79-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.36-3.87-1.36-.53-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.72-1.53-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.08.78 2.17 0 1.57-.01 2.83-.01 3.22 0 .3.21.66.8.55A11.5 11.5 0 0 0 23.5 12c0-6.35-5.15-11.5-11.5-11.5Z"/></svg>
+    Voir le code sur GitHub
+  </a>
+</div>
