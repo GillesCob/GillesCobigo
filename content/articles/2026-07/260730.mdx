@@ -1,0 +1,58 @@
+export const frontmatter = {
+  title: "J'ai automatisé ma veille sécurité, elle a trouvé plusieurs problèmes dès le premier essai",
+  date: "2026-07-30T15:00:00",
+  description:
+    "Nouvelle brique dans mon organisation avec l'IA : une veille dev quotidienne, automatisée, qui croise ses sources avant de me proposer un correctif. Premier lancement, plusieurs problèmes réels trouvés sur mes projets et mon serveur.",
+  tags: ["claude code", "ia agentique", "sécurité", "nexio"],
+  post: `Ma veille dev tourne depuis ce soir. Premier lancement, plusieurs problèmes réels trouvés sur mes projets et mon serveur.
+
+Dans l'article, je documente :
+- Pourquoi j'ai automatisé cette veille et comment elle fonctionne
+- Le principe qui compte le plus : ne jamais patcher sur la foi d'une seule source
+- Les problèmes concrets trouvés dès le premier essai et les correctifs proposés
+
+L'article dans le 1er commentaire.
+
+#dev #claudecode #iaagentique #securite`,
+  headings: [
+    { level: 2, text: "Une brique de plus dans mon organisation avec l'IA", id: "une-brique-de-plus-dans-mon-organisation-avec-l-ia" },
+    { level: 2, text: "Ce que fait cette veille, concrètement", id: "ce-que-fait-cette-veille-concretement" },
+    { level: 2, text: "Le principe qui compte le plus : ne rien prendre pour argent comptant", id: "le-principe-qui-compte-le-plus-ne-rien-prendre-pour-argent-comptant" },
+    { level: 2, text: "Dès le premier essai, plusieurs problèmes réels", id: "des-le-premier-essai-plusieurs-problemes-reels" },
+    { level: 2, text: "Ce que j'en retiens", id: "ce-que-j-en-retiens" },
+  ],
+};
+
+Mon organisation avec l'IA continue de bouger. Pas un grand plan posé à l'avance, plutôt une brique ajoutée quand un manque devient gênant. Ce soir, la brique, c'est une veille technique automatisée. Un article complet sur l'ensemble du setup viendra plus tard, une fois qu'il aura vraiment fait ses preuves sur la durée. Celui-ci raconte juste l'ajout du jour et ce qu'il a trouvé dès le premier essai.
+
+## Une brique de plus dans mon organisation avec l'IA
+
+Le constat de départ était simple : en tant que dev, la veille technique fait partie du métier et je ne la faisais pas de façon régulière. Trop de sujets à suivre en parallèle du reste (mes projets, la certification en cours, la recherche d'emploi) pour y consacrer un vrai créneau chaque jour à la main.
+
+L'idée retenue : à ma première session de la journée, avant toute autre chose, une recherche sur l'actualité de ma stack technique et sur l'actu générale du métier de dev. Le résultat classé et daté dans le vault, avec une page dédiée qui reprend le même habillage que mon Dashboard.
+
+## Ce que fait cette veille, concrètement
+
+Chaque sujet remonté reçoit un tag d'urgence, du plus grave au plus anodin : critique quand une action est requise sur un de mes projets pour le protéger, important quand l'impact potentiel mérite d'être évalué vite, à surveiller pour un sujet sans urgence immédiate, info quand c'est juste bon à savoir. Les sujets les plus graves remontent en premier dans la page, pas noyés au milieu du reste.
+
+Ce qui change vraiment par rapport à une veille générique glanée sur Twitter ou un flux RSS : le lien direct avec mes projets réels. La recherche ne s'arrête pas à "telle techno a une faille", elle va vérifier directement dans mes repos si je suis concerné ou non, sur quelle version, avec quel impact concret. C'est tout l'intérêt de faire tourner ça depuis un outil qui a déjà accès à mon code, pas depuis un simple agrégateur de news.
+
+## Le principe qui compte le plus : ne rien prendre pour argent comptant
+
+Un point m'a semblé non négociable dès le départ. Une seule source ne suffit jamais à justifier un correctif, encore moins sur un sujet de sécurité. Une source unique peut se tromper, ou pire, être malveillante et faire passer une vraie faille pour un correctif à appliquer. C'est exactement le réflexe que devrait avoir n'importe qui cherchant à vérifier une info sérieuse : recouper, pas gober.
+
+Concrètement, chaque sujet affiche désormais ses sources en bas, avec un score de confiance sur 10 pour chacune. Dix pour une source officielle (l'éditeur lui-même, un organisme de standardisation), autour de sept ou huit pour la presse spécialisée établie, trois ou quatre pour un blog obscur trouvé au détour d'une recherche. Plus un sujet est grave, plus j'exige un recoupement entre plusieurs sources avant d'en tirer un correctif. Et la veille ne propose jamais d'appliquer quoi que ce soit toute seule : elle expose le problème, le projet concerné, les étapes que je recommande, puis j'arbitre.
+
+## Dès le premier essai, plusieurs problèmes réels
+
+Premier lancement de la veille ce soir et pas besoin d'attendre plusieurs jours pour qu'elle serve à quelque chose. En croisant l'actu Node.js du jour avec l'état réel de mes projets, elle a confirmé un fait resté invisible jusque-là : _Nexio_ tourne sur Node 20, une version qui a atteint sa fin de vie officielle fin avril. Depuis, plus aucun correctif de sécurité n'est publié dessus, y compris pour les failles découvertes après cette date. Rien de comparable côté _Cerithe_, déjà sur Node 22, une ligne toujours activement maintenue aujourd'hui. La différence entre les deux projets, une simple ligne dans un Dockerfile, suffit à faire basculer l'un dans une zone à risque pendant que l'autre reste couvert.
+
+En repensant à la liste des technologies vraiment en jeu plutôt qu'à la seule que j'avais en tête au départ, la veille est allée voir plus loin que Node : mon VPS aussi fait tourner du logiciel qui vieillit. Du côté de Nginx, la version installée sur le serveur tombe dans la plage concernée par une faille critique corrigée mi-juillet, exploitable sans authentification sous certaines configurations. Ma configuration actuelle ne semble pas exposée au pattern précis en cause, mais je n'en ai pas encore la certitude totale, donc le sujet reste ouvert. Même histoire du côté de Docker Compose : la version installée est antérieure au correctif de deux failles découvertes récemment.
+
+Aucun de ces trois correctifs n'a été appliqué automatiquement. Pour chacun, la veille pose le même schéma : le problème, le projet ou le serveur concerné, les étapes que je recommande, à moi de valider avant la moindre exécution. Chaque sujet devient une tâche dans mon suivi quotidien, reconduite tant qu'elle n'est pas cochée faite.
+
+## Ce que j'en retiens
+
+Une veille qui tourne toute seule ne vaut rien si elle sort n'importe quoi n'importe comment. Ce qui rend celle-ci utile, c'est la rigueur posée autour : des sources croisées, un score de confiance affiché plutôt que caché et jamais un correctif qui s'applique sans mon feu vert.
+
+Et surtout, la preuve dès le premier lancement que ça vaut le coup : un projet resté trois mois sans le moindre correctif de sécurité, un serveur jamais vérifié au-delà de Node, tous les deux repérés le jour même où j'ai enfin mis ce mécanisme en place.
