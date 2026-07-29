@@ -1,0 +1,80 @@
+export const frontmatter = {
+  title: "Sur Cerithe, mon premier pipeline CI/CD a bloqué un vrai bug avant qu'il touche la prod",
+  date: "2026-07-29T15:00:00",
+  description:
+    "La théorie posée, restait à construire le pipeline CI/CD de Cerithe pour de vrai. Deux clés SSH plutôt qu'une, un détour sur la vérification d'identité d'un serveur et une preuve concrète que le mécanisme sert à quelque chose dès le premier run.",
+  tags: ["devops", "sécurité", "claude code", "cerithe"],
+  post: `La théorie du CI/CD posée hier, place à la construction du vrai pipeline sur Cerithe.
+
+Résultat inattendu : dès le premier run, il a bloqué un vrai bug avant qu'il touche la prod.
+
+Dans l'article, je documente :
+- Pourquoi deux clés SSH restreintes plutôt qu'une seule
+- L'écart entre la sécurité idéale et ce qu'un pipeline CI/CD fait vraiment
+- Le bug concret attrapé au premier essai, jamais vu en prod
+
+L'article dans le 1er commentaire.
+
+#dev #devops #securite #claudecode #cerithe`,
+  headings: [
+    { level: 2, text: "Ce que ce pipeline devait garantir", id: "ce-que-ce-pipeline-devait-garantir" },
+    { level: 2, text: "Deux clés plutôt qu'une, le moindre privilège appliqué à SSH", id: "deux-cles-plutot-qu-une-le-moindre-privilege-applique-a-ssh" },
+    { level: 2, text: "L'écart entre l'idéal et ce qu'un pipeline CI/CD fait vraiment", id: "l-ecart-entre-l-ideal-et-ce-qu-un-pipeline-ci-cd-fait-vraiment" },
+    { level: 2, text: "Une question a suffi à remettre ma propre confiance en cause", id: "une-question-a-suffi-a-remettre-ma-propre-confiance-en-cause" },
+    { level: 2, text: "La preuve que ça valait le coup", id: "la-preuve-que-ca-valait-le-coup" },
+    { level: 2, text: "Ce que j'en retiens", id: "ce-que-j-en-retiens" },
+  ],
+};
+
+La théorie posée hier, place à la construction du vrai pipeline sur _Cerithe_ : un job qui fait tourner les tests, un second qui déploie sur le VPS, le second ne démarrant que si le premier a réussi. Sur le papier, ça tient en quelques lignes de YAML. Dans les faits, la vraie question qui a occupé la matinée n'était pas comment écrire ce fichier, mais comment donner à GitHub Actions le droit de se connecter à mon serveur sans lui donner plus que ce dont il a besoin.
+
+## Ce que ce pipeline devait garantir
+
+Le déploiement de _Cerithe_ tenait jusqu'ici en deux commandes tapées à la main sur le VPS après chaque changement de code : un `rsync` qui copie le backend, un rebuild Docker qui le fait tourner. Automatiser ce geste veut dire donner à une machine que je ne contrôle pas directement, un runner GitHub, la capacité de se connecter à mon serveur en mon nom. Poser cette capacité sans réfléchir à ce qu'elle permet réellement, c'est ouvrir une porte plus large que nécessaire.
+
+## Deux clés plutôt qu'une, le moindre privilège appliqué à SSH
+
+Première décision, la plus structurante : pas une clé SSH générique avec un accès complet, mais deux clés dédiées, chacune restreinte à une seule action. Générées directement sur le VPS, jamais transitées par mon Mac.
+
+La première ne sert qu'à transférer les fichiers du backend, verrouillée par `rrsync`, un petit script qui vérifie que ce qui arrive est bien une vraie requête de transfert de fichiers, cantonnée à un seul dossier, avant de la laisser passer. Le genre de garde-fou qui a un air de déjà-vu pour qui a déjà écrit un DTO côté backend : valider la forme d'une requête avant de la laisser toucher la logique métier.
+
+La seconde ne sert qu'à relancer le backend, restreinte à une commande fixe et unique, `docker compose up -d --build`, quoi que le client demande d'autre. Testées séparément avant d'aller plus loin : la première a refusé une commande arbitraire mais accepté un vrai transfert de fichier, la seconde a ignoré tout ce qui n'était pas la commande attendue et relancé le container pour de vrai.
+
+Le vrai gain n'est pas dans le fait que ces clés soient différentes de la mienne. C'est que si l'une fuit un jour, elle ne donne accès qu'à une seule action précise, jamais un accès général au serveur.
+
+## L'écart entre l'idéal et ce qu'un pipeline CI/CD fait vraiment
+
+Un point m'a arrêté en cours de route. L'idéal en matière de clé privée, c'est qu'elle ne bouge jamais, qu'on lui demande juste de produire une preuve cryptographique sans jamais l'exposer, comme une clé matérielle. Ce n'est pas ce qui se passe dans un pipeline CI/CD classique. Le client SSH a besoin de lire la clé en clair pour signer, donc GitHub Actions doit l'écrire dans un fichier temporaire le temps d'une exécution, sur une machine jetable, détruite entièrement à la fin du job.
+
+C'est le compromis standard de la quasi-totalité des pipelines qui déploient par SSH, pas une négligence de ma part. Le vrai gold standard, matériel dédié ou service de signature à distance, reste hors de portée pour un projet comme _Cerithe_ aujourd'hui. Ce qui rend ce compromis acceptable, ce sont les couches déjà posées avant lui : un fichier qui n'existe que quelques secondes, jamais loggé. Des clés qui, même volées, ne donnent accès qu'à une seule action précise. Aucune étape de sécurité n'est parfaite isolément. C'est la somme des couches qui rend le risque résiduel acceptable.
+
+## Une question a suffi à remettre ma propre confiance en cause
+
+Le VPS a sa propre identité, une empreinte SSH que le client vérifie à chaque connexion pour s'assurer qu'il parle au bon serveur et pas à un imposteur. Le runner GitHub, neuf à chaque exécution, n'a jamais cette mémoire. La solution la plus courante consiste à la récupérer à l'aveugle au premier lancement, sans rien vérifier. Ce qui m'a semblé plus juste : réutiliser l'empreinte que j'avais déjà, accumulée sur des semaines de connexions sans incident, plutôt que de créer une nouvelle fenêtre d'exposition à chaque run.
+
+Une question toute simple a suffi à faire vaciller cette réponse : est-ce que la répétition de mes connexions avait vraiment renforcé cette confiance ? Honnêtement, non. Un attaquant présent dès ma toute première connexion serait resté parfaitement cohérent à chaque fois depuis, rien ne l'aurait trahi. Seule une vérification par un canal complètement séparé du réseau aurait vraiment tranché la question, le même principe qu'un appairage Bluetooth où un code affiché sur un appareil doit être confirmé sur l'autre pour prouver qu'aucun troisième appareil ne s'est glissé entre les deux.
+
+Cette vérification-là, je ne l'avais jamais faite au moment de créer le VPS. Tentative de rattrapage a posteriori, sans grand succès : la console de mon hébergeur ne montre pas cette empreinte en fonctionnement normal. Le mot de passe généré pour y accéder autrement s'est mal transposé sur un clavier de secours. Reste une solution plus modeste mais réelle : comparer l'empreinte vue par deux chemins réseau complètement indépendants, IPv4 et IPv6. Résultat identique sur les deux. Pas une preuve absolue, mais un vrai recoupement, largement suffisant pour ce que ce projet demande aujourd'hui.
+
+## La preuve que ça valait le coup
+
+Premier vrai run du pipeline : échec, pas en prod, dans le job de tests. Le client Prisma généré par mon backend n'existait tout simplement pas sur cette machine neuve. En local, il traînait depuis une génération manuelle ancienne, jamais remarqué comme un problème. Sur un environnement propre, rien ne le régénérait automatiquement, faute d'un simple hook manquant dans le fichier de configuration du projet.
+
+Ce même incident était déjà arrivé sur un autre de mes projets. J'en avais tiré une règle générale à appliquer systématiquement dès le scaffold d'un nouveau backend. Une règle notée quelque part ne se propage pas toute seule aux projets déjà en cours. _Cerithe_ avait été démarré avant, personne n'était jamais revenu vérifier depuis. Correction en une ligne, le pipeline complet est passé au vert juste derrière.
+
+## Ce que j'en retiens
+
+Ce que je retiens de cette session, ce n'est pas d'avoir écrit un fichier YAML. C'est que la vraie valeur d'un pipeline de ce genre ne se prouve pas en théorie, elle se prouve la première fois qu'il attrape quelque chose que la prod n'aurait pas dû voir. Ce bug serait passé inaperçu avec l'ancien déploiement manuel, il ne serait sorti qu'au premier redémarrage raté du container en prod.
+
+Et ce que je retiens de la partie sécurité, c'est qu'aucune de mes décisions du jour n'était évidente au premier passage. Chacune a demandé une question de plus pour être vraiment comprise, pas juste appliquée.
+
+<div class="flex flex-wrap gap-3 mt-8">
+  <a href="https://cerithe.gillescobigo.com" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+    <img src="/images/cerithe-logo.png" alt="" width="32" height="32" class="rounded-full border border-input bg-white p-0.5" />
+    Voir Cerithe en ligne
+  </a>
+  <a href="https://github.com/GillesCob/Cerithe" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.79-.25.79-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.36-3.87-1.36-.53-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.72-1.53-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.08.78 2.17 0 1.57-.01 2.83-.01 3.22 0 .3.21.66.8.55A11.5 11.5 0 0 0 23.5 12c0-6.35-5.15-11.5-11.5-11.5Z"/></svg>
+    Voir le code sur GitHub
+  </a>
+</div>
