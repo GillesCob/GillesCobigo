@@ -1,15 +1,15 @@
 export const frontmatter = {
   title: "J'ai automatisé ma veille sécurité, elle a trouvé plusieurs problèmes dès le premier essai",
-  date: "2026-07-30T15:00:00",
+  date: "2026-07-30T13:50:00",
   description:
     "Nouvelle brique dans mon organisation avec l'IA : une veille dev quotidienne, automatisée, qui croise ses sources avant de me proposer un correctif. Premier lancement, plusieurs problèmes réels trouvés sur mes projets et mon serveur.",
   tags: ["claude code", "ia agentique", "sécurité", "nexio"],
-  post: `Ma veille dev tourne depuis ce soir. Premier lancement, plusieurs problèmes réels trouvés sur mes projets et mon serveur.
+  post: `J'ai mis en place une veille technique par IA adaptée à ma stack. Premier lancement, plusieurs sujets identifiés. De la simple information parfois mais également plusieurs problèmes réels...
 
 Dans l'article, je documente :
-- Pourquoi j'ai automatisé cette veille et comment elle fonctionne
-- Le principe qui compte le plus : ne jamais patcher sur la foi d'une seule source
-- Les problèmes concrets trouvés dès le premier essai et les correctifs proposés
+- 3 mois sans le moindre correctif de sécurité sur Nexio et comment j'y ai remédié
+- Le principe qui rend cette veille fiable : ne jamais patcher sur la foi d'une seule source
+- Comment une mise à jour bien intentionnée sur Nginx a coupé mes 3 sites pendant 3 minutes
 
 L'article dans le 1er commentaire.
 
@@ -19,6 +19,7 @@ L'article dans le 1er commentaire.
     { level: 2, text: "Ce que fait cette veille, concrètement", id: "ce-que-fait-cette-veille-concretement" },
     { level: 2, text: "Le principe qui compte le plus : ne rien prendre pour argent comptant", id: "le-principe-qui-compte-le-plus-ne-rien-prendre-pour-argent-comptant" },
     { level: 2, text: "Dès le premier essai, plusieurs problèmes réels", id: "des-le-premier-essai-plusieurs-problemes-reels" },
+    { level: 2, text: "Les trois correctifs, appliqués depuis", id: "les-trois-correctifs-appliques-depuis" },
     { level: 2, text: "Ce que j'en retiens", id: "ce-que-j-en-retiens" },
   ],
 };
@@ -43,16 +44,30 @@ Un point m'a semblé non négociable dès le départ. Une seule source ne suffit
 
 Concrètement, chaque sujet affiche désormais ses sources en bas, avec un score de confiance sur 10 pour chacune. Dix pour une source officielle (l'éditeur lui-même, un organisme de standardisation), autour de sept ou huit pour la presse spécialisée établie, trois ou quatre pour un blog obscur trouvé au détour d'une recherche. Plus un sujet est grave, plus j'exige un recoupement entre plusieurs sources avant d'en tirer un correctif. Et la veille ne propose jamais d'appliquer quoi que ce soit toute seule : elle expose le problème, le projet concerné, les étapes que je recommande, puis j'arbitre.
 
+<img src="https://gillescobigo.com/imagesArticles/2026/07/30/1.png" alt="Page de veille dev : un sujet critique sur Nginx avec sources croisées et score de confiance, un sujet important sur Node.js, un menu déroulant de correctif proposé, non appliqué automatiquement" />
+
+Voilà à quoi ça ressemble concrètement : le tag de gravité, le constat, l'impact vérifié sur mes projets réels et en bas les sources avec leur score. Le correctif, quand il y en a un, reste caché dans un menu déroulant qu'il faut ouvrir volontairement, jamais affiché en avant comme s'il fallait l'appliquer sans réfléchir.
+
 ## Dès le premier essai, plusieurs problèmes réels
 
-Premier lancement de la veille ce soir et pas besoin d'attendre plusieurs jours pour qu'elle serve à quelque chose. En croisant l'actu Node.js du jour avec l'état réel de mes projets, elle a confirmé un fait resté invisible jusque-là : _Nexio_ tourne sur Node 20, une version qui a atteint sa fin de vie officielle fin avril. Depuis, plus aucun correctif de sécurité n'est publié dessus, y compris pour les failles découvertes après cette date. Rien de comparable côté _Cerithe_, déjà sur Node 22, une ligne toujours activement maintenue aujourd'hui. La différence entre les deux projets, une simple ligne dans un Dockerfile, suffit à faire basculer l'un dans une zone à risque pendant que l'autre reste couvert.
+Premier lancement de la veille ce soir et pas besoin d'attendre plusieurs jours pour qu'elle serve à quelque chose. En croisant l'actu Node.js du jour avec l'état réel de mes projets, elle a confirmé un fait resté invisible jusque-là : [_Nexio_](https://nexio.gillescobigo.com/login?demo=1) tourne sur Node 20, une version qui a atteint sa fin de vie officielle fin avril. Depuis, plus aucun correctif de sécurité n'est publié dessus, y compris pour les failles découvertes après cette date. Rien de comparable côté [_Cerithe_](https://cerithe.gillescobigo.com), déjà sur Node 22, une ligne toujours activement maintenue aujourd'hui. La différence entre les deux projets, une simple ligne dans un Dockerfile, suffit à faire basculer l'un dans une zone à risque pendant que l'autre reste couvert.
 
 En repensant à la liste des technologies vraiment en jeu plutôt qu'à la seule que j'avais en tête au départ, la veille est allée voir plus loin que Node : mon VPS aussi fait tourner du logiciel qui vieillit. Du côté de Nginx, la version installée sur le serveur tombe dans la plage concernée par une faille critique corrigée mi-juillet, exploitable sans authentification sous certaines configurations. Ma configuration actuelle ne semble pas exposée au pattern précis en cause, mais je n'en ai pas encore la certitude totale, donc le sujet reste ouvert. Même histoire du côté de Docker Compose : la version installée est antérieure au correctif de deux failles découvertes récemment.
 
 Aucun de ces trois correctifs n'a été appliqué automatiquement. Pour chacun, la veille pose le même schéma : le problème, le projet ou le serveur concerné, les étapes que je recommande, à moi de valider avant la moindre exécution. Chaque sujet devient une tâche dans mon suivi quotidien, reconduite tant qu'elle n'est pas cochée faite.
 
+## Les trois correctifs, appliqués depuis
+
+_Nexio_ est passé sur Node 22 sans accroc : Dockerfile modifié, build et suite de tests relancés avant tout déploiement, les 29 tests toujours verts, aucune incompatibilité avec argon2 ou Prisma. Docker Compose est monté en 5.3.1 sur le serveur, un simple remplacement de binaire côté client, sans impact sur les containers en cours.
+
+Nginx, en revanche, ne s'est pas laissé faire. Entre le moment où la veille avait repéré la faille et celui où j'ai validé le correctif, Canonical avait retiré son propre correctif Ubuntu, cassé par une régression sur les modules externes, sans date de remplacement annoncée. Seule option restante : basculer vers le dépôt officiel nginx.org plutôt que d'attendre que Canonical republie quelque chose de stable.
+
+Sauf qu'en changeant de dépôt, le gestionnaire de paquets a remplacé mon fichier de configuration principal sans prévenir. La ligne qui chargeait mes trois sites a disparu avec, le serveur s'est arrêté tout seul. Trois minutes de coupure sur _Cerithe_, _Nexio_ et mon serveur de vidéos, le temps de comprendre ce qui venait de se passer et de réinjecter la ligne manquante.
+
+Rien de dramatique, mais un bon rappel : `dpkg` ne demande de confirmation avant d'écraser un fichier que si ce fichier a été modifié à la main. Le mien ne l'avait jamais été, donc aucune alerte, un remplacement silencieux malgré un changement complet de dépôt. Le genre de détail qu'aucune doc n'annonce avant qu'on tombe dedans.
+
 ## Ce que j'en retiens
 
 Une veille qui tourne toute seule ne vaut rien si elle sort n'importe quoi n'importe comment. Ce qui rend celle-ci utile, c'est la rigueur posée autour : des sources croisées, un score de confiance affiché plutôt que caché et jamais un correctif qui s'applique sans mon feu vert.
 
-Et surtout, la preuve dès le premier lancement que ça vaut le coup : un projet resté trois mois sans le moindre correctif de sécurité, un serveur jamais vérifié au-delà de Node, tous les deux repérés le jour même où j'ai enfin mis ce mécanisme en place.
+Et surtout, la preuve dès le premier lancement que ça vaut le coup : un projet resté trois mois sans le moindre correctif de sécurité, un serveur jamais vérifié au-delà de Node, tous les deux repérés le jour même où j'ai enfin mis ce mécanisme en place. Et la preuve, aussi, que patcher n'est jamais aussi simple que "appliquer le correctif" : même une mise à jour bien intentionnée peut casser quelque chose en route, ce qui ne change rien à l'intérêt de l'avoir fait.
