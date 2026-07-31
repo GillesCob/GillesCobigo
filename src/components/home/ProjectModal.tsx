@@ -88,7 +88,11 @@ export default function ProjectModal({ isOpen, onClose, project, side }: IProjec
                       </div>
                     )}
                     <p className="text-white/35 text-xs mb-4">{project.status}</p>
-                    {(project.links?.github || project.links?.live || project.links?.demo || articleCount > 0) && (
+                    {(project.links?.github ||
+                      project.links?.live ||
+                      project.links?.demo ||
+                      project.comingSoon ||
+                      articleCount > 0) && (
                       <div className="flex gap-2 flex-wrap">
                         {project.links?.github && (
                           <Button
@@ -125,6 +129,11 @@ export default function ProjectModal({ isOpen, onClose, project, side }: IProjec
                               <ExternalLink size={14} className="mr-1" /> Démo
                             </a>
                           </Button>
+                        )}
+                        {!project.links?.live && !project.links?.demo && project.comingSoon && (
+                          <span className="inline-flex items-center text-white/40 text-xs italic px-2 py-1.5">
+                            Lien à venir
+                          </span>
                         )}
                         {articleCount > 0 && (
                           <Button

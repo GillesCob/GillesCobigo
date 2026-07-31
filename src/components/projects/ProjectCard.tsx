@@ -17,6 +17,7 @@ export interface IProjectCard {
     live?: string;
     demo?: string;
   };
+  comingSoon?: boolean;
 }
 
 interface IProjectCardProps {
@@ -27,6 +28,7 @@ export default function ProjectCard({ project }: IProjectCardProps) {
   const articleCount = useArticleCountByTag(project.id);
   const hasLinks =
     articleCount > 0 ||
+    project.comingSoon ||
     (project.links && (project.links.github || project.links.live || project.links.demo));
 
   return (
@@ -73,6 +75,11 @@ export default function ProjectCard({ project }: IProjectCardProps) {
                 <ExternalLink size={14} className="mr-1" /> Démo
               </a>
             </Button>
+          )}
+          {!project.links?.live && !project.links?.demo && project.comingSoon && (
+            <span className="inline-flex items-center text-xs text-muted-foreground italic px-2 py-1.5">
+              Lien à venir
+            </span>
           )}
           {articleCount > 0 && (
             <Button asChild variant="outline" size="sm">
