@@ -55,6 +55,16 @@ export const devProjects: IProjectCard[] = [
     links: { github: "https://github.com/GillesCob/Labelr" },
   },
   {
+    id: "cocotte-eclair",
+    name: "CocotteEclair",
+    description:
+      "App de gestion de recettes et de repas. Ajout de recettes (ingrédients, étapes), visibilité privée/publique. Première V1 sur la stack Java/Spring Boot + Angular.",
+    stack: ["Java", "Spring Boot", "PostgreSQL", "Angular", "TypeScript"],
+    status: "En développement",
+    links: { github: "https://github.com/GillesCob/cocotte-eclair-java" },
+    comingSoon: true,
+  },
+  {
     id: "vps-hetzner",
     name: "VPS Hetzner",
     description:
