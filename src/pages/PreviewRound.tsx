@@ -117,14 +117,16 @@ export default function PreviewRound() {
               ))}
             </div>
 
-            <div className="rounded-xl border border-border p-6 bg-card mb-8">
-              <h2 className="text-sm font-semibold mb-3">Ce qu'il me manque pour aller plus loin</h2>
-              <ul className="text-sm text-muted-foreground space-y-1.5 list-disc list-inside">
-                {entry.missingInfo.map((line) => (
-                  <li key={line}>{line}</li>
-                ))}
-              </ul>
-            </div>
+            {entry.missingInfo.length > 0 && (
+              <div className="rounded-xl border border-border p-6 bg-card mb-8">
+                <h2 className="text-sm font-semibold mb-3">Ce qu'il me manque pour aller plus loin</h2>
+                <ul className="text-sm text-muted-foreground space-y-1.5 list-disc list-inside">
+                  {entry.missingInfo.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {entry.clientFeedback && (
               <div className="rounded-xl bg-muted/40 border border-border p-6 mb-8">
@@ -137,11 +139,17 @@ export default function PreviewRound() {
               <h2 className="text-sm font-semibold mb-1.5">Tes retours concernant la {entry.round}</h2>
               <p className="text-sm text-muted-foreground mb-4">Merci de me faire tes retours via ce formulaire.</p>
               {submitted ? (
-                <p className="text-sm text-muted-foreground">Merci, c'est bien reçu.</p>
+                <p className="text-sm text-muted-foreground" role="status">
+                  Merci, c'est bien reçu.
+                </p>
               ) : (
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
+                  <label htmlFor="feedback-message" className="sr-only">
+                    Ton retour sur cette version
+                  </label>
                   <textarea
                     {...messageField}
+                    id="feedback-message"
                     ref={(el) => {
                       messageRef(el);
                       if (el) autoResize(el);
@@ -149,15 +157,26 @@ export default function PreviewRound() {
                     onInput={(e) => autoResize(e.currentTarget)}
                     rows={10}
                     placeholder="Liste des éléments à ajouter/modifier/supprimer"
+                    aria-invalid={errors.message ? true : undefined}
+                    aria-describedby={errors.message ? "feedback-message-error" : undefined}
                     className="w-full rounded-lg border border-input bg-background px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none overflow-hidden transition-colors"
                   />
-                  {errors.message && <p className="text-destructive text-xs">{errors.message.message}</p>}
-                  {submitError && <p className="text-destructive text-xs">{submitError}</p>}
+                  {errors.message && (
+                    <p id="feedback-message-error" className="text-destructive text-xs" role="alert">
+                      {errors.message.message}
+                    </p>
+                  )}
+                  {submitError && (
+                    <p className="text-destructive text-xs" role="alert">
+                      {submitError}
+                    </p>
+                  )}
                   <Button type="submit" disabled={isSubmitting} size="sm" className="self-start">
                     {isSubmitting ? "Envoi..." : "Envoyer"}
                   </Button>
                 </form>
               )}
+            </div>
             </div>
           </div>
         </div>

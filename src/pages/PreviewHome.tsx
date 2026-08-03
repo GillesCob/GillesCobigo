@@ -41,6 +41,9 @@ export default function PreviewHome() {
           </div>
 
           <div className="flex flex-col gap-3 text-left">
+            {project.rounds.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center">Aucune version disponible pour l'instant.</p>
+            )}
             {project.rounds.map((r) => (
               <Link
                 key={r.round}
