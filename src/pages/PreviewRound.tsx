@@ -71,23 +71,26 @@ export default function PreviewRound() {
         {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
       </button>
 
+      {/* max-w-6xl : proportions fixes pour toutes les pages de version (memes que Projects.tsx,
+          la page la plus large du portfolio, adaptee ici a la grille 2 colonnes de propositions). */}
       <div className="flex-1 px-6 md:px-12 py-10 md:py-16">
-        <Link
-          to={`/preview/${project.slug}/${secret}`}
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
-        >
-          <ArrowLeft size={14} /> Retour à {project.projectName}
-        </Link>
+        <div className="max-w-6xl mx-auto">
+          <Link
+            to={`/preview/${project.slug}/${secret}`}
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+          >
+            <ArrowLeft size={14} /> Retour à {project.projectName}
+          </Link>
 
-        <div className="flex flex-col md:flex-row gap-8">
-          <PreviewVersionsNav
-            slug={project.slug}
-            secret={secret!}
-            currentRound={entry.round}
-            rounds={project.rounds.map((r) => ({ round: r.round, date: r.date }))}
-          />
+          <div className="flex flex-col md:flex-row gap-8">
+            <PreviewVersionsNav
+              slug={project.slug}
+              secret={secret!}
+              currentRound={entry.round}
+              rounds={project.rounds.map((r) => ({ round: r.round, date: r.date }))}
+            />
 
-          <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-10">
               <span className="font-mono text-lg font-semibold">{entry.round}</span>
               <span className="text-sm text-muted-foreground">{entry.date}</span>

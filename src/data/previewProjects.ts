@@ -56,4 +56,26 @@ export const previewProjects: Record<string, IPreviewProject> = {
       },
     ],
   },
+  // Entree de demo, donnees factices (nom generique + logo de Gilles), sert a visualiser
+  // le template "V1-Echanges" sans exposer de vraie donnee client. Cf Projets/V1-Echanges/suivi.html.
+  "demo-template": {
+    slug: "demo",
+    projectName: "Client Démo",
+    logo: "/images/logo-gc-white.png",
+    contactName: "Client",
+    currentRound: "V1",
+    nextAction: "En attente des retours du client sur la V1",
+    feedbackFormId: "xgoggnej",
+    rounds: [
+      {
+        round: "V1",
+        date: "3 août 2026",
+        proposals: [
+          { label: "Exemple proposition A", screenshot: `${BASE}/screenshots/v1.png`, htmlPath: `${BASE}/mockup-v1.html` },
+          { label: "Exemple proposition B", screenshot: `${BASE}/screenshots/v2.png`, htmlPath: `${BASE}/mockup-v2.html` },
+        ],
+        missingInfo: ["Exemple d'information encore nécessaire de la part du client"],
+      },
+    ],
+  },
 };
