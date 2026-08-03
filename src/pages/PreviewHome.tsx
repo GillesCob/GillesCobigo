@@ -3,17 +3,19 @@ import { ArrowRight, Sun, Moon } from "lucide-react";
 import { previewProjects } from "@/data/previewProjects";
 import { useThemeStore } from "@/store/themeStore";
 import PreviewCredit from "@/components/preview/PreviewCredit";
+import { usePreviewFavicon } from "@/hooks/usePreviewFavicon";
 import NotFound from "@/pages/NotFound";
 
 export default function PreviewHome() {
   const { secret } = useParams<{ project: string; secret: string }>();
   const project = secret ? previewProjects[secret] : undefined;
   const { theme, toggleTheme } = useThemeStore();
+  usePreviewFavicon(project?.logo);
 
   if (!project) return <NotFound />;
 
   return (
-    <div className="min-h-dvh bg-background flex items-center justify-center px-6 py-16 relative">
+    <div className="min-h-dvh bg-background flex flex-col items-center justify-center px-6 py-16 relative">
       <button
         type="button"
         onClick={toggleTheme}

@@ -7,6 +7,7 @@ import PreviewVersionsNav from "@/components/preview/PreviewVersionsNav";
 import PreviewCredit from "@/components/preview/PreviewCredit";
 import { previewProjects } from "@/data/previewProjects";
 import { useThemeStore } from "@/store/themeStore";
+import { usePreviewFavicon } from "@/hooks/usePreviewFavicon";
 import NotFound from "@/pages/NotFound";
 
 interface IFeedbackForm {
@@ -18,6 +19,7 @@ export default function PreviewRound() {
   const project = secret ? previewProjects[secret] : undefined;
   const entry = project?.rounds.find((r) => r.round.toLowerCase() === round?.toLowerCase());
   const { theme, toggleTheme } = useThemeStore();
+  usePreviewFavicon(project?.logo);
 
   const {
     register,

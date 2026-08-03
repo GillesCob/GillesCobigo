@@ -10,7 +10,7 @@ export default function PreviewCredit() {
       to="/"
       target="_blank"
       rel="noopener noreferrer"
-      className="absolute bottom-6 inset-x-0 flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+      className="mt-16 pb-2 flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
     >
       <img src={logo} alt="" className="h-5 w-auto opacity-80" />
       Réalisé par Gilles Cobigo
