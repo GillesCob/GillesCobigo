@@ -61,7 +61,7 @@ export default function PreviewRound() {
   }
 
   return (
-    <div className="min-h-dvh bg-background px-6 md:px-12 py-10 md:py-16 relative">
+    <div className="min-h-dvh bg-background flex flex-col relative">
       <button
         type="button"
         onClick={toggleTheme}
@@ -71,7 +71,7 @@ export default function PreviewRound() {
         {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
       </button>
 
-      <div className="w-full">
+      <div className="flex-1 px-6 md:px-12 py-10 md:py-16">
         <Link
           to={`/preview/${project.slug}/${secret}`}
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
