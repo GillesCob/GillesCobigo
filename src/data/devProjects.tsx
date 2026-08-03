@@ -60,10 +60,9 @@ export const devProjects: IProjectCard[] = [
     description:
       "App de gestion de recettes et de repas. Ajout de recettes (ingrédients, étapes), visibilité privée/publique. Première V1 sur la stack Java/Spring Boot + Angular.",
     stack: ["Java", "Spring Boot", "PostgreSQL", "Angular", "TypeScript"],
-    status: "En développement",
+    status: "En production",
     image: "/images/cocotte-placeholder.jpg",
-    links: { github: "https://github.com/GillesCob/cocotte-eclair-java" },
-    comingSoon: true,
+    links: { github: "https://github.com/GillesCob/cocotte-eclair-java", live: "https://cocotteeclair.gillescobigo.com" },
   },
   {
     id: "vps-hetzner",

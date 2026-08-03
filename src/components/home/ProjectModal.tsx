@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { X, ExternalLink, FileText, Github } from "lucide-react";
+import { X, ExternalLink, FileText, Github, History } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -92,6 +92,7 @@ export default function ProjectModal({ isOpen, onClose, project, side }: IProjec
                       project.links?.live ||
                       project.links?.demo ||
                       project.comingSoon ||
+                      project.id === "cocotte-eclair" ||
                       articleCount > 0) && (
                       <div className="flex gap-2 flex-wrap">
                         {project.links?.github && (
@@ -144,6 +145,18 @@ export default function ProjectModal({ isOpen, onClose, project, side }: IProjec
                           >
                             <Link to={`/articles?tag=${project.id}`} onClick={onClose}>
                               <FileText size={14} className="mr-1" /> Articles
+                            </Link>
+                          </Button>
+                        )}
+                        {project.id === "cocotte-eclair" && (
+                          <Button
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className="border-white/20 text-white/70 hover:text-white hover:border-white/50"
+                          >
+                            <Link to="/projects/cocotte-eclair/versions" onClick={onClose}>
+                              <History size={14} className="mr-1" /> Versions
                             </Link>
                           </Button>
                         )}
