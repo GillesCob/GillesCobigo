@@ -8,24 +8,26 @@ import Articles from "@/pages/Articles";
 import ArticlePage from "@/pages/ArticlePage";
 import Contact from "@/pages/Contact";
 import VideoLanding from "@/pages/VideoLanding";
+import PreviewHome from "@/pages/PreviewHome";
+import PreviewRound from "@/pages/PreviewRound";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import ScrollReset from "@/components/layout/ScrollReset";
 
 export default function App() {
   const location = useLocation();
-  // Page vidéo de prospection : partagée telle quelle par lien, sans navbar ni footer du site.
-  const isVideoLanding = location.pathname.startsWith("/v/");
+  // Pages partagées telles quelles par lien direct (prospection vidéo, preview client) : sans navbar ni footer du site.
+  const isBareLayout = location.pathname.startsWith("/v/") || location.pathname.startsWith("/preview/");
   // Les pages articles ont une sidebar + un sommaire en position fixed sur toute la hauteur
   // de l'écran : un footer en dessous se ferait toujours recouvrir par ces deux panneaux.
-  const hideFooter = location.pathname.startsWith("/articles") || isVideoLanding;
+  const hideFooter = location.pathname.startsWith("/articles") || isBareLayout;
   // Contenu court : sans ça le footer remonte juste sous le formulaire au lieu de rester en bas d'écran.
   const isContactPage = location.pathname === "/contact";
 
   return (
     <div className={isContactPage ? "min-h-dvh flex flex-col" : undefined}>
       <ScrollReset />
-      {!isVideoLanding && <Navbar />}
+      {!isBareLayout && <Navbar />}
       <main className={isContactPage ? "flex-1" : undefined}>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -36,6 +38,8 @@ export default function App() {
           <Route path="/articles/:slug/*" element={<ArticlePage />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/v/:token" element={<VideoLanding />} />
+          <Route path="/preview/:project/:secret" element={<PreviewHome />} />
+          <Route path="/preview/:project/:secret/:round" element={<PreviewRound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
