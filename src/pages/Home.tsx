@@ -4,6 +4,7 @@ import HeroSplit from '@/components/home/HeroSplit'
 import HeadlineSection from '@/components/home/HeadlineSection'
 import StackMatcher from '@/components/home/StackMatcher'
 import Timeline from '@/components/home/Timeline'
+import ProjectsSection from '@/components/home/ProjectsSection'
 import GitHubStats from '@/components/home/GitHubStats'
 import SkillsRadar from '@/components/shared/SkillsRadar'
 
@@ -29,6 +30,7 @@ export default function Home() {
       <HeadlineSection />
       <StackMatcher />
       <Timeline />
+      <ProjectsSection />
       <GitHubStats />
       <section id="skills" className="py-16 px-4">
         <div className="max-w-4xl mx-auto">
