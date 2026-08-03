@@ -1,9 +1,93 @@
-import { useState } from "react";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cocotteVersions, type ICrudStatus } from "@/data/cocotteVersions";
+
+function Lightbox({
+  shots,
+  index,
+  onClose,
+  onNavigate,
+}: {
+  shots: { src: string; caption: string }[];
+  index: number;
+  onClose: () => void;
+  onNavigate: (index: number) => void;
+}) {
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") onNavigate((index + 1) % shots.length);
+      if (e.key === "ArrowLeft") onNavigate((index - 1 + shots.length) % shots.length);
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [index, shots.length, onClose, onNavigate]);
+
+  const shot = shots[index];
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={shot.caption}
+    >
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors"
+        aria-label="Fermer"
+      >
+        <X size={24} />
+      </button>
+
+      {shots.length > 1 && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onNavigate((index - 1 + shots.length) % shots.length);
+          }}
+          className="absolute left-2 sm:left-6 text-white/60 hover:text-white transition-colors"
+          aria-label="Image précédente"
+        >
+          <ChevronLeft size={32} />
+        </button>
+      )}
+
+      <figure className="max-w-4xl max-h-[85vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+        <img src={shot.src} alt={shot.caption} className="max-w-full max-h-[75vh] rounded-lg object-contain" />
+        <figcaption className="text-white/70 text-sm mt-3 text-center">
+          {shot.caption}
+          {shots.length > 1 && (
+            <span className="text-white/40">
+              {" "}
+              ({index + 1}/{shots.length})
+            </span>
+          )}
+        </figcaption>
+      </figure>
+
+      {shots.length > 1 && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onNavigate((index + 1) % shots.length);
+          }}
+          className="absolute right-2 sm:right-6 text-white/60 hover:text-white transition-colors"
+          aria-label="Image suivante"
+        >
+          <ChevronRight size={32} />
+        </button>
+      )}
+    </div>
+  );
+}
 
 const topLevel = cocotteVersions.filter((v) => !v.parentVersion);
 
@@ -36,6 +120,7 @@ function CrudIndicator({ crud }: { crud: ICrudStatus }) {
 
 export default function CocotteVersions() {
   const [selected, setSelected] = useState(cocotteVersions[0].version);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const entry = cocotteVersions.find((v) => v.version === selected) ?? cocotteVersions[0];
 
   return (
@@ -61,7 +146,10 @@ export default function CocotteVersions() {
               return (
                 <div key={v.version} className="flex-shrink-0">
                   <button
-                    onClick={() => setSelected(v.version)}
+                    onClick={() => {
+                      setSelected(v.version);
+                      setLightboxIndex(null);
+                    }}
                     className={`w-full text-left px-3 py-2 rounded-md text-sm font-mono transition-colors ${
                       selected === v.version
                         ? "bg-secondary text-secondary-foreground font-semibold"
@@ -75,7 +163,10 @@ export default function CocotteVersions() {
                       {patches.map((p) => (
                         <button
                           key={p.version}
-                          onClick={() => setSelected(p.version)}
+                          onClick={() => {
+                            setSelected(p.version);
+                            setLightboxIndex(null);
+                          }}
                           className={`text-left px-3 py-1.5 rounded-md text-xs font-mono transition-colors whitespace-nowrap ${
                             selected === p.version
                               ? "bg-secondary text-secondary-foreground font-semibold"
@@ -124,9 +215,16 @@ export default function CocotteVersions() {
 
           {entry.screenshots && entry.screenshots.length > 0 && (
             <div className="grid sm:grid-cols-2 gap-4 mb-4">
-              {entry.screenshots.map((shot) => (
+              {entry.screenshots.map((shot, i) => (
                 <figure key={shot.src} className="rounded-lg border border-border overflow-hidden bg-muted/30">
-                  <img src={shot.src} alt={shot.caption} className="w-full h-auto" loading="lazy" />
+                  <button
+                    type="button"
+                    onClick={() => setLightboxIndex(i)}
+                    className="block w-full cursor-zoom-in"
+                    aria-label={`Agrandir : ${shot.caption}`}
+                  >
+                    <img src={shot.src} alt={shot.caption} className="w-full h-auto" loading="lazy" />
+                  </button>
                   <figcaption className="text-xs text-muted-foreground px-3 py-2">{shot.caption}</figcaption>
                 </figure>
               ))}
@@ -142,6 +240,15 @@ export default function CocotteVersions() {
           )}
         </div>
       </div>
+
+      {lightboxIndex !== null && entry.screenshots && (
+        <Lightbox
+          shots={entry.screenshots}
+          index={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+          onNavigate={setLightboxIndex}
+        />
+      )}
     </div>
   );
 }

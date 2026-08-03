@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import ProjectCard from '@/components/projects/ProjectCard'
 import { devProjects } from '@/data/devProjects'
 
-const PREVIEW_IDS = ['cerithe', 'nexio', 'chouxfleurs']
+const PREVIEW_IDS = ['cerithe', 'nexio', 'chouxfleurs', 'cocotte-eclair']
 
 export default function ProjectsSection() {
   const previewProjects = devProjects.filter((p) => PREVIEW_IDS.includes(p.id))
@@ -20,7 +20,7 @@ export default function ProjectsSection() {
             </Link>
           </Button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {previewProjects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
