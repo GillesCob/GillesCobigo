@@ -8,6 +8,7 @@ import PreviewCredit from "@/components/preview/PreviewCredit";
 import { previewProjects } from "@/data/previewProjects";
 import { useThemeStore } from "@/store/themeStore";
 import { usePreviewFavicon } from "@/hooks/usePreviewFavicon";
+import { usePreviewTitle } from "@/hooks/usePreviewTitle";
 import NotFound from "@/pages/NotFound";
 
 interface IFeedbackForm {
@@ -20,6 +21,7 @@ export default function PreviewRound() {
   const entry = project?.rounds.find((r) => r.round.toLowerCase() === round?.toLowerCase());
   const { theme, toggleTheme } = useThemeStore();
   usePreviewFavicon(project?.logo);
+  usePreviewTitle(project && entry ? `${entry.round} · ${project.projectName}` : undefined);
 
   const {
     register,

@@ -4,6 +4,7 @@ import { previewProjects } from "@/data/previewProjects";
 import { useThemeStore } from "@/store/themeStore";
 import PreviewCredit from "@/components/preview/PreviewCredit";
 import { usePreviewFavicon } from "@/hooks/usePreviewFavicon";
+import { usePreviewTitle } from "@/hooks/usePreviewTitle";
 import NotFound from "@/pages/NotFound";
 
 export default function PreviewHome() {
@@ -11,6 +12,7 @@ export default function PreviewHome() {
   const project = secret ? previewProjects[secret] : undefined;
   const { theme, toggleTheme } = useThemeStore();
   usePreviewFavicon(project?.logo);
+  usePreviewTitle(project?.projectName);
 
   if (!project) return <NotFound />;
 
