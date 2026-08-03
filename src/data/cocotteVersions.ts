@@ -7,6 +7,7 @@ export interface ICrudStatus {
 
 export interface ICocotteVersion {
   version: string;
+  parentVersion?: string;
   date: string;
   tag: "Nouvelle fonctionnalité" | "Correctif";
   status: "shipped" | "in-progress";
@@ -14,14 +15,29 @@ export interface ICocotteVersion {
   crud?: ICrudStatus;
   impact: string[];
   githubTag?: string;
+  screenshots?: { src: string; caption: string }[];
 }
 
 export const cocotteVersions: ICocotteVersion[] = [
   {
+    version: "v1.1.1",
+    parentVersion: "v1.1.0",
+    date: "3 août 2026",
+    tag: "Correctif",
+    status: "shipped",
+    description:
+      "La suppression d'une recette échouait dès qu'elle avait au moins un ingrédient ou une étape (contrainte référentielle en base, aucune suppression en cascade des lignes associées). Corrigé, avec un nouveau test d'intégration sur une vraie base de données pour couvrir ce type de régression à l'avenir.",
+    impact: [
+      "Suppression explicite des ingrédients et étapes avant la recette elle-même.",
+      "Test d'intégration ajouté (base de données réelle, pas de mock) : les tests unitaires existants ne pouvaient pas détecter ce type de contrainte.",
+    ],
+    githubTag: "https://github.com/GillesCob/cocotte-eclair-java/releases/tag/v1.1.1",
+  },
+  {
     version: "v1.1.0",
     date: "3 août 2026",
     tag: "Nouvelle fonctionnalité",
-    status: "in-progress",
+    status: "shipped",
     description:
       "Refonte de l'écran détail recette par modales. Titre, description et visibilité sont directement cliquables et s'éditent via une modale dédiée à chaque champ. Les ingrédients passent en cartes (nom + quantité sur une seule ligne), les étapes restent en liste : un seul point d'entrée visible par ligne (modifier), la suppression se fait depuis la modale de modification avec confirmation, jamais un bouton de suppression à côté du bouton modifier pour limiter le risque de clic malheureux.",
     crud: { create: true, read: true, update: true, delete: true },
@@ -30,6 +46,10 @@ export const cocotteVersions: ICocotteVersion[] = [
       "Titre, description et visibilité de la recette enfin modifiables depuis l'écran (l'endpoint backend existait déjà, jamais câblé côté interface avant cette version).",
     ],
     githubTag: "https://github.com/GillesCob/cocotte-eclair-java/releases/tag/v1.1.0",
+    screenshots: [
+      { src: "/images/cocotte-versions/v1.1-detail.png", caption: "Écran détail : ingrédients en cartes, étapes en liste" },
+      { src: "/images/cocotte-versions/v1.1-modal-ingredient.png", caption: "Modification d'un ingrédient via modale" },
+    ],
   },
   {
     version: "v1.0.0",
