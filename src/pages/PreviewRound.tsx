@@ -97,9 +97,14 @@ export default function PreviewRound() {
               {entry.proposals.map((p) => (
                 <div key={p.label} className="rounded-xl border border-border p-4 bg-card">
                   <p className="text-sm font-semibold mb-3">{p.label}</p>
-                  <div className="rounded-lg border border-border overflow-hidden mb-3 bg-muted/30">
+                  <a
+                    href={p.htmlPath}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block rounded-lg border border-border overflow-hidden mb-3 bg-muted/30"
+                  >
                     <img src={p.screenshot} alt={`Aperçu ${p.label}`} className="w-full h-auto" loading="lazy" />
-                  </div>
+                  </a>
                   <Button asChild variant="outline" size="sm">
                     <a href={p.htmlPath} target="_blank" rel="noopener noreferrer">
                       <ExternalLink size={14} className="mr-1" /> Ouvrir dans un nouvel onglet
