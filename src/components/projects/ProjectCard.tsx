@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ExternalLink, FileText, Github } from "lucide-react";
+import { ExternalLink, FileText, Github, History } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,9 +26,12 @@ interface IProjectCardProps {
 
 export default function ProjectCard({ project }: IProjectCardProps) {
   const articleCount = useArticleCountByTag(project.id);
+  // Suivi des versions : dispo uniquement pour CocotteEclair pour le moment, cf src/data/cocotteVersions.ts.
+  const hasVersionHistory = project.id === "cocotte-eclair";
   const hasLinks =
     articleCount > 0 ||
     project.comingSoon ||
+    hasVersionHistory ||
     (project.links && (project.links.github || project.links.live || project.links.demo));
 
   return (
@@ -85,6 +88,13 @@ export default function ProjectCard({ project }: IProjectCardProps) {
             <Button asChild variant="outline" size="sm">
               <Link to={`/articles?tag=${project.id}`}>
                 <FileText size={14} className="mr-1" /> Articles
+              </Link>
+            </Button>
+          )}
+          {hasVersionHistory && (
+            <Button asChild variant="outline" size="sm">
+              <Link to="/projects/cocotte-eclair/versions">
+                <History size={14} className="mr-1" /> Versions
               </Link>
             </Button>
           )}
