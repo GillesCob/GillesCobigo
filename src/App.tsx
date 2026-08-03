@@ -3,6 +3,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Home from "@/pages/Home";
 import Projects from "@/pages/Projects";
+import CocotteVersions from "@/pages/CocotteVersions";
 import Articles from "@/pages/Articles";
 import ArticlePage from "@/pages/ArticlePage";
 import Contact from "@/pages/Contact";
@@ -29,6 +30,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/projects" element={<Projects />} />
+          <Route path="/projects/cocotte-eclair/versions" element={<CocotteVersions />} />
           <Route path="/articles" element={<Articles />} />
           <Route path="/articles/scheduled" element={<Articles scheduledOnly />} />
           <Route path="/articles/:slug/*" element={<ArticlePage />} />
