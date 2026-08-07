@@ -139,6 +139,13 @@ export default function PreviewRound() {
               </div>
             )}
 
+            {entry.ownerNote && (
+              <div className="rounded-xl border border-border p-6 bg-card mb-8">
+                <p className="text-xs font-semibold text-muted-foreground mb-1.5">Petite précision de ma part</p>
+                <p className="text-sm text-muted-foreground whitespace-pre-line">{entry.ownerNote}</p>
+              </div>
+            )}
+
             {entry.clientFeedback && (
               <div className="rounded-xl bg-muted/40 border border-border p-6 mb-8">
                 <p className="text-xs font-semibold text-muted-foreground mb-1.5">Retour de {project.contactName}</p>
