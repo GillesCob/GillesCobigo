@@ -117,6 +117,17 @@ export default function PreviewRound() {
               ))}
             </div>
 
+            {entry.changesApplied && entry.changesApplied.length > 0 && (
+              <div className="rounded-xl border border-border p-6 bg-card mb-8">
+                <h2 className="text-sm font-semibold mb-3">Ce qui a été pris en compte suite à ton retour</h2>
+                <ul className="text-sm text-muted-foreground space-y-1.5 list-disc list-inside">
+                  {entry.changesApplied.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {entry.missingInfo.length > 0 && (
               <div className="rounded-xl border border-border p-6 bg-card mb-8">
                 <h2 className="text-sm font-semibold mb-3">Ce qu'il me manque pour aller plus loin</h2>

@@ -11,6 +11,8 @@ export interface IPreviewRound {
   missingInfo: string[];
   /** Retour du client collé tel quel une fois reçu (ex. copié depuis un mail). */
   clientFeedback?: string;
+  /** Modifications prises en compte suite au retour du client sur le round précédent. */
+  changesApplied?: string[];
 }
 
 export interface IPreviewProject {
@@ -35,8 +37,8 @@ export const previewProjects: Record<string, IPreviewProject> = {
     projectName: "Le Dressing de Maïlys",
     logo: `${BASE}/logo.png`,
     contactName: "Mylène",
-    currentRound: "V1",
-    nextAction: "J'attends ton retour sur la V1",
+    currentRound: "V2",
+    nextAction: "J'attends ton retour sur la V2 (choix entre les 2 options du hero)",
     feedbackFormId: "xgoggnej",
     rounds: [
       {
@@ -52,6 +54,31 @@ export const previewProjects: Record<string, IPreviewProject> = {
           "Confirmer si le texte d'accroche actuel (\"Le neuf n'est plus à la mode\") te convient ou si tu préfères autre chose",
           "Ton numéro de SIRET et le nom exact de ta société, obligatoires pour les mentions légales du site",
           "Ton choix entre la proposition 1 et la proposition 2 (ou un mélange des deux)",
+        ],
+        clientFeedback:
+          "Coucou Gilles,\n\nMerci pour les propositions de site !\n\nJ'aime beaucoup la première. Les animations sont tops, et le déroulé des infos me convient parfaitement.\n\nLes couleurs sont trop vives cependant, donc je t'envoie en pièce jointe la palette de couleur que j'utilise en com et sur l'ancien site.\n\nEn première photo, j'aimerais tester qqch comme sur la deuxième pièce jointe que je t'envoie : la photo décentrée avec le mannequin et le panneau en bois sur la droite, avec le texte sur la gauche. Si possible, j'aimerais que le mannequin, son support et le panneau bois soient en clair et le fond en flouté. J'aimerais aussi voir une 2eme option de cette même photo décentrée mais en fond transparent vert comme tu as mis actuellement. J'aimerais enlever la mention \"dépôt-vente et friperie\" qui au dessus du logo.\n\nDans la section \"dans la boutique\", je voudrais les deux photos que tu as mis dans la section correspondante de la seconde version du site, en plus de la photo avec les lunettes ainsi que la photo que je t'envoie en 3eme pièce jointe. Merci de mettre les photos légèrement plus petites et en quinconce si possible. Pourrais-tu y ajouter les mots \"vêtements, chaussures et accessoires de mode\" stp?\n\nConcernant la section sur les \"conditions de dépôt-vente\", merci de remplacer \"Dépôt uniquement sur rendez-vous, pris en début de mois (en boutique, par mail ou réseaux sociaux)\" par \"Dépôt uniquement sur rendez-vous, pris en boutique\".\n\nLe reste est parfait ;)\n\nMerci encore pour tout Gilles! Ça envoie du lourd ^^",
+      },
+      {
+        round: "V2",
+        date: "7 août 2026",
+        proposals: [
+          { label: "Option A", screenshot: `${BASE}/screenshots/v2-optionA.png`, htmlPath: `${BASE}/mockup-v2-optionA.html` },
+          { label: "Option B", screenshot: `${BASE}/screenshots/v2-optionB.png`, htmlPath: `${BASE}/mockup-v2-optionB.html` },
+        ],
+        changesApplied: [
+          "Palette remplacée par tes vraies couleurs de marque, les couleurs trop vives retirées",
+          "Hero décentré : le mannequin, le sac et le panneau en bois à droite, le texte à gauche, avec un effet de parallaxe au scroll. 2 options pour le traitement du fond, à choisir : Option A (photo telle quelle pour l'instant, le flou du fond est encore en travaux) et Option B (overlay vert transparent, comme avant)",
+          "Mention \"Dépôt-vente & friperie\" retirée au-dessus du logo",
+          "Section \"Dans la boutique\" : les 2 photos de la seconde version, la photo avec les lunettes, et ta nouvelle photo du portant de jeans",
+          "Photos de cette section réduites et affichées en quinconce",
+          "Légende \"Vêtements, chaussures et accessoires de mode\" ajoutée sous le titre de la section",
+          "Conditions de dépôt-vente reformulées : \"Dépôt uniquement sur rendez-vous, pris en boutique\"",
+        ],
+        missingInfo: [
+          "Pouvoir se connecter à ton compte Instagram professionnel, pour afficher automatiquement tes derniers posts sur le site",
+          "Le lien vers ta fiche Google (ou l'accès), pour afficher tes vrais avis clients sur le site",
+          "Ton numéro de SIRET et le nom exact de ta société, obligatoires pour les mentions légales du site",
+          "Ton choix entre l'option A et l'option B pour le fond du hero (le flou de l'option A n'est pas encore terminé, on peut aussi partir directement sur l'option B)",
         ],
       },
     ],
