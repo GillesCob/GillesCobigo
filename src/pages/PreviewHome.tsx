@@ -44,7 +44,9 @@ export default function PreviewHome() {
             {project.rounds.length === 0 && (
               <p className="text-sm text-muted-foreground text-center">Aucune version disponible pour l'instant.</p>
             )}
-            {project.rounds.map((r) => (
+            {/* Uniquement le round le plus recent (rounds[0], deja trie du plus recent au plus ancien) :
+                l'historique complet reste accessible via le drawer de versions sur la page de detail. */}
+            {project.rounds.slice(0, 1).map((r) => (
               <Link
                 key={r.round}
                 to={`/preview/${project.slug}/${secret}/${r.round.toLowerCase()}`}
