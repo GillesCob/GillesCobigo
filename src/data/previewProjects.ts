@@ -40,7 +40,7 @@ export const previewProjects: Record<string, IPreviewProject> = {
     logo: `${BASE}/logo.png`,
     contactName: "Mylène",
     currentRound: "V2",
-    nextAction: "J'attends ton retour sur la V2 (choix entre les 2 options du hero)",
+    nextAction: "J'attends ton retour sur la V2 (choix entre les 6 options du hero)",
     feedbackFormId: "xgoggnej",
     rounds: [
       {
@@ -49,24 +49,27 @@ export const previewProjects: Record<string, IPreviewProject> = {
         proposals: [
           { label: "Option A", screenshot: `${BASE}/screenshots/v2-optionA.png`, htmlPath: `${BASE}/mockup-v2-optionA.html` },
           { label: "Option B", screenshot: `${BASE}/screenshots/v2-optionB.png`, htmlPath: `${BASE}/mockup-v2-optionB.html` },
+          { label: "Option C", screenshot: `${BASE}/screenshots/v3-optionA.png`, htmlPath: `${BASE}/mockup-v3-optionA.html` },
+          { label: "Option D", screenshot: `${BASE}/screenshots/v3-optionB.png`, htmlPath: `${BASE}/mockup-v3-optionB.html` },
+          { label: "Option E", screenshot: `${BASE}/screenshots/v3-optionC.png`, htmlPath: `${BASE}/mockup-v3-optionC.html` },
+          { label: "Option F", screenshot: `${BASE}/screenshots/v3-optionD.png`, htmlPath: `${BASE}/mockup-v3-optionD.html` },
         ],
         changesApplied: [
           "Palette remplacée par tes vraies couleurs de marque, les couleurs trop vives retirées",
-          "Hero décentré : le mannequin, le sac et le panneau en bois à droite, le texte à gauche, avec un effet de parallaxe au scroll. 2 options pour le traitement du fond, à choisir : Option A (photo telle quelle pour l'instant, le flou du fond est encore en travaux) et Option B (overlay vert transparent, comme avant)",
           "Mention \"Dépôt-vente & friperie\" retirée au-dessus du logo",
-          "Section \"Dans la boutique\" : les 2 photos de la seconde version, la photo avec les lunettes, et ta nouvelle photo du portant de jeans",
-          "Photos de cette section réduites et affichées en quinconce",
+          "Section \"Dans la boutique\" : les 2 photos de la seconde version, la photo avec les lunettes, et ta nouvelle photo du portant de jeans, réduites et affichées en quinconce",
           "Légende \"Vêtements, chaussures et accessoires de mode\" ajoutée sous le titre de la section",
           "Conditions de dépôt-vente reformulées : \"Dépôt uniquement sur rendez-vous, pris en boutique\"",
+          "6 options construites pour le hero, toutes avec effet de parallaxe au scroll. A : photo décentrée (mannequin/panneau à droite, texte à gauche), sans voile de couleur. B : pareil que A, avec un voile vert transparent sur la photo. C : la même photo en grand sur toute la largeur, cadrée plus haut (le panneau en bois n'est pas visible). D : pareil que C, avec le voile vert. E : pareil que C (photo en grand), mais cadrée différemment pour que le panneau \"Le Dressing de Maïlys\" reste visible. F : pareil que E, avec le voile vert.",
         ],
         missingInfo: [
           "Pouvoir se connecter à ton compte Instagram professionnel, pour afficher automatiquement tes derniers posts sur le site",
           "Le lien vers ta fiche Google (ou l'accès), pour afficher tes vrais avis clients sur le site",
           "Ton numéro de SIRET et le nom exact de ta société, obligatoires pour les mentions légales du site",
-          "Ton choix entre l'option A et l'option B pour le fond du hero (le flou de l'option A n'est pas encore terminé, on peut aussi partir directement sur l'option B)",
+          "Ton choix entre les 6 options (A à F) pour le hero",
         ],
         ownerNote:
-          "Deux trucs pas encore réglés sur cette V2. Le flou du fond sur l'option A (mannequin et panneau nets, la boutique floutée derrière) : je n'ai pas encore un rendu assez propre à mon goût, donc pour l'instant la photo est affichée nette. Et l'effet de parallaxe au scroll (la photo qui bouge plus lentement que le reste) : vu les proportions de l'image, il ne dure pas sur toute la longueur du scroll, il s'arrête avant la fin.",
+          "Un truc pas encore réglé sur les options A et C/E (celles sans voile vert) : le flou du fond derrière le mannequin (net devant, boutique floutée derrière), je n'ai pas encore un rendu assez propre à mon goût, donc pour l'instant la photo est affichée nette sur ces options. Et l'effet de parallaxe au scroll (la photo qui bouge plus lentement que le reste) : vu les proportions de l'image, il ne dure pas sur toute la longueur du scroll, il s'arrête avant la fin.",
       },
       {
         round: "V1",
