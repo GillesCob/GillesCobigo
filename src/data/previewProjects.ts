@@ -2,6 +2,8 @@ export interface IPreviewProposal {
   label: string;
   screenshot: string;
   htmlPath: string;
+  /** Regroupement visuel optionnel (ex. "Pour comparer" vs "À choisir"), pour distinguer une proposition de référence des vrais choix à trancher. Proposals du même round doivent être groupées consécutivement dans le tableau pour un rendu correct. */
+  group?: string;
 }
 
 export interface IPreviewRound {
@@ -47,11 +49,11 @@ export const previewProjects: Record<string, IPreviewProject> = {
         round: "V3",
         date: "10 août 2026",
         proposals: [
-          { label: "V2 (pour comparer)", screenshot: `${BASE}/screenshots/v3-optionD.png`, htmlPath: `${BASE}/mockup-v3-optionD.html` },
-          { label: "V3 · titres Fredoka", screenshot: `${BASE}/screenshots/v3-optionD.png`, htmlPath: `${BASE}/mockup-v4-fredoka.html` },
-          { label: "V3 · titres Caveat", screenshot: `${BASE}/screenshots/v3-optionD.png`, htmlPath: `${BASE}/mockup-v4-caveat.html` },
-          { label: "V3 · titres Baloo 2", screenshot: `${BASE}/screenshots/v3-optionD.png`, htmlPath: `${BASE}/mockup-v4-baloo.html` },
-          { label: "Comparatif rapide des 3 polices", screenshot: `${BASE}/screenshots/v3-optionD.png`, htmlPath: `${BASE}/mockup-v4-comparatif-titres.html` },
+          { label: "V2", screenshot: `${BASE}/screenshots/v3-optionD.png`, htmlPath: `${BASE}/mockup-v3-optionD.html`, group: "Pour comparer (avant)" },
+          { label: "V3 · titres Fredoka", screenshot: `${BASE}/screenshots/v4-fredoka.png`, htmlPath: `${BASE}/mockup-v4-fredoka.html`, group: "V3 : à choisir" },
+          { label: "V3 · titres Caveat", screenshot: `${BASE}/screenshots/v4-caveat.png`, htmlPath: `${BASE}/mockup-v4-caveat.html`, group: "V3 : à choisir" },
+          { label: "V3 · titres Baloo 2", screenshot: `${BASE}/screenshots/v4-baloo.png`, htmlPath: `${BASE}/mockup-v4-baloo.html`, group: "V3 : à choisir" },
+          { label: "Comparatif rapide des 3 polices", screenshot: `${BASE}/screenshots/v4-comparatif-titres.png`, htmlPath: `${BASE}/mockup-v4-comparatif-titres.html`, group: "V3 : à choisir" },
         ],
         changesApplied: [
           "Accroche \"Le neuf n'est plus à la mode\" retirée, remplacée par \"Dépôt-vente et friperie\" / \"Mont-de-Marsan\" sur deux lignes, en plus gros",
