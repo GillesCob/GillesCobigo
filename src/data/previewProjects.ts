@@ -39,10 +39,31 @@ export const previewProjects: Record<string, IPreviewProject> = {
     projectName: "Le Dressing de Maïlys",
     logo: `${BASE}/logo.png`,
     contactName: "Mylène",
-    currentRound: "V2",
-    nextAction: "J'attends ton retour sur la V2 (choix entre les 6 options du hero)",
+    currentRound: "V3",
+    nextAction: "J'attends ton choix de police pour les titres parmi les 3 propositions (le reste des retouches est prêt)",
     feedbackFormId: "xgoggnej",
     rounds: [
+      {
+        round: "V3",
+        date: "10 août 2026",
+        proposals: [
+          { label: "V2 (pour comparer)", screenshot: `${BASE}/screenshots/v3-optionD.png`, htmlPath: `${BASE}/mockup-v3-optionD.html` },
+          { label: "V3 · titres Fredoka", screenshot: `${BASE}/screenshots/v3-optionD.png`, htmlPath: `${BASE}/mockup-v4-fredoka.html` },
+          { label: "V3 · titres Caveat", screenshot: `${BASE}/screenshots/v3-optionD.png`, htmlPath: `${BASE}/mockup-v4-caveat.html` },
+          { label: "V3 · titres Baloo 2", screenshot: `${BASE}/screenshots/v3-optionD.png`, htmlPath: `${BASE}/mockup-v4-baloo.html` },
+          { label: "Comparatif rapide des 3 polices", screenshot: `${BASE}/screenshots/v3-optionD.png`, htmlPath: `${BASE}/mockup-v4-comparatif-titres.html` },
+        ],
+        changesApplied: [
+          "Accroche \"Le neuf n'est plus à la mode\" retirée, remplacée par \"Dépôt-vente et friperie\" / \"Mont-de-Marsan\" sur deux lignes, en plus gros",
+          "Calque vert transparent remplacé par un calque blanc (même dégradé, couleur seule changée), lisibilité des titres rattrapée par une ombre portée plutôt qu'un changement de couleur",
+          "Photo du hero rétrécie et décentrée vers la droite, uniquement sur mobile (le laptop garde le cadrage d'origine)",
+          "Mention \"en seconde main\" ajoutée dans le texte du concept",
+          "Police des titres de section : 3 pistes proposées (Fredoka, Caveat, Baloo 2), voir la page comparatif pour trancher d'un coup d'oeil",
+        ],
+        missingInfo: [
+          "Ton choix de police pour les titres parmi les 3 proposées (Fredoka / Caveat / Baloo 2)",
+        ],
+      },
       {
         round: "V2",
         date: "7 août 2026",
@@ -70,6 +91,8 @@ export const previewProjects: Record<string, IPreviewProject> = {
         ],
         ownerNote:
           "Un truc pas encore réglé sur les options A et C/E (celles sans voile vert) : le flou du fond derrière le mannequin (net devant, boutique floutée derrière), je n'ai pas encore un rendu assez propre à mon goût, donc pour l'instant la photo est affichée nette sur ces options. Et l'effet de parallaxe au scroll (la photo qui bouge plus lentement que le reste) : vu les proportions de l'image, il ne dure pas sur toute la longueur du scroll, il s'arrête avant la fin.",
+        clientFeedback:
+          "Coucou Gilles,\n\nMerci pour ton retour! J'aime bien la derniere version \"F\". \nPourrais-tu retirer le \"le neuf n'est plus à la mode\", mettre \"dépôt-vente et friperie\" sur une seule ligne en plus gros et \"Mont-de-Marsan\" sur une ligne juste en dessous en plus gros aussi stp? \n\nJ'aimerais également que le calque vert transparent soit blanc plutôt et il faudrait rétrécir la photo et la décentrer un peu plus vers la droite afin que le mannequin ne soit pas le seul truc que l'on voit sur l'écrandu téléphone. \n\nAprès le \"99 ans\", j'aimerais inclure la mention \"en seconde main\" (\"de 0 à 99 ans, en seconde main, en incluant\"). \n\nEt pour finir, serait possible d émettre une police d'écriture un peu plus fun pour les titres de chaque partie?\n\nMerci 😉",
       },
       {
         round: "V1",
