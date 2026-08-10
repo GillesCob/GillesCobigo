@@ -5,7 +5,7 @@ import { ArrowLeft, ExternalLink, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PreviewVersionsNav from "@/components/preview/PreviewVersionsNav";
 import PreviewCredit from "@/components/preview/PreviewCredit";
-import { previewProjects } from "@/data/previewProjects";
+import { previewProjects, type IPreviewProposal } from "@/data/previewProjects";
 import { useThemeStore } from "@/store/themeStore";
 import { usePreviewFavicon } from "@/hooks/usePreviewFavicon";
 import { usePreviewTitle } from "@/hooks/usePreviewTitle";
@@ -13,6 +13,21 @@ import NotFound from "@/pages/NotFound";
 
 interface IFeedbackForm {
   message: string;
+}
+
+/** Regroupe les propositions consécutives partageant le même `group` (ex. "Pour comparer" vs "À choisir"), pour distinguer visuellement une proposition de référence des vrais choix à trancher. Sans `group`, tout reste dans un seul groupe sans en-tête (comportement inchangé pour les rounds existants). */
+function groupProposals(proposals: IPreviewProposal[]) {
+  const groups: { label: string | null; items: IPreviewProposal[] }[] = [];
+  for (const p of proposals) {
+    const label = p.group ?? null;
+    const last = groups[groups.length - 1];
+    if (last && last.label === label) {
+      last.items.push(p);
+    } else {
+      groups.push({ label, items: [p] });
+    }
+  }
+  return groups;
 }
 
 export default function PreviewRound() {
@@ -96,23 +111,34 @@ export default function PreviewRound() {
               <span className="text-sm text-muted-foreground">{entry.date}</span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-              {entry.proposals.map((p) => (
-                <div key={p.label} className="rounded-xl border border-border p-4 bg-card">
-                  <p className="text-sm font-semibold mb-3">{p.label}</p>
-                  <a
-                    href={p.htmlPath}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block rounded-lg border border-border overflow-hidden mb-3 bg-muted/30"
-                  >
-                    <img src={p.screenshot} alt={`Aperçu ${p.label}`} className="w-full h-auto" loading="lazy" />
-                  </a>
-                  <Button asChild variant="outline" size="sm">
-                    <a href={p.htmlPath} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink size={14} className="mr-1" /> Ouvrir dans un nouvel onglet
-                    </a>
-                  </Button>
+            <div className="mb-10">
+              {groupProposals(entry.proposals).map((group, i) => (
+                <div key={group.label ?? `group-${i}`} className={i > 0 ? "mt-8" : undefined}>
+                  {group.label && (
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+                      {group.label}
+                    </p>
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {group.items.map((p) => (
+                      <div key={p.label} className="rounded-xl border border-border p-4 bg-card">
+                        <p className="text-sm font-semibold mb-3">{p.label}</p>
+                        <a
+                          href={p.htmlPath}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block rounded-lg border border-border overflow-hidden mb-3 bg-muted/30"
+                        >
+                          <img src={p.screenshot} alt={`Aperçu ${p.label}`} className="w-full h-auto" loading="lazy" />
+                        </a>
+                        <Button asChild variant="outline" size="sm">
+                          <a href={p.htmlPath} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink size={14} className="mr-1" /> Ouvrir dans un nouvel onglet
+                          </a>
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
