@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="./logo.png">
+<title>Le Dressing de Maïlys, V3 · Comparatif des 3 polices de titres</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Caveat:wght@600;700&family=Baloo+2:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --vert-fonce:#3E6D2A; --vert-clair:#7DAF74; --accent:#FFAD34; --creme:#F0EBD0; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--vert-fonce); background:var(--creme); line-height:1.5; padding:40px 20px 64px;}
+  h1.page-title{text-align:center; font-size:22px; font-weight:800; margin-bottom:6px;}
+  p.page-subtitle{text-align:center; color:var(--vert-fonce); opacity:.75; font-size:14.5px; margin-bottom:40px;}
+  .cols{max-width:1100px; margin:0 auto; display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
+  .card{background:#fff; border-radius:16px; padding:32px 24px; box-shadow:0 10px 26px rgba(45,80,22,.1); text-align:center;}
+  .card .titre1{font-size:30px; font-weight:700; margin-bottom:18px;}
+  .card .titre2{font-size:26px; font-weight:700; margin-bottom:28px;}
+  .card .font-label{display:inline-block; font-family:'Nunito',sans-serif; font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#fff; background:var(--vert-fonce); padding:5px 14px; border-radius:999px;}
+  .fredoka .titre1, .fredoka .titre2{font-family:'Fredoka','Nunito',sans-serif;}
+  .caveat .titre1, .caveat .titre2{font-family:'Caveat','Nunito',cursive;}
+  .baloo .titre1, .baloo .titre2{font-family:'Baloo 2','Nunito',sans-serif;}
+  @media(max-width:820px){
+    .cols{grid-template-columns:1fr; gap:18px;}
+  }
+</style>
+</head>
+<body>
+  <h1 class="page-title">Comparatif des 3 polices proposées pour les titres</h1>
+  <p class="page-subtitle">Même texte, même mise en page, seule la police change. Les autres retouches (accroche, calque, photo mobile, texte) sont identiques dans les 3 cas.</p>
+  <div class="cols">
+    <div class="card fredoka">
+      <div class="titre1">Notre concept</div>
+      <div class="titre2">Dans la boutique</div>
+      <span class="font-label">Fredoka</span>
+    </div>
+    <div class="card caveat">
+      <div class="titre1">Notre concept</div>
+      <div class="titre2">Dans la boutique</div>
+      <span class="font-label">Caveat</span>
+    </div>
+    <div class="card baloo">
+      <div class="titre1">Notre concept</div>
+      <div class="titre2">Dans la boutique</div>
+      <span class="font-label">Baloo 2</span>
+    </div>
+  </div>
+</body>
+</html>
