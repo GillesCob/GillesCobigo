@@ -63,6 +63,9 @@ export const previewProjects: Record<string, IPreviewProject> = {
           "Police des titres de section : 3 pistes proposées (Fredoka, Caveat, Baloo 2), voir la page comparatif pour trancher d'un coup d'oeil",
         ],
         missingInfo: [
+          "Pouvoir se connecter à ton compte Instagram professionnel, pour afficher automatiquement tes derniers posts sur le site",
+          "Le lien vers ta fiche Google (ou l'accès), pour afficher tes vrais avis clients sur le site",
+          "Ton numéro de SIRET et le nom exact de ta société, obligatoires pour les mentions légales du site",
           "Ton choix de police pour les titres parmi les 3 proposées (Fredoka / Caveat / Baloo 2)",
         ],
       },
