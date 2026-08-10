@@ -42,7 +42,7 @@ export const previewProjects: Record<string, IPreviewProject> = {
     logo: `${BASE}/logo.png`,
     contactName: "Mylène",
     currentRound: "V5",
-    nextAction: "Envoie-moi ton pseudo Instagram (+ confirme que le compte est public) et le lien de ta fiche Google Maps",
+    nextAction: "Envoie-moi le lien de ta fiche Google Maps (pour Instagram j'ai tout ce qu'il me faut)",
     feedbackFormId: "xgoggnej",
     rounds: [
       {
@@ -54,12 +54,11 @@ export const previewProjects: Record<string, IPreviewProject> = {
         ],
         changesApplied: [
           "Logo agrandi dans le hero, une première fois puis une deuxième sur ton retour",
-          "Tes 3 derniers posts Instagram affichés en aperçu dans la section \"Suivez-nous\" (en dur pour l'instant, en attendant de connecter ton compte pour une vraie mise à jour automatique)",
+          "Tes 3 derniers posts Instagram affichés en aperçu dans la section \"Suivez-nous\" (en dur pour l'instant, en attendant de connecter le widget pour une vraie mise à jour automatique)",
           "Mentions légales mises à jour avec ton SIRET et le nom exact de ta société",
+          "Ton compte Instagram (dressing_de_mailys, déjà public) me suffit pour la suite, plus besoin de rien de ton côté sur ce point",
         ],
         missingInfo: [
-          "Envoie-moi ton pseudo Instagram exact",
-          "Confirme-moi que ton compte est public",
           "Va sur ta fiche Google Maps/Google Business, clique sur \"Partager\"",
           "Envoie-moi ce lien",
         ],
