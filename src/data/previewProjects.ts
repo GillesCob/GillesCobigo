@@ -41,10 +41,34 @@ export const previewProjects: Record<string, IPreviewProject> = {
     projectName: "Le Dressing de Maïlys",
     logo: `${BASE}/logo.png`,
     contactName: "Mylène",
-    currentRound: "V3",
-    nextAction: "J'attends ton choix de police pour les titres parmi les 3 propositions (le reste des retouches est prêt)",
+    currentRound: "V4",
+    nextAction: "J'attends ton avis sur les 2 nouvelles pistes de police (Fredoka reste ton choix si tu préfères)",
     feedbackFormId: "xgoggnej",
     rounds: [
+      {
+        round: "V4",
+        date: "10 août 2026",
+        proposals: [
+          { label: "V3", screenshot: `${BASE}/screenshots/v4-fredoka.png`, htmlPath: `${BASE}/mockup-v4-fredoka.html`, group: "Pour comparer (avant)" },
+          { label: "V4 · titres Fredoka", screenshot: `${BASE}/screenshots/v5.png`, htmlPath: `${BASE}/mockup-v5.html`, group: "V4 : à choisir" },
+          { label: "V4 · titres Grandstander", screenshot: `${BASE}/screenshots/v6-grandstander.png`, htmlPath: `${BASE}/mockup-v6-grandstander.html`, group: "V4 : à choisir" },
+          { label: "V4 · titres M PLUS Rounded 1c", screenshot: `${BASE}/screenshots/v6-mplusrounded.png`, htmlPath: `${BASE}/mockup-v6-mplusrounded.html`, group: "V4 : à choisir" },
+          { label: "Comparatif rapide (2 nouvelles polices vs Fredoka)", screenshot: `${BASE}/screenshots/v6-comparatif-titres.png`, htmlPath: `${BASE}/mockup-v6-comparatif-titres.html`, group: "V4 : à choisir" },
+        ],
+        changesApplied: [
+          "Calque blanc remplacé par un calque vert transparent sur l'ensemble de la photo (dégradé vertical uniforme, comme la toute première version), couleur de marque réelle",
+          "\"Mont-de-Marsan\" agrandi pour occuper une largeur proche de \"Dépôt-vente et friperie\"",
+          "Les 2 photos de droite de la section \"Dans la boutique\" entrent maintenant depuis la droite",
+          "Bouton \"retour en haut de page\" ajouté (flottant, visible après le hero)",
+          "Police des titres : 2 nouvelles pistes proposées en plus de Fredoka (Grandstander, M PLUS Rounded 1c), voir la page comparatif pour trancher d'un coup d'oeil",
+        ],
+        missingInfo: [
+          "Pouvoir se connecter à ton compte Instagram professionnel, pour afficher automatiquement tes derniers posts sur le site",
+          "Le lien vers ta fiche Google (ou l'accès), pour afficher tes vrais avis clients sur le site",
+          "Ton numéro de SIRET et le nom exact de ta société, obligatoires pour les mentions légales du site",
+          "Ton avis sur les 2 nouvelles pistes de police, ou si Fredoka reste ton choix final",
+        ],
+      },
       {
         round: "V3",
         date: "10 août 2026",
@@ -68,6 +92,8 @@ export const previewProjects: Record<string, IPreviewProject> = {
           "Ton numéro de SIRET et le nom exact de ta société, obligatoires pour les mentions légales du site",
           "Ton choix de police pour les titres parmi les 3 proposées (Fredoka / Caveat / Baloo 2)",
         ],
+        clientFeedback:
+          "Merci! Le transparent blanc rend moins bien que ce que je pensais, je suis désolée 😖😖 tu pourrais tester en mettant un calque transparent vert sur l'ensemble de la photo comme tu avais fait au tout début stp?\n\nEst-ce que tu peux mettre \"Mont-de-Marsan\" de la même 'longueur' que \"dépôt-vente et friperie\", en agrandissant la taille du texte stp?\n\nJ'aime bien le côté 'gras' et 'arrondi' de la première écriture Fredoka. Tu en aurais d'autres sur le même style?\n\nPour la section 'dans la boutique', est-ce que tu pourrais faire apparaître les deux photos de droite par la droite ?",
       },
       {
         round: "V2",
