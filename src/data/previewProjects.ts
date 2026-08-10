@@ -41,10 +41,27 @@ export const previewProjects: Record<string, IPreviewProject> = {
     projectName: "Le Dressing de Maïlys",
     logo: `${BASE}/logo.png`,
     contactName: "Mylène",
-    currentRound: "V4",
-    nextAction: "J'attends ton avis sur les 2 nouvelles pistes de police (Fredoka reste ton choix si tu préfères)",
+    currentRound: "V5",
+    nextAction: "Dis-moi si le logo agrandi te va, et si tu peux, envoie-moi ton pseudo Instagram et le lien de ta fiche Google Maps",
     feedbackFormId: "xgoggnej",
     rounds: [
+      {
+        round: "V5",
+        date: "10 août 2026",
+        proposals: [
+          { label: "V4", screenshot: `${BASE}/screenshots/v5.png`, htmlPath: `${BASE}/mockup-v5.html`, group: "Pour comparer (avant)" },
+          { label: "V5 · logo agrandi + aperçu Instagram", screenshot: `${BASE}/screenshots/v7.png`, htmlPath: `${BASE}/mockup-v7.html`, group: "V5 : à valider" },
+        ],
+        changesApplied: [
+          "Logo agrandi dans le hero, comme demandé par Jim",
+          "Tes 3 derniers posts Instagram affichés en aperçu dans la section \"Suivez-nous\" (en dur pour l'instant, en attendant de connecter ton compte pour une vraie mise à jour automatique)",
+          "Mentions légales mises à jour avec ton SIRET et le nom exact de ta société",
+        ],
+        missingInfo: [
+          "Ton pseudo Instagram, et si tu veux la vraie mise à jour automatique : confirmer que tu peux passer ton compte en mode Professionnel",
+          "Le lien vers ta fiche Google Maps, pour afficher tes vrais avis clients sur le site",
+        ],
+      },
       {
         round: "V4",
         date: "10 août 2026",
@@ -68,6 +85,8 @@ export const previewProjects: Record<string, IPreviewProject> = {
           "Ton numéro de SIRET et le nom exact de ta société, obligatoires pour les mentions légales du site",
           "Ton avis sur les 2 nouvelles pistes de police, ou si Fredoka reste ton choix final",
         ],
+        clientFeedback:
+          "Parfait! Jim demande si on peut agrandir un peu le logo?\nLes avis se mettent automatiquement ?\nOups! Je n'avais pas vu!\nJ'en profite pour t'envoyer le SIRET : 93819650800015. Le nom complète c'est LE DRESSING DE MAILYS\nJe veux bien les 3 derniers pots insta si tu peux. Si trop compliquer, le lien vers insta suffira ;)\nJe valide Fredoka en police",
       },
       {
         round: "V3",
