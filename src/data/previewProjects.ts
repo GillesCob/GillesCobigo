@@ -42,7 +42,7 @@ export const previewProjects: Record<string, IPreviewProject> = {
     logo: `${BASE}/logo.png`,
     contactName: "Mylène",
     currentRound: "V5",
-    nextAction: "Dis-moi si le logo agrandi te va, et si tu peux, envoie-moi ton pseudo Instagram et le lien de ta fiche Google Maps",
+    nextAction: "Envoie-moi ton pseudo Instagram (+ confirme que le compte est public) et le lien de ta fiche Google Maps",
     feedbackFormId: "xgoggnej",
     rounds: [
       {
@@ -53,17 +53,18 @@ export const previewProjects: Record<string, IPreviewProject> = {
           { label: "V5 · logo agrandi + aperçu Instagram", screenshot: `${BASE}/screenshots/v7.png`, htmlPath: `${BASE}/mockup-v7.html`, group: "V5 : à valider" },
         ],
         changesApplied: [
-          "Logo agrandi dans le hero, comme demandé par Jim",
+          "Logo agrandi dans le hero, une première fois puis une deuxième sur ton retour",
           "Tes 3 derniers posts Instagram affichés en aperçu dans la section \"Suivez-nous\" (en dur pour l'instant, en attendant de connecter ton compte pour une vraie mise à jour automatique)",
           "Mentions légales mises à jour avec ton SIRET et le nom exact de ta société",
         ],
         missingInfo: [
-          "Passe ton compte Instagram en mode Professionnel (Business ou Créateur), gratuit, dans les réglages Instagram",
-          "Lie ce compte à ta Page Facebook (celle déjà en lien sur le site)",
           "Envoie-moi ton pseudo Instagram exact",
+          "Confirme-moi que ton compte est public",
           "Va sur ta fiche Google Maps/Google Business, clique sur \"Partager\"",
           "Envoie-moi ce lien",
         ],
+        clientFeedback:
+          "Oups! Je n'avais pas vu!\nJ'en profite pour t'envoyer le SIRET : 93819650800015. Le nom complète c'est LE DRESSING DE MAILYS\nOn peut agrandir un tout petit plus le logo encore stp?\nSi je passe en pro sur Instagram,  je n'ai plus accès aux musiques libres de droit malheureusement 😪\nAux musiques non libres, pardon",
       },
       {
         round: "V4",
