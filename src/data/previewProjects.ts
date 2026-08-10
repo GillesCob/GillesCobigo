@@ -58,8 +58,11 @@ export const previewProjects: Record<string, IPreviewProject> = {
           "Mentions légales mises à jour avec ton SIRET et le nom exact de ta société",
         ],
         missingInfo: [
-          "Pour Instagram : si tu veux que tes posts se mettent à jour tout seuls à chaque nouveau post, passe ton compte en mode Professionnel (Business ou Créateur), c'est gratuit et ça se fait dans les réglages Instagram. Dis-moi aussi si tu as déjà une Page Facebook liée à ton compte, sinon il t'en faudra une (5 minutes à créer). Sinon, si tu préfères rester simple, je peux aussi mettre à jour les posts à la main de temps en temps, à toi de voir. Dans tous les cas, envoie-moi ton pseudo Instagram exact",
-          "Pour les avis Google : va sur ta fiche Google Maps/Google Business et clique sur \"Partager\", ça te donne un lien. Envoie-moi ce lien, une fois que je l'ai les avis s'affichent et se mettent à jour tout seuls, t'auras plus rien à faire ensuite",
+          "Passe ton compte Instagram en mode Professionnel (Business ou Créateur), gratuit, dans les réglages Instagram",
+          "Lie ce compte à ta Page Facebook (celle déjà en lien sur le site)",
+          "Envoie-moi ton pseudo Instagram exact",
+          "Va sur ta fiche Google Maps/Google Business, clique sur \"Partager\"",
+          "Envoie-moi ce lien",
         ],
       },
       {
