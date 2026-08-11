@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="./logo.png">
+<title>Le Dressing de Maïlys, V6 (avis Google réels via proxy)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --vert-fonce:#3E6D2A; --vert-clair:#7DAF74; --accent:#FFAD34; --creme:#F0EBD0;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--vert-fonce); background:var(--creme); line-height:1.6;}
+  img{max-width:100%; display:block;}
+  section{padding:80px 24px;}
+  h1,h2,h3{font-weight:800;}
+  h2{font-family:'Fredoka','Nunito',sans-serif; font-weight:700;}
+  .fade{opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
+  .fade.show{opacity:1; transform:translateY(0);}
+  .travel-left{opacity:0; --stagger-y:0px; transform:translateY(var(--stagger-y)) translateX(-70px) rotate(-6deg); transition:opacity .9s ease, transform .9s cubic-bezier(.16,1,.3,1);}
+  .travel-left.show{opacity:1; transform:translateY(var(--stagger-y)) translateX(0) rotate(0deg);}
+  .travel-right{opacity:0; --stagger-y:0px; transform:translateY(var(--stagger-y)) translateX(70px) rotate(6deg); transition:opacity .9s ease, transform .9s cubic-bezier(.16,1,.3,1);}
+  .travel-right.show{opacity:1; transform:translateY(var(--stagger-y)) translateX(0) rotate(0deg);}
+  .btn{display:inline-block; padding:14px 32px; background:var(--accent); color:var(--vert-fonce); text-decoration:none; border-radius:30px; font-weight:700; transition:.2s;}
+  .btn:hover{background:var(--vert-fonce); color:#fff; transform:scale(1.03);}
+
+  /* HERO PLEIN CADRE, option F : identique a l'option D mais cadrage image d'origine (78% center),
+     panneau "Le Dressing de Maïlys" visible, avec overlay vert. */
+  .hero{position:relative; min-height:100vh; display:flex; align-items:center; padding:64px; overflow:hidden;}
+  .hero-bg{position:absolute; left:0; right:0; top:-15%; height:130%; background:url('./Photos/20260624_102430.jpg') 78% center/cover; will-change:transform;}
+  .hero-overlay{position:absolute; inset:0; background:linear-gradient(180deg, rgba(62,109,42,.55), rgba(62,109,42,.75));}
+  .hero-content{position:relative; z-index:2; max-width:620px; text-align:left; color:#fff;}
+  .hero-content .logo-badge{width:260px; margin-bottom:22px; filter:drop-shadow(0 4px 14px rgba(0,0,0,.35));}
+  .hero-content .hero-title{display:flex; flex-direction:column; gap:14px; margin-bottom:28px;}
+  .hero-content .hero-title span{font-size:clamp(20px,3.4vw,38px); line-height:1.15; color:#fff; white-space:nowrap; text-shadow:0 1px 3px rgba(0,0,0,.45), 0 6px 20px rgba(0,0,0,.3);}
+  .hero-content .hero-title .hero-title-city{font-size:clamp(26px,4.4vw,50px);}
+
+  /* CONCEPT */
+  .concept{background:var(--creme);}
+  .concept-grid{max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center;}
+  .concept-grid img{border-radius:16px; box-shadow:0 12px 30px rgba(45,80,22,.15);}
+  .concept-block h2{color:var(--vert-fonce); font-size:32px; margin-bottom:16px;}
+  .concept-block p{font-size:17px; margin-bottom:16px;}
+
+  /* PHOTOS BOUTIQUE, V2 : 4 photos plus petites, en quinconce */
+  .photos{background:var(--vert-clair); color:#fff;}
+  .photos h2{text-align:center; font-size:32px; margin-bottom:10px;}
+  .photos-subtitle{text-align:center; font-size:16px; opacity:.9; margin-bottom:48px;}
+  .photos-grid{max-width:1000px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr); gap:20px;}
+  .photos-grid figure{overflow:hidden; border-radius:12px; box-shadow:0 10px 24px rgba(0,0,0,.2); aspect-ratio:3/4;}
+  .photos-grid figure:nth-child(2n){--stagger-y:28px;}
+  .photos-grid img{width:100%; height:100%; object-fit:cover; transition:transform .6s ease;}
+  .photos-grid figure:hover img{transform:scale(1.08) rotate(-1deg);}
+  .photo-placeholder{display:flex; align-items:center; justify-content:center; text-align:center; font-size:12.5px; line-height:1.4; padding:14px; border:2px dashed rgba(255,255,255,.6); background:rgba(0,0,0,.15); height:100%;}
+
+  /* RESEAUX */
+  .reseaux{background:var(--creme); text-align:center;}
+  .reseaux h2{font-size:32px; margin-bottom:8px;}
+  .reseaux-subtitle{color:#666; font-size:15px; margin-bottom:28px;}
+  .reseaux-links{display:flex; gap:20px; justify-content:center; flex-wrap:wrap;}
+  .reseaux-links a{background:#fff; border:2px solid var(--vert-fonce); color:var(--vert-fonce); padding:14px 28px; border-radius:30px; text-decoration:none; font-weight:700;}
+  .reseaux-links a:hover{background:var(--vert-fonce); color:#fff;}
+  .insta-fallback-grid{max-width:700px; margin:0 auto 32px; display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .insta-fallback-grid figure{overflow:hidden; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,.18); aspect-ratio:1/1;}
+  .insta-fallback-grid img{width:100%; height:100%; object-fit:cover; transition:transform .4s ease;}
+  .insta-fallback-grid figure:hover img{transform:scale(1.05);}
+
+  /* AVIS */
+  .avis{background:var(--vert-fonce); color:#fff; text-align:center;}
+  .avis h2{font-size:32px; margin-bottom:40px;}
+  .avis-grid{max-width:900px; margin:0 auto; display:flex; flex-wrap:wrap; justify-content:center; gap:24px;}
+  .avis-card{background:rgba(255,255,255,.08); border-radius:16px; padding:24px; text-align:left; flex:1 1 260px; max-width:280px;}
+  .avis-card .stars{color:var(--accent); font-size:18px; margin-bottom:10px;}
+  .avis-card p{font-size:14px; opacity:.9;}
+  .avis-card .name{margin-top:12px; font-weight:700; font-size:13px;}
+  .avis-note{margin-top:24px; font-size:13px; opacity:.7;}
+  .avis-cta{margin-top:24px;}
+
+  /* CONDITIONS */
+  .conditions{background:var(--creme); max-width:800px; margin:0 auto;}
+  .conditions h2{font-size:32px; margin-bottom:24px; text-align:center;}
+  .conditions ul{list-style:none;}
+  .conditions li{padding:14px 0 14px 32px; border-bottom:1px solid rgba(45,80,22,.15); position:relative;}
+  .conditions li::before{content:"✓"; position:absolute; left:0; color:var(--vert-fonce); font-weight:800;}
+
+  /* MAP */
+  .map{background:var(--vert-clair); text-align:center; color:#fff;}
+  .map h2{font-size:32px; margin-bottom:32px;}
+  .map iframe{width:100%; max-width:1000px; height:400px; border:0; border-radius:16px; box-shadow:0 12px 30px rgba(0,0,0,.2);}
+  .map .adresse{margin-top:20px; font-weight:700;}
+
+  /* CONTACT */
+  .contact{background:var(--vert-fonce); color:#fff;}
+  .contact-box{max-width:500px; margin:0 auto; text-align:center;}
+  .contact h2{font-size:32px; margin-bottom:24px;}
+  .contact form{display:flex; flex-direction:column; gap:14px; text-align:left;}
+  .contact input, .contact textarea{padding:12px 16px; border-radius:10px; border:0; font-family:inherit; font-size:15px;}
+  .contact textarea{min-height:120px; resize:vertical;}
+  .contact button{margin-top:8px;}
+
+  .back-to-top{position:fixed; right:20px; bottom:20px; width:46px; height:46px; border-radius:50%; background:var(--vert-fonce); color:#fff; border:none; font-size:20px; line-height:1; cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,.25); opacity:0; pointer-events:none; transition:opacity .25s ease, transform .2s ease; z-index:50;}
+  .back-to-top.show{opacity:1; pointer-events:auto;}
+  .back-to-top:hover{transform:scale(1.06);}
+
+  footer{text-align:center; padding:32px 24px; background:var(--vert-fonce); color:rgba(255,255,255,.6); font-size:13px;}
+
+  @media(max-width:768px){
+    .hero{padding:48px 28px;}
+    .hero-bg{background-position:55% center;}
+    .concept-grid{grid-template-columns:1fr;}
+    .photos-grid{grid-template-columns:repeat(2,1fr);}
+    .photos-grid figure:nth-child(2n){--stagger-y:0px;}
+    .avis-card{flex-basis:100%; max-width:340px;}
+    section{padding:56px 20px;}
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content fade show">
+    <img class="logo-badge" src="./logo-badge.png" alt="Le Dressing de Maïlys">
+    <h1 class="hero-title">
+      <span>Dépôt-vente et friperie</span>
+      <span class="hero-title-city">Mont-de-Marsan</span>
+    </h1>
+    <a href="#concept" class="btn">Découvrir la boutique</a>
+  </div>
+</section>
+
+<section class="concept" id="concept">
+  <div class="concept-grid fade">
+    <img src="./Photos/20260623_120633.jpg" alt="Intérieur de la boutique">
+    <div class="concept-block">
+      <h2>Notre concept</h2>
+      <p>Le Dressing de Maïlys habille toute la famille de 0 à 99 ans, en seconde main, en incluant les amoureux du vintage, les fans des basiques et des intemporels, les grandes et les petites tailles, les futurs parents mais aussi les futurs grands-parents, et tout cela, à petits prix !</p>
+      <a href="#conditions" class="btn">Voir les conditions de dépôt</a>
+    </div>
+  </div>
+</section>
+
+<section class="photos">
+  <h2 class="fade">Dans la boutique</h2>
+  <p class="photos-subtitle fade">Vêtements, chaussures et accessoires de mode</p>
+  <div class="photos-grid">
+    <figure class="travel-left"><img src="./Photos/20260624_132505.jpg" alt="Rayon enfant en boutique"></figure>
+    <figure class="travel-right"><img src="./Photos/20260624_132707.jpg" alt="Portant de vêtements en boutique"></figure>
+    <figure class="travel-left"><img src="./Photos/20260624_101753.jpg" alt="Lunettes et accessoires en boutique"></figure>
+    <figure class="travel-right"><img src="./Photos/20260807_130420.jpg" alt="Portant de jeans en boutique"></figure>
+  </div>
+</section>
+
+<section class="reseaux">
+  <h2 class="fade">Suivez-nous</h2>
+  <p class="reseaux-subtitle fade">Nos derniers posts Instagram</p>
+  <div class="fade" id="insta-widget-wrap" style="max-width:700px; margin:0 auto 32px;">
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-c2d80907-5d26-4525-992e-689dcfa5dd60" data-elfsight-app-lazy id="insta-widget"></div>
+  </div>
+  <div class="fade" id="insta-fallback" style="display:none;">
+    <div class="insta-fallback-grid">
+      <figure><img src="./Photos/instagram-post-1.png" alt="Post Instagram"></figure>
+      <figure><img src="./Photos/instagram-post-2.png" alt="Post Instagram"></figure>
+      <figure><img src="./Photos/instagram-post-3.png" alt="Post Instagram"></figure>
+    </div>
+    <div class="reseaux-links">
+      <a href="https://www.instagram.com/dressing_de_mailys/" target="_blank" rel="noopener">📷 Voir sur Instagram</a>
+    </div>
+  </div>
+  <div class="reseaux-links fade">
+    <a href="https://www.instagram.com/dressing_de_mailys/" target="_blank" rel="noopener">📷 Instagram</a>
+    <a href="https://www.facebook.com/people/Le-Dressing-de-Ma%C3%AFlys/61572916040087/" target="_blank" rel="noopener">👍 Facebook</a>
+  </div>
+</section>
+
+<section class="avis">
+  <h2 class="fade">Ce qu'on dit de nous</h2>
+  <div class="avis-grid fade" id="avis-grid"></div>
+  <p class="avis-note" id="avis-note"></p>
+  <div class="avis-cta fade">
+    <a class="btn" href="https://maps.app.goo.gl/qJPVNdqvCL5cuXr58" target="_blank" rel="noopener noreferrer">Voir tous les avis</a>
+  </div>
+</section>
+
+<section class="conditions" id="conditions">
+  <h2 class="fade">Conditions de dépôt-vente</h2>
+  <ul class="fade">
+    <li>Dépôt réservé aux client·e·s de la boutique, pour favoriser une économie circulaire locale</li>
+    <li>Dépôt uniquement sur rendez-vous, pris en boutique</li>
+    <li>Minimum 10 à 15 articles par dépôt (20 conseillés), maximum 50 pièces par personne</li>
+    <li>Vêtements et chaussures lavés, sans tache ni trou ni couture défaite ; bijoux et accessoires en bon état</li>
+    <li>La boutique s'occupe de l'estimation, l'étiquetage, le repassage et la mise en rayon</li>
+    <li>Contrat de 3 mois, commission de 50 %, paiement en fin de contrat ; devenir des invendus à définir dès la signature</li>
+  </ul>
+</section>
+
+<section class="map">
+  <h2 class="fade">Nous trouver</h2>
+  <iframe class="fade" loading="lazy" src="https://maps.google.com/maps?q=11%20Rue%20du%20Mirail%2C%2040000%20Mont-de-Marsan&output=embed"></iframe>
+  <p class="adresse fade">11 Rue du Mirail, 40000 Mont-de-Marsan</p>
+</section>
+
+<section class="contact">
+  <div class="contact-box fade">
+    <h2>Une question ?</h2>
+    <form action="#" method="POST">
+      <input type="text" name="nom" placeholder="Votre nom" required>
+      <input type="email" name="email" placeholder="Votre email" required>
+      <textarea name="message" placeholder="Votre message" required></textarea>
+      <button type="submit" class="btn">Envoyer</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  LE DRESSING DE MAÏLYS · SIRET 938 196 508 00015 · 11 rue du Mirail, 40000 Mont-de-Marsan · contact@dressing-de-mailys.fr
+</footer>
+
+<button type="button" class="back-to-top" aria-label="Retour en haut de page" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('show'); });
+  }, {threshold:.15});
+  document.querySelectorAll('.fade:not(.show), .travel-left, .travel-right').forEach(el=>obs.observe(el));
+
+  // Parallaxe hero : le fond monte moins vite que le contenu au scroll
+  (function(){
+    const heroBg = document.querySelector('.hero-bg');
+    if(!heroBg || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let ticking = false;
+    function update(){
+      heroBg.style.transform = `translate3d(0, ${window.scrollY * 0.3}px, 0)`;
+      ticking = false;
+    }
+    window.addEventListener('scroll', () => {
+      if(!ticking){ requestAnimationFrame(update); ticking = true; }
+    }, {passive:true});
+  })();
+
+  // "Mont-de-Marsan" doit occuper la meme largeur rendue que "Depot-vente et friperie" :
+  // mesure reelle des deux lignes (pas un facteur d'agrandissement devine), recalcule
+  // sa taille de police pour matcher exactement, refait au resize et une fois les
+  // polices chargees (sinon la mesure initiale se fait sur la police de repli).
+  (function(){
+    function matchTitleWidth(){
+      var line1 = document.querySelector('.hero-title span:not(.hero-title-city)');
+      var line2 = document.querySelector('.hero-title-city');
+      if(!line1 || !line2) return;
+      line2.style.fontSize = '';
+      var w1 = line1.getBoundingClientRect().width;
+      var w2 = line2.getBoundingClientRect().width;
+      if(!w1 || !w2) return;
+      var currentSize = parseFloat(getComputedStyle(line2).fontSize);
+      line2.style.fontSize = (currentSize * (w1 / w2) * 1.06) + 'px';
+    }
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(matchTitleWidth);
+    } else {
+      window.addEventListener('load', matchTitleWidth);
+    }
+    window.addEventListener('resize', matchTitleWidth);
+  })();
+
+  // Avis Google : recuperes via le proxy VPS (reviews_sort=newest cote serveur,
+  // CORS empechant un appel direct au REST Places depuis un site statique).
+  // Tant que le proxy n'est pas deploye, repli sur des avis d'exemple.
+  (function(){
+    var grid = document.getElementById('avis-grid');
+    var note = document.getElementById('avis-note');
+    if(!grid) return;
+
+    function stars(rating){
+      var full = Math.round(rating);
+      return '★★★★★☆☆☆☆☆'.slice(5 - full, 10 - full);
+    }
+
+    function render(reviews){
+      grid.innerHTML = reviews.filter(function(r){ return r.text; }).map(function(r){
+        return '<div class="avis-card"><div class="stars">' + stars(r.rating) + '</div>' +
+          '<p>« ' + r.text + ' »</p><div class="name">' + r.author + '</div></div>';
+      }).join('');
+    }
+
+    fetch('https://api.dressing-de-mailys.fr/api/google-reviews')
+      .then(function(res){ if(!res.ok) throw new Error('proxy indisponible'); return res.json(); })
+      .then(function(data){ render(data.reviews); note.textContent = ''; })
+      .catch(function(){
+        render([
+          { rating: 5, text: "Exemple d'avis, en attente du branchement du proxy Google (VPS)", author: 'Une cliente' },
+          { rating: 5, text: "Exemple d'avis, en attente du branchement du proxy Google (VPS)", author: 'Une cliente' },
+          { rating: 5, text: "Exemple d'avis, en attente du branchement du proxy Google (VPS)", author: 'Une cliente' },
+          { rating: 5, text: "Exemple d'avis, en attente du branchement du proxy Google (VPS)", author: 'Une cliente' },
+          { rating: 5, text: "Exemple d'avis, en attente du branchement du proxy Google (VPS)", author: 'Une cliente' }
+        ]);
+        note.textContent = 'Avis d\'exemple : le proxy Google (VPS) sera branché à la mise en prod du site, tri par date une fois live.';
+      });
+  })();
+
+  // Widget Instagram (Elfsight) : si le quota de vues du plan est depasse, Elfsight
+  // desactive le widget pour les visiteurs (rendu vide, sans message d'erreur visible).
+  // On bascule alors sur un repli statique (3 vrais posts + bouton vers Instagram).
+  (function(){
+    var wrap = document.getElementById('insta-widget-wrap');
+    var widget = document.getElementById('insta-widget');
+    var fallback = document.getElementById('insta-fallback');
+    if(!wrap || !widget || !fallback) return;
+    setTimeout(function(){
+      if(!widget.children.length){
+        wrap.style.display = 'none';
+        fallback.style.display = 'block';
+      }
+    }, 5000);
+  })();
+
+  // Bouton retour en haut : visible apres avoir quitte le hero
+  (function(){
+    var btn = document.querySelector('.back-to-top');
+    if(!btn) return;
+    function toggle(){ btn.classList.toggle('show', window.scrollY > window.innerHeight * 0.6); }
+    window.addEventListener('scroll', toggle, {passive:true});
+    toggle();
+  })();
+</script>
+</body>
+</html>

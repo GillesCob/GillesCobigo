@@ -17,6 +17,8 @@ export interface IPreviewRound {
   changesApplied?: string[];
   /** Commentaire de Gilles sur ce round (limites connues, points encore en travaux). */
   ownerNote?: string;
+  /** Aperçus visuels illustrant les points d'ownerNote (ex. rendu du repli automatique) : affichés après ownerNote, jamais mélangés à l'avant/après principal de `proposals`. */
+  supportingVisuals?: IPreviewProposal[];
 }
 
 export interface IPreviewProject {
@@ -41,10 +43,35 @@ export const previewProjects: Record<string, IPreviewProject> = {
     projectName: "Le Dressing de Maïlys",
     logo: `${BASE}/logo.png`,
     contactName: "Mylène",
-    currentRound: "V5",
-    nextAction: "Envoie-moi le lien de ta fiche Google Maps (pour Instagram j'ai tout ce qu'il me faut)",
+    currentRound: "V6",
+    nextAction: "Une seule question pour toi cette fois : plan gratuit ou payant pour Instagram (détails dans la V6) ?",
     feedbackFormId: "xgoggnej",
     rounds: [
+      {
+        round: "V6",
+        date: "11 août 2026",
+        proposals: [
+          { label: "V5", screenshot: `${BASE}/screenshots/v7.png`, htmlPath: `${BASE}/mockup-v7.html`, group: "Pour comparer (avant)" },
+          { label: "V6 · avis Google et Instagram réels", screenshot: `${BASE}/screenshots/v8.png`, htmlPath: `${BASE}/mockup-v8.html`, group: "V6 : à valider" },
+        ],
+        changesApplied: [
+          "Avis Google branchés en vrai (les 5 plus récents envoyés par Google, mis à jour automatiquement toutes les heures), avec un bouton \"Voir tous les avis\" qui renvoie vers ta fiche Google Maps",
+          "Posts Instagram branchés en vrai eux aussi (plus figés comme sur la V5), mis à jour automatiquement",
+        ],
+        missingInfo: [
+          "Ta décision sur le plan Instagram : je suis parti sur le plan gratuit pour l'instant (détails et limites dans ma précision ci-dessous), dis-moi si tu préfères passer sur le payant",
+          "Si on reste sur le gratuit : les 3 photos affichées quand le quota est dépassé sont pour l'instant celles que tu m'avais envoyées pour la V5, elles ne changeront plus toutes seules tant que je ne les remplace pas à la main. Tu veux m'envoyer 3 photos précises que tu préfères voir dans ce cas-là, ou je garde ces 3-là ?",
+        ],
+        ownerNote:
+          "Deux limites à connaître avant de valider :\n\n- Google ne nous donne jamais plus de 5 avis (c'est une limite fixe de leur API, impossible à contourner), et parmi ces 5 un avis sans commentaire écrit (juste une note en étoiles) n'est pas affiché : ça peut arriver que tu voies moins de 5 avis à l'écran selon le moment, ce n'est pas un bug (aperçus avec 4, 3, 2 et 1 avis ci-dessous, pour te donner une idée du rendu dans chaque cas).\n\n- Le widget Instagram est sur un plan gratuit : un badge \"Free Instagram Feed Widget\" reste visible sous les posts, et l'affichage est limité à 200 vues par mois. Au-delà, la section Instagram bascule automatiquement sur 3 photos fixes (qui ne se mettent pas à jour toutes seules, contrairement au reste) et un lien direct vers ton compte (aperçu ci-dessous, \"Si le quota Instagram gratuit est dépassé\") le temps que ça se réinitialise le mois suivant. Passer sur le plan payant (4$/mois, environ 3,70€) retire le badge et cette limite, à toi de voir si ça vaut le coup pour toi.",
+        supportingVisuals: [
+          { label: "Si le quota Instagram gratuit est dépassé", screenshot: `${BASE}/screenshots/v8-instagram-repli.png`, htmlPath: `${BASE}/mockup-v8-instagram-repli.html`, group: "Aperçu du repli automatique" },
+          { label: "4 avis avec commentaire", screenshot: `${BASE}/screenshots/v8-avis-4.png`, htmlPath: `${BASE}/mockup-v8-avis-4.html`, group: "Aperçu selon le nombre d'avis avec commentaire" },
+          { label: "3 avis avec commentaire", screenshot: `${BASE}/screenshots/v8-avis-3.png`, htmlPath: `${BASE}/mockup-v8-avis-3.html`, group: "Aperçu selon le nombre d'avis avec commentaire" },
+          { label: "2 avis avec commentaire", screenshot: `${BASE}/screenshots/v8-avis-2.png`, htmlPath: `${BASE}/mockup-v8-avis-2.html`, group: "Aperçu selon le nombre d'avis avec commentaire" },
+          { label: "1 avis avec commentaire", screenshot: `${BASE}/screenshots/v8-avis-1.png`, htmlPath: `${BASE}/mockup-v8-avis-1.html`, group: "Aperçu selon le nombre d'avis avec commentaire" },
+        ],
+      },
       {
         round: "V5",
         date: "10 août 2026",
@@ -58,10 +85,7 @@ export const previewProjects: Record<string, IPreviewProject> = {
           "Mentions légales mises à jour avec ton SIRET et le nom exact de ta société",
           "Ton compte Instagram (dressing_de_mailys, déjà public) me suffit pour la suite, plus besoin de rien de ton côté sur ce point",
         ],
-        missingInfo: [
-          "Va sur ta fiche Google Maps/Google Business, clique sur \"Partager\"",
-          "Envoie-moi ce lien",
-        ],
+        missingInfo: [],
         clientFeedback:
           "Oups! Je n'avais pas vu!\nJ'en profite pour t'envoyer le SIRET : 93819650800015. Le nom complète c'est LE DRESSING DE MAILYS\nOn peut agrandir un tout petit plus le logo encore stp?\nSi je passe en pro sur Instagram,  je n'ai plus accès aux musiques libres de droit malheureusement 😪\nAux musiques non libres, pardon",
       },
