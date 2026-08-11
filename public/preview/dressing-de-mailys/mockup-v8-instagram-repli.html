@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="./logo.png">
+<title>Aperçu du repli Instagram (quota dépassé)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --vert-fonce:#3E6D2A; --vert-clair:#7DAF74; --accent:#FFAD34; --creme:#F0EBD0; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--vert-fonce); background:var(--creme); line-height:1.6;}
+  img{max-width:100%; display:block;}
+  section{padding:80px 24px;}
+  h2{font-family:'Fredoka','Nunito',sans-serif; font-weight:700; font-size:32px; margin-bottom:8px;}
+  .btn{display:inline-block; padding:14px 32px; background:var(--accent); color:var(--vert-fonce); text-decoration:none; border-radius:30px; font-weight:700;}
+  .reseaux{background:var(--creme); text-align:center;}
+  .reseaux-subtitle{color:#666; font-size:15px; margin-bottom:28px;}
+  .insta-fallback-grid{max-width:700px; margin:0 auto 32px; display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .insta-fallback-grid figure{overflow:hidden; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,.18); aspect-ratio:1/1;}
+  .insta-fallback-grid img{width:100%; height:100%; object-fit:cover; transition:transform .4s ease;}
+  .insta-fallback-grid figure:hover img{transform:scale(1.05);}
+  .reseaux-links{display:flex; gap:20px; justify-content:center; flex-wrap:wrap;}
+  .tag-repli{display:inline-block; margin-bottom:24px; padding:6px 16px; border-radius:30px; background:var(--vert-fonce); color:#fff; font-size:13px; font-weight:700;}
+  .reseaux-note{margin-top:20px; font-size:13px; color:#666;}
+</style>
+</head>
+<body>
+<section class="reseaux">
+  <span class="tag-repli">Aperçu : ce que voit un visiteur si le quota gratuit est dépassé</span>
+  <h2>Suivez-nous</h2>
+  <p class="reseaux-subtitle">Nos derniers posts Instagram</p>
+  <div class="insta-fallback-grid">
+    <figure><img src="./Photos/instagram-post-1.png" alt="Post Instagram"></figure>
+    <figure><img src="./Photos/instagram-post-2.png" alt="Post Instagram"></figure>
+    <figure><img src="./Photos/instagram-post-3.png" alt="Post Instagram"></figure>
+  </div>
+  <div class="reseaux-links">
+    <a class="btn" href="https://www.instagram.com/dressing_de_mailys/" target="_blank" rel="noopener">📷 Voir sur Instagram</a>
+  </div>
+  <p class="reseaux-note">Ces 3 photos sont fixes : elles ne se mettent pas à jour toutes seules, contrairement au flux Instagram habituel.</p>
+</section>
+</body>
+</html>
