@@ -1,0 +1,82 @@
+export const frontmatter = {
+  title: "Sur Cerithe, je remplis un tableau avant d'écrire une ligne de code",
+  date: "2026-08-13T15:00:00",
+  description:
+    "Comment le cadrage d'une nouvelle fonctionnalité sur Cerithe est passé d'une discussion en prose à un tableau structuré, rempli champ par champ avant tout code. Ce que ce tableau oblige à trancher sur le papier et ce qui reste ouvert avant de coder la fonctionnalité des pièces.",
+  tags: ["cerithe", "claude code", "ia agentique", "architecture"],
+  post: `Avant d'écrire la moindre ligne de code sur Cerithe, je remplis un tableau.
+
+Je viens de cadrer une nouvelle fonctionnalité, ajouter des pièces à un bien, sans avoir encore ouvert l'éditeur de code. Chaque champ d'un formulaire passe désormais par une grille à 5 colonnes avant d'exister en vrai.
+
+Dans l'article, je documente :
+- Une modale de pièces (type, nom, niveau) entièrement cadrée en tableau avant la moindre ligne de code
+- Pourquoi chaque champ a maintenant 5 colonnes à remplir avant le code : requis, création, édition, effaçable, affiché
+- Les 2 questions encore ouvertes avant de pouvoir coder la fonctionnalité
+
+L'article dans le 1er commentaire.
+
+#dev #claudecode #architecture #cerithe #agentique`,
+  headings: [
+    { level: 2, text: "Le cadrage devient un tableau, pas une discussion", id: "le-cadrage-devient-un-tableau" },
+    { level: 2, text: "Trois tableaux avant la moindre ligne de code", id: "trois-tableaux-avant-la-moindre-ligne-de-code" },
+    { level: 2, text: "L'exemple des pièces", id: "lexemple-des-pieces" },
+    { level: 2, text: "Ce qui reste ouvert", id: "ce-qui-reste-ouvert" },
+  ],
+};
+
+Sur <a href="https://cerithe.gillescobigo.com" target="_blank" rel="noopener"><em>Cerithe</em></a>, mon carnet de santé numérique du bâtiment, chaque nouvelle fonctionnalité passe par une étape de cadrage avant la moindre ligne de code : à quoi ça sert, comment ça se comporte écran par écran, ce qui reste volontairement hors périmètre. Cette étape existait déjà. Ce qui change, c'est sa forme : d'une discussion tenue en prose, elle est devenue un tableau rempli dans une page de suivi dédiée au projet, avant que le code existe.
+
+## Le cadrage devient un tableau, pas une discussion
+
+Décrire en prose le comportement attendu d'un écran force déjà à trancher beaucoup de choses avant de coder : ce qui se passe au clic, ce qui reste hors périmètre, les cas limites qui comptent. Mais une phrase bien écrite peut très bien décrire un champ sans jamais vérifier qu'il existe un input pour ce champ dans le vrai formulaire ou que ce champ peut réellement être vidé une fois rempli. La prose raconte un comportement. Elle ne vérifie pas une couverture.
+
+La différence tient dans le format. Un tableau à une ligne par champ oblige à répondre à des questions précises pour chacun, une par une, avant que le formulaire existe : ce champ est-il requis par le schéma de validation backend, un input permet-il de le remplir à la création, un autre de le modifier ensuite, vider ce champ le met-il vraiment à zéro en base ou reste-t-il silencieusement ignoré, la valeur est-elle affichée quelque part une fois renseignée. Cinq colonnes, cinq façons différentes qu'un champ a de rester à moitié fait.
+
+## Trois tableaux avant la moindre ligne de code
+
+Concrètement, une fonctionnalité qui touche des champs existants ou nouveaux passe maintenant par trois tableaux, remplis à l'étape de cadrage, avant tout code.
+
+Le premier est la couverture des champs elle-même : un tableau par formulaire touché, une ligne par champ, les cinq colonnes décrites plus haut. Le deuxième liste les effets de bord côté backend, table par table : quel modèle est créé ou modifié, avec quelles valeurs exactes pour chaque champ et une case pour confirmer que ces valeurs ont bien été vérifiées en base une fois le code écrit, jamais juste supposées correctes. Le troisième recense les endpoints existants que la fonctionnalité modifie et, pour chacun, tous les endroits du frontend qui l'appellent déjà aujourd'hui, pas seulement ceux visés par la fonctionnalité en cours.
+
+Les trois se remplissent dans l'ordre, avant d'ouvrir le moindre fichier de code. Un champ qui n'a pas de case cochée dans le premier tableau ou un appelant qui manque dans le troisième se voit avant d'être un bug en production plutôt qu'après.
+
+## L'exemple des pièces
+
+La fonctionnalité en cours de cadrage aujourd'hui ajoute des pièces aux biens : une modale permet de cocher des types de pièces par niveau (chambre, salon, salle de bain) et de préciser une quantité par type, puis crée toutes les pièces demandées en une fois. Avant d'écrire ce composant, voici le tableau de couverture des champs tel qu'il est rempli pour cette modale.
+
+```
+Champ    Requis   Création   Édition   Effaçable   Affiché
+type     Oui      ✓          n/a       n/a         ✓
+name     Oui      ✓          n/a       n/a         ✓
+level    Oui      ✓          n/a       n/a         ✓
+```
+
+Chaque colonne cochée est une décision prise avant le code, pas un constat après coup. La colonne Édition est à "n/a" pour les trois champs parce que la modale ne sert qu'à ajouter, jamais à modifier une pièce déjà créée : ce comportement doit exister, mais ailleurs, sur l'écran détail d'une pièce, avec son propre tableau. Le nom n'est pas un champ libre saisi par l'utilisateur, il est généré automatiquement (le type suivi d'un numéro qui compte les pièces du même type déjà présentes sur le bien), une décision qui aurait pu passer inaperçue si elle n'avait pas eu sa propre ligne à remplir.
+
+Le deuxième tableau, les effets de bord backend, force la même précision côté base de données, avant qu'un seul endpoint existe :
+
+```
+Room.create (plusieurs lignes, une transaction)
+  type  = type coché dans le bloc du niveau
+  name  = généré (type + numéro suivant disponible sur le bien)
+  level = niveau du bloc de la modale dans lequel le type a été coché
+```
+
+Trois valeurs, trois sources précisées, avant que la moindre route ne soit écrite. Un détail comme la génération du nom qui compte "sur le bien" et pas "sur le niveau" (pour éviter deux pièces identiques appelées pareil sur des niveaux différents) doit être décidé ici, sur cette ligne, plutôt que découvert en testant l'app une fois codée.
+
+## Ce qui reste ouvert
+
+Le cadrage de cette fonctionnalité n'est pas terminé. Deux questions restent tranchées nulle part pour l'instant : le type d'une pièce est-il modifiable après sa création ou fixé définitivement au moment où elle est ajoutée ? Et l'upload d'un document depuis l'écran d'une pièce mérite-t-il son propre tableau de couverture ou reste-t-il une simple ligne d'effet de bord sur le formulaire existant ? Tant que ces deux réponses ne sont pas données, le troisième tableau (les endpoints existants et leurs appelants frontend) et le mockup réel de la modale ne sont pas construits non plus.
+
+Rien de tout ça n'est codé. Et c'est précisément le point : la partie qui coûte le plus cher à corriger après coup, celle qui décide comment un champ se comporte, est aussi celle qui se règle le moins cher, sur un tableau, avant que le code existe.
+
+<div class="flex flex-wrap gap-3 mt-8">
+  <a href="https://cerithe.gillescobigo.com" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+    <img src="/images/cerithe-logo.png" alt="" width="32" height="32" class="rounded-full border border-input bg-white p-0.5" />
+    Voir Cerithe en ligne
+  </a>
+  <a href="https://github.com/GillesCob/Cerithe" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.79-.25.79-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.36-3.87-1.36-.53-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.72-1.53-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.08.78 2.17 0 1.57-.01 2.83-.01 3.22 0 .3.21.66.8.55A11.5 11.5 0 0 0 23.5 12c0-6.35-5.15-11.5-11.5-11.5Z"/></svg>
+    Voir le code sur GitHub
+  </a>
+</div>
