@@ -10,6 +10,7 @@ import Contact from "@/pages/Contact";
 import VideoLanding from "@/pages/VideoLanding";
 import PreviewHome from "@/pages/PreviewHome";
 import PreviewRound from "@/pages/PreviewRound";
+import CaseStudyRound from "@/pages/CaseStudyRound";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import ScrollReset from "@/components/layout/ScrollReset";
@@ -17,7 +18,10 @@ import ScrollReset from "@/components/layout/ScrollReset";
 export default function App() {
   const location = useLocation();
   // Pages partagées telles quelles par lien direct (prospection vidéo, preview client) : sans navbar ni footer du site.
-  const isBareLayout = location.pathname.startsWith("/v/") || location.pathname.startsWith("/preview/");
+  const isBareLayout =
+    location.pathname.startsWith("/v/") ||
+    location.pathname.startsWith("/preview/") ||
+    location.pathname.startsWith("/cas-client/");
   // Les pages articles ont une sidebar + un sommaire en position fixed sur toute la hauteur
   // de l'écran : un footer en dessous se ferait toujours recouvrir par ces deux panneaux.
   const hideFooter = location.pathname.startsWith("/articles") || isBareLayout;
@@ -40,6 +44,7 @@ export default function App() {
           <Route path="/v/:token" element={<VideoLanding />} />
           <Route path="/preview/:project/:secret" element={<PreviewHome />} />
           <Route path="/preview/:project/:secret/:round" element={<PreviewRound />} />
+          <Route path="/cas-client/:round" element={<CaseStudyRound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

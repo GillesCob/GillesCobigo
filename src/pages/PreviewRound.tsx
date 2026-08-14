@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { ArrowLeft, ExternalLink, Sun, Moon } from "lucide-react";
+import { ArrowLeft, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PreviewVersionsNav from "@/components/preview/PreviewVersionsNav";
 import PreviewCredit from "@/components/preview/PreviewCredit";
-import { previewProjects, type IPreviewProposal } from "@/data/previewProjects";
+import { RoundContent } from "@/components/preview/RoundContent";
+import GuideCallout from "@/components/preview/GuideCallout";
+import { previewProjects } from "@/data/previewProjects";
 import { useThemeStore } from "@/store/themeStore";
 import { usePreviewFavicon } from "@/hooks/usePreviewFavicon";
 import { usePreviewTitle } from "@/hooks/usePreviewTitle";
@@ -13,88 +15,6 @@ import NotFound from "@/pages/NotFound";
 
 interface IFeedbackForm {
   message: string;
-}
-
-/** Regroupe les propositions consécutives partageant le même `group` (ex. "Pour comparer" vs "À choisir"), pour distinguer visuellement une proposition de référence des vrais choix à trancher. Sans `group`, tout reste dans un seul groupe sans en-tête (comportement inchangé pour les rounds existants). */
-function groupProposals(proposals: IPreviewProposal[]) {
-  const groups: { label: string | null; items: IPreviewProposal[] }[] = [];
-  for (const p of proposals) {
-    const label = p.group ?? null;
-    const last = groups[groups.length - 1];
-    if (last && last.label === label) {
-      last.items.push(p);
-    } else {
-      groups.push({ label, items: [p] });
-    }
-  }
-  return groups;
-}
-
-function ProposalCard({ p }: { p: IPreviewProposal }) {
-  return (
-    <div className="rounded-xl border border-border p-4 bg-card">
-      <p className="text-sm font-semibold mb-3">{p.label}</p>
-      <a
-        href={p.htmlPath}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block rounded-lg border border-border overflow-hidden mb-3 bg-muted/30"
-      >
-        <img src={p.screenshot} alt={`Aperçu ${p.label}`} className="w-full h-auto" loading="lazy" />
-      </a>
-      <Button asChild variant="outline" size="sm">
-        <a href={p.htmlPath} target="_blank" rel="noopener noreferrer">
-          <ExternalLink size={14} className="mr-1" /> Ouvrir dans un nouvel onglet
-        </a>
-      </Button>
-    </div>
-  );
-}
-
-function ProposalsGrid({ proposals }: { proposals: IPreviewProposal[] }) {
-  const groups = groupProposals(proposals);
-  // Comparaison pure (un seul item par groupe, ex. "avant" vs "après") : les groupes
-  // partagent une seule ligne de grille au lieu d'empiler chaque groupe l'un sous l'autre,
-  // pour que l'avant et l'après soient cote a cote sur laptop plutot que separes par un
-  // groupe qui laisse la moitie de sa ligne vide. Un groupe avec plusieurs items (ex. un
-  // choix entre 4 polices) garde son propre bloc avec son titre partage.
-  const isPureComparison = groups.length > 1 && groups.every((g) => g.items.length === 1);
-
-  if (isPureComparison) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {groups.map((group) => (
-          <div key={group.items[0].label}>
-            {group.label && (
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-                {group.label}
-              </p>
-            )}
-            <ProposalCard p={group.items[0]} />
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  return (
-    <>
-      {groups.map((group, i) => (
-        <div key={group.label ?? `group-${i}`} className={i > 0 ? "mt-8" : undefined}>
-          {group.label && (
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-              {group.label}
-            </p>
-          )}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {group.items.map((p) => (
-              <ProposalCard key={p.label} p={p} />
-            ))}
-          </div>
-        </div>
-      ))}
-    </>
-  );
 }
 
 export default function PreviewRound() {
@@ -121,6 +41,11 @@ export default function PreviewRound() {
   }
 
   if (!project || !entry) return <NotFound />;
+
+  // Bulles d'aide affichees tant que le projet est en phase de decouverte (cf GuideCallout.tsx) :
+  // coldIntro absent des donnees une fois contractualise, les bulles disparaissent avec, sans
+  // toggle separe a gerer.
+  const showGuide = Boolean(project.coldIntro);
 
   async function onSubmit(data: IFeedbackForm) {
     setSubmitError(null);
@@ -173,60 +98,27 @@ export default function PreviewRound() {
             />
 
             <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-2 mb-10">
-              <span className="font-mono text-lg font-semibold">{entry.round}</span>
-              <span className="text-sm text-muted-foreground">{entry.date}</span>
-            </div>
+            <RoundContent
+              entry={entry}
+              contactName={project.contactName}
+              showGuide={showGuide}
+              guideTexts={{ proposals: "Clique ici pour voir notre proposition de site" }}
+            />
 
-            <div className="mb-10">
-              <ProposalsGrid proposals={entry.proposals} />
-            </div>
-
-            {entry.changesApplied && entry.changesApplied.length > 0 && (
-              <div className="rounded-xl border border-border p-6 bg-card mb-8">
-                <h2 className="text-sm font-semibold mb-3">Ce qui a été pris en compte suite à ton retour</h2>
-                <ul className="text-sm text-muted-foreground space-y-1.5 list-disc list-inside">
-                  {entry.changesApplied.map((line) => (
-                    <li key={line}>{line}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {entry.ownerNote && (
-              <div className="rounded-xl border border-border p-6 bg-card mb-8">
-                <h2 className="text-sm font-semibold mb-3">Précision de ma part</h2>
-                <p className="text-sm text-muted-foreground whitespace-pre-line">{entry.ownerNote}</p>
-              </div>
-            )}
-
-            {entry.supportingVisuals && entry.supportingVisuals.length > 0 && (
-              <div className="mb-8">
-                <ProposalsGrid proposals={entry.supportingVisuals} />
-              </div>
-            )}
-
-            {entry.clientFeedback && (
-              <div className="rounded-xl bg-muted/40 border border-border p-6 mb-8">
-                <p className="text-xs font-semibold text-muted-foreground mb-1.5">Retour de {project.contactName}</p>
-                <p className="text-sm whitespace-pre-line">{entry.clientFeedback}</p>
-              </div>
-            )}
-
-            {entry.missingInfo.length > 0 && (
-              <div className="rounded-xl border border-border p-6 bg-card mb-8">
-                <h2 className="text-sm font-semibold mb-3">Ce qu'il me manque pour aller plus loin</h2>
-                <ul className="text-sm text-muted-foreground space-y-1.5 list-disc list-inside">
-                  {entry.missingInfo.map((line) => (
-                    <li key={line}>{line}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
+            {/* Tu/vous : "showGuide" (present uniquement quand project.coldIntro est defini, cf plus
+                haut) sert aussi de flag de registre. Mylene (coldIntro absent) reste au tutoiement
+                deja etabli avec elle. Un prospect a froid est vouvoye (sobre/pro, decision du 14/08). */}
+            {/* La phrase "Merci de me faire ... retours via ce formulaire" a ete retiree cote
+                prospect (showGuide) : h2 suffit deja a expliquer le bloc, la repeter en plus de la
+                bulle faisait 3 fois "retours" d'affilee. Conservee cote Mylene (jamais retouchee). */}
+            {showGuide && <GuideCallout>Ici, vous pourrez me faire vos retours</GuideCallout>}
             <div className="rounded-xl border border-border p-6 bg-card">
-              <h2 className="text-sm font-semibold mb-1.5">Tes retours concernant la {entry.round}</h2>
-              <p className="text-sm text-muted-foreground mb-4">Merci de me faire tes retours via ce formulaire.</p>
+              <h2 className={showGuide ? "text-sm font-semibold mb-3" : "text-sm font-semibold mb-1.5"}>
+                {showGuide ? "Vos" : "Tes"} retours concernant la {entry.round}
+              </h2>
+              {!showGuide && (
+                <p className="text-sm text-muted-foreground mb-4">Merci de me faire tes retours via ce formulaire.</p>
+              )}
               {submitted ? (
                 <p className="text-sm text-muted-foreground" role="status">
                   Merci, c'est bien reçu.
@@ -234,7 +126,7 @@ export default function PreviewRound() {
               ) : (
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
                   <label htmlFor="feedback-message" className="sr-only">
-                    Ton retour sur cette version
+                    {showGuide ? "Votre retour sur cette version" : "Ton retour sur cette version"}
                   </label>
                   <textarea
                     {...messageField}

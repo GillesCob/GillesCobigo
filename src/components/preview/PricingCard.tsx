@@ -1,0 +1,179 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+
+// Tarifs pilote Boutiques (cadres le 14/08, cf Projets/Boutiques/workflow-cc.md) : chiffres a
+// ajuster une fois les premiers clients reels convertis, pas figes dans le marbre. La case a
+// cocher ne declenche aucun achat (V1 statique, pas de paiement en ligne) : elle sert uniquement a
+// comparer visuellement les deux scenarios avant contact.
+// Volontairement condense (retex du 14/08 : premiere version jugee trop dense) : chaque idee tient
+// en 1 ligne courte, le detail (variations possibles par version, devis sur mesure) part vers
+// l'exemple concret plutot que d'etre explique en toutes lettres ici.
+const BASE_PRICE = 500;
+const DOMAIN_PRICE_YEAR = 20;
+const ADHOC_MODIF_PRICE = 40;
+const SUBSCRIPTION_PRICE_YEAR = 75;
+const SUBSCRIPTION_MODIF_PRICE = 30;
+const SUBSCRIPTION_INCLUDED_MODIFS = 2;
+// Meme endpoint Formspree que Contact.tsx (pas de compte dedie a creer pour l'instant, cf
+// "ne pas construire d'outil par anticipation" dans workflow-cc.md) : le payload precise
+// explicitement la source pour ne pas confondre un lead Boutiques chaud avec un contact generique
+// du portfolio dans la meme boite mail.
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/mykarjar";
+
+export default function PricingCard({ projectName, phone }: { projectName: string; phone?: string }) {
+  const [withSubscription, setWithSubscription] = useState(false);
+  // Le clic sur "Ça m'intéresse" ouvre la modale mais n'envoie rien : on confirme d'abord le canal
+  // de rappel dedans, un seul envoi Formspree au clic sur "Confirmer" (retex du 14/08 : 2 envois
+  // separes, un a l'interet et un a la correction du numero, faisait doublon cote Gilles).
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [contactValue, setContactValue] = useState(phone ?? "");
+  const [confirmed, setConfirmed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  function openDialog() {
+    setDialogOpen(true);
+  }
+
+  async function handleConfirm() {
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          source: "Boutiques - PricingCard",
+          projet: projectName,
+          formule: withSubscription ? "Avec abonnement Sérénité" : "Sans abonnement",
+          contact: contactValue || "Non précisé",
+          message: `${projectName} est intéressé(e) par son site (${
+            withSubscription ? "avec" : "sans"
+          } abonnement Sérénité). Rappel : ${contactValue || "canal non précisé"}.`,
+        }),
+      });
+      if (res.ok) {
+        setConfirmed(true);
+      } else {
+        setSubmitError("Envoi échoué, réessayez ou écrivez-moi directement.");
+      }
+    } catch {
+      setSubmitError("Envoi échoué, réessayez ou écrivez-moi directement.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <div className="rounded-2xl border border-border bg-card p-6 max-w-md mx-auto text-left">
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">Tarif</p>
+      <p className="text-3xl font-bold text-foreground mb-1">{BASE_PRICE}€</p>
+      <p className="text-sm text-muted-foreground mb-1">
+        Site + 5 allers-retours (
+        <Link to="/cas-client/v3" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">
+          plusieurs variations possibles par version
+        </Link>
+        ) + mise en ligne.
+      </p>
+      <p className="text-xs text-muted-foreground mb-4">
+        Tarif pilote : nombre de commerces accompagnés limité à ce prix pendant le lancement.
+      </p>
+
+      <label className="flex items-start gap-3 rounded-xl border border-border p-3 mb-2 cursor-pointer hover:border-foreground/30 transition-colors">
+        <input
+          type="checkbox"
+          checked={withSubscription}
+          onChange={(e) => setWithSubscription(e.target.checked)}
+          className="mt-0.5 h-4 w-4 rounded border-input accent-foreground"
+        />
+        <span className="block text-sm text-foreground">
+          <span className="font-medium">Abonnement Sérénité, {SUBSCRIPTION_PRICE_YEAR}€/an</span>
+          <span className="text-muted-foreground">
+            {" "}
+            : renouvellement du nom de domaine, {SUBSCRIPTION_INCLUDED_MODIFS} modifs/an, prioritaire.
+          </span>
+        </span>
+      </label>
+      {!withSubscription && (
+        <p className="text-xs text-muted-foreground mb-4">
+          Abonnement rentable dès la 2ᵉ modification ({DOMAIN_PRICE_YEAR + 2 * ADHOC_MODIF_PRICE}€ à la carte contre{" "}
+          {SUBSCRIPTION_PRICE_YEAR}€ en abonnement).
+        </p>
+      )}
+      {withSubscription && <div className="mb-4" />}
+
+      <ul className="text-sm text-foreground space-y-2">
+        <li className="flex items-center justify-between gap-3">
+          <span className="text-muted-foreground">Nom de domaine</span>
+          <span className={withSubscription ? "text-muted-foreground" : "font-medium"}>
+            {withSubscription ? "Inclus" : `${DOMAIN_PRICE_YEAR}€/an`}
+          </span>
+        </li>
+        <li className="flex items-start justify-between gap-3">
+          <span className="text-muted-foreground leading-snug">
+            Version supplémentaire (au-delà des 5 incluses)
+            <br />
+            ou modification après mise en ligne
+          </span>
+          <span className="font-medium shrink-0">{withSubscription ? SUBSCRIPTION_MODIF_PRICE : ADHOC_MODIF_PRICE}€</span>
+        </li>
+      </ul>
+
+      <p className="text-xs text-muted-foreground mt-4 mb-2">Évolution plus importante (boutique en ligne...) : devis à part.</p>
+      <p className="text-xs text-muted-foreground mb-5">
+        Vous n'avez rien à gérer techniquement, je m'occupe de tout : le site vous appartient entièrement, export
+        du code gratuit à tout moment, aucun verrouillage.
+      </p>
+
+      <Button size="lg" className="w-full rounded-full" onClick={openDialog}>
+        Ça m'intéresse, on en parle <ArrowRight size={16} />
+      </Button>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-sm text-center">
+          {confirmed ? (
+            <DialogHeader className="items-center">
+              <CheckCircle2 className="text-emerald-500 mb-2" size={40} />
+              <DialogTitle className="text-xl">C'est noté !</DialogTitle>
+              <DialogDescription className="text-base text-foreground">
+                Je reviens vers vous rapidement !
+              </DialogDescription>
+            </DialogHeader>
+          ) : (
+            <>
+              <DialogHeader className="items-center">
+                <DialogTitle className="text-xl">Une dernière confirmation</DialogTitle>
+                <DialogDescription>Je vous contacte à ce numéro ?</DialogDescription>
+              </DialogHeader>
+
+              <div className="text-left">
+                <input
+                  type="text"
+                  value={contactValue}
+                  onChange={(e) => setContactValue(e.target.value)}
+                  placeholder="Numéro de téléphone, ou « plutôt par mail »..."
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                {phone && (
+                  <p className="text-xs text-muted-foreground mt-1.5">Vous pouvez le corriger si besoin.</p>
+                )}
+              </div>
+
+              <Button className="w-full rounded-full" onClick={handleConfirm} disabled={submitting}>
+                {submitting ? "Envoi..." : "Confirmer"}
+              </Button>
+              {submitError && (
+                <p className="text-xs text-destructive text-center" role="alert">
+                  {submitError}
+                </p>
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
