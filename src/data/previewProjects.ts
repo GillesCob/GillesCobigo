@@ -30,6 +30,10 @@ export interface IPreviewProject {
   currentRound: string;
   nextAction: string;
   feedbackFormId: string;
+  /** Message d'orientation pour un premier contact à froid (prospect qui n'a jamais échangé avec Gilles) : qui envoie ce lien, pourquoi, avec un lien vers un exemple de résultat déjà livré. Absent pour un client déjà engagé (ex. Mylène), affiché uniquement si présent. */
+  coldIntro?: string;
+  /** Numéro de téléphone trouvé en prospection (fiche Google), affiché dans la card tarifs pour confirmer le canal de rappel. Absent pour un client déjà engagé (le numéro se cale en direct avec lui). */
+  phone?: string;
   rounds: IPreviewRound[];
 }
 
@@ -187,6 +191,31 @@ export const previewProjects: Record<string, IPreviewProject> = {
         ],
         clientFeedback:
           "Coucou Gilles,\n\nMerci pour les propositions de site !\n\nJ'aime beaucoup la première. Les animations sont tops, et le déroulé des infos me convient parfaitement.\n\nLes couleurs sont trop vives cependant, donc je t'envoie en pièce jointe la palette de couleur que j'utilise en com et sur l'ancien site.\n\nEn première photo, j'aimerais tester qqch comme sur la deuxième pièce jointe que je t'envoie : la photo décentrée avec le mannequin et le panneau en bois sur la droite, avec le texte sur la gauche. Si possible, j'aimerais que le mannequin, son support et le panneau bois soient en clair et le fond en flouté. J'aimerais aussi voir une 2eme option de cette même photo décentrée mais en fond transparent vert comme tu as mis actuellement. J'aimerais enlever la mention \"dépôt-vente et friperie\" qui au dessus du logo.\n\nDans la section \"dans la boutique\", je voudrais les deux photos que tu as mis dans la section correspondante de la seconde version du site, en plus de la photo avec les lunettes ainsi que la photo que je t'envoie en 3eme pièce jointe. Merci de mettre les photos légèrement plus petites et en quinconce si possible. Pourrais-tu y ajouter les mots \"vêtements, chaussures et accessoires de mode\" stp?\n\nConcernant la section sur les \"conditions de dépôt-vente\", merci de remplacer \"Dépôt uniquement sur rendez-vous, pris en début de mois (en boutique, par mail ou réseaux sociaux)\" par \"Dépôt uniquement sur rendez-vous, pris en boutique\".\n\nLe reste est parfait ;)\n\nMerci encore pour tout Gilles! Ça envoie du lourd ^^",
+      },
+    ],
+  },
+  // Entree de demo pour le prototype "premier contact a froid" (prospection Boutiques, cf
+  // Projets/Boutiques/ dans le vault) : donnees fictives, sert uniquement a visualiser le rendu
+  // du champ coldIntro en local, jamais destinee a etre deployee telle quelle.
+  "demo-boutique": {
+    slug: "demo-boutique",
+    projectName: "Boulangerie du Centre (exemple fictif)",
+    logo: "/images/logo-gc-white.png",
+    contactName: "Madame Dupont",
+    phone: "05 58 00 00 00",
+    currentRound: "V1",
+    nextAction: "Premier contact, en attente de retour",
+    feedbackFormId: "xgoggnej",
+    coldIntro:
+      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre commerce.",
+    rounds: [
+      {
+        round: "V1",
+        date: "14 août 2026",
+        proposals: [
+          { label: "Votre site, premier jet", screenshot: `${BASE}/screenshots/v1.png`, htmlPath: "/preview/demo-boutique/mockup-v1.html" },
+        ],
+        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
       },
     ],
   },
