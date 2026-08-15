@@ -1,4 +1,5 @@
-import { Link, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useParams, useLocation } from "react-router-dom";
 import { ArrowRight, Sun, Moon } from "lucide-react";
 import { previewProjects } from "@/data/previewProjects";
 import { useThemeStore } from "@/store/themeStore";
@@ -13,8 +14,20 @@ export default function PreviewHome() {
   const { secret } = useParams<{ project: string; secret: string }>();
   const project = secret ? previewProjects[secret] : undefined;
   const { theme, toggleTheme } = useThemeStore();
+  const { hash } = useLocation();
   usePreviewFavicon(project?.logo);
   usePreviewTitle(project?.projectName);
+
+  // Arrivee depuis le mockup V1 (#exemple) ou depuis /cas-client/* (#tarif) : navigation complete
+  // (nouvel onglet), le navigateur ne scroll pas tout seul vers le hash tant que React n'a pas
+  // rendu la page (id absent du HTML initial). Meme pattern que Home.tsx (delai court).
+  useEffect(() => {
+    if (!hash) return;
+    const id = hash.slice(1);
+    setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  }, [hash]);
 
   if (!project) return <NotFound />;
 
@@ -24,6 +37,10 @@ export default function PreviewHome() {
   // rougeatre a l'ecran, jugé pas pro) : fond standard du theme conserve en sombre. Page d'un
   // client deja engage (Mylene) : fond inchange dans les deux modes.
   const isColdProspect = Boolean(project.coldIntro);
+  // Passe le chemin de retour vers /cas-client/* en query param plutot que de dupliquer cette page
+  // par prospect : la page cas client est commune a tous (donnees figees sur Mylene), seul le lien
+  // de retour change. Achemine par CaseStudyVersionsNav sur toute la navigation V1->V6.
+  const caseStudyFrom = secret ? `${project.slug}/${secret}` : "";
 
   return (
     <div
@@ -69,21 +86,21 @@ export default function PreviewHome() {
               {/* bg-foreground/5 plutot que bg-card : bg-card reference le token "carte" pense pour
                   le fond noir/blanc par defaut, pas pour le fond creme/brun chaud de cette page,
                   un overlay relatif au texte s'adapte correctement aux deux. */}
-              <div className="rounded-2xl bg-foreground/5 border border-foreground/10 px-6 py-5 max-w-md mx-auto">
+              <div id="exemple" className="rounded-2xl bg-foreground/5 border border-foreground/10 px-6 py-5 max-w-md mx-auto scroll-mt-8">
                 <p className="text-sm text-foreground/80 leading-relaxed mb-3">
-                  <span className="block mb-1">Envie de voir un exemple concret ?</span>
-                  Voici tout le travail réalisé pour une autre commerçante de Mont-de-Marsan, du premier jet jusqu'au
-                  résultat final.
+                  <span className="block mb-1">Le site proposé n'est qu'un premier jet.</span>
+                  On l'affine ensemble jusqu'au résultat final, comme pour cette autre commerçante de Mont-de-Marsan :
+                  voici tout son parcours, du premier jet à la version livrée.
                 </p>
                 <Button asChild variant="outline" size="sm">
-                  <Link to="/cas-client/v1" target="_blank" rel="noopener noreferrer">
+                  <Link to={`/cas-client/v1?from=${caseStudyFrom}`} target="_blank" rel="noopener noreferrer">
                     Voir l'exemple <ArrowRight size={14} />
                   </Link>
                 </Button>
               </div>
 
-              <div className="mt-8">
-                <PricingCard projectName={project.projectName} phone={project.phone} />
+              <div id="tarif" className="mt-8 scroll-mt-8">
+                <PricingCard projectName={project.projectName} phone={project.phone} caseStudyFrom={caseStudyFrom} />
               </div>
             </div>
           ) : (

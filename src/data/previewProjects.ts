@@ -213,7 +213,7 @@ export const previewProjects: Record<string, IPreviewProject> = {
         round: "V1",
         date: "14 août 2026",
         proposals: [
-          { label: "Votre site, premier jet", screenshot: `${BASE}/screenshots/v1.png`, htmlPath: `${BASE}/mockup-v1.html` },
+          { label: "Votre site, premier jet", screenshot: `${BASE}/screenshots/v1.png`, htmlPath: "/preview/demo-boutique/mockup-v1.html" },
         ],
         missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
       },

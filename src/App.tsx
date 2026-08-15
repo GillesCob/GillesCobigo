@@ -11,6 +11,7 @@ import VideoLanding from "@/pages/VideoLanding";
 import PreviewHome from "@/pages/PreviewHome";
 import PreviewRound from "@/pages/PreviewRound";
 import CaseStudyRound from "@/pages/CaseStudyRound";
+import CGVBoutiques from "@/pages/CGVBoutiques";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import ScrollReset from "@/components/layout/ScrollReset";
@@ -21,7 +22,8 @@ export default function App() {
   const isBareLayout =
     location.pathname.startsWith("/v/") ||
     location.pathname.startsWith("/preview/") ||
-    location.pathname.startsWith("/cas-client/");
+    location.pathname.startsWith("/cas-client/") ||
+    location.pathname.startsWith("/cgv-boutiques");
   // Les pages articles ont une sidebar + un sommaire en position fixed sur toute la hauteur
   // de l'écran : un footer en dessous se ferait toujours recouvrir par ces deux panneaux.
   const hideFooter = location.pathname.startsWith("/articles") || isBareLayout;
@@ -45,6 +47,7 @@ export default function App() {
           <Route path="/preview/:project/:secret" element={<PreviewHome />} />
           <Route path="/preview/:project/:secret/:round" element={<PreviewRound />} />
           <Route path="/cas-client/:round" element={<CaseStudyRound />} />
+          <Route path="/cgv-boutiques" element={<CGVBoutiques />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

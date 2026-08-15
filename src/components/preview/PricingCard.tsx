@@ -23,7 +23,16 @@ const SUBSCRIPTION_INCLUDED_MODIFS = 2;
 // du portfolio dans la meme boite mail.
 const FORMSPREE_ENDPOINT = "https://formspree.io/f/mykarjar";
 
-export default function PricingCard({ projectName, phone }: { projectName: string; phone?: string }) {
+export default function PricingCard({
+  projectName,
+  phone,
+  caseStudyFrom,
+}: {
+  projectName: string;
+  phone?: string;
+  /** Chemin de retour transmis en query param a /cas-client/*, cf PreviewHome.tsx. */
+  caseStudyFrom?: string;
+}) {
   const [withSubscription, setWithSubscription] = useState(false);
   // Le clic sur "Ça m'intéresse" ouvre la modale mais n'envoie rien : on confirme d'abord le canal
   // de rappel dedans, un seul envoi Formspree au clic sur "Confirmer" (retex du 14/08 : 2 envois
@@ -73,7 +82,12 @@ export default function PricingCard({ projectName, phone }: { projectName: strin
       <p className="text-3xl font-bold text-foreground mb-1">{BASE_PRICE}€</p>
       <p className="text-sm text-muted-foreground mb-1">
         Site + 5 allers-retours (
-        <Link to="/cas-client/v3" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">
+        <Link
+          to={`/cas-client/v3?from=${caseStudyFrom ?? ""}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-foreground"
+        >
           plusieurs variations possibles par version
         </Link>
         ) + mise en ligne.
@@ -123,9 +137,14 @@ export default function PricingCard({ projectName, phone }: { projectName: strin
       </ul>
 
       <p className="text-xs text-muted-foreground mt-4 mb-2">Évolution plus importante (boutique en ligne...) : devis à part.</p>
-      <p className="text-xs text-muted-foreground mb-5">
+      <p className="text-xs text-muted-foreground mb-2">
         Vous n'avez rien à gérer techniquement, je m'occupe de tout : le site vous appartient entièrement, export
-        du code gratuit à tout moment, aucun verrouillage.
+        du code fourni dès la mise en ligne, aucun verrouillage.
+      </p>
+      <p className="text-xs text-muted-foreground mb-5">
+        <Link to="/cgv-boutiques" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">
+          Voir les conditions générales complètes
+        </Link>
       </p>
 
       <Button size="lg" className="w-full rounded-full" onClick={openDialog}>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { List } from "lucide-react";
 import { Drawer, DrawerClose, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 
@@ -15,6 +15,9 @@ interface ICaseStudyVersionsNavProps {
 
 export default function CaseStudyVersionsNav({ basePath, currentRound, rounds }: ICaseStudyVersionsNavProps) {
   const [open, setOpen] = useState(false);
+  // Conserve ?from=<slug>/<secret> (lien de retour personnalise, cf CaseStudyRound.tsx) sur chaque
+  // changement de round : sans ca, cliquer V1 -> V2 perdrait le contexte du prospect en cours.
+  const { search } = useLocation();
 
   return (
     <>
@@ -23,7 +26,7 @@ export default function CaseStudyVersionsNav({ basePath, currentRound, rounds }:
         {rounds.map((r) => (
           <Link
             key={r.round}
-            to={`${basePath}/${r.round.toLowerCase()}`}
+            to={`${basePath}/${r.round.toLowerCase()}${search}`}
             className={`px-3 py-2 rounded-md text-sm font-mono transition-colors ${
               r.round.toLowerCase() === currentRound.toLowerCase()
                 ? "bg-secondary text-secondary-foreground font-semibold"
@@ -55,7 +58,7 @@ export default function CaseStudyVersionsNav({ basePath, currentRound, rounds }:
             {rounds.map((r) => (
               <DrawerClose asChild key={r.round}>
                 <Link
-                  to={`${basePath}/${r.round.toLowerCase()}`}
+                  to={`${basePath}/${r.round.toLowerCase()}${search}`}
                   className={`flex items-center justify-between text-left text-sm py-2.5 px-3 rounded-md transition-colors ${
                     r.round.toLowerCase() === currentRound.toLowerCase()
                       ? "bg-secondary text-secondary-foreground font-semibold"

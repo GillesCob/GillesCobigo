@@ -1,5 +1,6 @@
-import { useParams } from "react-router-dom";
-import { Sun, Moon } from "lucide-react";
+import { useParams, useSearchParams, Link } from "react-router-dom";
+import { Sun, Moon, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import CaseStudyVersionsNav from "@/components/preview/CaseStudyVersionsNav";
 import PreviewCredit from "@/components/preview/PreviewCredit";
 import { RoundContent } from "@/components/preview/RoundContent";
@@ -14,7 +15,9 @@ import NotFound from "@/pages/NotFound";
 // que Mylene a utilisee (/preview/dressing-mailys/EuMLnfc8Uk/<round>), donnees figees sur son
 // projet (pas de lookup par secret), pour montrer a un prospect a froid l'interface reelle plutot
 // qu'un resume. URL sans le nom de sa boutique (voulu, page ouverte dans un nouvel onglet depuis
-// PreviewHome.tsx, jamais de lien retour vers le reste du site). Cf Projets/Boutiques/workflow-cc.md.
+// PreviewHome.tsx). Lien de retour personnalise vers /preview/<slug>/<secret> du prospect transmis
+// en query param (?from=...) plutot que par une page dupliquee par prospect, cf CaseStudyVersionsNav.tsx
+// pour la propagation sur tous les rounds. Cf Projets/Boutiques/workflow-cc.md.
 const CASE_STUDY_SECRET = "EuMLnfc8Uk";
 
 // Bulles d'aide reparties sur toute la progression V1 -> V6, jamais repetees pour un type de bloc
@@ -69,6 +72,8 @@ const ROUND_GUIDE: Record<
 
 export default function CaseStudyRound() {
   const { round } = useParams<{ round: string }>();
+  const [searchParams] = useSearchParams();
+  const from = searchParams.get("from");
   const project = previewProjects[CASE_STUDY_SECRET];
   const entry = project.rounds.find((r) => r.round.toLowerCase() === round?.toLowerCase());
   const { theme, toggleTheme } = useThemeStore();
@@ -81,17 +86,42 @@ export default function CaseStudyRound() {
 
   return (
     <div className="min-h-dvh bg-background flex flex-col relative">
-      <button
-        type="button"
-        onClick={toggleTheme}
-        aria-label="Basculer le thème"
-        className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors p-2"
-      >
-        {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-      </button>
+      {/* Bandeau figé en haut, visible pendant tout le scroll (demande explicite du 15/08 : un
+          encart qui ne reste que le temps de le croiser une fois se rate trop facilement). Le
+          toggle theme, auparavant seul en absolute top-4 right-4, est integre a la meme barre
+          fixed pour ne jamais se faire recouvrir par elle. Lien personnalise si ?from=<slug>/<secret>
+          est present (transmis depuis PreviewHome.tsx), sinon repli generique (acces direct a la
+          page sans ce contexte). */}
+      <div className="fixed top-0 inset-x-0 z-50 bg-card border-b border-border shadow-sm">
+        <div className="max-w-6xl mx-auto px-6 md:px-12 py-3 flex items-center justify-between gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 min-w-0">
+            <p className="text-sm text-foreground shrink-0">Envie de la même chose pour votre site ?</p>
+            {from ? (
+              <Button asChild size="sm" className="rounded-full shrink-0 w-fit">
+                <Link to={`/preview/${from}#tarif`} target="_blank" rel="noopener noreferrer">
+                  Découvrez comment on le rend réel <ArrowRight size={14} />
+                </Link>
+              </Button>
+            ) : (
+              <p className="text-sm text-muted-foreground shrink-0">
+                Répondez au mail que vous avez reçu, ou appelez-moi.
+              </p>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label="Basculer le thème"
+            className="text-muted-foreground hover:text-foreground transition-colors p-2 shrink-0"
+          >
+            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+        </div>
+      </div>
 
-      {/* max-w-6xl : memes proportions que PreviewRound.tsx, page dont celle-ci est la copie. */}
-      <div className="flex-1 px-6 md:px-12 py-10 md:py-16">
+      {/* pt-20 : compense la hauteur du bandeau fixed ci-dessus, sinon il recouvre le debut du
+          contenu. max-w-6xl : memes proportions que PreviewRound.tsx, page dont celle-ci est la copie. */}
+      <div className="flex-1 px-6 md:px-12 pt-20 pb-10 md:pb-16">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row gap-8">
             <CaseStudyVersionsNav
