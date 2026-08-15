@@ -82,12 +82,7 @@ export default function PricingCard({
       <p className="text-3xl font-bold text-foreground mb-1">{BASE_PRICE}€</p>
       <p className="text-sm text-muted-foreground mb-1">
         Site + 5 allers-retours (
-        <Link
-          to={`/cas-client/v3?from=${caseStudyFrom ?? ""}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline hover:text-foreground"
-        >
+        <Link to={`/cas-client/v3?from=${caseStudyFrom ?? ""}`} className="underline hover:text-foreground">
           plusieurs variations possibles par version
         </Link>
         ) + mise en ligne.
@@ -152,7 +147,11 @@ export default function PricingCard({
       </Button>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-sm text-center">
+        {/* Positionnee pres du haut sur mobile plutot que centree verticalement (15/08) : une
+            modale centree sur 100% de la hauteur se retrouve, une fois le clavier ouvert, avec
+            son champ et son bouton "Confirmer" caches derriere le clavier. Pres du haut, il reste
+            toujours de la place en dessous. Centrage classique conserve a partir de sm. */}
+        <DialogContent className="max-w-sm text-center top-[8%] translate-y-0 sm:top-[50%] sm:-translate-y-1/2">
           {confirmed ? (
             <DialogHeader className="items-center">
               <CheckCircle2 className="text-emerald-500 mb-2" size={40} />
@@ -174,7 +173,10 @@ export default function PricingCard({
                   value={contactValue}
                   onChange={(e) => setContactValue(e.target.value)}
                   placeholder="Numéro de téléphone, ou « plutôt par mail »..."
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  // text-base (16px) et non text-sm (14px) : sous 16px, Safari iOS zoome automatiquement
+                  // la page au focus du champ, zoom qui persiste ensuite meme la modale fermee (scroll
+                  // horizontal constate le 15/08). 16px est le seuil qui desactive ce comportement.
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-ring"
                 />
                 {phone && (
                   <p className="text-xs text-muted-foreground mt-1.5">Vous pouvez le corriger si besoin.</p>

@@ -74,10 +74,12 @@ export default function PreviewHome() {
 
               {/* Lien direct vers le mockup HTML statique (pas vers la page de suivi /preview/.../<round>,
                   inutile pour un premier contact a froid : le prospect veut voir son site, pas un ecran
-                  de suivi de version). */}
+                  de suivi de version). Meme onglet (retire le 15/08, cf bandeau de retour du mockup) :
+                  mockup -> exemple -> tarif restaient chacun un nouvel onglet, ca en accumulait 3-4 au
+                  total pour un simple aller-retour, jamais l'intention initiale. */}
               {project.rounds[0]?.proposals[0]?.htmlPath && (
                 <Button asChild size="lg" className="rounded-full mb-8 h-14 px-10 text-lg">
-                  <a href={project.rounds[0].proposals[0].htmlPath} target="_blank" rel="noopener noreferrer">
+                  <a href={project.rounds[0].proposals[0].htmlPath}>
                     Votre site <ArrowRight size={20} />
                   </a>
                 </Button>
@@ -93,7 +95,7 @@ export default function PreviewHome() {
                   voici tout son parcours, du premier jet à la version livrée.
                 </p>
                 <Button asChild variant="outline" size="sm">
-                  <Link to={`/cas-client/v1?from=${caseStudyFrom}`} target="_blank" rel="noopener noreferrer">
+                  <Link to={`/cas-client/v1?from=${caseStudyFrom}`}>
                     Voir l'exemple <ArrowRight size={14} />
                   </Link>
                 </Button>
