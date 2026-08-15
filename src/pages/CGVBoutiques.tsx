@@ -53,6 +53,7 @@ export default function CGVBoutiques() {
                 <li>Abonnement Sérénité : 75€/an (renouvellement du domaine inclus, 2 modifications mineures par an, délai prioritaire 48h ouvrées).</li>
                 <li>Toute évolution ou projet plus ambitieux (nouvelle fonctionnalité, boutique en ligne, site multi-pages...) : devis séparé, jamais ce tarif.</li>
               </ul>
+              <p className="text-xs text-muted-foreground mt-2">TVA non applicable, art. 293 B du CGI.</p>
             </section>
 
             <section>
