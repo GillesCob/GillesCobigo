@@ -98,7 +98,7 @@ export default function CaseStudyRound() {
             <p className="text-sm text-foreground shrink-0">Envie de la même chose pour votre site ?</p>
             {from ? (
               <Button asChild size="sm" className="rounded-full shrink-0 w-fit">
-                <Link to={`/preview/${from}#tarif`} target="_blank" rel="noopener noreferrer">
+                <Link to={`/preview/${from}#tarif`}>
                   Découvrez comment on le rend réel <ArrowRight size={14} />
                 </Link>
               </Button>
@@ -119,9 +119,12 @@ export default function CaseStudyRound() {
         </div>
       </div>
 
-      {/* pt-20 : compense la hauteur du bandeau fixed ci-dessus, sinon il recouvre le debut du
-          contenu. max-w-6xl : memes proportions que PreviewRound.tsx, page dont celle-ci est la copie. */}
-      <div className="flex-1 px-6 md:px-12 pt-20 pb-10 md:pb-16">
+      {/* pt-36/sm:pt-24 : compense la hauteur du bandeau fixed ci-dessus, sinon il recouvre le debut
+          du contenu ("V1" collé au bandeau, constate le 15/08). Le bandeau est plus haut sur mobile
+          (texte + bouton empiles sur 2 lignes, flex-col ci-dessus) qu'en desktop (une seule ligne),
+          d'ou l'ecart plus large en mobile. max-w-6xl : memes proportions que PreviewRound.tsx, page
+          dont celle-ci est la copie. */}
+      <div className="flex-1 px-6 md:px-12 pt-36 sm:pt-24 pb-10 md:pb-16">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row gap-8">
             <CaseStudyVersionsNav

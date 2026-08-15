@@ -38,14 +38,16 @@ export default function CaseStudyVersionsNav({ basePath, currentRound, rounds }:
         ))}
       </aside>
 
-      {/* Bouton mobile */}
+      {/* Bouton mobile : icone seule remplacee par un bouton texte+icone (15/08), un utilisateur
+          "basique" qui ne connait pas ce pattern d'icone n'aurait jamais compris qu'il y a 6
+          versions a consulter derriere un simple rond. */}
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Toutes les versions"
-        className="md:hidden fixed bottom-6 right-6 z-40 w-11 h-11 rounded-full bg-foreground text-background flex items-center justify-center shadow-lg transition-opacity hover:opacity-90"
+        className="md:hidden fixed bottom-6 right-6 z-40 h-11 pl-4 pr-5 rounded-full bg-foreground text-background flex items-center gap-2 shadow-lg transition-opacity hover:opacity-90 text-sm font-medium"
       >
         <List size={18} />
+        Voir les {rounds.length} versions
       </button>
 
       {/* Drawer mobile */}
