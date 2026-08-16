@@ -34,6 +34,11 @@ export default function PricingCard({
   caseStudyFrom?: string;
 }) {
   const [withSubscription, setWithSubscription] = useState(false);
+  // Non pertinente une fois l'abonnement coche (nom de domaine deja inclus dedans) : decochee
+  // automatiquement au moment ou l'abonnement est coche, cf onChange ci-dessous.
+  const [withDomain, setWithDomain] = useState(false);
+  const domainActive = withDomain && !withSubscription;
+  const total = BASE_PRICE + (withSubscription ? SUBSCRIPTION_PRICE_YEAR : 0) + (domainActive ? DOMAIN_PRICE_YEAR : 0);
   // Le clic sur "Ça m'intéresse" ouvre la modale mais n'envoie rien : on confirme d'abord le canal
   // de rappel dedans, un seul envoi Formspree au clic sur "Confirmer" (retex du 14/08 : 2 envois
   // separes, un a l'interet et un a la correction du numero, faisait doublon cote Gilles).
@@ -57,11 +62,15 @@ export default function PricingCard({
         body: JSON.stringify({
           source: "Boutiques - PricingCard",
           projet: projectName,
-          formule: withSubscription ? "Avec abonnement Sérénité" : "Sans abonnement",
+          formule: `${total}€ (${withSubscription ? "avec" : "sans"} abonnement Sérénité${
+            domainActive ? ", avec nom de domaine" : ""
+          })`,
           contact: contactValue || "Non précisé",
-          message: `${projectName} est intéressé(e) par son site (${
+          message: `${projectName} est intéressé(e) par son site, première facture à ${total}€ (${
             withSubscription ? "avec" : "sans"
-          } abonnement Sérénité). Rappel : ${contactValue || "canal non précisé"}.`,
+          } abonnement Sérénité${domainActive ? ", avec nom de domaine" : ""}). Rappel : ${
+            contactValue || "canal non précisé"
+          }.`,
         }),
       });
       if (res.ok) {
@@ -78,15 +87,50 @@ export default function PricingCard({
 
   return (
     <div className="rounded-2xl border border-border bg-card p-6 max-w-md mx-auto text-left">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">Tarif</p>
-      <p className="text-3xl font-bold text-foreground mb-1">{BASE_PRICE}€</p>
-      <p className="text-sm text-muted-foreground mb-1">
-        Site + 5 allers-retours (
-        <Link to={`/cas-client/v3?from=${caseStudyFrom ?? ""}`} className="underline hover:text-foreground">
-          plusieurs variations possibles par version
-        </Link>
-        ) + mise en ligne.
-      </p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">Première facture</p>
+      <p className="text-3xl font-bold text-foreground mb-4">{total}€</p>
+
+      <ul className="text-sm text-foreground space-y-2 mb-4">
+        <li className="flex items-center gap-2 whitespace-nowrap">
+          <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
+          Votre site
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
+          5 allers-retours (V1 à V6,{" "}
+          <Link to={`/cas-client/v3?from=${caseStudyFrom ?? ""}`} className="underline hover:text-foreground">
+            plusieurs variations possibles par version
+          </Link>
+          )
+        </li>
+        <li className="flex items-center gap-2 whitespace-nowrap">
+          <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
+          Mise en ligne
+        </li>
+        {withSubscription && (
+          <>
+            <li className="flex items-center gap-2 font-medium whitespace-nowrap">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+              {SUBSCRIPTION_INCLUDED_MODIFS} modifications incluses/an
+            </li>
+            <li className="flex items-center gap-2 font-medium whitespace-nowrap">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+              Nom de domaine
+            </li>
+            <li className="flex items-center gap-2 font-medium whitespace-nowrap">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+              Retour sous 48h ouvrées
+            </li>
+          </>
+        )}
+        {domainActive && (
+          <li className="flex items-center gap-2 font-medium whitespace-nowrap">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+            Nom de domaine
+          </li>
+        )}
+      </ul>
+
       <p className="text-xs text-muted-foreground mb-4">
         Tarif pilote : nombre de commerces accompagnés limité à ce prix pendant le lancement.
       </p>
@@ -95,14 +139,17 @@ export default function PricingCard({
         <input
           type="checkbox"
           checked={withSubscription}
-          onChange={(e) => setWithSubscription(e.target.checked)}
+          onChange={(e) => {
+            setWithSubscription(e.target.checked);
+            if (e.target.checked) setWithDomain(false);
+          }}
           className="mt-0.5 h-4 w-4 rounded border-input accent-foreground"
         />
         <span className="block text-sm text-foreground">
-          <span className="font-medium">Abonnement Sérénité, {SUBSCRIPTION_PRICE_YEAR}€/an</span>
+          <span className="font-medium">Abonnement Sérénité, +{SUBSCRIPTION_PRICE_YEAR}€/an</span>
           <span className="text-muted-foreground">
             {" "}
-            : renouvellement du nom de domaine, {SUBSCRIPTION_INCLUDED_MODIFS} modifs/an, prioritaire.
+            : nom de domaine, {SUBSCRIPTION_INCLUDED_MODIFS} modifications/an, retour sous 48h ouvrées.
           </span>
         </span>
       </label>
@@ -112,24 +159,36 @@ export default function PricingCard({
           {SUBSCRIPTION_PRICE_YEAR}€ en abonnement).
         </p>
       )}
-      {withSubscription && <div className="mb-4" />}
 
-      <ul className="text-sm text-foreground space-y-2">
-        <li className="flex items-center justify-between gap-3">
-          <span className="text-muted-foreground">Nom de domaine</span>
-          <span className={withSubscription ? "text-muted-foreground" : "font-medium"}>
-            {withSubscription ? "Inclus" : `${DOMAIN_PRICE_YEAR}€/an`}
+      <label
+        className={`flex items-start gap-3 rounded-xl border border-border p-3 mb-2 transition-colors ${
+          withSubscription ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:border-foreground/30"
+        }`}
+      >
+        <input
+          type="checkbox"
+          checked={withDomain}
+          disabled={withSubscription}
+          onChange={(e) => setWithDomain(e.target.checked)}
+          className="mt-0.5 h-4 w-4 rounded border-input accent-foreground"
+        />
+        <span className="block text-sm text-foreground">
+          <span className="font-medium">Nom de domaine, +{DOMAIN_PRICE_YEAR}€</span>
+          <span className="text-muted-foreground">
+            {" "}
+            : couvre la 1ère année, renouvelable ensuite chaque année ({DOMAIN_PRICE_YEAR}€/an).
           </span>
-        </li>
-        <li className="flex items-start justify-between gap-3">
-          <span className="text-muted-foreground leading-snug">
-            Version supplémentaire (au-delà des 5 incluses)
-            <br />
-            ou modification après mise en ligne
-          </span>
-          <span className="font-medium shrink-0">{withSubscription ? SUBSCRIPTION_MODIF_PRICE : ADHOC_MODIF_PRICE}€</span>
-        </li>
-      </ul>
+        </span>
+      </label>
+      {withSubscription && (
+        <p className="text-xs text-muted-foreground mb-4 ml-1">Déjà inclus dans l'abonnement Sérénité.</p>
+      )}
+      {!withSubscription && <div className="mb-4" />}
+
+      <p className="text-xs text-muted-foreground mb-2 whitespace-nowrap">
+        Au-delà de la V6 (V7, V8...) ou modification après mise en ligne :{" "}
+        {withSubscription ? SUBSCRIPTION_MODIF_PRICE : ADHOC_MODIF_PRICE}€.
+      </p>
 
       <p className="text-xs text-muted-foreground mt-4 mb-2">Évolution plus importante (boutique en ligne...) : devis à part.</p>
       <p className="text-xs text-muted-foreground mb-2">
