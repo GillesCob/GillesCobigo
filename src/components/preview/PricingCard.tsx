@@ -108,11 +108,11 @@ export default function PricingCard({
             </li>
             <li className="flex items-center gap-2 font-medium whitespace-nowrap">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-              Nom de domaine
+              Nom de domaine renouvelé automatiquement
             </li>
             <li className="flex items-center gap-2 font-medium whitespace-nowrap">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-              Retour sous 48h ouvrées
+              Retours sous 48h ouvrées
             </li>
           </>
         )}
@@ -138,7 +138,8 @@ export default function PricingCard({
           <span className="font-medium">Abonnement Sérénité, +{SUBSCRIPTION_PRICE_YEAR}€/an</span>
           <span className="text-muted-foreground">
             {" "}
-            : nom de domaine, {SUBSCRIPTION_INCLUDED_MODIFS} modifications/an, retour sous 48h ouvrées.
+            : nom de domaine renouvelé automatiquement, {SUBSCRIPTION_INCLUDED_MODIFS} modifications/an, retours
+            sous 48h ouvrées.
           </span>
         </span>
       </label>
@@ -167,12 +168,14 @@ export default function PricingCard({
         <p className="text-xs text-muted-foreground mb-2 ml-1">Déjà inclus dans l'abonnement Sérénité.</p>
       )}
 
-      <p className="text-xs text-muted-foreground mb-2 mt-3.5 pt-3.5 border-t border-border whitespace-nowrap">
-        Au-delà de la V6 (V7, V8...) ou modification après mise en ligne :{" "}
+      <p className="text-xs text-muted-foreground mb-2 mt-3.5 pt-3.5 border-t border-border">
+        Au-delà de la V6 (V7, V8...) ou pour toute modification après mise en ligne :{" "}
         {withSubscription ? SUBSCRIPTION_MODIF_PRICE : ADHOC_MODIF_PRICE}€.
       </p>
 
-      <p className="text-xs text-muted-foreground mt-4 mb-2">Évolution plus importante (boutique en ligne...) : devis à part.</p>
+      <p className="text-xs text-muted-foreground mt-4 mb-2">
+        Évolution plus importante (plusieurs pages, boutique en ligne...) : devis à part.
+      </p>
       <p className="text-xs text-muted-foreground mb-2">
         Vous n'avez rien à gérer techniquement, je m'occupe de tout : le site vous appartient entièrement, export
         du code fourni dès la mise en ligne, aucun verrouillage.
