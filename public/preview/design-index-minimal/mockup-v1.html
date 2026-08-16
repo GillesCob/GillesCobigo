@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Template Designs, index minimaliste</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Fraunces:wght@600;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#d98c22; --ink:#141414; --bg:#f7f5f0; --border:rgba(20,20,20,.14);
+    --font-a:'Fraunces',serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{overflow-x:clip;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--ink); background:var(--bg); line-height:1.6;}
+  img{max-width:100%; display:block;}
+  h1,h2{font-family:var(--font-a); font-weight:900;}
+  body[data-font="b"] h1, body[data-font="b"] h2{font-family:'Nunito',sans-serif; font-weight:700; letter-spacing:-.02em;}
+  .btn{display:inline-block; padding:14px 32px; background:var(--ink); color:var(--bg); text-decoration:none; font-weight:700; font-size:14px; border:none; cursor:pointer; font-family:inherit; text-transform:uppercase; letter-spacing:.06em;}
+  .btn:hover{background:var(--accent); color:var(--ink);}
+
+  .font-toggle{position:fixed; top:14px; right:14px; z-index:1000; background:rgba(255,255,255,.94); padding:6px 8px; display:flex; align-items:center; gap:6px; font-size:12px; box-shadow:0 4px 12px rgba(0,0,0,.1);}
+  .font-toggle span{opacity:.55; padding-left:4px;}
+  .font-btn{border:1px solid var(--ink); background:none; color:var(--ink); padding:4px 10px; font-size:12px; cursor:pointer; font-family:'Nunito',sans-serif;}
+  .font-btn.active{background:var(--ink); color:var(--bg);}
+
+  .to-top{position:fixed; bottom:76px; right:16px; z-index:999; width:44px; height:44px; border:2px solid var(--ink); border-radius:50%; background:var(--bg); color:var(--ink); font-size:18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease;}
+  .to-top.show{opacity:1; pointer-events:auto;}
+
+  /* Hero pleine hauteur, typographie geante seule, aucune image. Registre "digital brutalism /
+     index editorial" 2026, distinct des 7 autres templates (aucun ne renonce entierement a
+     l'image, aucun n'utilise une liste-index comme structure de navigation ET de contenu). */
+  .hero{min-height:88vh; display:flex; flex-direction:column; justify-content:center; padding:100px 6vw 40px; border-bottom:1px solid var(--border);}
+  .hero .tagline{font-size:12px; text-transform:uppercase; letter-spacing:.22em; color:var(--accent); font-weight:700; margin-bottom:18px;}
+  .hero h1{font-size:clamp(48px,11vw,140px); line-height:.92; letter-spacing:-.02em;}
+  .hero p{max-width:520px; margin-top:24px; font-size:16px; opacity:.75;}
+
+  /* Index : chaque ligne = un numero + un titre geant, clic deplie le contenu juste en dessous
+     (accordion), une seule ouverte a la fois (meme regle que les popovers du reste du vault). */
+  .index{border-top:1px solid var(--border);}
+  .idx-row{border-bottom:1px solid var(--border);}
+  .idx-head{width:100%; background:none; border:0; cursor:pointer; padding:26px 6vw; display:flex; align-items:baseline; gap:24px; font-family:inherit; text-align:left;}
+  .idx-head:hover{background:rgba(217,140,34,.06);}
+  .idx-num{font-family:var(--font-a); font-weight:900; font-size:15px; color:var(--accent); flex-shrink:0; width:34px;}
+  .idx-title{font-family:var(--font-a); font-weight:700; font-size:clamp(22px,4vw,40px); flex:1;}
+  body[data-font="b"] .idx-title{font-family:'Nunito',sans-serif; font-weight:700;}
+  .idx-plus{font-size:22px; color:var(--accent); transition:transform .25s ease; flex-shrink:0;}
+  .idx-row.open .idx-plus{transform:rotate(45deg);}
+  .idx-body{max-height:0; overflow:hidden; transition:max-height .35s ease;}
+  .idx-row.open .idx-body{max-height:600px;}
+  .idx-body-inner{padding:0 6vw 34px; max-width:640px;}
+  .idx-body-inner p{font-size:15.5px; opacity:.85; margin-bottom:10px;}
+  .idx-body-inner .quote{font-family:var(--font-a); font-style:italic; color:var(--accent); font-size:17px;}
+
+  .etapes{list-style:none; counter-reset:step; padding:0;}
+  .etapes li{counter-increment:step; margin-bottom:8px; font-size:15px; padding-left:26px; position:relative;}
+  .etapes li::before{content:counter(step); position:absolute; left:0; top:1px; width:18px; height:18px; border-radius:50%; background:var(--accent); color:var(--ink); font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center;}
+
+  .stat-row{display:flex; gap:28px; margin-bottom:10px;}
+  .stat b{display:block; font-family:var(--font-a); font-size:26px;}
+  .stat span{font-size:12px; opacity:.65;}
+
+  .rs-links{display:flex; gap:16px;}
+  .rs-links a{color:var(--ink); font-weight:700; text-decoration:none; border-bottom:2px solid var(--accent); font-size:14.5px;}
+
+  .info-line{font-size:15px; margin-bottom:6px;}
+  .map-placeholder{margin-top:12px; height:130px; background:repeating-linear-gradient(135deg, rgba(20,20,20,.05), rgba(20,20,20,.05) 10px, rgba(20,20,20,.09) 10px, rgba(20,20,20,.09) 20px); display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--ink); opacity:.6; font-weight:700;}
+
+  .contact-bloc{max-width:480px; padding:48px 6vw 64px;}
+  .contact-bloc form{display:flex; flex-direction:column; gap:12px;}
+  .contact-bloc input, .contact-bloc textarea{padding:12px 14px; border:1px solid var(--border); font-family:inherit; font-size:16px; background:#fff;}
+  .contact-bloc textarea{min-height:90px; resize:vertical;}
+
+  footer{text-align:center; padding:26px 24px 88px; background:var(--ink); color:rgba(247,245,240,.7); font-size:12.5px;}
+
+  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:var(--ink); color:var(--bg); padding:14px 20px; text-align:center; font-family:'Nunito',-apple-system,sans-serif; font-size:14px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
+  .retour-bandeau a{color:var(--accent); font-weight:800; text-decoration:underline; margin-left:6px;}
+</style>
+</head>
+<body>
+
+<div class="retour-bandeau">
+  Ça vous plaît ? <a href="file:///Users/gillescobigo/Documents/Gilles/vault-perso/Projets/V1-Echanges/mockups/preview-prospect.html?retour=1">Découvrez comment on le rend réel →</a>
+</div>
+
+<div class="font-toggle">
+  <span>Titres</span>
+  <button class="font-btn active" data-font="a">Élégant</button>
+  <button class="font-btn" data-font="b">Épuré</button>
+</div>
+<button class="to-top" id="toTop" aria-label="Retour en haut">↑</button>
+
+<div class="hero">
+  <div class="tagline">[Secteur d'activité]</div>
+  <h1>[Nom de la<br>boutique]</h1>
+  <p>[Accroche courte, une phrase sur ce qui rend la boutique unique.] Parcourez l'index ci-dessous.</p>
+</div>
+
+<div class="index" id="index">
+  <div class="idx-row open">
+    <button class="idx-head" data-toggle>
+      <span class="idx-num">01</span>
+      <span class="idx-title">Le concept</span>
+      <span class="idx-plus">+</span>
+    </button>
+    <div class="idx-body">
+      <div class="idx-body-inner">
+        <p>[Texte de présentation : ce que fait la boutique, pour qui, ce qui la distingue d'un commerce générique du même secteur.]</p>
+        <p class="quote">« [Phrase signature, courte et mémorable] »</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="idx-row">
+    <button class="idx-head" data-toggle>
+      <span class="idx-num">02</span>
+      <span class="idx-title">Comment ça marche</span>
+      <span class="idx-plus">+</span>
+    </button>
+    <div class="idx-body">
+      <div class="idx-body-inner">
+        <ol class="etapes">
+          <li>[Étape 1, ex. prise de contact ou de rendez-vous]</li>
+          <li>[Étape 2, ex. sélection ou préparation personnalisée]</li>
+          <li>[Étape 3, ex. remise en boutique ou livraison]</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="idx-row">
+    <button class="idx-head" data-toggle>
+      <span class="idx-num">03</span>
+      <span class="idx-title">Ce qu'on en dit</span>
+      <span class="idx-plus">+</span>
+    </button>
+    <div class="idx-body">
+      <div class="idx-body-inner">
+        <div class="stat-row">
+          <div class="stat"><b>4,8/5</b><span>sur [N] avis Google</span></div>
+          <div class="stat"><b>[N]</b><span>abonnés Instagram</span></div>
+        </div>
+        <p style="font-size:12.5px; opacity:.6;">Avis fictifs, widget réel connecté à la mise en ligne.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="idx-row">
+    <button class="idx-head" data-toggle>
+      <span class="idx-num">04</span>
+      <span class="idx-title">Nous suivre</span>
+      <span class="idx-plus">+</span>
+    </button>
+    <div class="idx-body">
+      <div class="idx-body-inner">
+        <div class="rs-links">
+          <a href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+          <a href="#" target="_blank" rel="noopener noreferrer">Facebook</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="idx-row">
+    <button class="idx-head" data-toggle>
+      <span class="idx-num">05</span>
+      <span class="idx-title">Nous trouver</span>
+      <span class="idx-plus">+</span>
+    </button>
+    <div class="idx-body">
+      <div class="idx-body-inner">
+        <p class="info-line">[Adresse complète]</p>
+        <p class="info-line">[Horaires d'ouverture]</p>
+        <p class="info-line">[Numéro] · [Email]</p>
+        <div class="map-placeholder">Emplacement de la carte Google Maps</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="contact-bloc" id="contact">
+  <h2 style="font-size:26px; margin-bottom:16px;">Nous écrire</h2>
+  <form action="#" method="POST">
+    <input type="text" name="nom" placeholder="Votre nom" required>
+    <input type="email" name="email" placeholder="Votre email" required>
+    <textarea name="message" placeholder="Votre message" required></textarea>
+    <button type="submit" class="btn">Envoyer</button>
+  </form>
+</div>
+
+<footer>[NOM DE LA BOUTIQUE] · [Ville] · [Email]</footer>
+
+<script>
+  var rows = document.querySelectorAll('.idx-row');
+  rows.forEach(function(row){
+    row.querySelector('[data-toggle]').addEventListener('click', function(){
+      var wasOpen = row.classList.contains('open');
+      rows.forEach(function(r){ r.classList.remove('open'); });
+      if(!wasOpen) row.classList.add('open');
+    });
+  });
+
+  var fontBtns = document.querySelectorAll('.font-btn');
+  fontBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      fontBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.body.setAttribute('data-font', btn.dataset.font);
+    });
+  });
+
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    toTop.classList.toggle('show', window.scrollY > 500);
+  }, {passive:true});
+  toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+</script>
+</body>
+</html>
