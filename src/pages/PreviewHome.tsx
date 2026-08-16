@@ -59,7 +59,12 @@ export default function PreviewHome() {
 
       <div className="flex-1 flex items-center justify-center px-6 py-16">
         <div className="w-full max-w-2xl text-center">
-          <img src={project.logo} alt="" className="h-56 md:h-80 w-auto mx-auto mb-8 drop-shadow-lg" />
+          <img
+            src={project.logo}
+            alt=""
+            className="h-56 md:h-80 w-auto mx-auto mb-8 drop-shadow-lg"
+            style={project.logoMaxWidth ? { maxWidth: project.logoMaxWidth } : undefined}
+          />
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{project.projectName}</h1>
 
           {project.coldIntro ? (

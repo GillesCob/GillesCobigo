@@ -26,6 +26,9 @@ export interface IPreviewProject {
   slug: string;
   projectName: string;
   logo: string;
+  /** Cap la taille d'affichage du logo (px) quand le fichier source est en trop basse resolution
+      pour la taille par defaut de PreviewHome.tsx (h-56/h-80) : evite l'agrandissement pixelise. */
+  logoMaxWidth?: number;
   contactName: string;
   currentRound: string;
   nextAction: string;
@@ -314,6 +317,8 @@ export const previewProjects: Record<string, IPreviewProject> = {
     slug: "creation-saint-roch",
     projectName: "Création Saint Roch",
     logo: "/preview/creation-saint-roch/logo.gif",
+    // Source 140x140px : au-dela, l'agrandissement pixelise nettement (retour de Gilles le 16/08).
+    logoMaxWidth: 140,
     contactName: "L'équipe Création Saint Roch",
     currentRound: "V1",
     nextAction: "Premier contact, en attente de retour",
