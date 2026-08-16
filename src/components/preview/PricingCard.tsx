@@ -26,12 +26,9 @@ const FORMSPREE_ENDPOINT = "https://formspree.io/f/mykarjar";
 export default function PricingCard({
   projectName,
   phone,
-  caseStudyFrom,
 }: {
   projectName: string;
   phone?: string;
-  /** Chemin de retour transmis en query param a /cas-client/*, cf PreviewHome.tsx. */
-  caseStudyFrom?: string;
 }) {
   const [withSubscription, setWithSubscription] = useState(false);
   // Non pertinente une fois l'abonnement coche (nom de domaine deja inclus dedans) : decochee
@@ -95,15 +92,9 @@ export default function PricingCard({
           <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
           Votre site
         </li>
-        <li className="flex items-start gap-2">
-          <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0 mt-1.5" />
-          <span>
-            5 allers-retours (V1 à V6,{" "}
-            <Link to={`/cas-client/v3?from=${caseStudyFrom ?? ""}`} className="underline hover:text-foreground">
-              plusieurs variations possibles par version
-            </Link>
-            )
-          </span>
+        <li className="flex items-center gap-2 whitespace-nowrap">
+          <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
+          5 allers-retours (V1 à V6)
         </li>
         <li className="flex items-center gap-2 whitespace-nowrap">
           <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
@@ -133,10 +124,6 @@ export default function PricingCard({
         )}
       </ul>
 
-      <p className="text-xs text-muted-foreground mb-4">
-        Tarif pilote : nombre de commerces accompagnés limité à ce prix pendant le lancement.
-      </p>
-
       <label className="flex items-start gap-3 rounded-xl border border-border p-3 mb-2 cursor-pointer hover:border-foreground/30 transition-colors">
         <input
           type="checkbox"
@@ -155,12 +142,6 @@ export default function PricingCard({
           </span>
         </span>
       </label>
-      {!withSubscription && (
-        <p className="text-xs text-muted-foreground mb-4">
-          Abonnement rentable dès la 2ᵉ modification ({DOMAIN_PRICE_YEAR + 2 * ADHOC_MODIF_PRICE}€ à la carte contre{" "}
-          {SUBSCRIPTION_PRICE_YEAR}€ en abonnement).
-        </p>
-      )}
 
       <label
         className={`flex items-start gap-3 rounded-xl border border-border p-3 mb-2 transition-colors ${
@@ -183,11 +164,10 @@ export default function PricingCard({
         </span>
       </label>
       {withSubscription && (
-        <p className="text-xs text-muted-foreground mb-4 ml-1">Déjà inclus dans l'abonnement Sérénité.</p>
+        <p className="text-xs text-muted-foreground mb-2 ml-1">Déjà inclus dans l'abonnement Sérénité.</p>
       )}
-      {!withSubscription && <div className="mb-4" />}
 
-      <p className="text-xs text-muted-foreground mb-2 whitespace-nowrap">
+      <p className="text-xs text-muted-foreground mb-2 mt-3.5 pt-3.5 border-t border-border whitespace-nowrap">
         Au-delà de la V6 (V7, V8...) ou modification après mise en ligne :{" "}
         {withSubscription ? SUBSCRIPTION_MODIF_PRICE : ADHOC_MODIF_PRICE}€.
       </p>

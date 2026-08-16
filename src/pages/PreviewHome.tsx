@@ -103,7 +103,7 @@ export default function PreviewHome() {
               </div>
 
               <div id="tarif" className="mt-8 scroll-mt-8">
-                <PricingCard projectName={project.projectName} phone={project.phone} caseStudyFrom={caseStudyFrom} />
+                <PricingCard projectName={project.projectName} phone={project.phone} />
               </div>
             </div>
           ) : (
