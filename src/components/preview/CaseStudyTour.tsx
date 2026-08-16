@@ -71,55 +71,57 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
     el.style.transition = "box-shadow .25s ease";
     el.style.boxShadow = "0 0 0 9999px rgba(0,0,0,.72)";
 
-    // "fixed-top" (etape sidenav) : la cible est trop pres du haut de page pour calculer une
-    // position fiable (le scroll d'approche n'a pas forcement fini son animation au moment du
-    // calcul, et il n'y a pas assez de place au-dessus). Bulle fixee sous le bandeau, jamais
-    // rognee quel que soit le scroll (2 tentatives de calcul dynamique ont echoue en prod le
-    // 16/08, on abandonne le calcul pour cette etape precise).
-    if (step.placement === "fixed-top") {
-      setBubblePos({ top: -1, left: -1 });
-    }
-
+    let lastTop = NaN;
+    let lastLeft = NaN;
     function place() {
-      if (step.placement === "fixed-top") return;
       const r = el.getBoundingClientRect();
-      const bubbleHeight = bubbleRef.current?.offsetHeight ?? 0;
-      const top = r.top + window.scrollY - bubbleHeight - 16;
-      const left = Math.min(r.left + window.scrollX, window.scrollX + window.innerWidth - 340 - 24);
-      setBubblePos({ top, left: Math.max(left, 16) });
+      let top: number;
+      let left: number;
+      if (step.placement === "right") {
+        top = r.top + window.scrollY;
+        left = r.right + window.scrollX + 20;
+      } else {
+        const bubbleHeight = bubbleRef.current?.offsetHeight ?? 0;
+        top = r.top + window.scrollY - bubbleHeight - 16;
+        left = Math.max(Math.min(r.left + window.scrollX, window.scrollX + window.innerWidth - 340 - 24), 16);
+      }
+      // Evite un re-render (donc un nouvel objet bubblePos) a chaque frame de la boucle rAF quand
+      // rien n'a bouge : la cible/le scroll sont stables la plupart du temps entre deux frames.
+      if (top === lastTop && left === lastLeft) return;
+      lastTop = top;
+      lastLeft = left;
+      setBubblePos({ top, left });
     }
 
     // Reset instantane du scroll au changement de version : la nouvelle page peut etre bien
     // plus courte ou plus longue que la precedente, un reset evite un saut visuel imprevisible
     // avant notre propre scroll anime (meme bug que sur le prototype vault, 16/08).
-    const scrollOffset = step.placement === "fixed-top" ? 130 : 220;
+    const scrollOffset = step.placement === "right" ? 130 : 220;
     function scrollToEl() {
       const targetY = el.getBoundingClientRect().top + window.scrollY - scrollOffset;
       window.scrollTo({ top: Math.max(targetY, 0), behavior: "smooth" });
     }
 
-    let timeout1: ReturnType<typeof setTimeout> | undefined;
-    let timeout2: ReturnType<typeof setTimeout> | undefined;
-    if (roundChanged) {
-      window.scrollTo(0, 0);
-      timeout1 = setTimeout(() => {
-        scrollToEl();
-        timeout2 = setTimeout(place, 260);
-      }, 180);
-    } else {
-      scrollToEl();
-      timeout2 = setTimeout(place, 260);
+    // Repositionnement en boucle (requestAnimationFrame) tant que l'etape est affichee, au lieu
+    // d'un delai fixe apres le scroll : un setTimeout devine une duree d'animation, une boucle
+    // rAF s'aligne toujours sur l'etat reel, quel que soit le temps que prend le scroll (cause
+    // des rognages constates en prod le 16/08 sur l'etape sidenav et l'etape V3).
+    let rafId = 0;
+    function loop() {
+      place();
+      rafId = requestAnimationFrame(loop);
     }
 
+    if (roundChanged) window.scrollTo(0, 0);
+    scrollToEl();
+    rafId = requestAnimationFrame(loop);
+
     window.addEventListener("resize", place);
-    window.addEventListener("scroll", place, { passive: true });
 
     return () => {
       el.style.boxShadow = "none";
       window.removeEventListener("resize", place);
-      window.removeEventListener("scroll", place);
-      if (timeout1) clearTimeout(timeout1);
-      if (timeout2) clearTimeout(timeout2);
+      cancelAnimationFrame(rafId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOnRightRound, step]);
@@ -136,12 +138,15 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
     window.scrollTo(0, 0);
   }, [status, roundLower, search, navigate]);
 
+  // bottom-left, pas bottom-right : ScrollToTop.tsx (bouton "remonter en haut", deja present sur
+  // toutes les pages) occupe deja ce coin avec un z-index plus eleve, il cachait ce bouton
+  // (retour de Gilles le 16/08, prod).
   if (status === "idle" || status === "off") {
     return status === "off" ? (
       <button
         type="button"
         onClick={restart}
-        className="fixed bottom-5 right-5 z-40 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-semibold shadow-lg"
+        className="fixed bottom-5 left-5 z-40 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-semibold shadow-lg"
       >
         ↻ Relancer la visite guidée
       </button>
@@ -180,10 +185,7 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
 
   if (!isOnRightRound || !bubblePos) return null;
 
-  const bubbleStyle: CSSProperties =
-    step.placement === "fixed-top"
-      ? { position: "fixed", top: 88, left: 24, zIndex: 61 }
-      : { position: "absolute", top: bubblePos.top, left: bubblePos.left, zIndex: 61 };
+  const bubbleStyle: CSSProperties = { position: "absolute", top: bubblePos.top, left: bubblePos.left, zIndex: 61 };
 
   return (
     <div
