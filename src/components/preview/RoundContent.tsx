@@ -47,10 +47,15 @@ function ProposalCard({ p }: { p: IPreviewProposal }) {
 export function ProposalsGrid({
   proposals,
   calloutsByLabel,
+  tourKeyByGroupLabel,
 }: {
   proposals: IPreviewProposal[];
   /** Bulle d'aide affichee au-dessus d'une carte precise (cle = label exact de la proposition), plutot qu'une bulle generique au-dessus de toute la grille. */
   calloutsByLabel?: Record<string, string>;
+  /** Cible la visite guidee (CaseStudyTour.tsx) sur un groupe precis plutot que toute la grille
+      (ex. V3, groupe "V3 : à choisir" seul, sans le groupe "Pour comparer (avant)" au-dessus :
+      cible trop haute sinon pour un placement fiable, cf incident prod du 16/08). */
+  tourKeyByGroupLabel?: Record<string, string>;
 }) {
   const groups = groupProposals(proposals);
   // Comparaison pure (un seul item par groupe, ex. "avant" vs "après") : les groupes
@@ -83,7 +88,11 @@ export function ProposalsGrid({
   return (
     <>
       {groups.map((group, i) => (
-        <div key={group.label ?? `group-${i}`} className={i > 0 ? "mt-8" : undefined}>
+        <div
+          key={group.label ?? `group-${i}`}
+          className={i > 0 ? "mt-8" : undefined}
+          data-tour-key={group.label ? tourKeyByGroupLabel?.[group.label] : undefined}
+        >
           {group.label && (
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
               {group.label}
@@ -132,11 +141,16 @@ export function RoundContent({
         <span className="text-sm text-muted-foreground">{entry.date}</span>
       </div>
 
-      <div className="mb-10" data-tour-key="proposals">
+      {/* data-tour-key="proposals" sur le conteneur entier uniquement quand la grille reste
+          courte (V1, 2 cartes sans groupe) : sur un round avec plusieurs groupes (V3, comparaison
+          + choix), la cible est trop haute pour un placement fiable, cf tourKeyByGroupLabel qui
+          cible alors uniquement le groupe "a choisir" via ProposalsGrid. */}
+      <div className="mb-10" data-tour-key={entry.round.toLowerCase() === "v1" ? "proposals" : undefined}>
         {showGuide && guideTexts?.proposals && <GuideCallout>{guideTexts.proposals}</GuideCallout>}
         <ProposalsGrid
           proposals={entry.proposals}
           calloutsByLabel={showGuide ? guideTexts?.proposalCallouts : undefined}
+          tourKeyByGroupLabel={entry.round.toLowerCase() === "v3" ? { "V3 : à choisir": "proposals" } : undefined}
         />
       </div>
 
