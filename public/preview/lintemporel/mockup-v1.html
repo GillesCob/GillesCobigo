@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/jpeg" href="./logo.jpg">
+<title>L'Intemporel Concept Store, proposition de site</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Cormorant+Garamond:wght@600;700&family=Jost:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#c85c52; --accent-light:#f18980; --creme:#fff8f5; --text:#3a2420;
+    --font-a:'Cormorant Garamond',serif; --font-b:'Jost',sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{overflow-x:clip;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--text); background:var(--creme); line-height:1.65;}
+  img{max-width:100%; display:block;}
+  h1,h2,h3{font-family:var(--font-a); font-weight:700;}
+  body[data-font="b"] h1, body[data-font="b"] h2, body[data-font="b"] h3{font-family:var(--font-b); letter-spacing:.01em;}
+  .btn{display:inline-block; padding:14px 30px; background:var(--accent); color:#fff; text-decoration:none; border-radius:30px; font-weight:700; font-size:15px; border:none; cursor:pointer; font-family:inherit;}
+  .btn:hover{background:#a8483f;}
+
+  .font-toggle{position:fixed; top:14px; right:14px; z-index:1000; background:rgba(255,255,255,.94); border-radius:20px; padding:6px 8px; display:flex; align-items:center; gap:6px; font-size:12px; box-shadow:0 4px 12px rgba(0,0,0,.15);}
+  .font-toggle span{opacity:.55; padding-left:4px;}
+  .font-btn{border:1px solid var(--accent); background:none; color:var(--accent); border-radius:14px; padding:4px 10px; font-size:12px; cursor:pointer; font-family:'Nunito',sans-serif;}
+  .font-btn.active{background:var(--accent); color:#fff;}
+
+  .to-top{position:fixed; bottom:78px; right:16px; z-index:999; width:44px; height:44px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease; box-shadow:0 6px 16px rgba(0,0,0,.25);}
+  .to-top.show{opacity:1; pointer-events:auto;}
+
+  /* Reveal enrichi (flou + echelle + mouvement), inspire des sites boutique
+     haut de gamme (Bottega Veneta, Aesop). */
+  .reveal{opacity:0; filter:blur(7px); transform:translateY(28px) scale(.98); transition:opacity .9s cubic-bezier(.16,1,.3,1), filter .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1);}
+  .reveal.show{opacity:1; filter:blur(0); transform:translateY(0) scale(1);}
+  .reveal .avis-card, .reveal .etapes li{opacity:0; transform:translateY(14px);}
+  .reveal.show .avis-card, .reveal.show .etapes li{opacity:1; transform:translateY(0); transition:opacity .6s ease, transform .6s ease;}
+  .reveal.show .avis-card:nth-child(1), .reveal.show .etapes li:nth-child(1){transition-delay:.05s;}
+  .reveal.show .avis-card:nth-child(2), .reveal.show .etapes li:nth-child(2){transition-delay:.16s;}
+  .reveal.show .avis-card:nth-child(3), .reveal.show .etapes li:nth-child(3){transition-delay:.27s;}
+
+  /* Structure principale : colonne editoriale fixe a gauche (identite +
+     chapitre qui change avec le scroll), contenu en blocs continus a droite.
+     Choisie pour L'Intemporel car son positionnement (mode seconde main
+     PREMIUM, "chaque piece a une histoire") appelle un registre longform/
+     lookbook plutot qu'un site vitrine classique. CSS Grid (pas flex) pour
+     le sticky, cf incident du 16/08 (overflow-x:hidden sur body cassait le
+     sticky, corrige en overflow-x:clip). */
+  .split{display:grid; grid-template-columns:42% 1fr;}
+  @media(max-width:860px){ .split{display:block;} }
+
+  .visuel{position:sticky; top:0; min-width:340px; height:100vh; background:linear-gradient(165deg, rgba(200,92,82,.86), rgba(107,46,41,.92) 70%), url('../_stock/mode-vintage/mode-vintage-02.jpg') center/cover; color:#fff; text-align:center;}
+  .visuel-inner{display:flex; flex-direction:column; height:100%; padding:36px 40px;}
+  .visuel-top{display:flex; flex-direction:column; align-items:center; flex-shrink:0;}
+  .visuel-top .logo{width:64px; height:64px; border-radius:50%; margin-bottom:12px; box-shadow:0 10px 24px rgba(0,0,0,.3); overflow:hidden;}
+  .visuel-top .logo img{width:100%; height:100%; object-fit:cover;}
+  .visuel-name{font-size:15px; font-weight:800;}
+  .visuel-top .tagline{font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; opacity:.7; margin-top:4px;}
+  .visuel-chapter{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px 0;}
+  .chapter-num{font-family:var(--font-a); font-size:14px; letter-spacing:.3em; opacity:.65; margin-bottom:14px;}
+  .chapter-title{font-size:clamp(26px,3vw,38px); line-height:1.15; max-width:300px;}
+  @keyframes chapterIn{ from{opacity:0; transform:translateY(14px); filter:blur(4px);} to{opacity:1; transform:translateY(0); filter:blur(0);} }
+  .chapter-anim{ animation:chapterIn .5s cubic-bezier(.16,1,.3,1); }
+  .visuel-dots{display:flex; justify-content:center; gap:10px; flex-shrink:0; padding-top:8px;}
+  .v-dot{width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.35); border:none; padding:0; cursor:pointer; transition:background .25s ease, transform .25s ease;}
+  .v-dot:hover{background:rgba(255,255,255,.6);}
+  .v-dot.active{background:#fff; transform:scale(1.3);}
+  @media(max-width:860px){ .visuel-dots{display:none;} }
+
+  .contenu{min-width:340px; padding:80px 6vw 100px;}
+  .bloc{padding:44px 0; border-bottom:1px solid rgba(200,92,82,.16);}
+  .bloc:first-child{padding-top:0;}
+  .bloc:last-child{border-bottom:none;}
+  .bloc h2{font-size:26px; color:var(--accent); margin-bottom:16px;}
+  .bloc p{font-size:15.5px; margin-bottom:12px;}
+  .bloc p.lead{font-size:18px; font-weight:700; color:var(--accent);}
+  .quote{font-family:var(--font-a); font-style:italic; font-size:20px; color:var(--accent); margin-top:16px;}
+  body[data-font="b"] .quote{font-family:var(--font-b); font-style:normal;}
+
+  .etapes{list-style:none; counter-reset:step; margin-top:6px;}
+  .etapes li{counter-increment:step; padding-left:40px; position:relative; margin-bottom:16px; font-size:15px;}
+  .etapes li::before{content:counter(step); position:absolute; left:0; top:-1px; width:27px; height:27px; border-radius:50%; background:var(--accent); color:#fff; font-family:var(--font-a); font-size:13px; display:flex; align-items:center; justify-content:center;}
+
+  .stat-row{display:flex; gap:24px; flex-wrap:wrap; margin-bottom:18px;}
+  .stat{background:#fff; border-radius:14px; padding:16px 22px; box-shadow:0 6px 18px rgba(0,0,0,.05);}
+  .stat b{display:block; font-family:var(--font-a); font-size:24px; color:var(--accent);}
+  .stat span{font-size:12px; opacity:.7;}
+  .avis-scroll{display:flex; gap:16px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:8px; margin:0 -4px;}
+  .avis-card{scroll-snap-align:start; flex:0 0 240px; background:#fff; border-radius:16px; padding:20px; box-shadow:0 6px 18px rgba(0,0,0,.06);}
+  .avis-card .stars{color:var(--accent); margin-bottom:8px;}
+  .avis-card p{font-size:13.5px; opacity:.85; margin-bottom:0;}
+  .avis-note{margin-top:14px; font-size:12px; opacity:.6;}
+
+
+  dl{display:grid; grid-template-columns:auto 1fr; gap:9px 18px; font-size:14.5px; max-width:420px;}
+  dt{font-weight:700; color:var(--accent);}
+  dd{opacity:.85;}
+
+  .contact-bloc form{display:flex; flex-direction:column; gap:14px; max-width:420px; margin-top:8px;}
+  .contact-bloc input, .contact-bloc textarea{padding:12px 16px; border-radius:10px; border:1px solid rgba(200,92,82,.25); font-family:inherit; font-size:15px; background:#fff;}
+  .contact-bloc textarea{min-height:100px; resize:vertical;}
+
+  footer{text-align:center; padding:26px 24px 100px; background:#6b2e29; color:rgba(255,255,255,.7); font-size:13px;}
+
+  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:1000; background:#6b2e29; color:#fff; padding:14px 20px; text-align:center; font-family:'Nunito',sans-serif; font-size:14px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
+  .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
+
+  @media(max-width:860px){
+    .visuel{position:relative; width:100%; height:auto; min-height:320px;}
+    .visuel-inner{height:auto; padding:60px 30px;}
+    .contenu{width:100%; padding:48px 22px 70px;}
+    .font-toggle{top:auto; bottom:130px; right:12px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="font-toggle">
+  <span>Titres</span>
+  <button class="font-btn active" data-font="a">Élégant</button>
+  <button class="font-btn" data-font="b">Épuré</button>
+</div>
+<button class="to-top" id="toTop" aria-label="Retour en haut">↑</button>
+
+<div class="retour-bandeau">
+  Ça vous plaît ? <a href="/preview/lintemporel/Xx3dVKxK4O#exemple">Découvrez comment on le rend réel →</a>
+</div>
+
+<div class="split">
+  <div class="visuel">
+    <div class="visuel-inner">
+      <div class="visuel-top">
+        <div class="logo"><img src="./logo.jpg" alt="L'Intemporel Concept Store"></div>
+        <div class="visuel-name">L'Intemporel</div>
+        <div class="tagline">Concept store</div>
+      </div>
+      <div class="visuel-chapter">
+        <div class="chapter-num" id="chapterNum">01</div>
+        <div class="chapter-title" id="chapterTitle">Notre parti pris</div>
+      </div>
+      <div class="visuel-dots" id="visuelDots"></div>
+    </div>
+  </div>
+
+  <div class="contenu">
+    <div class="bloc reveal" id="bloc-concept" data-label="Notre parti pris" data-num="01">
+      <h2>Notre parti pris</h2>
+      <p class="lead">Mode seconde main premium à Mont-de-Marsan, sur rendez-vous.</p>
+      <p>L'Intemporel propose une sélection de mode seconde main premium et luxe pour femme, chaque pièce choisie personnellement pour sa qualité et son intemporalité.</p>
+      <p class="quote">« Chaque pièce a déjà une histoire, à vous de lui en offrir une nouvelle. »</p>
+    </div>
+
+    <div class="bloc reveal" id="bloc-etapes" data-label="Comment ça marche" data-num="02">
+      <h2>Comment ça marche</h2>
+      <ol class="etapes">
+        <li>Prise de rendez-vous, en boutique ou via Instagram.</li>
+        <li>Sélection personnalisée, chaque pièce choisie avec vous.</li>
+        <li>Dépôt en boutique, conditions fixées ensemble.</li>
+      </ol>
+    </div>
+
+    <div class="bloc reveal" id="bloc-avis" data-label="Leurs retours" data-num="03">
+      <h2>Leurs retours</h2>
+      <div class="stat-row">
+        <div class="stat"><b>4,5/5</b><span>sur 17 avis Google</span></div>
+        <div class="stat"><b>1098</b><span>abonnés Instagram</span></div>
+      </div>
+      <div class="avis-scroll">
+        <div class="avis-card"><div class="stars">★★★★★</div><p>« Placeholder, vrais avis Google à intégrer via widget une fois la fiche Google Business connectée. »</p></div>
+        <div class="avis-card"><div class="stars">★★★★★</div><p>« Placeholder, vrais avis Google à intégrer via widget une fois la fiche Google Business connectée. »</p></div>
+        <div class="avis-card"><div class="stars">★★★★★</div><p>« Placeholder, vrais avis Google à intégrer via widget une fois la fiche Google Business connectée. »</p></div>
+      </div>
+      <p class="avis-note">Note réelle vérifiée sur la fiche Google, avis affichés fictifs en attendant la connexion du widget.</p>
+    </div>
+
+    <div class="bloc reveal" id="bloc-infos" data-label="Bon à savoir" data-num="04">
+      <h2>Bon à savoir</h2>
+      <dl>
+        <dt>Adresse</dt><dd>21 rue des Cordeliers, 40000 Mont-de-Marsan</dd>
+        <dt>Horaires</dt><dd>Mardi-samedi, 10h-18h30 (sur rendez-vous)</dd>
+        <dt>Téléphone</dt><dd>06 10 86 13 08</dd>
+        <dt>Email</dt><dd>contact.intemporelconcept@gmail.com</dd>
+      </dl>
+    </div>
+
+    <div class="bloc reveal" id="bloc-map" data-label="Nous rendre visite" data-num="05">
+      <h2>Nous rendre visite</h2>
+      <iframe loading="lazy" style="width:100%; height:260px; border:0; border-radius:16px;" src="https://maps.google.com/maps?q=21%20rue%20des%20Cordeliers%2C%2040000%20Mont-de-Marsan&output=embed"></iframe>
+    </div>
+
+    <div class="bloc contact-bloc reveal" id="bloc-contact" data-label="Prendre rendez-vous" data-num="06">
+      <h2>Prendre rendez-vous</h2>
+      <form action="#" method="POST">
+        <input type="text" name="nom" placeholder="Votre nom" required>
+        <input type="email" name="email" placeholder="Votre email" required>
+        <textarea name="message" placeholder="Votre message" required></textarea>
+        <button type="submit" class="btn">Envoyer</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>L'INTEMPOREL CONCEPT STORE · Mont-de-Marsan · contact.intemporelconcept@gmail.com · <a href="https://www.instagram.com/lintemporel_conceptstore/" target="_blank" rel="noopener noreferrer" style="color:inherit;">Instagram</a></footer>
+
+<script>
+  var revealObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('show'); });
+  }, {threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el){ revealObs.observe(el); });
+
+  var blocs = Array.prototype.slice.call(document.querySelectorAll('.bloc[data-label]'));
+  var dotsWrap = document.getElementById('visuelDots');
+  var numEl = document.getElementById('chapterNum');
+  var titleEl = document.getElementById('chapterTitle');
+  var dots = blocs.map(function(bloc, i){
+    var dot = document.createElement('button');
+    dot.className = 'v-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', bloc.dataset.label);
+    dot.addEventListener('click', function(){ bloc.scrollIntoView({behavior:'smooth', block:'center'}); });
+    dotsWrap.appendChild(dot);
+    return dot;
+  });
+
+  var activeIndex = 0;
+  function playAnim(el){ el.classList.remove('chapter-anim'); void el.offsetWidth; el.classList.add('chapter-anim'); }
+  function setActive(i){
+    if (i === activeIndex) return;
+    activeIndex = i;
+    dots.forEach(function(d, j){ d.classList.toggle('active', j === i); });
+    numEl.textContent = blocs[i].dataset.num;
+    titleEl.textContent = blocs[i].dataset.label;
+    playAnim(numEl); playAnim(titleEl);
+  }
+  function closestBlocIndex(){
+    var centerY = window.innerHeight / 2, best = 0, bestDist = Infinity;
+    blocs.forEach(function(b, i){
+      var r = b.getBoundingClientRect();
+      var dist = Math.abs((r.top + r.height / 2) - centerY);
+      if (dist < bestDist){ bestDist = dist; best = i; }
+    });
+    return best;
+  }
+  var ticking = false;
+  function onScroll(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){ setActive(closestBlocIndex()); ticking = false; });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+
+  document.querySelectorAll('.font-btn').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.body.dataset.font = b.dataset.font;
+      document.querySelectorAll('.font-btn').forEach(function(x){ x.classList.toggle('active', x===b); });
+    });
+  });
+
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    if(window.scrollY > window.innerHeight * 0.6){ toTop.classList.add('show'); } else { toTop.classList.remove('show'); }
+  }, {passive:true});
+  toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+</script>
+</body>
+</html>

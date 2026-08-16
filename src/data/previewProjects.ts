@@ -48,7 +48,7 @@ export const previewProjects: Record<string, IPreviewProject> = {
     logo: `${BASE}/logo.png`,
     contactName: "Mylène",
     currentRound: "V6",
-    nextAction: "Une seule question pour toi cette fois : plan gratuit ou payant pour Instagram (détails dans la V6) ?",
+    nextAction: "Rien à faire de ton côté pour l'instant, merci pour ta réponse ! Le site part en ligne dans les prochains jours.",
     feedbackFormId: "xgoggnej",
     rounds: [
       {
@@ -62,10 +62,9 @@ export const previewProjects: Record<string, IPreviewProject> = {
           "Avis Google branchés en vrai (les 5 plus récents envoyés par Google, mis à jour automatiquement toutes les heures), avec un bouton \"Voir tous les avis\" qui renvoie vers ta fiche Google Maps",
           "Posts Instagram branchés en vrai eux aussi (plus figés comme sur la V5), mis à jour automatiquement",
         ],
-        missingInfo: [
-          "Ta décision sur le plan Instagram : je suis parti sur le plan gratuit pour l'instant (détails et limites dans ma précision ci-dessous), dis-moi si tu préfères passer sur le payant",
-          "Si on reste sur le gratuit : les 3 photos affichées quand le quota est dépassé sont pour l'instant celles que tu m'avais envoyées pour la V5, elles ne changeront plus toutes seules tant que je ne les remplace pas à la main. Tu veux m'envoyer 3 photos précises que tu préfères voir dans ce cas-là, ou je garde ces 3-là ?",
-        ],
+        missingInfo: [],
+        clientFeedback:
+          "Coucou Gilles,\nje valide les 2 propositions pour les avis Google et pour le widget Insta gratuit. Pour les photos fixes, tu peux garder celles que tu as déjà.\nMerci pour tout!!",
         ownerNote:
           "Deux limites à connaître avant de valider :\n\n- Google ne nous donne jamais plus de 5 avis (c'est une limite fixe de leur API, impossible à contourner), et parmi ces 5 un avis sans commentaire écrit (juste une note en étoiles) n'est pas affiché : ça peut arriver que tu voies moins de 5 avis à l'écran selon le moment, ce n'est pas un bug (aperçus avec 4, 3, 2 et 1 avis ci-dessous, pour te donner une idée du rendu dans chaque cas).\n\n- Le widget Instagram est sur un plan gratuit : un badge \"Free Instagram Feed Widget\" reste visible sous les posts, et l'affichage est limité à 200 vues par mois. Au-delà, la section Instagram bascule automatiquement sur 3 photos fixes (qui ne se mettent pas à jour toutes seules, contrairement au reste) et un lien direct vers ton compte (aperçu ci-dessous, \"Si le quota Instagram gratuit est dépassé\") le temps que ça se réinitialise le mois suivant. Passer sur le plan payant (4$/mois, environ 3,70€) retire le badge et cette limite, à toi de voir si ça vaut le coup pour toi.",
         supportingVisuals: [
@@ -214,6 +213,119 @@ export const previewProjects: Record<string, IPreviewProject> = {
         date: "14 août 2026",
         proposals: [
           { label: "Votre site, premier jet", screenshot: `${BASE}/screenshots/v1.png`, htmlPath: "/preview/demo-boutique/mockup-v1.html" },
+        ],
+        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
+      },
+    ],
+  },
+  // Prospects reels, prospection a froid Mont-de-Marsan (cf Projets/Boutiques/ dans le vault,
+  // suivi.html + Prospects/Mont-de-Marsan/<nom>/). Meme mecanisme coldIntro que demo-boutique
+  // ci-dessus, htmlPath pointant vers leur propre mockup-v1.html statique. Pas encore signes :
+  // aucune page /preview/<slug>/<secret>/<round> pour eux, uniquement cette page d'accueil.
+  Ru4wE22dUd: {
+    slug: "cave-velours",
+    projectName: "Cave Velours",
+    logo: "/preview/cave-velours/logo.jpg",
+    contactName: "L'équipe Cave Velours",
+    phone: "06 62 27 85 73",
+    currentRound: "V1",
+    nextAction: "Premier contact, en attente de retour",
+    feedbackFormId: "xgoggnej",
+    coldIntro:
+      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre commerce.",
+    rounds: [
+      {
+        round: "V1",
+        date: "15 août 2026",
+        proposals: [
+          { label: "Votre site, premier jet", screenshot: "/preview/cave-velours/logo.jpg", htmlPath: "/preview/cave-velours/mockup-v1.html" },
+        ],
+        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
+      },
+    ],
+  },
+  Xx3dVKxK4O: {
+    slug: "lintemporel",
+    projectName: "L'Intemporel Concept Store",
+    logo: "/preview/lintemporel/logo.jpg",
+    contactName: "Coralie Generosi",
+    phone: "06 10 86 13 08",
+    currentRound: "V1",
+    nextAction: "Premier contact, en attente de retour",
+    feedbackFormId: "xgoggnej",
+    coldIntro:
+      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre commerce.",
+    rounds: [
+      {
+        round: "V1",
+        date: "15 août 2026",
+        proposals: [
+          { label: "Votre site, premier jet", screenshot: "/preview/lintemporel/logo.jpg", htmlPath: "/preview/lintemporel/mockup-v1.html" },
+        ],
+        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
+      },
+    ],
+  },
+  WnbclCyz2v: {
+    slug: "fripouilles",
+    projectName: "Les Frip'ouilles",
+    logo: "/preview/fripouilles/logo.jpg",
+    contactName: "Camille Giraudel",
+    phone: "07 81 87 34 35",
+    currentRound: "V1",
+    nextAction: "Premier contact, en attente de retour",
+    feedbackFormId: "xgoggnej",
+    coldIntro:
+      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre commerce.",
+    rounds: [
+      {
+        round: "V1",
+        date: "15 août 2026",
+        proposals: [
+          { label: "Votre site, premier jet", screenshot: "/preview/fripouilles/logo.jpg", htmlPath: "/preview/fripouilles/mockup-v1.html" },
+        ],
+        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
+      },
+    ],
+  },
+  PKpURvgnT5: {
+    slug: "trois-petits-muscaris",
+    projectName: "Trois Petits Muscaris",
+    logo: "/preview/trois-petits-muscaris/logo.jpg",
+    contactName: "Claire Faure",
+    phone: "06 37 77 62 43",
+    currentRound: "V1",
+    nextAction: "Premier contact, en attente de retour",
+    feedbackFormId: "xgoggnej",
+    coldIntro:
+      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre commerce.",
+    rounds: [
+      {
+        round: "V1",
+        date: "15 août 2026",
+        proposals: [
+          { label: "Votre site, premier jet", screenshot: "/preview/trois-petits-muscaris/logo.jpg", htmlPath: "/preview/trois-petits-muscaris/mockup-v1.html" },
+        ],
+        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
+      },
+    ],
+  },
+  H2g7uNKQu4: {
+    slug: "creation-saint-roch",
+    projectName: "Création Saint Roch",
+    logo: "/preview/creation-saint-roch/logo.gif",
+    contactName: "L'équipe Création Saint Roch",
+    currentRound: "V1",
+    nextAction: "Premier contact, en attente de retour",
+    feedbackFormId: "xgoggnej",
+    coldIntro:
+      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre commerce.",
+    rounds: [
+      {
+        round: "V1",
+        date: "15 août 2026",
+        proposals: [
+          { label: "Votre site, premier jet", screenshot: "/preview/creation-saint-roch/logo.gif", htmlPath: "/preview/creation-saint-roch/mockup-v1.html" },
         ],
         missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
       },

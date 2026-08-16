@@ -93,6 +93,7 @@ export default function PreviewHome() {
                   <span className="block mb-1">Le site proposé n'est qu'un premier jet.</span>
                   On l'affine ensemble jusqu'au résultat final, comme pour cette autre commerçante de Mont-de-Marsan :
                   voici tout son parcours, du premier jet à la version livrée.
+                  En général, la mise en ligne complète prend une semaine une fois les informations réunies.
                 </p>
                 <Button asChild variant="outline" size="sm">
                   <Link to={`/cas-client/v1?from=${caseStudyFrom}`}>
