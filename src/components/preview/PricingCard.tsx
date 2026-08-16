@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,9 +26,13 @@ const FORMSPREE_ENDPOINT = "https://formspree.io/f/mykarjar";
 export default function PricingCard({
   projectName,
   phone,
+  autoOpenDialog,
 }: {
   projectName: string;
   phone?: string;
+  /** Ouvre la modale de confirmation directement au montage (lien "Discutons-en" de la visite
+      guidee, ?discuter=1 lu par PreviewHome.tsx), sans preselection (memes defauts que d'habitude). */
+  autoOpenDialog?: boolean;
 }) {
   const [withSubscription, setWithSubscription] = useState(false);
   // Non pertinente une fois l'abonnement coche (nom de domaine deja inclus dedans) : decochee
@@ -48,6 +52,11 @@ export default function PricingCard({
   function openDialog() {
     setDialogOpen(true);
   }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (autoOpenDialog) setDialogOpen(true);
+  }, []);
 
   async function handleConfirm() {
     setSubmitting(true);

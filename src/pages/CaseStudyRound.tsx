@@ -39,6 +39,7 @@ export default function CaseStudyRound() {
         currentRound={entry.round}
         search={search}
         ctaHref={from ? `/preview/${from}#tarif` : undefined}
+        discussHref={from ? `/preview/${from}?discuter=1#tarif` : undefined}
       />
 
       {/* Bandeau figé en haut, visible pendant tout le scroll (demande explicite du 15/08 : un

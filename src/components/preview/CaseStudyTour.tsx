@@ -10,6 +10,8 @@ interface ICaseStudyTourProps {
   search: string;
   /** Destination du CTA de fin de visite, absente si la page est ouverte sans contexte prospect. */
   ctaHref?: string;
+  /** Destination du CTA "Discutons-en" affiche des l'etape 1, absente sans contexte prospect. */
+  discussHref?: string;
 }
 
 // Visite guidee multi-versions sur /cas-client/<round> : porte le prototype valide dans le vault
@@ -17,7 +19,7 @@ interface ICaseStudyTourProps {
 // box-shadow demesure (pas de masque SVG/canvas), bulle positionnee par calcul (au-dessus ou a
 // droite selon l'etape), navigation reelle entre rounds pilotee par le store (CaseStudyRound.tsx
 // est demonte/remonte a chaque changement de route, le store Zustand survit).
-export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseStudyTourProps) {
+export default function CaseStudyTour({ currentRound, search, ctaHref, discussHref }: ICaseStudyTourProps) {
   const navigate = useNavigate();
   const status = useCaseStudyTourStore((s) => s.status);
   const stepIndex = useCaseStudyTourStore((s) => s.stepIndex);
@@ -101,7 +103,12 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
     // Reset instantane du scroll au changement de version : la nouvelle page peut etre bien
     // plus courte ou plus longue que la precedente, un reset evite un saut visuel imprevisible
     // avant notre propre scroll anime (meme bug que sur le prototype vault, 16/08).
-    const scrollOffset = step.placement === "right" ? 130 : 220;
+    // Offset "above" derive de la vraie hauteur de la bulle (deja rendue avec le contenu de cette
+    // etape a ce stade) plutot qu'un chiffre fige : l'etape 1 (CTA "Discutons-en" en plus) est
+    // plus haute que les autres, un offset fixe la laissait deborder sous le bandeau (meme bug
+    // que sur le prototype vault, 16/08).
+    const bubbleHeight = bubbleRef.current?.offsetHeight ?? 130;
+    const scrollOffset = step.placement === "right" ? 130 : (96 + bubbleHeight);
     function scrollToEl() {
       const targetY = el.getBoundingClientRect().top + window.scrollY - scrollOffset;
       window.scrollTo({ top: Math.max(targetY, 0), behavior: "smooth" });
@@ -234,6 +241,17 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
         Étape {stepIndex + 1} / {CASE_STUDY_TOUR_STEPS.length}
       </div>
       <p className="mb-3.5">{step.text}</p>
+      {/* Discutons-en : uniquement etape 1 (16/08, propose comme prototype puis valide par Gilles).
+          Ouvre la page tarif du prospect avec ?discuter=1, lu par PreviewHome/PricingCard pour
+          ouvrir directement la modale de confirmation du numero (rien de preselectionne, options
+          discutees au telephone). */}
+      {stepIndex === 0 && discussHref && (
+        <div className="mb-3 border-t border-background/25 pt-3">
+          <a href={discussHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[13px] font-bold opacity-90 hover:opacity-100 hover:underline">
+            🎯 Discutons-en →
+          </a>
+        </div>
+      )}
       <div className="flex items-center justify-between gap-2.5">
         <button type="button" onClick={skip} className="text-xs underline opacity-55">
           Visiter librement

@@ -14,7 +14,11 @@ export default function PreviewHome() {
   const { secret } = useParams<{ project: string; secret: string }>();
   const project = secret ? previewProjects[secret] : undefined;
   const { theme, toggleTheme } = useThemeStore();
-  const { hash } = useLocation();
+  const { hash, search } = useLocation();
+  // ?discuter=1 : pose par le CTA "Discutons-en" de la visite guidee (CaseStudyTour.tsx), ouvre
+  // directement la modale de confirmation du numero dans PricingCard, sans repasser par un clic
+  // supplementaire sur "Ça m'intéresse, on en parle".
+  const autoOpenDialog = new URLSearchParams(search).get("discuter") === "1";
   usePreviewFavicon(project?.logo);
   usePreviewTitle(project?.projectName);
 
@@ -122,7 +126,7 @@ export default function PreviewHome() {
               </div>
 
               <div id="tarif" className="mt-8 scroll-mt-8">
-                <PricingCard projectName={project.projectName} phone={project.phone} />
+                <PricingCard projectName={project.projectName} phone={project.phone} autoOpenDialog={autoOpenDialog} />
               </div>
             </div>
           ) : (
