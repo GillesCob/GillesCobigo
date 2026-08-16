@@ -95,13 +95,15 @@ export default function PricingCard({
           <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
           Votre site
         </li>
-        <li className="flex items-center gap-2">
-          <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
-          5 allers-retours (V1 à V6,{" "}
-          <Link to={`/cas-client/v3?from=${caseStudyFrom ?? ""}`} className="underline hover:text-foreground">
-            plusieurs variations possibles par version
-          </Link>
-          )
+        <li className="flex items-start gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0 mt-1.5" />
+          <span>
+            5 allers-retours (V1 à V6,{" "}
+            <Link to={`/cas-client/v3?from=${caseStudyFrom ?? ""}`} className="underline hover:text-foreground">
+              plusieurs variations possibles par version
+            </Link>
+            )
+          </span>
         </li>
         <li className="flex items-center gap-2 whitespace-nowrap">
           <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
