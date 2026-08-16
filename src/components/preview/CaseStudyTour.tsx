@@ -112,13 +112,45 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
       rafId = requestAnimationFrame(loop);
     }
 
+    // Attendre que les images de la page (captures d'ecran des propositions) aient fini de
+    // charger avant de calculer le scroll : tant qu'une image au-dessus de la cible n'a pas sa
+    // taille reelle, la page est plus courte qu'elle ne le sera, et le scroll calcule s'arrete
+    // trop tot (cause du "ca ne descend pas assez" sur les etapes V2/V6, retour de Gilles le
+    // 16/08). La bulle (boucle rAF ci-dessus) se recale d'elle-meme sans attendre, seul le
+    // scroll a besoin d'etre differe. "cancelled" evite qu'un appel differe d'une etape deja
+    // quittee (clic rapide Suivant/Precedent) ne vienne re-scroller au mauvais endroit.
+    let cancelled = false;
+    function waitForImages(maxWaitMs: number): Promise<void> {
+      return new Promise((resolve) => {
+        const pending = Array.from(document.images).filter((img) => !img.complete);
+        if (pending.length === 0) {
+          resolve();
+          return;
+        }
+        let remaining = pending.length;
+        const done = () => {
+          remaining -= 1;
+          if (remaining <= 0) resolve();
+        };
+        pending.forEach((img) => {
+          img.addEventListener("load", done, { once: true });
+          img.addEventListener("error", done, { once: true });
+        });
+        setTimeout(resolve, maxWaitMs);
+      });
+    }
+
     if (roundChanged) window.scrollTo(0, 0);
     scrollToEl();
     rafId = requestAnimationFrame(loop);
+    waitForImages(1200).then(() => {
+      if (!cancelled) scrollToEl();
+    });
 
     window.addEventListener("resize", place);
 
     return () => {
+      cancelled = true;
       el.style.boxShadow = "none";
       window.removeEventListener("resize", place);
       cancelAnimationFrame(rafId);
