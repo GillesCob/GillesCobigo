@@ -55,7 +55,7 @@ export default function CaseStudyRound() {
             {from ? (
               <Button asChild size="sm" className="rounded-full shrink-0 w-fit">
                 <Link to={`/preview/${from}#tarif`}>
-                  Découvrez comment on le rend réel <ArrowRight size={14} />
+                  Découvrez comment <ArrowRight size={14} />
                 </Link>
               </Button>
             ) : (
