@@ -215,13 +215,6 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, discussHr
               Découvrez comment <ArrowRight size={16} />
             </a>
           )}
-          <button
-            type="button"
-            onClick={skip}
-            className="mt-6 block w-full text-sm text-muted-foreground underline"
-          >
-            Continuer à visiter librement
-          </button>
         </div>
       </div>
     );
