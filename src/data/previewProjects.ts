@@ -251,6 +251,8 @@ export const previewProjects: Record<string, IPreviewProject> = {
     slug: "lintemporel",
     projectName: "L'Intemporel Concept Store",
     logo: "/preview/lintemporel/logo.jpg",
+    // Source 150x150px : au-dela, l'agrandissement pixelise (retour de Gilles le 16/08).
+    logoMaxWidth: 150,
     contactName: "Coralie Generosi",
     phone: "06 10 86 13 08",
     currentRound: "V1",
@@ -273,6 +275,8 @@ export const previewProjects: Record<string, IPreviewProject> = {
     slug: "fripouilles",
     projectName: "Les Frip'ouilles",
     logo: "/preview/fripouilles/logo.jpg",
+    // Source 150x150px : au-dela, l'agrandissement pixelise (retour de Gilles le 16/08).
+    logoMaxWidth: 150,
     contactName: "Camille Giraudel",
     phone: "07 81 87 34 35",
     currentRound: "V1",
