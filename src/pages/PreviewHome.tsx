@@ -102,6 +102,10 @@ export default function PreviewHome() {
               <div className="mb-8">
                 <a
                   href="#tarif"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById("tarif")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }}
                   className="inline-flex items-center gap-1.5 rounded-full bg-foreground/5 border border-foreground/10 px-4 py-1.5 text-sm text-foreground/80 hover:text-foreground hover:border-foreground/30 transition-colors"
                 >
                   À partir de 500€
