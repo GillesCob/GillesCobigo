@@ -77,9 +77,14 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
       const r = el.getBoundingClientRect();
       let top: number;
       let left: number;
-      if (step.placement === "right") {
+      if (step.placement === "right" && window.innerWidth - r.right >= 360) {
         top = r.top + window.scrollY;
         left = r.right + window.scrollX + 20;
+      } else if (step.placement === "right") {
+        // Pas assez de place a droite (mobile, la nav de versions prend toute la largeur) :
+        // repli sous la cible plutot que hors ecran, retour de Gilles le 16/08.
+        top = r.bottom + window.scrollY + 16;
+        left = Math.max(Math.min(r.left + window.scrollX, window.scrollX + window.innerWidth - 340 - 24), 16);
       } else {
         const bubbleHeight = bubbleRef.current?.offsetHeight ?? 0;
         top = r.top + window.scrollY - bubbleHeight - 16;
