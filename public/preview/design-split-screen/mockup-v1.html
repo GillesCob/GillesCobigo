@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Template Designs, split-screen éditorial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Cormorant+Garamond:wght@600;700&family=Jost:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#2d5016; --accent-dark:#1c3510; --creme:#f7f5ef; --text:#2a2620;
+    --font-a:'Cormorant Garamond',serif; --font-b:'Jost',sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  /* overflow-x:hidden sur body/html force le calcul de overflow-y a "auto"
+     (regle CSS peu connue), ce qui transforme body en conteneur de scroll et
+     casse position:sticky pour tout descendant (cause reelle du bug remonte
+     3 fois par Gilles le 16/08, les tentatives precedentes visaient les
+     mauvaises pistes : bug Safari puis flex vs grid). overflow-x:clip evite
+     ce cote de bord tout en bloquant le scroll horizontal. */
+  html,body{overflow-x:clip;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--text); background:var(--creme); line-height:1.65;}
+  img{max-width:100%; display:block;}
+  h1,h2,h3{font-family:var(--font-a); font-weight:700;}
+  body[data-font="b"] h1, body[data-font="b"] h2, body[data-font="b"] h3{font-family:var(--font-b); letter-spacing:.01em;}
+  /* Reveal enrichi (flou + echelle + translation, easing "expo-out"), plutot
+     qu'un simple fade+translateY : inspire des sites boutique haut de gamme
+     (Bottega Veneta, Aesop) qui combinent blur/scale/mouvement sur leurs
+     reveals de scroll plutot qu'une opacite plate. */
+  .reveal{opacity:0; filter:blur(7px); transform:translateY(28px) scale(.98); transition:opacity .9s cubic-bezier(.16,1,.3,1), filter .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1);}
+  .reveal.show{opacity:1; filter:blur(0); transform:translateY(0) scale(1);}
+  /* Cascade des enfants (cards d'avis, etapes) : delai croissant par nth-child,
+     ne se declenche qu'une fois le bloc parent visible. */
+  .reveal .avis-card, .reveal .etapes li{opacity:0; transform:translateY(14px);}
+  .reveal.show .avis-card, .reveal.show .etapes li{opacity:1; transform:translateY(0); transition:opacity .6s ease, transform .6s ease;}
+  .reveal.show .avis-card:nth-child(1), .reveal.show .etapes li:nth-child(1){transition-delay:.05s;}
+  .reveal.show .avis-card:nth-child(2), .reveal.show .etapes li:nth-child(2){transition-delay:.16s;}
+  .reveal.show .avis-card:nth-child(3), .reveal.show .etapes li:nth-child(3){transition-delay:.27s;}
+  .btn{display:inline-block; padding:14px 30px; background:var(--accent); color:#fff; text-decoration:none; border-radius:30px; font-weight:700; font-size:15px; border:none; cursor:pointer; font-family:inherit;}
+  .btn:hover{background:var(--accent-dark);}
+  .btn-outline{display:inline-block; padding:12px 26px; border:2px solid var(--accent); color:var(--accent); text-decoration:none; border-radius:30px; font-weight:700; font-size:14px;}
+
+  .font-toggle{position:fixed; top:14px; right:14px; z-index:1000; background:rgba(255,255,255,.94); border-radius:20px; padding:6px 8px; display:flex; align-items:center; gap:6px; font-size:12px; box-shadow:0 4px 12px rgba(0,0,0,.15);}
+  .font-toggle span{opacity:.55; padding-left:4px;}
+  .font-btn{border:1px solid var(--accent); background:none; color:var(--accent); border-radius:14px; padding:4px 10px; font-size:12px; cursor:pointer; font-family:'Nunito',sans-serif;}
+  .font-btn.active{background:var(--accent); color:#fff;}
+
+  .to-top{position:fixed; bottom:16px; right:16px; z-index:999; width:44px; height:44px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease; box-shadow:0 6px 16px rgba(0,0,0,.25);}
+  .to-top.show{opacity:1; pointer-events:auto;}
+
+  /* Structure principale : colonne visuelle fixe a gauche pendant que le contenu
+     defile a droite. Rompt avec l'enchainement de bandes pleine largeur des V1
+     deja codees (Cave Velours, Frip'ouilles...), pense comme une page longform
+     plutot qu'un site vitrine classique.
+     CSS Grid plutot que flex pour les deux colonnes : position:sticky sur un
+     enfant flex a des comportements incoherents cross-navigateurs bien
+     documentes (element qui se tronque/detache pendant le scroll, constate
+     par Gilles le 16/08 malgre un 1er correctif). Grid est le pattern
+     recommande pour un sticky sidebar, sans ce risque. */
+  .split{display:grid; grid-template-columns:42% 1fr;}
+  @media(max-width:860px){ .split{display:block;} }
+
+  /* Colonne fixe repensee en 3 zones (identite compacte / chapitre dominant /
+     nav a points), pas en un visuel fige : la zone "chapitre" occupe la
+     majorite de la hauteur et change a chaque section, donc la colonne reste
+     active sur tout le scroll au lieu de figer apres le hero. */
+  .visuel{position:sticky; top:0; min-width:340px; height:100vh; background:linear-gradient(165deg, var(--accent), var(--accent-dark) 70%); color:#fff; text-align:center;}
+  .visuel-inner{display:flex; flex-direction:column; height:100%; padding:36px 40px;}
+  .visuel-top{display:flex; flex-direction:column; align-items:center; flex-shrink:0;}
+  .visuel-top .logo{width:64px; height:64px; border-radius:50%; background:#fff; padding:6px; margin-bottom:12px; box-shadow:0 10px 24px rgba(0,0,0,.3);}
+  .visuel-top .logo div{width:100%; height:100%; border-radius:50%; background:#e9e4d8; display:flex; align-items:center; justify-content:center; font-family:var(--font-a); font-size:11px; color:var(--accent-dark);}
+  .visuel-name{font-size:15px; font-weight:800; letter-spacing:.02em;}
+  .visuel-top .tagline{font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; opacity:.7; margin-top:4px;}
+
+  .visuel-chapter{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px 0;}
+  .chapter-num{font-family:var(--font-a); font-size:14px; letter-spacing:.3em; opacity:.65; margin-bottom:14px;}
+  .chapter-title{font-size:clamp(26px,3vw,38px); line-height:1.15; max-width:300px;}
+  /* Anim rejouee a chaque changement via une classe ajoutee/retiree au meme
+     tick (reflow force), jamais via setTimeout : l'etat de repos est
+     toujours opacite 1, donc aucun risque de rester bloque invisible si
+     deux sections se declenchent tres vite l'une apres l'autre (bug du
+     16/08, texte disparu a partir de la section Avis). */
+  @keyframes chapterIn{ from{opacity:0; transform:translateY(14px); filter:blur(4px);} to{opacity:1; transform:translateY(0); filter:blur(0);} }
+  .chapter-anim{ animation:chapterIn .5s cubic-bezier(.16,1,.3,1); }
+
+  /* Nav a points cliquable, repere secondaire sous le chapitre. */
+  .visuel-dots{display:flex; justify-content:center; gap:10px; flex-shrink:0; padding-top:8px;}
+  .v-dot{width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.35); border:none; padding:0; cursor:pointer; transition:background .25s ease, transform .25s ease;}
+  .v-dot:hover{background:rgba(255,255,255,.6);}
+  .v-dot.active{background:#fff; transform:scale(1.3);}
+  @media(max-width:860px){ .visuel-dots{display:none;} }
+
+  .contenu{min-width:340px; padding:80px 6vw 100px;}
+  .bloc{padding:44px 0; border-bottom:1px solid rgba(45,80,22,.14);}
+  .bloc:first-child{padding-top:0;}
+  .bloc:last-child{border-bottom:none;}
+  .bloc h2{font-size:26px; color:var(--accent); margin-bottom:16px;}
+  .bloc p{font-size:15.5px; margin-bottom:12px;}
+  .bloc p.lead{font-size:18px; font-weight:700; color:var(--accent);}
+  .quote{font-family:var(--font-a); font-style:italic; font-size:20px; color:var(--accent); margin-top:16px;}
+  body[data-font="b"] .quote{font-family:var(--font-b); font-style:normal;}
+
+  .etapes{list-style:none; counter-reset:step; margin-top:6px;}
+  .etapes li{counter-increment:step; padding-left:40px; position:relative; margin-bottom:16px; font-size:15px;}
+  .etapes li::before{content:counter(step); position:absolute; left:0; top:-1px; width:27px; height:27px; border-radius:50%; background:var(--accent); color:#fff; font-family:var(--font-a); font-size:13px; display:flex; align-items:center; justify-content:center;}
+
+  /* Avis en carrousel horizontal (scroll-snap, pas de JS), plutot que la grille
+     3 colonnes utilisee sur les V1 existantes : coherent avec une colonne plus
+     etroite, et sort du reflexe "grille de cards". */
+  .stat-row{display:flex; gap:24px; flex-wrap:wrap; margin-bottom:18px;}
+  .stat{background:#fff; border-radius:14px; padding:16px 22px; box-shadow:0 6px 18px rgba(0,0,0,.05);}
+  .stat b{display:block; font-family:var(--font-a); font-size:24px; color:var(--accent);}
+  .stat span{font-size:12px; opacity:.7;}
+  /* Pile verticale (pas de scroll horizontal, cf regle "Zero scroll
+     horizontal" des V1 Boutiques, incident du 16/08 sur Frip'ouilles). */
+  /* Scroll horizontal contenu a cette seule section, autorise par la regle
+     "zero scroll horizontal" clarifiee le 16/08 (interdit : la page entiere ;
+     autorise : une section locale comme ce carrousel). */
+  .avis-scroll{display:flex; gap:16px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:8px; margin:0 -4px;}
+  .avis-card{scroll-snap-align:start; flex:0 0 240px; background:#fff; border-radius:16px; padding:20px; box-shadow:0 6px 18px rgba(0,0,0,.06);}
+  .avis-card .stars{color:var(--accent); margin-bottom:8px;}
+  .avis-card p{font-size:13.5px; opacity:.85; margin-bottom:0;}
+  .avis-note{margin-top:14px; font-size:12px; opacity:.6;}
+
+  .rs-links{display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;}
+  .rs-links a{color:var(--accent); font-weight:700; text-decoration:none; border-bottom:2px solid rgba(45,80,22,.3); font-size:14.5px;}
+  .rs-links a:hover{border-color:var(--accent);}
+
+  dl{display:grid; grid-template-columns:auto 1fr; gap:9px 18px; font-size:14.5px; max-width:420px;}
+  dt{font-weight:700; color:var(--accent);}
+  dd{opacity:.85;}
+
+  .map-placeholder{margin-top:20px; height:220px; border-radius:16px; background:repeating-linear-gradient(135deg, rgba(45,80,22,.06), rgba(45,80,22,.06) 10px, rgba(45,80,22,.1) 10px, rgba(45,80,22,.1) 20px); display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--accent); font-weight:700;}
+
+  .contact-bloc form{display:flex; flex-direction:column; gap:14px; max-width:420px; margin-top:8px;}
+  .contact-bloc input, .contact-bloc textarea{padding:12px 16px; border-radius:10px; border:1px solid rgba(45,80,22,.25); font-family:inherit; font-size:15px; background:#fff;}
+  .contact-bloc textarea{min-height:100px; resize:vertical;}
+
+  footer{text-align:center; padding:26px 24px; background:var(--accent-dark); color:rgba(255,255,255,.7); font-size:12.5px;}
+
+  @media(max-width:860px){
+    .visuel{position:relative; width:100%; height:auto; min-height:320px;}
+    .visuel-inner{height:auto; padding:60px 30px;}
+    .contenu{width:100%; padding:48px 22px 70px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="font-toggle">
+  <span>Titres</span>
+  <button class="font-btn active" data-font="a">Élégant</button>
+  <button class="font-btn" data-font="b">Épuré</button>
+</div>
+<button class="to-top" id="toTop" aria-label="Retour en haut">↑</button>
+
+<div class="split">
+  <div class="visuel">
+    <div class="visuel-inner">
+      <div class="visuel-top">
+        <div class="logo"><div>LOGO</div></div>
+        <div class="visuel-name">[Nom de la boutique]</div>
+        <div class="tagline">[Secteur d'activité]</div>
+      </div>
+      <div class="visuel-chapter">
+        <div class="chapter-num" id="chapterNum">01</div>
+        <div class="chapter-title" id="chapterTitle">Le concept</div>
+      </div>
+      <div class="visuel-dots" id="visuelDots"></div>
+    </div>
+  </div>
+
+  <div class="contenu">
+    <div class="bloc reveal" id="bloc-concept" data-label="Le concept" data-num="01">
+      <h2>Notre parti pris</h2>
+      <p class="lead">[Accroche courte, une phrase sur ce qui rend la boutique unique]</p>
+      <p>[Texte de présentation : ce que fait la boutique, pour qui, ce qui la distingue d'un commerce générique du même secteur.]</p>
+      <p class="quote">« [Phrase signature, courte et mémorable] »</p>
+    </div>
+
+    <div class="bloc reveal" id="bloc-etapes" data-label="Comment ça marche" data-num="02">
+      <h2>Comment ça marche</h2>
+      <ol class="etapes">
+        <li>[Étape 1, ex. prise de contact ou de rendez-vous]</li>
+        <li>[Étape 2, ex. sélection ou préparation personnalisée]</li>
+        <li>[Étape 3, ex. remise en boutique ou livraison]</li>
+      </ol>
+    </div>
+
+    <div class="bloc reveal" id="bloc-avis" data-label="Ce qu'on en dit" data-num="03">
+      <h2>Leurs retours</h2>
+      <div class="stat-row">
+        <div class="stat"><b>4,8/5</b><span>sur [N] avis Google</span></div>
+        <div class="stat"><b>[N]</b><span>abonnés Instagram</span></div>
+      </div>
+      <div class="avis-scroll">
+        <div class="avis-card"><div class="stars">★★★★★</div><p>« [Avis client, placeholder à remplacer par un vrai avis une fois le widget Google connecté.] »</p></div>
+        <div class="avis-card"><div class="stars">★★★★★</div><p>« [Avis client, placeholder à remplacer par un vrai avis une fois le widget Google connecté.] »</p></div>
+        <div class="avis-card"><div class="stars">★★★★★</div><p>« [Avis client, placeholder à remplacer par un vrai avis une fois le widget Google connecté.] »</p></div>
+      </div>
+      <p class="avis-note">Avis fictifs, widget réel connecté à la mise en ligne.</p>
+    </div>
+
+    <div class="bloc reveal" id="bloc-reseaux" data-label="Nous suivre" data-num="04">
+      <h2>Nous suivre</h2>
+      <div class="rs-links">
+        <a href="#" target="_blank" rel="noopener noreferrer">📷 Instagram</a>
+        <a href="#" target="_blank" rel="noopener noreferrer">👍 Facebook</a>
+      </div>
+    </div>
+
+    <div class="bloc reveal" id="bloc-infos" data-label="Nous trouver" data-num="05">
+      <h2>Bon à savoir</h2>
+      <dl>
+        <dt>Adresse</dt><dd>[Adresse complète]</dd>
+        <dt>Horaires</dt><dd>[Horaires d'ouverture]</dd>
+        <dt>Téléphone</dt><dd>[Numéro]</dd>
+        <dt>Email</dt><dd>[Adresse email]</dd>
+      </dl>
+      <div class="map-placeholder">Emplacement de la carte Google Maps</div>
+    </div>
+
+    <div class="bloc contact-bloc reveal" id="bloc-contact" data-label="Nous écrire" data-num="06">
+      <h2>Nous écrire</h2>
+      <form action="#" method="POST">
+        <input type="text" name="nom" placeholder="Votre nom" required>
+        <input type="email" name="email" placeholder="Votre email" required>
+        <textarea name="message" placeholder="Votre message" required></textarea>
+        <button type="submit" class="btn">Envoyer</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>[NOM DE LA BOUTIQUE] · [Ville] · [Email]</footer>
+
+<script>
+  var revealObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('show'); });
+  }, {threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el){ revealObs.observe(el); });
+
+  // Colonne fixe "vivante" : nav a points generee depuis les blocs, chapitre
+  // (numero + titre) mis a jour selon le bloc le plus proche du centre de
+  // l'ecran (cf closestBlocIndex plus bas).
+  var blocs = Array.prototype.slice.call(document.querySelectorAll('.bloc[data-label]'));
+  var dotsWrap = document.getElementById('visuelDots');
+  var numEl = document.getElementById('chapterNum');
+  var titleEl = document.getElementById('chapterTitle');
+  var dots = blocs.map(function(bloc, i){
+    var dot = document.createElement('button');
+    dot.className = 'v-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', bloc.dataset.label);
+    dot.addEventListener('click', function(){
+      bloc.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+    dotsWrap.appendChild(dot);
+    return dot;
+  });
+
+  var activeIndex = 0;
+  function playAnim(el){
+    el.classList.remove('chapter-anim');
+    void el.offsetWidth; // force le reflow pour pouvoir rejouer l'anim
+    el.classList.add('chapter-anim');
+  }
+  function setActive(i){
+    if (i === activeIndex) return;
+    activeIndex = i;
+    dots.forEach(function(d, j){ d.classList.toggle('active', j === i); });
+    numEl.textContent = blocs[i].dataset.num;
+    titleEl.textContent = blocs[i].dataset.label;
+    playAnim(numEl);
+    playAnim(titleEl);
+  }
+
+  // Calcul direct (scroll + rAF), pas d'IntersectionObserver : on choisit a
+  // chaque frame le bloc dont le centre est le plus proche du centre de
+  // l'ecran, deterministe quelle que soit la hauteur des blocs ou la
+  // vitesse de scroll (l'ancienne version, basee sur une bande d'intersection
+  // etroite, pouvait rater des blocs courts en scroll rapide).
+  function closestBlocIndex(){
+    var centerY = window.innerHeight / 2;
+    var best = 0, bestDist = Infinity;
+    blocs.forEach(function(b, i){
+      var r = b.getBoundingClientRect();
+      var dist = Math.abs((r.top + r.height / 2) - centerY);
+      if (dist < bestDist){ bestDist = dist; best = i; }
+    });
+    return best;
+  }
+  var ticking = false;
+  function onScroll(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      setActive(closestBlocIndex());
+      ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+
+  document.querySelectorAll('.font-btn').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.body.dataset.font = b.dataset.font;
+      document.querySelectorAll('.font-btn').forEach(function(x){ x.classList.toggle('active', x===b); });
+    });
+  });
+
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    if(window.scrollY > window.innerHeight * 0.6){ toTop.classList.add('show'); } else { toTop.classList.remove('show'); }
+  }, {passive:true});
+  toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+</script>
+</body>
+</html>
