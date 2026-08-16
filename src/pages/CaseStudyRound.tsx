@@ -75,12 +75,14 @@ export default function CaseStudyRound() {
         </div>
       </div>
 
-      {/* pt-36/sm:pt-24 : compense la hauteur du bandeau fixed ci-dessus, sinon il recouvre le debut
-          du contenu ("V1" collé au bandeau, constate le 15/08). Le bandeau est plus haut sur mobile
-          (texte + bouton empiles sur 2 lignes, flex-col ci-dessus) qu'en desktop (une seule ligne),
-          d'ou l'ecart plus large en mobile. max-w-6xl : memes proportions que PreviewRound.tsx, page
-          dont celle-ci est la copie. */}
-      <div className="flex-1 px-6 md:px-12 pt-36 sm:pt-24 pb-10 md:pb-16">
+      {/* pt-[165px]/sm:pt-[150px] : compense la hauteur du bandeau fixed ci-dessus (96px suffisait
+          seul), mais aussi la bulle de la visite guidee sur l'etape 1 ("proposals"), qui a besoin
+          d'assez de place au-dessus de sa cible pour ne pas etre rognee en haut d'ecran quand la
+          page est deja scrollee tout en haut (meme bug et meme correctif que sur le prototype
+          vault, Projets/V1-Echanges/mockups/version-guided-tour.html, 16/08 : passe de 96 a 150px
+          desktop/165px mobile). max-w-6xl : memes proportions que PreviewRound.tsx, page dont
+          celle-ci est la copie. */}
+      <div className="flex-1 px-6 md:px-12 pt-[165px] sm:pt-[150px] pb-10 md:pb-16">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row gap-8">
             {/* data-tour-key="sidenav" : cible de l'etape de transition de CaseStudyTour, avant

@@ -241,13 +241,13 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, discussHr
         Étape {stepIndex + 1} / {CASE_STUDY_TOUR_STEPS.length}
       </div>
       <p className="mb-3.5">{step.text}</p>
-      {/* Discutons-en : uniquement etape 1 (16/08, propose comme prototype puis valide par Gilles).
-          Ouvre la page tarif du prospect avec ?discuter=1, lu par PreviewHome/PricingCard pour
-          ouvrir directement la modale de confirmation du numero (rien de preselectionne, options
-          discutees au telephone). */}
-      {stepIndex === 0 && discussHref && (
+      {/* Discutons-en : generalise a toutes les etapes (16/08, propose comme prototype sur l'etape 1
+          seule puis valide sur les 6 etapes le meme jour). Ouvre la page tarif du prospect avec
+          ?discuter=1, lu par PreviewHome/PricingCard pour ouvrir directement la modale de
+          confirmation du numero (rien de preselectionne, options discutees au telephone). */}
+      {discussHref && (
         <div className="mb-3 border-t border-background/25 pt-3">
-          <a href={discussHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[13px] font-bold opacity-90 hover:opacity-100 hover:underline">
+          <a href={discussHref} className="inline-flex items-center gap-1.5 text-[13px] font-bold opacity-90 hover:opacity-100 hover:underline">
             🎯 Discutons-en →
           </a>
         </div>
