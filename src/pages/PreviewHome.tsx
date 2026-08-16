@@ -62,8 +62,11 @@ export default function PreviewHome() {
           <img
             src={project.logo}
             alt=""
-            className="h-56 md:h-80 w-auto mx-auto mb-8 drop-shadow-lg"
-            style={project.logoMaxWidth ? { maxWidth: project.logoMaxWidth } : undefined}
+            className={project.logoMaxWidth ? "mx-auto mb-8 drop-shadow-lg" : "h-56 md:h-80 w-auto mx-auto mb-8 drop-shadow-lg"}
+            // h-56/md:h-80 forcent une hauteur fixe : combines a un max-width seul (1ere tentative,
+            // insuffisante), le navigateur etirait l'image au lieu de la reduire proportionnellement
+            // (retour de Gilles le 16/08). width/height "auto" ici reprennent la main entierement.
+            style={project.logoMaxWidth ? { maxWidth: project.logoMaxWidth, maxHeight: project.logoMaxWidth, width: "auto", height: "auto" } : undefined}
           />
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{project.projectName}</h1>
 
