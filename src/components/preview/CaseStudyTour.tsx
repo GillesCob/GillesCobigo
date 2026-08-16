@@ -75,7 +75,12 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
       const r = el.getBoundingClientRect();
       const bubbleHeight = bubbleRef.current?.offsetHeight ?? 0;
       if (step.placement === "right") {
-        setBubblePos({ top: r.top + window.scrollY, left: r.right + window.scrollX + 20 });
+        // Clamp defensif : la cible (sidenav) peut se trouver tres pres du haut de page, le
+        // scroll qui l'amene en vue peut aussi ne pas avoir totalement fini son animation au
+        // moment du calcul. Sans plancher, la bulle peut se retrouver rognee sous le bandeau
+        // fixe (retour de Gilles le 16/08, prod). Marge minimale = hauteur du bandeau + confort.
+        const minTop = window.scrollY + 100;
+        setBubblePos({ top: Math.max(r.top + window.scrollY, minTop), left: r.right + window.scrollX + 20 });
         return;
       }
       const top = r.top + window.scrollY - bubbleHeight - 16;
@@ -86,7 +91,7 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
     // Reset instantane du scroll au changement de version : la nouvelle page peut etre bien
     // plus courte ou plus longue que la precedente, un reset evite un saut visuel imprevisible
     // avant notre propre scroll anime (meme bug que sur le prototype vault, 16/08).
-    const scrollOffset = step.placement === "right" ? 90 : 220;
+    const scrollOffset = step.placement === "right" ? 130 : 220;
     function scrollToEl() {
       const targetY = el.getBoundingClientRect().top + window.scrollY - scrollOffset;
       window.scrollTo({ top: Math.max(targetY, 0), behavior: "smooth" });
