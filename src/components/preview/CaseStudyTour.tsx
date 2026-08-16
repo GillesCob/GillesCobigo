@@ -200,7 +200,12 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, discussHr
   if (status === "finished") {
     if (roundLower !== "v1") return null;
     return (
-      <div className="fixed inset-0 z-[70] flex items-center justify-center bg-background/70 p-6">
+      <div
+        className="fixed inset-0 z-[70] flex items-center justify-center bg-background/70 p-6"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) skip();
+        }}
+      >
         <div className="max-w-lg rounded-2xl border border-border bg-card p-14 text-center shadow-2xl">
           <h2 className="mb-5 text-2xl font-bold">Alors, ça vous plaît ?</h2>
           <p className="mb-9 text-base leading-relaxed text-muted-foreground">
