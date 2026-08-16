@@ -3,7 +3,7 @@ import { create } from "zustand";
 export interface ICaseStudyTourStep {
   round: string;
   key: string;
-  placement?: "above" | "right";
+  placement?: "above" | "fixed-top";
   text: string;
 }
 
@@ -14,7 +14,7 @@ export interface ICaseStudyTourStep {
 export const CASE_STUDY_TOUR_STEPS: ICaseStudyTourStep[] = [
   { round: "v1", key: "proposals", text: "Propositions de versions pour votre site" },
   { round: "v1", key: "feedback", text: "Ajout de votre message de retour afin de toujours garder une trace de vos souhaits" },
-  { round: "v1", key: "sidenav", placement: "right", text: "Les versions de ce projet sont listées ici. On va les suivre dans l'ordre : cliquez sur Suivant pour aller directement à la V2." },
+  { round: "v1", key: "sidenav", placement: "fixed-top", text: "Les versions de ce projet sont listées ici. On va les suivre dans l'ordre : cliquez sur Suivant pour aller directement à la V2." },
   { round: "v2", key: "changes", text: "Sur la V2, ce qui a changé suite à votre précédent retour" },
   { round: "v3", key: "proposals", text: "Sur la V3, une même version peut proposer plusieurs pistes à comparer, ici 4 options de police : ça reste un seul aller-retour, pas un par option testée" },
   { round: "v6", key: "supporting", text: "Sur la V6, un aperçu complémentaire, pour un cas particulier (ici, si le quota Instagram est dépassé)" },
