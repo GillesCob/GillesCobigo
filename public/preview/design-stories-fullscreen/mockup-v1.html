@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Template Designs, stories plein écran</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#6d28a3; --accent-dark:#3f1660; --creme:#f7f2fb; --text:#241033;
+    --font-a:'Fraunces',serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{overflow-x:clip; scroll-snap-type:y proximity; scroll-behavior:smooth;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:#fff; line-height:1.6;}
+  img{max-width:100%; display:block;}
+  h1,h2{font-family:var(--font-a); font-weight:700;}
+  body[data-font="b"] h1, body[data-font="b"] h2{font-family:'Nunito',sans-serif; letter-spacing:-.01em;}
+  .btn{display:inline-block; padding:14px 32px; background:#fff; color:var(--accent-dark); text-decoration:none; border-radius:999px; font-weight:800; font-size:15px; border:none; cursor:pointer; font-family:inherit;}
+
+  .font-toggle{position:fixed; top:52px; right:14px; z-index:1000; background:rgba(0,0,0,.5); border-radius:20px; padding:6px 8px; display:flex; align-items:center; gap:6px; font-size:12px;}
+  .font-toggle span{opacity:.7; padding-left:4px;}
+  .font-btn{border:1px solid #fff; background:none; color:#fff; border-radius:14px; padding:4px 10px; font-size:12px; cursor:pointer; font-family:'Nunito',sans-serif;}
+  .font-btn.active{background:#fff; color:var(--accent-dark);}
+
+  /* Barres de progression segmentees type "stories" : une par slide, se remplit quand la slide
+     correspondante est active. Zones de clic gauche/droite (pas de bouton visible) pour naviguer,
+     comme un swipe. Registre "narration sequentielle plein ecran", distinct des 10 autres
+     templates (aucun n'emprunte a la grammaire des stories). */
+  .story-bars{position:fixed; top:16px; left:16px; right:16px; z-index:1000; display:flex; gap:6px;}
+  .story-bar{flex:1; height:3px; border-radius:3px; background:rgba(255,255,255,.3); overflow:hidden;}
+  .story-bar span{display:block; height:100%; width:0; background:#fff; transition:width .3s ease;}
+  .story-bar.done span{width:100%;}
+
+  .slide{min-height:100dvh; scroll-snap-align:start; display:flex; align-items:center; justify-content:center; padding:100px 8vw 64px; position:relative; text-align:center;}
+  .slide-inner{max-width:560px; opacity:0; transform:translateY(20px); transition:opacity .6s ease, transform .6s ease;}
+  .slide.show .slide-inner{opacity:1; transform:translateY(0);}
+  .slide-num{font-family:var(--font-a); font-size:13px; letter-spacing:.25em; opacity:.7; margin-bottom:12px;}
+  .slide h2{font-size:clamp(24px,4vw,36px); margin-bottom:16px;}
+  .slide p{opacity:.92; font-size:16px;}
+  .click-zone{position:absolute; top:0; bottom:0; width:33%; z-index:5; cursor:pointer;}
+  .click-zone.left{left:0;} .click-zone.right{right:0;}
+
+  .slide.hero{background:linear-gradient(160deg, var(--accent), var(--accent-dark));}
+  .slide.concept{background:var(--accent-dark);}
+  .slide.etapes{background:linear-gradient(200deg, #4a1d78, var(--accent-dark));}
+  .slide.avis{background:var(--accent);}
+  .slide.reseaux{background:linear-gradient(200deg, var(--accent-dark), #2a0d47);}
+  .slide.infos{background:#2a0d47;}
+
+  .logo{width:68px; height:68px; border-radius:50%; background:rgba(255,255,255,.15); margin:0 auto 18px; display:flex; align-items:center; justify-content:center; font-family:var(--font-a); font-size:11px; border:1px solid rgba(255,255,255,.35);}
+  .tagline{font-size:12px; text-transform:uppercase; letter-spacing:.2em; opacity:.75; margin-bottom:14px;}
+
+  .etapes-list{list-style:none; counter-reset:step; text-align:left; margin-top:10px; display:inline-block;}
+  .etapes-list li{counter-increment:step; padding-left:38px; position:relative; margin-bottom:14px;}
+  .etapes-list li::before{content:counter(step); position:absolute; left:0; top:-2px; width:26px; height:26px; border-radius:50%; background:#fff; color:var(--accent-dark); font-weight:800; display:flex; align-items:center; justify-content:center; font-size:13px;}
+
+  .stat-row{display:flex; gap:26px; justify-content:center; margin-top:8px;}
+  .stat b{display:block; font-family:var(--font-a); font-size:28px;}
+  .stat span{font-size:12px; opacity:.75;}
+
+  .rs-links{display:flex; gap:14px; justify-content:center; margin-top:12px;}
+  .rs-links a{color:#fff; font-weight:800; text-decoration:none; border:2px solid #fff; border-radius:999px; padding:9px 20px; font-size:14px;}
+
+  .map-placeholder{margin-top:14px; height:130px; border-radius:12px; background:rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;}
+
+  .contact-form{display:flex; flex-direction:column; gap:12px; text-align:left; margin-top:16px;}
+  .contact-form input, .contact-form textarea{padding:12px 16px; border-radius:8px; border:0; font-family:inherit; font-size:16px;}
+  .contact-form textarea{min-height:90px; resize:vertical;}
+
+  footer{text-align:center; padding:24px 24px 92px; background:#1c0930; color:rgba(255,255,255,.6); font-size:12px; scroll-snap-align:end;}
+
+  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:#1c0930; color:#fff; padding:14px 20px; text-align:center; font-family:'Nunito',-apple-system,sans-serif; font-size:14px; box-shadow:0 -4px 16px rgba(0,0,0,.3);}
+  .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
+</style>
+</head>
+<body>
+
+<div class="retour-bandeau">
+  Ça vous plaît ? <a href="file:///Users/gillescobigo/Documents/Gilles/vault-perso/Projets/V1-Echanges/mockups/preview-prospect.html?retour=1">Découvrez comment on le rend réel →</a>
+</div>
+
+<div class="story-bars" id="storyBars"></div>
+
+<div class="font-toggle">
+  <span>Titres</span>
+  <button class="font-btn active" data-font="a">Élégant</button>
+  <button class="font-btn" data-font="b">Épuré</button>
+</div>
+
+<div class="slide hero" data-slide>
+  <div class="click-zone right" data-next></div>
+  <div class="slide-inner">
+    <div class="logo">LOGO</div>
+    <div class="tagline">[Secteur d'activité]</div>
+    <h2 style="font-size:clamp(30px,5vw,44px);">[Nom de la boutique]</h2>
+    <p>[Accroche courte, une phrase sur ce qui rend la boutique unique.]</p>
+  </div>
+</div>
+
+<div class="slide concept" data-slide>
+  <div class="click-zone left" data-prev></div>
+  <div class="click-zone right" data-next></div>
+  <div class="slide-inner">
+    <div class="slide-num">01 / 05</div>
+    <h2>Notre parti pris</h2>
+    <p>[Texte de présentation : ce que fait la boutique, pour qui, ce qui la distingue d'un commerce générique du même secteur.]</p>
+  </div>
+</div>
+
+<div class="slide etapes" data-slide>
+  <div class="click-zone left" data-prev></div>
+  <div class="click-zone right" data-next></div>
+  <div class="slide-inner">
+    <div class="slide-num">02 / 05</div>
+    <h2>Comment ça marche</h2>
+    <ol class="etapes-list">
+      <li>[Étape 1, ex. prise de contact ou de rendez-vous]</li>
+      <li>[Étape 2, ex. sélection ou préparation personnalisée]</li>
+      <li>[Étape 3, ex. remise en boutique ou livraison]</li>
+    </ol>
+  </div>
+</div>
+
+<div class="slide avis" data-slide>
+  <div class="click-zone left" data-prev></div>
+  <div class="click-zone right" data-next></div>
+  <div class="slide-inner">
+    <div class="slide-num">03 / 05</div>
+    <h2>Ce qu'on en dit</h2>
+    <div class="stat-row">
+      <div class="stat"><b>4,8/5</b><span>sur [N] avis Google</span></div>
+      <div class="stat"><b>[N]</b><span>abonnés Instagram</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide reseaux" data-slide>
+  <div class="click-zone left" data-prev></div>
+  <div class="click-zone right" data-next></div>
+  <div class="slide-inner">
+    <div class="slide-num">04 / 05</div>
+    <h2>Nous suivre</h2>
+    <div class="rs-links">
+      <a href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="#" target="_blank" rel="noopener noreferrer">Facebook</a>
+    </div>
+  </div>
+</div>
+
+<div class="slide infos" data-slide>
+  <div class="click-zone left" data-prev></div>
+  <div class="slide-inner">
+    <div class="slide-num">05 / 05</div>
+    <h2>Nous écrire</h2>
+    <p>[Adresse complète] · [Horaires] · [Numéro]</p>
+    <div class="map-placeholder">Emplacement de la carte Google Maps</div>
+    <form class="contact-form" action="#" method="POST">
+      <input type="text" name="nom" placeholder="Votre nom" required>
+      <input type="email" name="email" placeholder="Votre email" required>
+      <textarea name="message" placeholder="Votre message" required></textarea>
+      <button type="submit" class="btn">Envoyer</button>
+    </form>
+  </div>
+</div>
+
+<footer>[NOM DE LA BOUTIQUE] · [Ville] · [Email]</footer>
+
+<script>
+  var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+  var barsWrap = document.getElementById('storyBars');
+  slides.forEach(function(){
+    var bar = document.createElement('div');
+    bar.className = 'story-bar';
+    bar.innerHTML = '<span></span>';
+    barsWrap.appendChild(bar);
+  });
+  var bars = Array.prototype.slice.call(barsWrap.children);
+
+  var current = 0;
+  function setActive(i){
+    current = Math.max(0, Math.min(i, slides.length - 1));
+    bars.forEach(function(b, idx){ b.classList.toggle('done', idx <= current); });
+  }
+
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('show');
+        setActive(slides.indexOf(entry.target));
+      }
+    });
+  }, {threshold:.55});
+  slides.forEach(function(s){ obs.observe(s); });
+
+  document.querySelectorAll('[data-next]').forEach(function(zone){
+    zone.addEventListener('click', function(){
+      var next = slides[current + 1];
+      if(next) next.scrollIntoView({behavior:'smooth'});
+    });
+  });
+  document.querySelectorAll('[data-prev]').forEach(function(zone){
+    zone.addEventListener('click', function(){
+      var prev = slides[current - 1];
+      if(prev) prev.scrollIntoView({behavior:'smooth'});
+    });
+  });
+
+  var fontBtns = document.querySelectorAll('.font-btn');
+  fontBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      fontBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.body.setAttribute('data-font', btn.dataset.font);
+    });
+  });
+</script>
+</body>
+</html>
