@@ -212,7 +212,7 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, discussHr
               href={ctaHref}
               className="inline-flex items-center gap-2 rounded-full bg-foreground px-7 py-3.5 text-base font-semibold text-background"
             >
-              Découvrez comment on le rend réel <ArrowRight size={16} />
+              Montrez-moi comment <ArrowRight size={16} />
             </a>
           )}
           <button
