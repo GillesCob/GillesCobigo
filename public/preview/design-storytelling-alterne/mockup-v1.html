@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Template Designs, storytelling alterné</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#3d5a2e; --accent-dark:#243619; --creme:#f6f7f0; --text:#1c2617;
+    --font-a:'Fraunces',serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{overflow-x:clip;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--text); background:var(--creme); line-height:1.65;}
+  img{max-width:100%; display:block;}
+  h1,h2{font-family:var(--font-a); font-weight:700;}
+  body[data-font="b"] h1, body[data-font="b"] h2{font-family:'Nunito',sans-serif; letter-spacing:-.01em;}
+  .btn{display:inline-block; padding:14px 32px; background:var(--accent); color:#fff; text-decoration:none; border-radius:999px; font-weight:700; font-size:15px; border:none; cursor:pointer; font-family:inherit;}
+  .btn:hover{background:var(--accent-dark);}
+
+  .font-toggle{position:fixed; top:14px; right:14px; z-index:1000; background:rgba(255,255,255,.94); border-radius:20px; padding:6px 8px; display:flex; align-items:center; gap:6px; font-size:12px; box-shadow:0 4px 12px rgba(0,0,0,.1);}
+  .font-toggle span{opacity:.55; padding-left:4px;}
+  .font-btn{border:1px solid var(--accent); background:none; color:var(--accent); border-radius:14px; padding:4px 10px; font-size:12px; cursor:pointer; font-family:'Nunito',sans-serif;}
+  .font-btn.active{background:var(--accent); color:#fff;}
+
+  .to-top{position:fixed; bottom:76px; right:16px; z-index:999; width:44px; height:44px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease; box-shadow:0 6px 16px rgba(0,0,0,.25);}
+  .to-top.show{opacity:1; pointer-events:auto;}
+
+  /* Nav a points flottante (pas une colonne visuelle sticky comme le split-screen : juste un
+     indicateur discret sur le cote, disparait sur mobile). Registre "scrollytelling" avec rangees
+     alternees image/texte, distinct des 10 autres templates (aucun n'alterne gauche/droite en
+     pleine largeur avec ce fil narratif). */
+  .dots-nav{position:fixed; right:24px; top:50%; transform:translateY(-50%); z-index:900; display:flex; flex-direction:column; gap:12px;}
+  .dot{width:9px; height:9px; border-radius:50%; background:rgba(61,90,46,.25); border:none; cursor:pointer; padding:0; transition:background .2s ease, transform .2s ease;}
+  .dot.active{background:var(--accent); transform:scale(1.3);}
+  @media(max-width:900px){ .dots-nav{display:none;} }
+
+  .hero{padding:100px 6vw 60px; text-align:center; max-width:640px; margin:0 auto;}
+  .hero .logo{width:72px; height:72px; border-radius:50%; background:var(--accent); margin:0 auto 20px; display:flex; align-items:center; justify-content:center; color:#fff; font-family:var(--font-a); font-size:12px;}
+  .hero .tagline{font-size:12px; text-transform:uppercase; letter-spacing:.18em; color:var(--accent); font-weight:700; margin-bottom:18px;}
+  .hero h1{font-size:clamp(30px,5vw,44px); margin-bottom:14px;}
+  .hero p{opacity:.8; margin-bottom:24px;}
+
+  .row{display:flex; align-items:center; gap:60px; max-width:1100px; margin:0 auto; padding:64px 6vw;}
+  .row:nth-child(even){flex-direction:row-reverse;}
+  .row-visual{flex:1; min-width:0; aspect-ratio:4/3; border-radius:16px; background:linear-gradient(155deg, rgba(61,90,46,.16), rgba(61,90,46,.05)); display:flex; align-items:center; justify-content:center; color:var(--accent); font-size:12px; font-weight:700; opacity:0; transform:scale(.94); transition:opacity .7s ease, transform .7s ease;}
+  .row-visual.show{opacity:1; transform:scale(1);}
+  .row-text{flex:1; min-width:0; opacity:0; transform:translateY(20px); transition:opacity .7s ease .1s, transform .7s ease .1s;}
+  .row-text.show{opacity:1; transform:translateY(0);}
+  .row-num{font-family:var(--font-a); font-size:13px; letter-spacing:.2em; color:var(--accent); margin-bottom:8px;}
+  .row-text h2{font-size:26px; margin-bottom:12px;}
+  .row-text p{font-size:15.5px;}
+  .quote{font-family:var(--font-a); font-style:italic; color:var(--accent); font-size:18px; margin-top:10px;}
+
+  .etapes{list-style:none; counter-reset:step; margin-top:6px;}
+  .etapes li{counter-increment:step; padding-left:36px; position:relative; margin-bottom:12px; font-size:15px;}
+  .etapes li::before{content:counter(step); position:absolute; left:0; top:-1px; width:24px; height:24px; border-radius:50%; background:var(--accent); color:#fff; font-size:12px; display:flex; align-items:center; justify-content:center;}
+
+  .stat-row{display:flex; gap:24px; margin-top:8px;}
+  .stat b{display:block; font-family:var(--font-a); font-size:24px; color:var(--accent);}
+  .stat span{font-size:12px; opacity:.65;}
+
+  .rs-links{display:flex; gap:14px; margin-top:10px;}
+  .rs-links a{color:var(--accent-dark); font-weight:700; text-decoration:none; border-bottom:2px solid var(--accent); font-size:14px;}
+
+  @media(max-width:760px){ .row, .row:nth-child(even){flex-direction:column; gap:24px; padding:48px 24px;} }
+
+  .contact-bloc{max-width:460px; margin:0 auto; padding:0 24px 64px; text-align:center;}
+  .contact-bloc form{display:flex; flex-direction:column; gap:14px; text-align:left;}
+  .contact-bloc input, .contact-bloc textarea{padding:12px 16px; border-radius:8px; border:1px solid rgba(61,90,46,.25); font-family:inherit; font-size:16px; background:#fff;}
+  .contact-bloc textarea{min-height:100px; resize:vertical;}
+
+  footer{text-align:center; padding:26px 24px 88px; background:var(--accent-dark); color:rgba(255,255,255,.7); font-size:12.5px;}
+
+  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:var(--accent-dark); color:#fff; padding:14px 20px; text-align:center; font-family:'Nunito',-apple-system,sans-serif; font-size:14px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
+  .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
+</style>
+</head>
+<body>
+
+<div class="retour-bandeau">
+  Ça vous plaît ? <a href="file:///Users/gillescobigo/Documents/Gilles/vault-perso/Projets/V1-Echanges/mockups/preview-prospect.html?retour=1">Découvrez comment on le rend réel →</a>
+</div>
+
+<div class="font-toggle">
+  <span>Titres</span>
+  <button class="font-btn active" data-font="a">Élégant</button>
+  <button class="font-btn" data-font="b">Épuré</button>
+</div>
+<button class="to-top" id="toTop" aria-label="Retour en haut">↑</button>
+
+<div class="dots-nav" id="dotsNav"></div>
+
+<div class="hero">
+  <div class="logo">LOGO</div>
+  <div class="tagline">[Secteur d'activité]</div>
+  <h1>[Nom de la boutique]</h1>
+  <p>[Accroche courte, une phrase sur ce qui rend la boutique unique.]</p>
+  <a href="#contact" class="btn">Nous écrire</a>
+</div>
+
+<div class="row" data-section>
+  <div class="row-visual reveal">Photo boutique</div>
+  <div class="row-text reveal">
+    <div class="row-num">01</div>
+    <h2>Notre parti pris</h2>
+    <p>[Texte de présentation : ce que fait la boutique, pour qui, ce qui la distingue d'un commerce générique du même secteur.]</p>
+    <p class="quote">« [Phrase signature] »</p>
+  </div>
+</div>
+
+<div class="row" data-section>
+  <div class="row-visual reveal">Photo boutique</div>
+  <div class="row-text reveal">
+    <div class="row-num">02</div>
+    <h2>Comment ça marche</h2>
+    <ol class="etapes">
+      <li>[Étape 1, ex. prise de contact ou de rendez-vous]</li>
+      <li>[Étape 2, ex. sélection ou préparation personnalisée]</li>
+      <li>[Étape 3, ex. remise en boutique ou livraison]</li>
+    </ol>
+  </div>
+</div>
+
+<div class="row" data-section>
+  <div class="row-visual reveal">Photo boutique</div>
+  <div class="row-text reveal">
+    <div class="row-num">03</div>
+    <h2>Ce qu'on en dit</h2>
+    <div class="stat-row">
+      <div class="stat"><b>4,8/5</b><span>sur [N] avis Google</span></div>
+      <div class="stat"><b>[N]</b><span>abonnés Instagram</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="row" data-section>
+  <div class="row-visual reveal">Photo boutique</div>
+  <div class="row-text reveal">
+    <div class="row-num">04</div>
+    <h2>Nous suivre</h2>
+    <div class="rs-links">
+      <a href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="#" target="_blank" rel="noopener noreferrer">Facebook</a>
+    </div>
+  </div>
+</div>
+
+<div class="row" data-section>
+  <div class="row-visual reveal">Carte Google Maps</div>
+  <div class="row-text reveal">
+    <div class="row-num">05</div>
+    <h2>Nous trouver</h2>
+    <p>[Adresse complète]<br>[Horaires]<br>[Numéro] · [Email]</p>
+  </div>
+</div>
+
+<div class="contact-bloc" id="contact">
+  <h2 style="font-size:26px; margin-bottom:18px;">Nous écrire</h2>
+  <form action="#" method="POST">
+    <input type="text" name="nom" placeholder="Votre nom" required>
+    <input type="email" name="email" placeholder="Votre email" required>
+    <textarea name="message" placeholder="Votre message" required></textarea>
+    <button type="submit" class="btn">Envoyer</button>
+  </form>
+</div>
+
+<footer>[NOM DE LA BOUTIQUE] · [Ville] · [Email]</footer>
+
+<script>
+  var sections = Array.prototype.slice.call(document.querySelectorAll('[data-section]'));
+  var dotsNav = document.getElementById('dotsNav');
+  sections.forEach(function(){
+    var dot = document.createElement('button');
+    dot.className = 'dot';
+    dotsNav.appendChild(dot);
+  });
+  var dots = Array.prototype.slice.call(dotsNav.children);
+  dots.forEach(function(dot, i){
+    dot.addEventListener('click', function(){ sections[i].scrollIntoView({behavior:'smooth', block:'center'}); });
+  });
+
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('show'); });
+        dots.forEach(function(d){ d.classList.remove('active'); });
+        dots[sections.indexOf(e.target)].classList.add('active');
+      }
+    });
+  }, {threshold:.4});
+  sections.forEach(function(s){ obs.observe(s); });
+
+  var fontBtns = document.querySelectorAll('.font-btn');
+  fontBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      fontBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.body.setAttribute('data-font', btn.dataset.font);
+    });
+  });
+
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    toTop.classList.toggle('show', window.scrollY > 500);
+  }, {passive:true});
+  toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+</script>
+</body>
+</html>
