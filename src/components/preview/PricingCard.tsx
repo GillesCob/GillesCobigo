@@ -234,24 +234,6 @@ export default function PricingCard({
                 {phone && (
                   <p className="text-xs text-muted-foreground mt-1.5">Vous pouvez le corriger si besoin.</p>
                 )}
-                {/* Rappel du prix dans la modale (16/08) : sans lui, le prospect confirme un interet
-                    sans plus revoir le montant, valide sur le prototype vault. Ferme la modale et
-                    scrolle vers la card de prix plutot qu'un simple lien texte. */}
-                <p className="text-xs text-muted-foreground mt-3">
-                  Base à {BASE_PRICE}€,{" "}
-                  <a
-                    href="#tarif"
-                    className="underline text-foreground"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setDialogOpen(false);
-                      document.getElementById("tarif")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                    }}
-                  >
-                    le détail est juste en dessous
-                  </a>
-                  .
-                </p>
               </div>
 
               <Button className="w-full rounded-full" onClick={handleConfirm} disabled={submitting}>
