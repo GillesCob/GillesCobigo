@@ -78,12 +78,23 @@ export default function PreviewHome() {
                   mockup -> exemple -> tarif restaient chacun un nouvel onglet, ca en accumulait 3-4 au
                   total pour un simple aller-retour, jamais l'intention initiale. */}
               {project.rounds[0]?.proposals[0]?.htmlPath && (
-                <Button asChild size="lg" className="rounded-full mb-8 h-14 px-10 text-lg">
+                <Button asChild size="lg" className="rounded-full mb-3 h-14 px-10 text-lg">
                   <a href={project.rounds[0].proposals[0].htmlPath}>
                     Votre site <ArrowRight size={20} />
                   </a>
                 </Button>
               )}
+              {/* Badge tarif discret sous le bouton principal (16/08) : le prix n'apparaissait
+                  qu'en bas de page, un prospect pouvait repartir sans jamais le voir. Scroll vers
+                  #tarif plutot que de dupliquer le montant en dur, source unique = PricingCard. */}
+              <div className="mb-8">
+                <a
+                  href="#tarif"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-foreground/5 border border-foreground/10 px-4 py-1.5 text-sm text-foreground/80 hover:text-foreground hover:border-foreground/30 transition-colors"
+                >
+                  À partir de 500€
+                </a>
+              </div>
 
               {/* bg-foreground/5 plutot que bg-card : bg-card reference le token "carte" pense pour
                   le fond noir/blanc par defaut, pas pour le fond creme/brun chaud de cette page,
