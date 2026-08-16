@@ -132,7 +132,7 @@ export function RoundContent({
         <span className="text-sm text-muted-foreground">{entry.date}</span>
       </div>
 
-      <div className="mb-10">
+      <div className="mb-10" data-tour-key="proposals">
         {showGuide && guideTexts?.proposals && <GuideCallout>{guideTexts.proposals}</GuideCallout>}
         <ProposalsGrid
           proposals={entry.proposals}
@@ -143,7 +143,7 @@ export function RoundContent({
       {entry.changesApplied && entry.changesApplied.length > 0 && (
         <>
           {showGuide && guideTexts?.changesApplied && <GuideCallout>{guideTexts.changesApplied}</GuideCallout>}
-          <div className="rounded-xl border border-border p-6 bg-card mb-8">
+          <div className="rounded-xl border border-border p-6 bg-card mb-8" data-tour-key="changes">
             <h2 className="text-sm font-semibold mb-3">Ce qui a été pris en compte suite au retour</h2>
             <ul className="text-sm text-muted-foreground space-y-1.5 list-disc list-inside">
               {entry.changesApplied.map((line) => (
@@ -165,7 +165,7 @@ export function RoundContent({
       )}
 
       {entry.supportingVisuals && entry.supportingVisuals.length > 0 && (
-        <div className="mb-8">
+        <div className="mb-8" data-tour-key="supporting">
           {showGuide && guideTexts?.supportingVisuals && <GuideCallout>{guideTexts.supportingVisuals}</GuideCallout>}
           <ProposalsGrid proposals={entry.supportingVisuals} />
         </div>
@@ -174,7 +174,7 @@ export function RoundContent({
       {entry.clientFeedback && (
         <>
           {showGuide && guideTexts?.clientFeedback && <GuideCallout>{guideTexts.clientFeedback}</GuideCallout>}
-          <div className="rounded-xl bg-muted/40 border border-border p-6 mb-8">
+          <div className="rounded-xl bg-muted/40 border border-border p-6 mb-8" data-tour-key="feedback">
             <p className="text-xs font-semibold text-muted-foreground mb-1.5">Retour de {contactName}</p>
             <p className="text-sm whitespace-pre-line">{entry.clientFeedback}</p>
           </div>

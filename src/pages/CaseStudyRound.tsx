@@ -1,10 +1,10 @@
-import { useParams, useSearchParams, Link } from "react-router-dom";
+import { useParams, useSearchParams, useLocation, Link } from "react-router-dom";
 import { Sun, Moon, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CaseStudyVersionsNav from "@/components/preview/CaseStudyVersionsNav";
 import PreviewCredit from "@/components/preview/PreviewCredit";
 import { RoundContent } from "@/components/preview/RoundContent";
-import GuideCallout from "@/components/preview/GuideCallout";
+import CaseStudyTour from "@/components/preview/CaseStudyTour";
 import { previewProjects } from "@/data/previewProjects";
 import { useThemeStore } from "@/store/themeStore";
 import { usePreviewFavicon } from "@/hooks/usePreviewFavicon";
@@ -20,59 +20,10 @@ import NotFound from "@/pages/NotFound";
 // pour la propagation sur tous les rounds. Cf Projets/Boutiques/workflow-cc.md.
 const CASE_STUDY_SECRET = "EuMLnfc8Uk";
 
-// Bulles d'aide reparties sur toute la progression V1 -> V6, jamais repetees pour un type de bloc
-// deja explique sur un round precedent (cf discussion du 14/08) : V1 explique le mecanisme de base
-// (propositions / retour client / manques / formulaire), V2 introduit "ce qui a change" et "mes
-// precisions", V3 introduit le comparatif de polices, V6 introduit les apercus complementaires.
-// V4 et V5 ne montrent rien de nouveau par rapport a un round deja vu, donc pas de bulle.
-const ROUND_GUIDE: Record<
-  string,
-  {
-    showFormBubble?: boolean;
-    texts: {
-      proposals?: string;
-      proposalCallouts?: Record<string, string>;
-      clientFeedback?: string;
-      missingInfo?: string;
-      changesApplied?: string;
-      ownerNote?: string;
-      supportingVisuals?: string;
-    };
-  }
-> = {
-  v1: {
-    showFormBubble: true,
-    texts: {
-      proposals: "Propositions de versions pour votre site",
-      clientFeedback: "Ajout de votre message de retour afin de toujours garder une trace de vos souhaits",
-      missingInfo: "Les éléments dont j'ai besoin afin d'avancer et fiabiliser la prochaine version proposée",
-    },
-  },
-  v2: {
-    texts: {
-      changesApplied: "Ce qui a changé suite à votre précédent retour",
-      ownerNote: "Une précision de ma part, quand un point mérite d'être expliqué avant que vous ne validiez",
-    },
-  },
-  v3: {
-    texts: {
-      // Bulle generique au-dessus de toute la grille (pas ciblee sur une seule carte) : visible
-      // immediatement en arrivant sur la page depuis le lien "plusieurs variations possibles par
-      // version" de PricingCard.tsx, plutot qu'enterree sur la 4e carte du groupe.
-      proposals:
-        "Une même version peut proposer plusieurs pistes à comparer, ici 4 options de police : ça reste un seul aller-retour, pas un par option testée",
-    },
-  },
-  v6: {
-    texts: {
-      supportingVisuals: "Un aperçu complémentaire, pour un cas particulier (ici, si le quota Instagram est dépassé)",
-    },
-  },
-};
-
 export default function CaseStudyRound() {
   const { round } = useParams<{ round: string }>();
   const [searchParams] = useSearchParams();
+  const { search } = useLocation();
   const from = searchParams.get("from");
   const project = previewProjects[CASE_STUDY_SECRET];
   const entry = project.rounds.find((r) => r.round.toLowerCase() === round?.toLowerCase());
@@ -82,10 +33,14 @@ export default function CaseStudyRound() {
 
   if (!entry) return <NotFound />;
 
-  const guide = ROUND_GUIDE[entry.round.toLowerCase()];
-
   return (
     <div className="min-h-dvh bg-background flex flex-col relative">
+      <CaseStudyTour
+        currentRound={entry.round}
+        search={search}
+        ctaHref={from ? `/preview/${from}#tarif` : undefined}
+      />
+
       {/* Bandeau figé en haut, visible pendant tout le scroll (demande explicite du 15/08 : un
           encart qui ne reste que le temps de le croiser une fois se rate trop facilement). Le
           toggle theme, auparavant seul en absolute top-4 right-4, est integre a la meme barre
@@ -127,31 +82,24 @@ export default function CaseStudyRound() {
       <div className="flex-1 px-6 md:px-12 pt-36 sm:pt-24 pb-10 md:pb-16">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row gap-8">
-            <CaseStudyVersionsNav
-              basePath="/cas-client"
-              currentRound={entry.round}
-              // Ordre inverse de project.rounds (V6 -> V1, le plus recent d'abord, utile sur la page
-              // privee de Mylene) : ici V1 -> V6, pour qu'un prospect qui arrive lise la progression
-              // dans l'ordre plutot que de tomber sur la version la plus aboutie en premier.
-              rounds={[...project.rounds].reverse().map((r) => ({ round: r.round, date: r.date }))}
-            />
+            {/* data-tour-key="sidenav" : cible de l'etape de transition de CaseStudyTour, avant
+                le saut vers la V2 (cf caseStudyTourStore.ts). */}
+            <div data-tour-key="sidenav">
+              <CaseStudyVersionsNav
+                basePath="/cas-client"
+                currentRound={entry.round}
+                // Ordre inverse de project.rounds (V6 -> V1, le plus recent d'abord, utile sur la page
+                // privee de Mylene) : ici V1 -> V6, pour qu'un prospect qui arrive lise la progression
+                // dans l'ordre plutot que de tomber sur la version la plus aboutie en premier.
+                rounds={[...project.rounds].reverse().map((r) => ({ round: r.round, date: r.date }))}
+              />
+            </div>
 
             <div className="flex-1 min-w-0">
-              <RoundContent
-                entry={entry}
-                contactName={project.contactName}
-                showGuide={Boolean(guide)}
-                guideTexts={guide?.texts}
-              />
+              <RoundContent entry={entry} contactName={project.contactName} />
 
               {/* Formulaire volontairement inactif : simple demonstration du mecanisme de retour
                   pour un prospect, jamais un vrai envoi (posterait dans le Formspree de Mylene). */}
-              {/* h2 seul suffit a expliquer le bloc (pas besoin d'une phrase en plus qui redirait la
-                  meme chose) : la bulle, quand elle est presente, apporte l'info complementaire
-                  (c'est ICI, precisement) plutot que de repeter "vos retours" une 3e fois. Uniquement
-                  en V1 (guide.showFormBubble) : le mecanisme est deja explique une fois, pas la peine
-                  de le repeter sur chaque round suivant. */}
-              {guide?.showFormBubble && <GuideCallout>Ici, vous pourrez me faire vos retours</GuideCallout>}
               <div className="rounded-xl border border-border p-6 bg-card">
                 <h2 className="text-sm font-semibold mb-3">Vos retours concernant la {entry.round}</h2>
                 <textarea
