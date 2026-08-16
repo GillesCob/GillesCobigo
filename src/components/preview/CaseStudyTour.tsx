@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { CASE_STUDY_TOUR_STEPS, useCaseStudyTourStore } from "@/store/caseStudyTourStore";
@@ -71,18 +71,19 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
     el.style.transition = "box-shadow .25s ease";
     el.style.boxShadow = "0 0 0 9999px rgba(0,0,0,.72)";
 
+    // "fixed-top" (etape sidenav) : la cible est trop pres du haut de page pour calculer une
+    // position fiable (le scroll d'approche n'a pas forcement fini son animation au moment du
+    // calcul, et il n'y a pas assez de place au-dessus). Bulle fixee sous le bandeau, jamais
+    // rognee quel que soit le scroll (2 tentatives de calcul dynamique ont echoue en prod le
+    // 16/08, on abandonne le calcul pour cette etape precise).
+    if (step.placement === "fixed-top") {
+      setBubblePos({ top: -1, left: -1 });
+    }
+
     function place() {
+      if (step.placement === "fixed-top") return;
       const r = el.getBoundingClientRect();
       const bubbleHeight = bubbleRef.current?.offsetHeight ?? 0;
-      if (step.placement === "right") {
-        // Clamp defensif : la cible (sidenav) peut se trouver tres pres du haut de page, le
-        // scroll qui l'amene en vue peut aussi ne pas avoir totalement fini son animation au
-        // moment du calcul. Sans plancher, la bulle peut se retrouver rognee sous le bandeau
-        // fixe (retour de Gilles le 16/08, prod). Marge minimale = hauteur du bandeau + confort.
-        const minTop = window.scrollY + 100;
-        setBubblePos({ top: Math.max(r.top + window.scrollY, minTop), left: r.right + window.scrollX + 20 });
-        return;
-      }
       const top = r.top + window.scrollY - bubbleHeight - 16;
       const left = Math.min(r.left + window.scrollX, window.scrollX + window.innerWidth - 340 - 24);
       setBubblePos({ top, left: Math.max(left, 16) });
@@ -91,7 +92,7 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
     // Reset instantane du scroll au changement de version : la nouvelle page peut etre bien
     // plus courte ou plus longue que la precedente, un reset evite un saut visuel imprevisible
     // avant notre propre scroll anime (meme bug que sur le prototype vault, 16/08).
-    const scrollOffset = step.placement === "right" ? 130 : 220;
+    const scrollOffset = step.placement === "fixed-top" ? 130 : 220;
     function scrollToEl() {
       const targetY = el.getBoundingClientRect().top + window.scrollY - scrollOffset;
       window.scrollTo({ top: Math.max(targetY, 0), behavior: "smooth" });
@@ -179,10 +180,15 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
 
   if (!isOnRightRound || !bubblePos) return null;
 
+  const bubbleStyle: CSSProperties =
+    step.placement === "fixed-top"
+      ? { position: "fixed", top: 88, left: 24, zIndex: 61 }
+      : { position: "absolute", top: bubblePos.top, left: bubblePos.left, zIndex: 61 };
+
   return (
     <div
       ref={bubbleRef}
-      style={{ position: "absolute", top: bubblePos.top, left: bubblePos.left, zIndex: 61 }}
+      style={bubbleStyle}
       className="max-w-[340px] rounded-lg bg-foreground px-4 py-3 text-sm leading-relaxed text-background shadow-xl"
     >
       <div className="mb-1.5 text-[11px] font-bold uppercase tracking-wide opacity-55">
