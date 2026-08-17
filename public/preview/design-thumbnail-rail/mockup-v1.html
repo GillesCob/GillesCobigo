@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Template Designs, rail de miniatures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Jost:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#2b4c7e; --accent-dark:#1b3255; --creme:#f3f5f8; --text:#1c2430;
+    --font-a:'Jost',sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{overflow-x:clip;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--text); background:var(--creme); line-height:1.6;}
+  img{max-width:100%; display:block;}
+  h1,h2{font-family:var(--font-a); font-weight:700;}
+  .btn{display:inline-block; padding:14px 32px; background:var(--accent); color:#fff; text-decoration:none; border-radius:6px; font-weight:700; font-size:15px; border:none; cursor:pointer; font-family:inherit;}
+  .btn:hover{background:var(--accent-dark);}
+  .to-top{position:fixed; bottom:76px; right:16px; z-index:999; width:44px; height:44px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease; box-shadow:0 6px 16px rgba(0,0,0,.25);}
+  .to-top.show{opacity:1; pointer-events:auto;}
+
+  .hero{padding:96px 24px 50px; text-align:center; max-width:640px; margin:0 auto;}
+  .hero h1{font-size:clamp(30px,5vw,46px); margin-bottom:12px;}
+  .hero p{font-size:16px; opacity:.78; margin-bottom:24px;}
+
+  /* Registre "rail de miniatures" (galerie produit/PDP) : une liste verticale de miniatures pilote
+     un grand panneau de previsualisation, clic = changement de contenu, comme une fiche produit
+     e-commerce. Distinct des 15 templates existants (aucun n'a de navigation par selection de
+     miniature pilotant un panneau principal). */
+  .gallery{max-width:1080px; margin:0 auto 60px; padding:0 24px; display:grid; grid-template-columns:96px 1fr; gap:20px;}
+  .rail{display:flex; flex-direction:column; gap:12px;}
+  .rail-item{width:96px; height:96px; border-radius:8px; cursor:pointer; border:2px solid transparent; background:linear-gradient(150deg, rgba(43,76,126,.16), rgba(43,76,126,.05)); display:flex; align-items:center; justify-content:center; font-family:var(--font-a); font-size:12px; color:var(--accent); transition:border-color .2s ease, transform .2s ease;}
+  .rail-item:hover{transform:translateX(2px);}
+  .rail-item.active{border-color:var(--accent);}
+  .main-panel{border-radius:14px; overflow:hidden; background:#fff; box-shadow:0 12px 30px rgba(0,0,0,.08);}
+  .mp-visual{aspect-ratio:16/10; background:linear-gradient(150deg, rgba(43,76,126,.2), rgba(43,76,126,.04)); display:flex; align-items:center; justify-content:center; color:var(--accent); font-family:var(--font-a); font-size:14px;}
+  .mp-content{padding:28px 30px; opacity:0; transition:opacity .3s ease;}
+  .mp-content.show{opacity:1;}
+  .mp-content h2{font-size:24px; margin-bottom:10px;}
+  .mp-content p{font-size:15px;}
+  .mp-content .stat-row{display:flex; gap:20px; margin-top:12px;}
+  .mp-content .stat b{display:block; font-family:var(--font-a); font-size:24px; color:var(--accent);}
+  .mp-content .stat span{font-size:11.5px; opacity:.65;}
+  .mp-content .rs-links{display:flex; gap:14px; margin-top:4px;}
+  .mp-content .rs-links a{color:var(--accent); font-weight:700; text-decoration:none; border-bottom:2px solid rgba(43,76,126,.3); font-size:14px;}
+
+  .contact-bloc{max-width:480px; margin:0 auto; padding:0 24px 64px; text-align:center;}
+  .contact-bloc h2{font-size:26px; margin-bottom:18px;}
+  .contact-bloc form{display:flex; flex-direction:column; gap:14px; text-align:left;}
+  .contact-bloc input, .contact-bloc textarea{padding:12px 16px; border-radius:8px; border:1px solid rgba(43,76,126,.2); font-family:inherit; font-size:16px; background:#fff;}
+  .contact-bloc textarea{min-height:100px; resize:vertical;}
+
+  footer{text-align:center; padding:26px 24px 88px; background:var(--accent-dark); color:rgba(255,255,255,.7); font-size:12.5px;}
+
+  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:var(--accent-dark); color:#fff; padding:22px 20px; text-align:center; font-family:'Nunito',-apple-system,sans-serif; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
+  .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
+
+  @media(max-width:680px){
+    .gallery{grid-template-columns:1fr; gap:14px;}
+    .rail{flex-direction:row; overflow-x:auto; padding-bottom:4px;}
+    .rail-item{flex-shrink:0;}
+  }
+
+  /* Modale "fin de page" (17/08, demande de Gilles) : affichee une seule fois quand le visiteur
+     atteint le bas de la page, avant meme d'envisager une nouvelle modif du bandeau fixe. Meme
+     lien que le bandeau (coherence, pas un 2e chemin different), fermeture au clic en dehors ou
+     sur la croix, jamais reaffichee une fois fermee sur ce chargement de page. */
+  .result-modal-overlay{position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .3s ease;}
+  .result-modal-overlay.show{opacity:1; pointer-events:auto;}
+  .result-modal{position:relative; max-width:380px; width:100%; background:#fff; border-radius:20px; padding:38px 30px 32px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.35); transform:translateY(14px); transition:transform .3s ease;}
+  .result-modal-overlay.show .result-modal{transform:translateY(0);}
+  .result-modal h2{font-family:var(--font-a); font-size:23px; margin:0 0 10px; color:#1a1a1a;}
+  .result-modal p{font-size:14.5px; color:#5a5a5a; margin:0 0 24px; line-height:1.5;}
+  .result-modal-close{position:absolute; top:12px; right:12px; background:none; border:0; font-size:18px; line-height:1; color:#999; cursor:pointer; padding:8px;}
+</style>
+</head>
+<body>
+<div class="result-modal-overlay" id="resultModalOverlay">
+  <div class="result-modal">
+    <button type="button" class="result-modal-close" aria-label="Fermer" onclick="closeResultModal()">✕</button>
+    <h2>Le résultat vous plaît ?</h2>
+    <p>Ce premier jet peut encore évoluer. On peut en discuter ensemble dès maintenant.</p>
+    <a class="btn" href="file:///Users/gillescobigo/Documents/Gilles/vault-perso/Projets/V1-Echanges/mockups/preview-prospect.html?retour=1">Discutons-en →</a>
+  </div>
+</div>
+
+<div class="retour-bandeau">
+  Ça vous plaît ? <a href="file:///Users/gillescobigo/Documents/Gilles/vault-perso/Projets/V1-Echanges/mockups/preview-prospect.html?retour=1">Découvrez comment on le rend réel →</a>
+</div>
+
+<button class="to-top" id="toTop" aria-label="Retour en haut">↑</button>
+
+<div class="hero">
+  <h1>[Nom de la boutique]</h1>
+  <p>[Accroche courte, une phrase sur ce qui rend la boutique unique].</p>
+  <a href="#contact" class="btn">Nous écrire</a>
+</div>
+
+<div class="gallery">
+  <div class="rail">
+    <div class="rail-item active" data-panel="0">01</div>
+    <div class="rail-item" data-panel="1">02</div>
+    <div class="rail-item" data-panel="2">03</div>
+    <div class="rail-item" data-panel="3">04</div>
+  </div>
+  <div class="main-panel">
+    <div class="mp-visual">[Photo de la boutique ou du produit]</div>
+    <div class="mp-content show" data-panel="0">
+      <h2>Notre parti pris</h2>
+      <p>[Texte de présentation : ce que fait la boutique, pour qui, ce qui la distingue d'un commerce générique du même secteur.]</p>
+    </div>
+    <div class="mp-content" data-panel="1" hidden>
+      <h2>Leurs retours</h2>
+      <div class="stat-row">
+        <div class="stat"><b>4,8/5</b><span>sur [N] avis Google</span></div>
+        <div class="stat"><b>[N]</b><span>abonnés Instagram</span></div>
+      </div>
+      <p style="margin-top:10px; font-size:13px; opacity:.65;">Avis fictifs, widget réel connecté à la mise en ligne.</p>
+    </div>
+    <div class="mp-content" data-panel="2" hidden>
+      <h2>Sur les réseaux</h2>
+      <div class="rs-links">
+        <a href="#" target="_blank" rel="noopener noreferrer">📷 Instagram</a>
+        <a href="#" target="_blank" rel="noopener noreferrer">👍 Facebook</a>
+      </div>
+    </div>
+    <div class="mp-content" data-panel="3" hidden>
+      <h2>Bon à savoir</h2>
+      <p>[Adresse complète] · [Horaires d'ouverture] · [Numéro] · [Email]</p>
+    </div>
+  </div>
+</div>
+
+<div class="contact-bloc" id="contact">
+  <h2>Nous écrire</h2>
+  <form action="#" method="POST">
+    <input type="text" name="nom" placeholder="Votre nom" required>
+    <input type="email" name="email" placeholder="Votre email" required>
+    <textarea name="message" placeholder="Votre message" required></textarea>
+    <button type="submit" class="btn">Envoyer</button>
+  </form>
+</div>
+
+<footer>[NOM DE LA BOUTIQUE] · [Ville] · [Email]</footer>
+
+<script>
+  var railItems = document.querySelectorAll('.rail-item');
+  var panels = document.querySelectorAll('.mp-content');
+  railItems.forEach(function(item){
+    item.addEventListener('click', function(){
+      var idx = item.dataset.panel;
+      railItems.forEach(function(r){ r.classList.toggle('active', r === item); });
+      panels.forEach(function(p){
+        var match = p.dataset.panel === idx;
+        p.hidden = !match;
+        p.classList.toggle('show', match);
+      });
+    });
+  });
+
+  var revealObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('show'); });
+  }, {threshold:.2});
+  document.querySelectorAll('.reveal').forEach(function(el){ revealObs.observe(el); });
+
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    toTop.classList.toggle('show', window.scrollY > 500);
+  }, {passive:true});
+  toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+  (function(){
+    var overlay = document.getElementById('resultModalOverlay');
+    if(!overlay) return;
+    var shown = false;
+    function openModal(){ if(shown) return; shown = true; overlay.classList.add('show'); }
+    function closeModal(){ overlay.classList.remove('show'); }
+    window.closeResultModal = closeModal;
+    overlay.addEventListener('click', function(e){ if(e.target === overlay) closeModal(); });
+    function checkNearBottom(){
+      if(shown) return;
+      var doc = document.documentElement;
+      var scrollBottom = window.scrollY + window.innerHeight;
+      var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight);
+      if(scrollBottom >= pageHeight - 80) openModal();
+    }
+    window.addEventListener('scroll', checkNearBottom, {passive:true});
+    window.addEventListener('resize', checkNearBottom);
+    checkNearBottom();
+  })();
+</script>
+</body>
+</html>
