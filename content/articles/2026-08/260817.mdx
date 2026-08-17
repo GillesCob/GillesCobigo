@@ -1,0 +1,39 @@
+export const frontmatter = {
+  title: "Sur Cerithe, j'ai rendu public l'exact suivi qui pilote mon développement avec l'IA",
+  date: "2026-08-17T15:00:00",
+  description:
+    "Plutôt que de décrire ma méthode de travail avec l'IA, je publie l'extrait réel de mon suivi de projet Cerithe : le cadrage écrit avant le code et la vérification qui suit chaque tâche.",
+  tags: ["méthode", "claude code", "cerithe", "agentique"],
+  post: `Aujourd'hui, n'importe qui peut voir comment je pilote mon développement avec l'IA sur Cerithe.
+
+Un extrait réel de mon suivi de projet interne, celui que j'utilise vraiment, rendu public et parcourable en visite guidée.
+
+Ça montre deux choses concrètes :
+- Le cadrage écrit avant la moindre ligne de code (spec, comportement attendu, tableau de couverture des champs)
+- La vérification qui suit chaque tâche codée, en local puis en prod, en plus des tests unitaires déjà dans le code
+
+L'article et le lien vers la page dans le 1er commentaire.
+
+#dev #claudecode #cerithe #agentique #methode`,
+  headings: [
+    { level: 2, text: "Un extrait réel, pas une reconstitution", id: "un-extrait-reel-pas-une-reconstitution" },
+    { level: 2, text: "Cadrer avant que le code tranche à ma place", id: "cadrer-avant-que-le-code-tranche-a-ma-place" },
+    { level: 2, text: "Rien ne passe à fait sans être rejoué à la main", id: "rien-ne-passe-a-fait-sans-etre-rejoue-a-la-main" },
+  ],
+};
+
+Je reçois souvent la même question en entretien : comment je travaille concrètement avec l'IA. Jusqu'ici, je répondais avec des mots. Depuis aujourd'hui, il y a une réponse plus honnête : <a href="https://gillescobigo.com/cerithe-v1-6-0" target="_blank" rel="noopener">une page</a> qui montre l'extrait réel de mon suivi de projet sur <a href="https://cerithe.gillescobigo.com" target="_blank" rel="noopener"><em>Cerithe</em></a>, mon carnet de santé numérique du bâtiment, avec une visite guidée pour la parcourir pas à pas.
+
+## Un extrait réel, pas une reconstitution
+
+C'est la fonctionnalité "Ajouter des pièces aux biens", livrée le 13 août, telle qu'elle a été cadrée, codée et vérifiée dans mon outil de suivi interne. J'ai copié ce contenu tel quel dans une page publique, sans rien réécrire pour le rendre plus présentable.
+
+## Cadrer avant que le code tranche à ma place
+
+Avant d'écrire une ligne de code, la spec pose le résultat attendu, le comportement écran par écran et les cas limites qui comptent vraiment : un niveau déjà peuplé, un doublon de nom, une suppression en cascade. Puis un tableau liste chaque champ touché, avec cinq questions systématiques : est-il requis, pris en compte à la création, modifiable, effaçable, affiché ? L'objectif est concret, pas théorique : ne jamais découvrir en prod qu'un champ obligatoire côté serveur n'a pas d'input côté formulaire. C'est déjà arrivé sur ce projet, une fois de trop.
+
+## Rien ne passe à fait sans être rejoué à la main
+
+Chaque tâche du développement, front comme back, a sa propre zone "Tester" : la démarche exacte pour vérifier ce point précis, d'abord en local, puis une seconde fois en prod une fois déployé. Rien ne passe au statut "fait" sans avoir été rejoué à la main, pour confirmer que ça marche et que rien d'autre n'a été cassé au passage. Cette vérification manuelle s'ajoute aux tests unitaires déjà présents dans le code, elle ne les remplace jamais : les deux couvrent des choses différentes, l'une le comportement réel à l'écran, l'autre la logique isolée.
+
+Le reste, vous pouvez le voir directement sur la page. C'est plus honnête qu'un paragraphe de plus ici.

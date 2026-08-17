@@ -1,0 +1,2484 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      // Applique le theme AVANT le premier rendu (dans le head, avant le body),
+      // pour eviter le flash clair/sombre (FOUC) qui se produisait quand ce
+      // script tournait en bas de page.
+      (function () {
+        var stored = localStorage.getItem("vault-theme");
+        if (stored) { document.documentElement.setAttribute("data-theme", stored); }
+      })();
+      var SUN_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>';
+      var MOON_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
+      function renderThemeIcon() {
+        var btn = document.querySelector(".theme-toggle");
+        if (!btn) return;
+        var current = document.documentElement.getAttribute("data-theme");
+        var isDark = current ? current === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        btn.innerHTML = isDark ? SUN_ICON : MOON_ICON;
+      }
+      function toggleTheme() {
+        var current = document.documentElement.getAttribute("data-theme");
+        var isDark = current ? current === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var next = isDark ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem("vault-theme", next);
+        renderThemeIcon();
+      }
+    </script>
+    <title>Cerithe · v1.6.0 — Ajouter des pièces aux biens (visite guidée)</title>
+    <link rel="icon" type="image/png" href="data:image/png;base64,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" />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --border: #30363d;
+        --text: #c9d1d9;
+        --muted: #8b949e;
+        --link: #58a6ff;
+        --accent: #58a6ff;
+        --accent-bg: rgba(88, 166, 255, 0.12);
+        --fix: #d29922;
+        --fix-bg: rgba(210, 153, 34, 0.1);
+        --type-fix: #a371f7;
+        --type-fix-bg: rgba(163, 113, 247, 0.12);
+        --success: #3fb950;
+        --success-bg: rgba(63, 185, 80, 0.12);
+        --field: #39c5cf;
+        --field-bg: rgba(57, 197, 207, 0.12);
+        --spec: #2f81f7;
+        --spec-bg: rgba(47, 129, 247, 0.12);
+        --mockup: #f778ba;
+        --mockup-bg: rgba(247, 120, 186, 0.12);
+        --danger: #f85149;
+        --danger-bg: rgba(248, 81, 73, 0.12);
+        --hover-overlay: rgba(230, 237, 243, 0.05);
+      }
+
+      /* Mode clair : préférence système par défaut, bascule manuelle (bouton +
+         data-theme + localStorage) prioritaire sur la préférence système. */
+      @media (prefers-color-scheme: light) {
+        :root:not([data-theme="dark"]) {
+          --bg: #ffffff;
+          --surface: #f6f8fa;
+          --border: #d0d7de;
+          --text: #1f2328;
+          --muted: #656d76;
+          --link: #0969da;
+          --hover-overlay: rgba(31, 35, 40, 0.05);
+        }
+      }
+      :root[data-theme="light"] {
+        --bg: #ffffff;
+        --surface: #f6f8fa;
+        --border: #d0d7de;
+        --text: #1f2328;
+        --muted: #656d76;
+        --link: #0969da;
+        --hover-overlay: rgba(31, 35, 40, 0.05);
+      }
+
+      .theme-toggle {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        color: var(--muted);
+        padding: 5px 8px;
+        cursor: pointer;
+        font-family: inherit;
+        line-height: 0;
+      }
+      .theme-toggle svg { width: 16px; height: 16px; }
+      .theme-toggle:hover { color: var(--text); }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        line-height: 1.5;
+      }
+
+      /* ---- Navbar (partagée sur toutes les pages de l'outil, cf _dashboard/dashboard.html) ---- */
+      .navbar {
+        height: 52px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        background: var(--bg);
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        z-index: 20;
+      }
+      .navbar-brand {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text);
+        text-decoration: none;
+      }
+      .navbar-links {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 14px;
+      }
+      .navbar-links > a { color: var(--muted); text-decoration: none; }
+      .navbar-links > a:hover { color: var(--text); }
+      .navbar-links > a.active { color: var(--link); }
+      .navbar-dropdown { position: relative; }
+      .navbar-dropdown-trigger { color: var(--muted); cursor: pointer; user-select: none; }
+      .navbar-dropdown.open .navbar-dropdown-trigger,
+      .navbar-dropdown-trigger.active { color: var(--link); }
+      .navbar-dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 10px;
+        min-width: 160px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 6px;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .navbar-dropdown.open .navbar-dropdown-menu { display: flex; }
+      .navbar-dropdown-menu a {
+        color: var(--muted);
+        text-decoration: none;
+        padding: 6px 8px;
+        border-radius: 4px;
+      }
+      .navbar-dropdown-menu a:hover { color: var(--text); background: var(--hover-overlay); }
+      .navbar-dropdown-menu a.active { color: var(--link); }
+      .navbar-dropdown-divider { border-top: 1px solid var(--border); margin: 4px 4px; }
+
+      .shell { display: flex; align-items: flex-start; min-height: calc(100vh - 52px); }
+
+      /* ---- Sidebar ---- */
+      .sidenav {
+        width: clamp(250px, 15vw, 320px);
+        flex-shrink: 0;
+        height: calc(100vh - 52px);
+        position: sticky;
+        top: 52px;
+        overflow-y: auto;
+        border-right: 1px solid var(--border);
+        padding: 20px 12px 40px;
+      }
+
+      .version-group { margin-bottom: 4px; }
+      .version-group-wip { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+      /* Ces deux liens n'ont pas de tag-mini (feature/fix) a droite : sans ca, le
+         justify-content: space-between herite de .version-link ecarte le texte du
+         point au lieu de le coller, avec un espacement qui varie selon la longueur
+         du texte. Force les deux lignes a rester collees et alignees entre elles. */
+      .version-group-wip .version-link { justify-content: flex-start; gap: 8px; }
+      .version-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        width: 100%;
+        background: none;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        padding: 7px 10px;
+        cursor: pointer;
+        text-align: left;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      .version-link:hover { border-color: var(--border); }
+      .version-link.active { background: var(--surface); border-color: var(--border); }
+      .version-num { font-size: 14.5px; font-weight: 700; color: var(--text); }
+      .version-tag-mini {
+        font-size: 10.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        padding: 1px 7px;
+        border-radius: 999px;
+      }
+      .version-tag-mini.feature { color: var(--accent); background: var(--accent-bg); }
+      .version-tag-mini.fix { color: var(--type-fix); background: var(--type-fix-bg); }
+      /* Statut à 3 états, distinct du tag Fonctionnalité/Correctif ci-dessus :
+         en-prod = version actuellement live/déployée (une seule à la fois) ;
+         ouvert = pas encore validé/poussé, en cours d'échange ;
+         historique = déjà validé et déployé un jour, depuis supersédé par une
+         version plus récente. Cf _templates/page-suivi-projet-v1-instructions.md. */
+      .version-status-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+      .version-status-dot.en-prod { background: #3fb950; }
+      .version-status-dot.ouvert { background: var(--fix); }
+      .version-status-dot.historique { background: var(--muted); }
+      .version-status-dot.gabarit { background: none; border: 1.5px solid var(--accent); }
+      .version-patches {
+        margin: 2px 0 10px 14px;
+        padding-left: 10px;
+        border-left: 2px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+      .version-empty {
+        padding: 10px;
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      /* ---- Contenu principal ---- */
+      .main { flex: 1; padding: 32px 40px 64px; max-width: 900px; margin: 0 auto; }
+      h1 { font-size: 23px; margin: 0 0 20px; }
+
+      .tag {
+        font-size: 11.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        padding: 2px 8px;
+        border-radius: 999px;
+      }
+      .tag.feature { color: var(--accent); background: var(--accent-bg); }
+      .tag.fix { color: var(--type-fix); background: var(--type-fix-bg); }
+
+      /* ---- État vide / notice exemple ---- */
+      .empty-state {
+        border: 1px dashed var(--border);
+        border-radius: 10px;
+        padding: 18px 20px;
+        color: var(--muted);
+        font-size: 14.5px;
+        line-height: 1.7;
+        margin-bottom: 28px;
+      }
+      .empty-state strong { color: var(--text); }
+
+      /* ---- Backlog des remarques/idées/correctifs à venir, pas encore promues
+         dans un onglet ouvert. Liste réelle dès qu'un item existe (remplace
+         .backlog-empty). Cf _templates/page-suivi-projet-v1-instructions.md. ---- */
+      .backlog-empty {
+        border: 1px dashed var(--border);
+        border-radius: 10px;
+        padding: 16px 20px;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.7;
+        margin-top: 20px;
+      }
+      .version-panel[hidden] { display: none; }
+
+      /* ---- Carte "Nouvelle fonctionnalité" / "Correctif" ---- */
+      .feature-card, .fix-card {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 20px 22px;
+      }
+      .card-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      .version-tag { font-weight: 700; color: var(--text); font-size: 15px; }
+      .version-date { color: var(--muted); font-size: 13px; }
+      .card-description { font-size: 15.5px; margin: 0 0 18px; }
+      .feature-title { font-size: 19px; font-weight: 700; color: var(--text); margin: 0 0 8px; }
+      .checklist { list-style: none; margin: 20px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+      .checklist-item { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; }
+      .checklist-status { flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%; margin-top: 2px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+      .checklist-status.done { background: rgba(63, 185, 80, 0.15); color: #3fb950; }
+      .checklist-status.done::before { content: "✓"; }
+      .checklist-status.pending { background: var(--fix-bg); color: var(--fix); }
+      .checklist-status.pending::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+      .checklist-status.prototype { background: var(--accent-bg); color: var(--accent); }
+      .checklist-status.prototype::before { content: "◐"; }
+      .pr-ref { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 600; color: var(--accent); background: var(--accent-bg); text-decoration: none; white-space: nowrap; }
+      .pr-ref:hover { text-decoration: underline; }
+      .pr-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 0; }
+      .pr-summary-label { font-size: 11px; color: var(--muted); font-weight: 500; margin-right: 2px; }
+      .pr-summary .pr-ref { margin-left: 0; }
+      .checklist-text strong { color: var(--text); }
+      .checklist-text em { color: var(--muted); font-style: normal; }
+      .checklist-item.done .checklist-text { color: var(--muted); }
+      .checklist-item.done .checklist-text strong { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--border); }
+      .checklist-group { margin-top: 22px; }
+      .checklist-group-title { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 0; }
+      .checklist-group-hint { font-size: 12.5px; color: var(--muted); font-style: italic; margin: 3px 0 0; }
+      .checklist-group .checklist { margin-top: 12px; }
+      .example-badge {
+        display: inline-block;
+        font-size: 11.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: var(--fix);
+        background: var(--fix-bg);
+        border: 1px dashed var(--fix);
+        border-radius: 999px;
+        padding: 2px 10px;
+        margin-bottom: 14px;
+      }
+
+      .verified-tag {
+        font-size: 12px;
+        color: var(--muted);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      .status-tag {
+        font-size: 11.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        padding: 2px 8px;
+        border-radius: 999px;
+      }
+      .status-tag.en-cours { color: var(--fix); background: var(--fix-bg); }
+      .status-tag.valide { color: #3fb950; background: rgba(63, 185, 80, 0.12); }
+      .status-tag.neutre { color: var(--muted); background: var(--surface); }
+      .status-tag.a-discuter { color: var(--type-fix); background: var(--type-fix-bg); }
+      .status-tag.a-valider { color: var(--accent); background: var(--accent-bg); }
+      .status-tag.probleme { color: var(--danger); background: var(--danger-bg); }
+      .todo-card-head .status-tag { margin-left: auto; flex-shrink: 0; }
+
+
+      /* ---- Couverture des champs (schéma backend vs formulaire) ---- */
+      /* Même traitement carte que .template-section (bordure pointillée), pour
+         que cette section ait le même design que Specs/Call sites/Visuel/Todo. */
+      .field-coverage { border: 1px dashed var(--border); border-radius: 8px; padding: 12px 14px; margin: 0 0 14px; }
+      .field-coverage-title { font-size: 19px; color: var(--text); font-weight: 700; margin: 0 0 12px; }
+      /* "Effets de bord backend" suit toujours directement le tableau de champs
+         (plus de divider entre les deux, cf 12/08) : marge haute large pour
+         bien le distinguer visuellement, sans toucher au 1er titre de la card. */
+      .field-coverage table + .field-coverage-title { margin-top: 40px; }
+      .field-coverage-hint { font-size: 12px; color: var(--muted); font-style: italic; margin: 4px 0 0; }
+      /* Distinct de .field-coverage-hint (texte générique de mode d'emploi, muted/italique) :
+         contenu factuel propre à la fonctionnalité (formulaire concerné, modifications), texte normal. */
+      .field-coverage-meta { font-size: 12.5px; color: var(--text); margin: 6px 0 0; }
+      .field-coverage-meta-list { font-size: 12.5px; color: var(--text); margin: 2px 0 0 18px; padding: 0; }
+      .field-coverage-meta-list li { margin-bottom: 2px; }
+      /* ---- Grille d'icônes de types de pièces (12/08, v1.6.0) ---- */
+      .roomtype-group { margin-top: 16px; }
+      .roomtype-group:first-child { margin-top: 8px; }
+      .roomtype-group-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 8px; }
+      .roomtype-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+      .roomtype-tile { display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 8px; padding: 10px 6px; background: var(--surface); text-align: center; }
+      .roomtype-tile svg { width: 24px; height: 24px; color: var(--muted); flex-shrink: 0; }
+      .roomtype-tile span { font-size: 11px; color: var(--text); line-height: 1.25; }
+      /* ---- Card d'attente pour un mockup pas encore construit (12/08) : remplacée
+         par le vrai widget .feature-visual une fois le mockup réellement fait. ---- */
+      .mockup-pending-card { border: 1px dashed var(--border); border-radius: 8px; padding: 12px 14px; background: var(--surface); }
+      .mockup-pending-title { font-size: 14px; font-weight: 700; color: var(--text); margin: 0 0 6px; }
+      .mockup-pending-desc { font-size: 12.5px; color: var(--muted); margin: 0; line-height: 1.5; }
+      /* Variante à onglets (12/08) : mêmes groupes/onglets que .feature-visual
+         (cf .visual-tab-groups), mais chaque onglet affiche juste la card
+         d'attente ci-dessus au lieu d'un vrai mockup cliquable. */
+      .mockup-pending-visual .visual-tab-groups { margin-bottom: 12px; }
+      .mockup-pending-tab {
+        background: none;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-size: 14px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .mockup-pending-tab:hover { color: var(--text); }
+      .mockup-pending-tab.active { color: var(--accent); border-color: var(--accent); background: var(--accent-bg); }
+      .field-coverage .cov-empty-row td { text-align: center; color: var(--muted); font-style: italic; padding: 8px 10px; }
+      /* Légende à côté du titre : mêmes classes .cov que les cellules du tableau,
+         juste réduites, pour que le code couleur soit reconnu directement en le lisant. */
+      .field-coverage-legend { display: inline-flex; align-items: center; gap: 4px 14px; flex-wrap: wrap; font-size: 11.5px; color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: normal; }
+      .field-coverage-subtitle .field-coverage-hint { display: block; text-transform: none; letter-spacing: normal; font-weight: 400; margin: 2px 0 0; }
+      .field-coverage-title-callsites .field-coverage-hint { display: block; flex: 1 0 100%; width: 100%; margin: 2px 0 0; }
+      .field-coverage-legend .cov { width: 14px; height: 14px; font-size: 9px; }
+      /* Séparateur interne quand plusieurs tableaux vivent dans la même card
+         (ex. Champs + Effets de bord) : pointillé comme la bordure externe,
+         pour rester dans le même langage visuel plutôt qu'une ligne pleine. */
+      .field-coverage-divider { border-top: 1px dashed var(--field); margin: 18px 0; }
+      .field-coverage table { border-collapse: collapse; font-size: 12.5px; width: 100%; margin-top: 10px; }
+      .field-coverage th, .field-coverage td { text-align: left; padding: 5px 10px 5px 0; border-bottom: 1px solid var(--border); }
+      .field-coverage th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; position: relative; }
+      /* Icône d'info cliquable sur les en-têtes : JS (même mécanisme que le
+         dropdown navbar), pas un hack CSS checkbox, pour qu'un clic ailleurs ou
+         sur une autre icône referme le popover ouvert. Une seule zone affichée
+         à la fois. */
+      .th-info-icon { display: inline-flex; align-items: center; justify-content: center; width: 13px; height: 13px; border-radius: 50%; border: 1px solid var(--muted); color: var(--muted); font-size: 9px; font-weight: 700; font-style: normal; margin-left: 4px; cursor: pointer; user-select: none; vertical-align: middle; }
+      .th-info-icon:hover { color: var(--text); border-color: var(--text); }
+      .th-info-popover {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        margin-top: 6px;
+        width: 220px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 9px 11px;
+        font-size: 12px;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: normal;
+        color: var(--text);
+        line-height: 1.5;
+        z-index: 10;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+      }
+      .th-info-popover.open { display: block; }
+      /* Réutilise le même mécanisme icône/popover hors d'un <th> (qui a déjà
+         position:relative) : ce petit wrapper sert de point d'ancrage local. */
+      .info-anchor { position: relative; display: inline-block; }
+      .info-anchor .th-info-popover { top: 130%; left: 0; }
+      /* Les 2 dernières colonnes ouvrent leur popover vers la gauche, pour ne
+         pas déborder du cadre à droite. */
+      .field-coverage th:nth-last-child(-n+2) .th-info-popover { left: auto; right: 0; }
+      .field-coverage td:nth-child(2) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--text); }
+      .field-coverage .field-num { width: 22px; text-align: center; color: var(--muted); font-weight: 600; }
+      /* Détail des valeurs replié par défaut : le titre visible (summary) porte
+         le statut cadré/pas cadré via la couleur du point (réutilise .checklist-status
+         déjà défini), le détail champ par champ ne s'ouvre que si besoin. */
+      .values-drop summary { cursor: pointer; display: flex; align-items: center; gap: 6px; list-style: none; font-size: 12.5px; color: var(--text); }
+      .values-drop summary::-webkit-details-marker { display: none; }
+      .values-drop summary::before { content: "▸"; color: var(--muted); font-size: 9px; }
+      .values-drop[open] summary::before { content: "▾"; }
+      .values-drop summary .checklist-status { width: 12px; height: 12px; margin: 0; }
+      .values-drop-body { margin: 6px 0 2px 18px; display: flex; flex-direction: column; gap: 3px; overflow-wrap: break-word; }
+      .values-drop-body code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--text); }
+      /* Largeurs figées : ouvrir un menu déroulant ne doit jamais redimensionner
+         les colonnes du tableau, le texte replie dans la largeur fixée à la place. */
+      .side-effects-table { table-layout: fixed; width: 100%; }
+      .side-effects-table th:nth-child(1), .side-effects-table td:nth-child(1) { width: 60px; }
+      .side-effects-table th:nth-child(2), .side-effects-table td:nth-child(2) { width: 150px; }
+      .side-effects-table th:nth-child(3), .side-effects-table td:nth-child(3) { width: 70px; }
+      .side-effects-table th:nth-child(5), .side-effects-table td:nth-child(5) { width: 60px; }
+      /* table-layout: fixed contraint la largeur de colonne mais ne force pas le
+         retour à la ligne d'un identifiant long sans espace (ex. Property.numberOf...) :
+         sans ça, le texte déborde par-dessus la colonne suivante au lieu de replier. */
+      .side-effects-table td { overflow-wrap: break-word; word-break: break-word; }
+      .field-coverage .req { font-size: 10.5px; font-weight: 700; text-transform: uppercase; padding: 1px 6px; border-radius: 999px; }
+      .field-coverage .req.oui { color: var(--success); background: var(--success-bg); }
+      .field-coverage .req.non { color: var(--muted); background: var(--surface); }
+      .field-coverage .cov { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 4px; font-weight: 700; font-size: 11px; }
+      .field-coverage .cov.oui { color: var(--success); background: var(--success-bg); }
+      .field-coverage .cov.non { color: var(--muted); background: var(--surface); }
+      .field-coverage .cov.na { color: var(--muted); }
+      /* Distinct de .cov.non (grille par défaut, n'a jamais été prévu) : ambre =
+         prévu pour cette fonctionnalité, pas encore codé. Même code couleur que
+         .checklist-status.pending, pour rester cohérent avec le reste du document. */
+      .field-coverage .cov.pending { color: var(--fix); background: var(--fix-bg); }
+      .field-coverage .req.adecider, .field-coverage .cov.adecider { color: var(--muted); background: none; border: 1px dashed var(--border); }
+      /* Combinaison dangereuse : Requis = Oui + Création = Non (champ obligatoire
+         côté back mais aucune valeur posée à la création, cf incident phoneNumber).
+         Calculé en CSS pur via :has() à partir des classes req/cov déjà posées :
+         se recalcule tout seul dès que l'une des deux cellules change, jamais à
+         resynchroniser à la main. Icône en plus de la couleur (accessibilité). */
+      .field-coverage tr:has(.req.oui) td:nth-child(4):has(.cov.non, .cov.pending) { background: var(--fix-bg); box-shadow: inset 0 0 0 1px var(--fix); }
+      .field-coverage tr:has(.req.oui) td:nth-child(4) .cov.non::after, .field-coverage tr:has(.req.oui) td:nth-child(4) .cov.pending::after { content: "⚠"; margin-left: 4px; }
+
+      /* ---- Rétrospective (menu déroulant) ---- */
+      .retro-details { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin: 0 0 18px; }
+      .retro-details summary { cursor: pointer; font-weight: 600; font-size: 14px; color: var(--text); }
+      .retro-details summary::-webkit-details-marker { color: var(--muted); }
+      .retro-details[open] summary { margin-bottom: 10px; }
+      .retro-details h4 { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); margin: 14px 0 6px; }
+      .retro-details h4:first-of-type { margin-top: 0; }
+      .retro-details ul { margin: 0; padding-left: 20px; }
+      .retro-details li { font-size: 13.5px; line-height: 1.6; margin-bottom: 6px; }
+      .retro-details li strong { color: var(--text); }
+
+      /* ---- Template vide (placeholder d'une future fonctionnalité) ---- */
+      .template-placeholder { color: var(--muted); font-style: italic; }
+      .template-section { border: 1px dashed var(--border); border-radius: 8px; padding: 12px 14px; margin: 0 0 14px; }
+      .template-section-title { font-size: 19px; color: var(--text); font-weight: 700; margin: 0 0 14px; }
+      /* Coloration du grand titre selon le système de blocs qu'il introduit :
+         bleu (accent) pour la Spec (cf .behavior-grid), jaune/ambre (fix) pour
+         la Todo (cf .todo-grid, même teinte que la pastille "pending"), violet
+         (type-fix) pour Call sites, en attente de sa propre mise en cards. */
+      .template-section-title-spec { color: var(--spec); }
+      .template-section-title-fields { color: var(--field); }
+      .template-section-title-todo { color: var(--fix); }
+      .template-section-title-callsites { color: var(--type-fix); }
+      .template-section-title-mockup { color: var(--success); }
+      /* Bordure de la section teintée de la même couleur que son grand titre (12/08). */
+      .template-section:has(.template-section-title-spec) { border-color: var(--spec); }
+      .template-section:has(.template-section-title-fields) { border-color: var(--field); }
+      .template-section:has(.template-section-title-todo) { border-color: var(--fix); }
+      .template-section:has(.template-section-title-callsites) { border-color: var(--type-fix); }
+      .template-section:has(.template-section-title-mockup) { border-color: var(--success); }
+      /* Numérotation + titre des cards "Formulaire concerné" dans Couverture des champs (12/08).
+         Le nom du formulaire est le grand titre de la card, "Tableau de couverture des
+         champs"/"Effets de bord backend" deviennent des sous-titres en dessous. */
+      .template-section:has(.template-section-title-fields) { counter-reset: field-form; }
+      .field-coverage-form-title { counter-increment: field-form; font-size: 19px; font-weight: 700; color: var(--field); margin: 0 0 10px; }
+      .field-coverage-form-title::before { content: "Formulaire " counter(field-form) " : "; }
+      .field-coverage-form-title.is-page::before { content: "Écran " counter(field-form) " : "; }
+      .field-coverage-subtitle { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 18px 0 8px; }
+      .field-coverage-subtitle:first-of-type { margin-top: 4px; }
+      /* Sous-blocs "Endpoints touchés"/"Call sites frontend" (12/08) : même
+         mise en forme que "Couverture des champs", pas de boîte à part
+         entière, juste le contenu sous le grand titre de la section. */
+      .field-coverage.field-coverage-flat { border: none; border-radius: 0; padding: 0; background: none; }
+      .field-coverage-title-fields { color: var(--field); display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+      /* Sous-tableaux de la section Call sites (violet), pas verts comme Champs/Effets de bord. */
+      .field-coverage-title-callsites { color: var(--type-fix); display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+      .field-coverage-title-fields + .field-coverage-hint { margin-top: -6px; }
+      .template-section ul { margin: 0; padding-left: 20px; }
+      .template-section li { margin-bottom: 4px; line-height: 1.5; }
+
+      /* ---- Comportement attendu : grille de blocs contexte -> trigger -> conséquence ---- */
+      .behavior-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 14px;
+        margin: 10px 0 4px;
+      }
+      .behavior-block {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--surface);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .behavior-block-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        padding: 10px 14px;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--text);
+        background: var(--accent-bg);
+        border-bottom: 1px solid var(--border);
+      }
+      .behavior-block-title::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        flex-shrink: 0;
+      }
+      .behavior-steps { list-style: none; margin: 0; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+      .behavior-step { font-size: 13.5px; line-height: 1.55; }
+      .behavior-trigger { color: var(--accent); font-weight: 600; }
+      .behavior-arrow { color: var(--muted); margin: 0 2px; }
+      .behavior-outcome { color: var(--text); }
+      /* RÈGLE : la flèche verticale (affichée par défaut entre les lignes d'un
+         .behavior-steps) signifie "cette ligne mène à la suivante", jamais un
+         simple séparateur visuel. À n'utiliser que si les étapes forment une
+         vraie suite d'actions qui s'enchaînent dans cet ordre (ex. 2.1, un
+         parcours écran par écran). Si les lignes sont des règles indépendantes
+         qui peuvent être lues dans n'importe quel ordre (ex. 2.3, 3 cas limites
+         séparés), ajouter la classe .behavior-steps-flat au <ul> pour la
+         retirer, cf plus bas. Distincte de la flèche horizontale trigger ->
+         conséquence sur une même ligne. Absente automatiquement si le bloc n'a
+         qu'une seule étape (:not(:last-child) ne matche rien). */
+      .behavior-step:not(:last-child)::after {
+        content: "↓";
+        display: block;
+        text-align: center;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1;
+        margin: 5px 0 1px;
+        opacity: 0.6;
+      }
+      /* Bloc dont les lignes sont chacune une règle indépendante, pas une suite
+         d'actions qui s'enchaînent (ex. 2.3 Transmission de biens) : pas de
+         flèche verticale entre elles. */
+      .behavior-steps-flat > .behavior-step:not(:last-child)::after { content: none; }
+
+      /* ---- Todo : même principe de grille que Comportement attendu, teinte
+         jaune/ambre (var(--fix), même couleur que la pastille "pending" déjà
+         présente sur chaque card) pour se distinguer visuellement du bleu de
+         la Spec. Le statut pending/done reste porté par .checklist-status,
+         inchangé. ---- */
+      .todo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 14px;
+        margin: 10px 0 4px;
+        counter-reset: todo-card-num;
+      }
+      .todo-card { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); overflow: hidden; display: flex; flex-direction: column; counter-increment: todo-card-num; }
+      .todo-card-head { display: flex; align-items: center; gap: 8px; margin: 0; padding: 12px 16px; font-size: 13.5px; font-weight: 700; color: var(--text); background: var(--fix-bg); border-bottom: 1px solid var(--border); }
+      .todo-card-head .checklist-status { margin: 0; flex-shrink: 0; }
+      .todo-num::before { content: counter(todo-group) "." counter(todo-card-num) "  "; color: var(--fix); font-weight: 700; }
+      .todo-card-body { padding: 14px 16px; font-size: 13.5px; line-height: 1.65; color: var(--text); flex: 1; display: flex; flex-direction: column; gap: 10px; }
+      .todo-card-body p { margin: 0; }
+      .todo-card-body .pr-ref { margin-left: 0; margin-top: 2px; display: inline-block; align-self: flex-start; }
+
+      /* ---- Numérotation Front/Back de la Todo (1. Front -> 1.1/1.2..., 2. Back
+         -> 2.1/2.2...), même mécanisme de compteurs CSS que .spec-list. ---- */
+      .todo-list { counter-reset: todo-group; }
+      .todo-list > .checklist-group { counter-increment: todo-group; }
+      .todo-label::before { content: counter(todo-group) ". "; color: var(--fix); font-weight: 700; }
+
+      /* ---- Numérotation de la Spec (1. Résultat attendu, 2. Comportement attendu
+         -> 2.1/2.2/2.3, 3. Hors périmètre -> 3.1...), via compteurs CSS pour rester
+         juste automatiquement si un item est ajouté/retiré. ---- */
+      .spec-list { list-style: none; margin: 0; padding: 0; counter-reset: spec-item; }
+      .spec-list > li { counter-increment: spec-item; }
+      .spec-list > li + li { margin-top: 34px; }
+      .spec-label { display: inline-block; font-size: 16px; margin-bottom: 4px; }
+      .spec-label::before { content: counter(spec-item) ". "; color: var(--accent); font-weight: 700; }
+      .behavior-grid { counter-reset: behavior-item; }
+      .behavior-block { counter-increment: behavior-item; }
+      .behavior-num::before { content: counter(spec-item) "." counter(behavior-item) "  "; color: var(--accent); font-weight: 700; }
+
+      /* ---- Widget visuel ---- */
+      .visual-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .visual-tab-groups { display: flex; flex-direction: column; gap: 6px; }
+      .visual-tab-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+      .visual-tab-group-label {
+        font-size: 11.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        flex-shrink: 0;
+        width: auto;
+        min-width: 74px;
+      }
+      .visual-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+      .visual-behavior {
+        font-size: 14.5px;
+        line-height: 1.6;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px 14px;
+        margin: 0 0 18px;
+      }
+      .visual-behavior[hidden] { display: none; }
+      .visual-behavior strong { color: var(--accent); }
+      .visual-tab {
+        background: none;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-size: 14px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .visual-tab:hover { color: var(--text); }
+      .visual-tab.active { color: var(--accent); border-color: var(--accent); background: var(--accent-bg); }
+      .visual-tab { position: relative; }
+      .visual-tab.validated::after {
+        content: "✓";
+        position: absolute;
+        top: -7px;
+        right: -7px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--bg);
+        border: 1.5px solid #3fb950;
+        color: #3fb950;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        font-weight: 700;
+      }
+
+      .visual-toggles { display: flex; gap: 8px; }
+      .visual-toggle { display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+      .visual-toggle button {
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 13px;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .visual-toggle button + button { border-left: 1px solid var(--border); }
+      .visual-toggle button.active { color: var(--text); background: var(--hover-overlay); }
+      .visual-open {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        color: var(--muted);
+        font-size: 13px;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .visual-open:hover { color: var(--text); border-color: var(--text); }
+
+      .visual-frame {
+        position: relative;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: #22272e;
+        text-align: center;
+        padding: 16px;
+        min-height: 300px;
+        margin-bottom: 18px;
+      }
+      .visual-frame.zoom-natif { overflow: hidden; }
+      .visual-frame.zoom-travail { overflow: auto; max-height: 540px; }
+
+      .visual-logo {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        background: rgba(13, 17, 23, 0.75);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        padding: 3px;
+      }
+      .visual-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+      .visual-scale { display: none; }
+      .visual-scale.active { display: inline-block; }
+      .visual-scale iframe { border: none; display: block; background: #fff; }
+      .visual-scale[data-viewport="laptop"] iframe { width: 1280px; height: 800px; }
+      .visual-scale[data-viewport="mobile"] iframe { width: 375px; height: 700px; }
+      .visual-frame.zoom-natif .visual-scale[data-viewport="laptop"] { zoom: 0.4; }
+      .visual-frame.zoom-natif .visual-scale[data-viewport="mobile"] { zoom: 0.55; }
+      .visual-frame.zoom-travail .visual-scale { zoom: 1; }
+
+      .visual-note {
+        font-size: 14px;
+        color: var(--muted);
+        margin: 10px 2px 18px;
+        padding-left: 12px;
+        border-left: 2px solid var(--border);
+        white-space: pre-line;
+      }
+
+      .impact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .impact-block h4 {
+        margin: 0 0 6px;
+        font-size: 12.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: var(--muted);
+      }
+      .impact-block p { margin: 0; font-size: 15px; }
+      .impact-block ul { margin: 0; padding-left: 16px; font-size: 14.5px; }
+      .impact-block ul li { margin-bottom: 7px; }
+      .impact-block ul li:last-child { margin-bottom: 0; }
+
+      .card-links { display: flex; gap: 10px; margin-top: 18px; }
+      .card-links a {
+        font-size: 14px;
+        color: var(--link);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 6px 12px;
+      }
+      .card-links a:hover { border-color: var(--link); }
+
+      .fix-card p { font-size: 15px; margin: 0 0 8px; }
+      .fix-card p strong { color: var(--text); }
+
+      /* ---- Cards numerotees "Correctif en cours" (12/08) : meme langage visuel
+         que .todo-card, avec zone depliable optionnelle pour le detail. ---- */
+      .fix-item-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; counter-reset: fix-item; }
+      /* Correctifs v1.6.1 : meme carte que la Todo (.todo-grid/.todo-card), 2 colonnes fixes forcees
+         (l'auto-fit par defaut de .todo-grid rendait 3 colonnes sur un ecran large). */
+      .version-panel[data-version="1.6.1"] .todo-grid { grid-template-columns: repeat(2, 1fr); }
+      /* Pas de groupe Front/Back/Non-regression ici (todo-group jamais incremente) : numero simple
+         sans le "0." en tete que produirait le compteur todo-group par defaut. */
+      .version-panel[data-version="1.6.1"] .todo-num::before { content: counter(todo-card-num) ". "; }
+      /* Titres de correctifs plus longs que les titres Todo habituels : taille reduite pour ce panel. */
+      .version-panel[data-version="1.6.1"] .todo-card-head { font-size: 12px; }
+      .fix-item-card { counter-increment: fix-item; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); overflow: hidden; display: flex; flex-direction: column; }
+      .fix-item-head { display: flex; align-items: flex-start; gap: 10px; padding: 12px 16px; }
+      .fix-item-head .checklist-status { margin-top: 3px; }
+      .fix-item-num { flex-shrink: 0; color: var(--fix); font-weight: 700; font-size: 13px; }
+      .fix-item-num::before { content: counter(fix-item) ". "; }
+      .fix-item-body { flex: 1; min-width: 0; }
+      .fix-item-title { font-size: 13.5px; font-weight: 700; color: var(--text); margin: 0; }
+      .fix-item-brief { font-size: 13px; color: var(--muted); margin: 3px 0 0; line-height: 1.5; }
+      .fix-item-more { border-top: 1px solid var(--border); }
+      .fix-item-more summary { cursor: pointer; display: flex; align-items: center; gap: 6px; list-style: none; font-size: 12px; color: var(--link); padding: 8px 16px; }
+      .fix-item-more summary::-webkit-details-marker { display: none; }
+      .fix-item-more summary::before { content: "▸ Plus d'infos"; color: var(--muted); }
+      .fix-item-more[open] summary::before { content: "▾ Masquer"; }
+      .fix-item-more.test summary::before { content: "▸ Tester"; }
+      .fix-item-more.test[open] summary::before { content: "▾ Tester"; }
+      .fix-item-more.probleme { background: var(--danger-bg); }
+      .fix-item-more.probleme summary { color: var(--danger); }
+      .fix-item-more.probleme summary::before { content: "▸ Problème"; color: var(--danger); }
+      .fix-item-more.probleme[open] summary::before { content: "▾ Problème"; }
+      .fix-item-more.probleme .fix-item-more-body { color: var(--text); }
+      .fix-item-more-body { padding: 0 16px 14px; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+
+      /* ---- Cards Todo simplifiees (12/08) : brief toujours visible + 2 zones
+         depliables independantes, "Plus d'infos" (detail/decisions) et "Tester"
+         (manips concretes en local), meme mecanique que .fix-item-more. ---- */
+      .todo-card-brief { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; padding: 12px 16px; }
+      .todo-card-details { border-top: 1px solid var(--border); }
+      .todo-card-details summary { cursor: pointer; display: flex; align-items: center; gap: 6px; list-style: none; font-size: 12px; color: var(--link); padding: 8px 16px; }
+      .todo-card-details summary::-webkit-details-marker { display: none; }
+      .todo-card-details summary::before { content: "▸ Plus d'infos"; color: var(--muted); }
+      .todo-card-details[open] summary::before { content: "▾ Masquer"; }
+      .todo-card-details.test summary::before { content: "▸ Tester"; }
+      .todo-card-details.test[open] summary::before { content: "▾ Tester"; }
+      .todo-card-details.probleme { background: var(--danger-bg); }
+      .todo-card-details.probleme summary { color: var(--danger); }
+      .todo-card-details.probleme summary::before { content: "▸ Problème"; color: var(--danger); }
+      .todo-card-details.probleme[open] summary::before { content: "▾ Problème"; }
+      .todo-card-details.probleme .todo-card-details-body { color: var(--text); }
+      .todo-card-details-body { padding: 0 16px 14px; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+      .todo-card-details-body p { margin: 0 0 8px; }
+      .todo-card-details-body p:last-child { margin-bottom: 0; }
+      .todo-card-details-body ol { margin: 0; padding-left: 18px; }
+      .todo-card-details-body li { margin-bottom: 6px; }
+      .todo-card-details-body li:last-child { margin-bottom: 0; }
+
+      @media (max-width: 760px) {
+        .shell { flex-direction: column; }
+        .sidenav { width: 100%; height: auto; max-height: 40vh; position: static; border-right: none; border-bottom: 1px solid var(--border); }
+        .main { padding: 20px 16px 48px; }
+        .impact-grid { grid-template-columns: 1fr; }
+        .fix-item-list { grid-template-columns: 1fr; }
+        .version-panel[data-version="1.6.1"] .todo-grid { grid-template-columns: 1fr; }
+      }
+      /* ---- Visite guidee (17/08), pattern repris de V1-Echanges/mockups/version-guided-tour.html,
+         adapte aux variables de couleur de Cerithe (--bg/--surface/--border/--text/--muted/--link)
+         plutot que celles du prototype d'origine (--fg/--card/--secondary). ---- */
+      .tour-target { position: relative; z-index: 10001; border-radius: 14px; transition: box-shadow .25s ease; background: var(--bg); }
+      :root:not([data-theme="light"]) .tour-target { box-shadow: 0 0 0 9999px rgba(0,0,0,.72); }
+      :root[data-theme="light"] .tour-target { box-shadow: 0 0 0 9999px rgba(9,9,11,.55); }
+
+      .tour-bubble { position: absolute; z-index: 10002; max-width: 360px; background: var(--text); color: var(--bg);
+        border-radius: 10px; padding: 16px 18px; font-size: 14px; line-height: 1.5; box-shadow: 0 12px 32px rgba(0,0,0,.35); }
+      .tour-bubble .tour-step { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; opacity: .55; margin-bottom: 6px; }
+      .tour-bubble .tour-text { margin: 0 0 14px; }
+      /* Bulle compacte (17/08, etape "tour-mockup" trop haute avec son texte le plus long) : texte
+         plus petit et plus resserre, jamais applique par defaut. */
+      .tour-bubble.tour-bubble-compact .tour-text { font-size: 12.5px; line-height: 1.4; margin-bottom: 10px; }
+      /* Pendant un scroll actif (17/08, demande de Gilles, version finale apres essai d'un simple
+         fondu du texte) : la bulle entiere disparait pour laisser voir la page en dessous, une
+         barre basse compacte (Precedent/Suivant uniquement) apparait a la place, jamais les deux
+         a la fois — coordonne par la seule classe .is-mid-scroll sur <html>. Nickel sur mobile,
+         ou la bulle prenait trop de place a l'ecran pendant la lecture. */
+      :root.is-mid-scroll .tour-bubble { display: none; }
+      /* Grid 3 colonnes (17/08) : le numero d'etape doit rester au centre EXACT de la barre, pas
+         seulement entre Precedent/Suivant (un simple flex+gap le decale des que le groupe de
+         gauche, avec le bouton commentaire, n'a pas la meme largeur que le bouton de droite). */
+      .tour-bottom-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10003; display: none;
+        grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+        background: var(--surface); border-top: 1px solid var(--border); box-shadow: 0 -8px 20px rgba(0,0,0,.25); }
+      :root.is-mid-scroll .tour-bottom-nav { display: grid; }
+      :root.tour-off .tour-bottom-nav { display: none; }
+      .tour-bottom-nav .tour-comment { justify-self: start; }
+      .tour-bottom-step { justify-self: center; }
+      .tour-bottom-nav-right { display: flex; align-items: center; gap: 8px; justify-self: end; }
+      .tour-bottom-nav button { font-family: inherit; font-size: 13px; font-weight: 600; border-radius: 6px; padding: 8px 16px; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+      .tour-bottom-nav .tour-next { background: var(--text); color: var(--bg); border-color: transparent; }
+      .tour-bottom-nav .tour-prev:disabled { opacity: .35; cursor: default; }
+      /* Bouton "revoir le texte" (17/08) : le retour automatique de la bulle apres un delai de
+         scroll se battait contre le defilement inertiel (trackpad/mobile), qui redeclenche des
+         evenements "scroll" bien apres le geste physique et empechait le texte de revenir. Retour
+         desormais uniquement manuel, sur ce bouton. */
+      .tour-bottom-nav .tour-comment { padding: 8px 12px; font-size: 15px; line-height: 1; }
+      .tour-bottom-step { font-size: 11.5px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: var(--muted); }
+      .tour-bubble .tour-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+      .tour-bubble .tour-nav-buttons { display: flex; gap: 8px; }
+      .tour-bubble button { font-family: inherit; font-size: 13px; font-weight: 600; border-radius: 6px; padding: 6px 12px; cursor: pointer; border: 1px solid transparent; }
+      .tour-bubble .tour-prev { background: none; color: var(--bg); opacity: .6; border-color: currentColor; }
+      .tour-bubble .tour-prev:disabled { opacity: .25; cursor: default; }
+      .tour-bubble .tour-next { background: var(--bg); color: var(--text); }
+      .tour-bubble .tour-skip { background: none; color: var(--bg); opacity: .55; text-decoration: underline; padding: 6px 0; }
+      .tour-arrow { position: absolute; width: 14px; height: 14px; background: var(--text); transform: rotate(45deg); }
+
+      :root.tour-off .tour-target { box-shadow: none; z-index: auto; }
+      :root.tour-off .tour-bubble { display: none; }
+      :root.tour-off .tour-arrow { display: none; }
+
+      .tour-restart { position: fixed; bottom: 20px; right: 20px; z-index: 9000; display: none; align-items: center; gap: 8px;
+        background: var(--surface); border: 1px solid var(--border); color: var(--text); font-size: 13px; font-weight: 600;
+        border-radius: 999px; padding: 10px 16px; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,.25); }
+      :root.tour-off .tour-restart { display: inline-flex; }
+
+      /* Modale de fin de visite (17/08) : pas un CTA commercial (Gilles ne cherche pas de nouveaux
+         utilisateurs Cerithe pour l'instant), juste un pont vers sa page de contact pour qui a
+         envie de le recruter. */
+      .tour-end-overlay { position: fixed; inset: 0; z-index: 10010; background: rgba(9,9,11,.6);
+        display: flex; align-items: center; justify-content: center; padding: 24px; }
+      .tour-end-overlay[hidden] { display: none; }
+      .tour-end-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+        padding: 48px 40px; max-width: 460px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,.35); }
+      .tour-end-card h2 { margin: 0 0 16px; font-size: 22px; color: var(--text); }
+      .tour-end-card p { margin: 0 0 28px; font-size: 14.5px; color: var(--muted); line-height: 1.6; }
+      .tour-end-cta { display: inline-flex; align-items: center; gap: 6px; background: var(--link); color: #fff;
+        border-radius: 999px; padding: 12px 26px; font-size: 14px; font-weight: 600; text-decoration: none; }
+
+      /* Lien Cerithe en bas de page, apres la todo (17/08) : mis en avant avec le logo, pas un
+         simple lien texte perdu dans le contenu. */
+      .cerithe-link-card { display: flex; align-items: center; gap: 16px; margin-top: 32px; padding: 20px 24px;
+        border: 1px solid var(--border); border-radius: 12px; background: var(--surface); text-decoration: none; }
+      .cerithe-link-card img { width: 44px; height: 44px; object-fit: contain; flex-shrink: 0; }
+      .cerithe-link-card-text strong { display: block; font-size: 14.5px; color: var(--text); margin-bottom: 3px; }
+      .cerithe-link-card-text span { font-size: 13px; color: var(--muted); }
+      .cerithe-link-card-arrow { margin-left: auto; color: var(--muted); font-size: 18px; }
+
+      .tour-topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 60; background: var(--surface); border-bottom: 1px solid var(--border); }
+      .tour-topbar-inner { max-width: 900px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .tour-topbar-left { display: flex; flex-direction: column; gap: 2px; }
+      .tour-topbar-left strong { font-size: 14px; color: var(--text); }
+      .tour-topbar-left span { font-size: 12.5px; color: var(--muted); }
+      .tour-topbar-cta { display: inline-flex; align-items: center; gap: 6px; color: var(--link); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+      /* Padding-top genereux (17/08, meme incident que sur la visite Mylene le 16/08) : l'etape 1
+         cible un element tout en haut de la page, sans rien au-dessus pour scroller ; si ce
+         padding est trop juste, le scroll clamp a 0 et la bulle (positionnee au-dessus de la
+         cible) sort de l'ecran ou chevauche la card, qui semble "coupee". */
+      /* Bulle toujours fixe (17/08, demande explicite de Gilles) : les 6 etapes utilisent
+         desormais "fixed-top", plus besoin de marge variable pour laisser de la place a une
+         bulle "above" au-dessus de sa cible (source des crops a repetition corriges avant ca). */
+      .tour-content-shift { padding-top: 72px; }
+      @media (max-width: 480px) { .tour-topbar-inner { flex-wrap: wrap; } }
+    </style>
+  </head>
+  <body>
+    <div class="tour-topbar">
+      <div class="tour-topbar-inner">
+        <div class="tour-topbar-left" data-tour-id="tour-who">
+          <strong>Cerithe · v1.6.0</strong>
+          <span>Extrait réel du suivi de projet, publié le 17/08/2026</span>
+        </div>
+        <!-- Slug temporaire (17/08), a corriger une fois l'article publie et son slug definitif connu -->
+        <a class="tour-topbar-cta" href="https://gillescobigo.com/articles/260817" target="_blank" rel="noopener">← Retour à l'article</a>
+        <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Changer de thème"></button>
+        <script>renderThemeIcon();</script>
+      </div>
+    </div>
+    <div class="main tour-content-shift">
+          <div class="feature-card">
+            <div class="card-head">
+              <span class="version-tag">v1.6.0</span>
+              <span class="version-date">13/08</span>
+              <span class="tag feature">Nouvelle fonctionnalité</span>
+              <span class="status-tag valide">Validé</span>
+              <span class="verified-tag">Vérifié le 13/08</span>
+            </div>
+
+            <h3 class="feature-title" data-tour-id="tour-intro">Ajouter des pièces aux biens</h3>
+
+            <div class="template-section" data-tour-id="tour-specs">
+              <p class="template-section-title template-section-title-spec">Specs</p>
+              <ul class="spec-list">
+                <li><strong class="spec-label">Résultat attendu</strong> : pouvoir ajouter facilement et en nombre des pièces à un bien.</li>
+                <li>
+                  <strong class="spec-label">Comportement attendu</strong>
+                  <div class="behavior-grid">
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Fiche du bien (<code>PropertyPage</code>)</p>
+                      <ul class="behavior-steps">
+                        <li class="behavior-step"><span class="behavior-trigger">Clic sur "Ajouter des pièces"</span><span class="behavior-arrow">→</span><span class="behavior-outcome">ouverture d'une modale de configuration par niveau.</span></li>
+                        <li class="behavior-step"><span class="behavior-trigger">Validation de la modale</span><span class="behavior-arrow">→</span><span class="behavior-outcome">les pièces créées s'affichent sur la fiche du bien, organisées par niveau.</span></li>
+                        <li class="behavior-step"><span class="behavior-trigger">Clic sur une pièce affichée</span><span class="behavior-arrow">→</span><span class="behavior-outcome">navigation vers l'écran détail de cette pièce.</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Modale d'ajout de pièces</p>
+                      <ul class="behavior-steps">
+                        <li class="behavior-step"><span class="behavior-trigger">Ouverture</span><span class="behavior-arrow">→</span><span class="behavior-outcome">affiche les niveaux du bien séparés, un bloc par niveau, dans l'ordre -1 (si présent) puis RDC puis +1, +2...</span></li>
+                        <li class="behavior-step"><span class="behavior-trigger">Pour chaque niveau</span><span class="behavior-arrow">→</span><span class="behavior-outcome">tous les types de pièces sont proposables, sans restriction par niveau (ex. une cuisine peut être ajoutée à l'étage). Présentés en grille de tuiles (icône + nom), groupées par catégorie (Espaces courants / Annexes / Autre) ; le groupe "Espaces courants" est ouvert par défaut, les 2 autres repliés pour rester compact, dépliables au clic. Si des pièces existent déjà à ce niveau pour un type, leur nombre est affiché en badge sur la tuile, à titre indicatif, en lecture seule (ex. badge "2" sur la tuile Chambre).</span></li>
+                        <li class="behavior-step"><span class="behavior-trigger">Tuile non cochée</span><span class="behavior-arrow">→</span><span class="behavior-outcome">affiche seulement l'icône et le nom du type, pas de champ quantité visible.</span></li>
+                        <li class="behavior-step"><span class="behavior-trigger">Clic sur une tuile (nouveau ou déjà existant type sur ce niveau)</span><span class="behavior-arrow">→</span><span class="behavior-outcome">la tuile se surligne (bordure et fond en couleur d'accent) et affiche un contrôle de quantité : un champ numérique au centre, un bouton "−" et un bouton "+" de part et d'autre. La valeur part à 1, modifiable soit en tapant directement dans le champ, soit via les boutons, jamais en dessous de 1 tant que la tuile reste cochée.</span></li>
+                        <li class="behavior-step"><span class="behavior-trigger">Quantité indiquée</span><span class="behavior-arrow">→</span><span class="behavior-outcome">ce nombre de nouvelles pièces sera ajouté à ce type sur ce niveau. Toujours un ajout, jamais un remplacement du total existant : la modale ne sert qu'à ajouter des pièces.</span></li>
+                        <li class="behavior-step"><span class="behavior-trigger">Aucune tuile cochée sur aucun niveau</span><span class="behavior-arrow">→</span><span class="behavior-outcome">bouton "Valider" grisé, désactivé tant qu'au moins une tuile n'est pas cochée quelque part.</span></li>
+                        <li class="behavior-step"><span class="behavior-trigger">Bas de la modale, sous le dernier bloc de niveau</span><span class="behavior-arrow">→</span><span class="behavior-outcome">bouton "+ Ajouter le niveau +N" (N = niveau hors-sol le plus haut existant + 1, toujours proposé, pas de limite). Clic → <code>numberOfLevels</code> incrémenté (<code>PUT /api/properties/:id</code>), nouveau bloc de niveau ajouté en bas de la modale sans la fermer.</span></li>
+                        <li class="behavior-step"><span class="behavior-trigger">Au-dessus du bloc RDC</span><span class="behavior-arrow">→</span><span class="behavior-outcome">bouton "+ Ajouter un -1", visible uniquement si le bien n'a pas encore de niveau sous-sol (<code>numberOfBasementLevels === 0</code>). Une fois un -1 créé, le bouton disparaît : pas de -2 proposé (cf cas limite dédiée, jugé trop rare). Même mécanique que "+N" : incrémente <code>numberOfBasementLevels</code>, ajoute le bloc -1 en haut sans fermer la modale.</span></li>
+                        <li class="behavior-step"><span class="behavior-trigger">Validation</span><span class="behavior-arrow">→</span><span class="behavior-outcome">création en une fois de toutes les pièces ajoutées (tous niveaux confondus), fermeture de la modale.</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Écran détail d'une pièce</p>
+                      <ul class="behavior-steps">
+                        <li class="behavior-step"><span class="behavior-outcome">Affiche les infos de la pièce, dont son nom (générique à la création, ex. "Chambre 1").</span></li>
+                        <li class="behavior-step"><span class="behavior-trigger">Modification</span><span class="behavior-arrow">→</span><span class="behavior-outcome">même logique de mise à jour que pour un bien (formulaire d'édition), inclut le renommage du nom générique.</span></li>
+                        <li class="behavior-step"><span class="behavior-trigger">Suppression</span><span class="behavior-arrow">→</span><span class="behavior-outcome">supprime aussi tous les documents attachés à cette pièce (cascade), avertissement affiché avant confirmation pour préciser cette conséquence. Seul endroit où une pièce peut être modifiée ou supprimée, jamais depuis la modale d'ajout.</span></li>
+                        <li class="behavior-step"><span class="behavior-outcome">Bouton "Ajouter un projet" présent mais grisé, non fonctionnel (fonctionnalité Projets pas encore construite), même style que le bouton "+ Ajouter des travaux" déjà présent sur la fiche du bien.</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Documents d'une pièce</p>
+                      <ul class="behavior-steps">
+                        <li class="behavior-step"><span class="behavior-outcome">Une pièce peut avoir des documents attachés, même flux d'upload que pour un bien.</span></li>
+                        <li class="behavior-step"><span class="behavior-outcome">Un document attaché à une pièce s'affiche uniquement dans cette pièce, pas sur la fiche du bien.</span></li>
+                        <li class="behavior-step"><span class="behavior-outcome">Pas de mécanisme de transfert après coup : le document prend le <code>roomId</code> s'il est uploadé depuis l'écran d'une pièce, le <code>propertyId</code> s'il est uploadé depuis la fiche du bien. Un seul des deux renseigné, jamais les deux.</span></li>
+                      </ul>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <strong class="spec-label">Cas limites qui comptent</strong>
+                  <div class="behavior-grid">
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Niveau déjà peuplé</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">Rouvrir "Ajouter des pièces" reste possible même si le niveau a déjà des pièces : elles sont affichées à titre indicatif (compteur par type) mais jamais modifiables ni supprimables depuis cette modale, pour éviter l'ambiguïté "laquelle supprimer" si on baisse une quantité (ex. repasser de 2 chambres à 1). Toute quantité saisie s'ajoute au total existant.</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Quantité minimum par type</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">Un type coché a toujours une quantité d'au moins 1 (jamais 0 pièce ajoutée pour un type coché). Décoché → quantité désactivée et réaffichée à "0".</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Nommage automatique et doublons</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">Numérotation et unicité du nom sur tout le bien, pas seulement sur le niveau (évite deux "Chambre 1" sur des niveaux différents). À la création via la modale, le nom généré compte les pièces existantes du même type sur tout le bien et incrémente, jamais de collision automatique. Au renommage manuel, le nom choisi est vérifié contre les autres pièces du même bien, bloqué s'il existe déjà.</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Suppression d'une pièce avec documents attachés</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">Cascade complète : supprimer la pièce supprime aussi tous ses documents. Avertissement affiché avant confirmation pour préciser cette conséquence, même principe que le message déjà en place à la suppression d'un bien (à mettre à jour pour mentionner aussi ses pièces et leurs documents, pas seulement ses documents directs).</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Champ niveau de la pièce</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">Jamais vide : renseigné à la création (le bloc de la modale où la pièce a été cochée) et modifiable ensuite depuis l'écran détail, via une liste déroulante générée à partir des niveaux du bien, hors-sol ET sous-sol (-2, -1, RDC, +1, +2...), jamais un champ libre.</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Bien avec des niveaux en sous-sol (cave, parking...)</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">Ajouté au périmètre v1.6.0 (13/08) : nouveau champ <code>numberOfBasementLevels</code> sur <code>Property</code>, plafonné à 1 (0 ou 1, jamais plus : un -2 est jugé suffisamment rare pour rester hors périmètre). 2e input dédié sur la Page de modification du bien, à côté du champ niveaux hors-sol existant depuis v1.0.0. La liste de niveaux générée pour la Modale et la Page de modification d'une pièce couvre les deux (ex. 1 niveau hors-sol + 1 sous-sol → -1, RDC, +1). Affichage sur la Page du bien : le niveau -1 s'affiche au-dessus du RDC quand il existe.</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Deuxième niveau de sous-sol (-2)</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">Hors périmètre volontaire : <code>numberOfBasementLevels</code> plafonné à 1 côté validation backend, pas seulement caché côté front. Le bouton "+ Ajouter un -1" de la Modale disparaît dès qu'un -1 existe, aucun moyen d'aller plus loin, y compris depuis la Page de modification du bien (input capé à 1 lui aussi, cohérence des deux entrées vers le même champ).</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Réduction du nombre de niveaux d'un bien avec des pièces existantes</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">Même règle sur les 2 champs (niveaux hors-sol <code>numberOfLevels</code> et niveaux sous-sol <code>numberOfBasementLevels</code>) : seule une <strong>diminution</strong> est bloquée (erreur de validation) tant que le bien a au moins une pièce, quel que soit son niveau (pas seulement les niveaux concernés par la diminution, même règle volontairement large que pour le champ hors-sol). Une augmentation reste toujours autorisée, même si le bien a des pièces : aucune conséquence sur les pièces existantes (ex. aménagement des combles en niveau supplémentaire, ou creusement d'une cave). Mécanisme plus fin pour la diminution (autoriser en gérant les pièces du niveau supprimé) reporté à plus tard.</span></li>
+                      </ul>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <strong class="spec-label">Hors périmètre</strong>
+                  <div class="behavior-grid">
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Fonctionnalité Projets elle-même</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">Seul le bouton grisé fait partie du scope v1.6, pas la création/gestion réelle des projets.</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Modifier ou supprimer une pièce depuis la modale d'ajout</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">La modale ne sert qu'à ajouter des pièces. Toute modification/suppression se fait depuis l'écran détail de la pièce.</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Modifier le nombre de niveaux du bien</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">Les niveaux sont déjà définis sur le bien, cette fonctionnalité ne les retouche pas.</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Personnaliser l'icône d'une pièce</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">Seule l'icône par défaut du type est prévue en v1.6. Upload/changement d'icône par pièce reporté, ajouté au backlog design.</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Transfert d'une pièce d'un bien à un autre</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">Pas de mécanisme de transfert : en cas d'erreur, on supprime la pièce dans le bien 1 et on la recrée dans le bien 2.</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Vue 3D / plan interactif des pièces</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">Sera une fonctionnalité dédiée.</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Vue groupée multi-biens (niveaux/pièces en un coup d'œil)</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">Idée notée le 19/07 (liste déroulante de biens avec niveaux/pièces en face dans le Dashboard). Reportée à une future refonte visuelle, pas cette v1.6.</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Champ libre pour le type "Autre"</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">Le type "Autre" est coché comme les autres, mais sans champ texte pour préciser de quoi il s'agit. En attendant un correctif futur pour ce champ libre, les pièces "Autre" se distinguent via leur nom (déjà modifiable).</span></li>
+                      </ul>
+                    </div>
+                    <div class="behavior-block">
+                      <p class="behavior-block-title"><span class="behavior-num"></span>Réduire les niveaux d'un bien qui a déjà des pièces</p>
+                      <ul class="behavior-steps behavior-steps-flat">
+                        <li class="behavior-step"><span class="behavior-outcome">Bloqué pour cette v1.6 (cf cas limite dédiée). Mécanisme pour autoriser cette réduction en gérant les pièces du niveau supprimé (reclassement, suppression ciblée...) reporté à plus tard.</span></li>
+                      </ul>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="template-section">
+              <p class="template-section-title">Types de pièces proposés <span class="status-tag neutre">À valider avec Gilles</span></p>
+              <div class="roomtype-group">
+                <p class="roomtype-group-title">Espaces courants</p>
+                <div class="roomtype-grid">
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 19v-6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v6"/><path d="M2 19v2M22 19v2"/><rect x="4" y="7" width="6" height="4" rx="1"/><path d="M2 15h20"/></svg><span>Chambre</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12V9a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/><path d="M3 12h18v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M5 18v2M19 18v2"/></svg><span>Salon</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="12" r="6"/><path d="M16 12h6"/></svg><span>Cuisine</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h15a3 3 0 0 1 3 3 6 6 0 0 1-6 6H9a6 6 0 0 1-6-6z"/><path d="M3 12V8a2 2 0 0 1 2-2"/><path d="M7 21v1M17 21v1"/></svg><span>Salle de bain</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="4" rx="2"/><path d="M9 10v2M12 10v3M15 10v2"/></svg><span>Salle d'eau</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="4" width="8" height="4" rx="1"/><path d="M7 11h10a1 1 0 0 1 1 1 6 7 0 0 1-6 7 6 7 0 0 1-6-7 1 1 0 0 1 1-1z"/></svg><span>WC</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="6" rx="1"/><path d="M12 9v3"/><path d="M3 18h18"/><path d="M3 18v3M21 18v3"/></svg><span>Bureau</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="10" height="18" rx="1"/><circle cx="14" cy="12" r="1"/><path d="M2 12h5"/><path d="M4.5 9.5 2 12l2.5 2.5"/></svg><span>Entrée</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21 9 3M19 21 15 3"/><path d="M12 8v9"/><path d="M9 14l3 3 3-3"/></svg><span>Couloir / dégagement</span></div>
+                </div>
+              </div>
+              <div class="roomtype-group">
+                <p class="roomtype-group-title">Annexes (surtout maison)</p>
+                <div class="roomtype-grid">
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 3l9 7"/><rect x="3" y="10" width="18" height="11" rx="1"/><path d="M3 14h18M3 18h18"/></svg><span>Garage</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20V16h4v-4h4v-4h4V4h6"/></svg><span>Cave</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13 12 4l9 9"/><path d="M6 13v8h12v-8"/><path d="M10 21v-5h4v5"/></svg><span>Grenier / combles</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="3"/><path d="M12 2v1.2M12 10.8V12M6.3 4.3l.9.9M17.7 4.3l-.9.9"/><path d="M3 21h18"/></svg><span>Terrasse</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V10M21 21V10M3 10h18"/><path d="M7 10v11M11 10v11M15 10v11"/></svg><span>Balcon</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21c0-8 4-14 12-16-2 8-6 12-12 16z"/><path d="M6 21c2-4 5-7 9-9"/></svg><span>Jardin</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="1.3"/><path d="M12 5.3v1.2"/><path d="M4 16l8-6 8 6"/><path d="M4 16h16"/></svg><span>Dressing</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 10h18M3 16h18"/><circle cx="7" cy="6.5" r="1.2"/><circle cx="11" cy="6.5" r="1.2"/></svg><span>Cellier</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 6h2"/><circle cx="12" cy="14" r="4.5"/></svg><span>Buanderie</span></div>
+                </div>
+              </div>
+              <div class="roomtype-group">
+                <p class="roomtype-group-title">Autre</p>
+                <div class="roomtype-grid">
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18" cy="12" r="1.3"/></svg><span>Autre</span></div>
+                  <div class="roomtype-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M21 12h-3M6 12H3M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1M18.4 18.4l-2.1-2.1M7.7 7.7 5.6 5.6"/></svg><span>Local technique</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="template-section" data-tour-id="tour-champs">
+              <p class="template-section-title template-section-title-fields">Couverture des champs</p>
+              <div class="field-coverage">
+                <p class="field-coverage-form-title is-page">Page du bien (PropertyPage) <span class="status-tag neutre">Existant</span></p>
+                <p class="field-coverage-meta"><strong>Modifications :</strong></p>
+                <ul class="field-coverage-meta-list">
+                  <li>Bouton "+ Ajouter une pièce" déjà existant mais grisé (section "Pièces & travaux", à côté de "+ Ajouter des travaux" et "Vue 3D du bien", tous les 3 en <code>FeatureComingSoonButton</code>) : activé, ouvre la modale. Affichage des pièces créées, groupées par niveau, ajouté sous la rangée de boutons. Première étape du parcours : c'est ici que tout commence.</li>
+                </ul>
+                <p class="field-coverage-subtitle">Tableau de couverture des champs <span class="field-coverage-legend"><span class="cov oui">✓</span> fait &nbsp; <span class="cov pending">✗</span> prévu, pas fait &nbsp; <span class="cov na">n/a</span> non prévu</span></p>
+                <p class="field-coverage-hint">Liste les champs touchés et permet de vérifier que le formulaire (front) permet bien ce que le schéma de validation (back) impose ou autorise.</p>
+                <table>
+                  <thead>
+                    <tr>
+                      <th class="field-num">#</th>
+                      <th>Champ</th>
+                      <th>Requis
+                        <span class="th-info-icon">i</span>
+                        <span class="th-info-popover">Le schéma de validation backend (Zod/Prisma) exige-t-il que ce champ soit rempli pour accepter la requête ?</span>
+                      </th>
+                      <th>Création
+                        <span class="th-info-icon">i</span>
+                        <span class="th-info-popover">Le champ est-il bien complété à la création, que ce soit via l'input du formulaire ou automatiquement ?</span>
+                      </th>
+                      <th>Édition
+                        <span class="th-info-icon">i</span>
+                        <span class="th-info-popover">Existe-t-il un moyen (input, action) de modifier ce champ sur un élément déjà existant ?</span>
+                      </th>
+                      <th>Effaçable
+                        <span class="th-info-icon">i</span>
+                        <span class="th-info-popover">Vider ce champ et sauvegarder le met-il bien à null en base, ou est-il silencieusement ignoré (undefined) ?</span>
+                      </th>
+                      <th>Affiché
+                        <span class="th-info-icon">i</span>
+                        <span class="th-info-popover">La valeur est-elle montrée quelque part à l'écran une fois renseignée (liste, fiche, carte...), formulaire ou pas ?</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="field-num">1</td>
+                      <td>pièces <span class="template-placeholder">(liste, lecture seule)</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov na" title="Rien à créer ici, la création se fait dans la modale (Formulaire 2 ci-dessous)">n/a</span></td>
+                      <td><span class="cov na" title="Rien à éditer ici, l'édition se fait sur la page de modification d'une pièce (Formulaire 4 ci-dessous)">n/a</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov oui" title="Groupées par niveau, chacune cliquable vers son écran détail">✓</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="field-coverage-divider"></div>
+
+              <div class="field-coverage">
+                <p class="field-coverage-form-title">Modale d'ajout de pièces <span class="status-tag neutre">À créer</span></p>
+                <p class="field-coverage-meta"><strong>Modifications :</strong></p>
+                <ul class="field-coverage-meta-list">
+                  <li>Nouveau composant, grille de tuiles de types par niveau + quantité, crée plusieurs pièces (<code>Room</code>) en une fois. Ouverte depuis le bouton de l'Écran 1 ci-dessus. Boutons "+ Ajouter un niveau" (haut et bas de la modale) : appellent aussi <code>PUT /api/properties/:id</code> (endpoint 2) sans fermer la modale, cf Call sites.</li>
+                </ul>
+                <p class="field-coverage-subtitle">Tableau de couverture des champs</p>
+                <table>
+                  <thead>
+                    <tr>
+                      <th class="field-num">#</th>
+                      <th>Champ</th>
+                      <th>Requis</th>
+                      <th>Création</th>
+                      <th>Édition</th>
+                      <th>Effaçable</th>
+                      <th>Affiché</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="field-num">1</td>
+                      <td>type <span class="template-placeholder">(roomType)</span></td>
+                      <td><span class="req oui">Oui</span></td>
+                      <td><span class="cov oui" title="Coché dans la modale">✓</span></td>
+                      <td><span class="cov na" title="Pas dans cette modale, voir Formulaire 4 ci-dessous">n/a</span></td>
+                      <td><span class="cov na" title="Pas dans cette modale">n/a</span></td>
+                      <td><span class="cov oui" title="Icône + nom du type sur la fiche du bien et l'écran détail de la pièce">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">2</td>
+                      <td>name</td>
+                      <td><span class="req oui">Oui</span></td>
+                      <td><span class="cov oui" title="Généré automatiquement (ex. « Chambre 1 »), pas un input libre dans cette modale">✓</span></td>
+                      <td><span class="cov na" title="Pas dans cette modale, voir Formulaire 4 ci-dessous">n/a</span></td>
+                      <td><span class="cov na" title="Pas dans cette modale">n/a</span></td>
+                      <td><span class="cov oui" title="Affiché sur la fiche du bien et l'écran détail">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">3</td>
+                      <td>level <span class="template-placeholder">(niveau)</span></td>
+                      <td><span class="req oui">Oui</span></td>
+                      <td><span class="cov oui" title="Implicite : déterminé par le bloc de la modale dans lequel le type est coché">✓</span></td>
+                      <td><span class="cov na" title="Pas dans cette modale, voir Formulaire 4 ci-dessous">n/a</span></td>
+                      <td><span class="cov na" title="Pas dans cette modale">n/a</span></td>
+                      <td><span class="cov oui" title="Pièces organisées par niveau sur la fiche du bien">✓</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <p class="field-coverage-subtitle">Effets de bord backend <span class="field-coverage-hint">Conséquences en back de chaque champ modifié, référencé par son numéro dans le tableau ci-dessus.</span></p>
+                <table class="side-effects-table">
+                  <thead>
+                    <tr>
+                      <th class="field-num">Champ n°</th>
+                      <th>Table / modèle</th>
+                      <th>Action</th>
+                      <th>Valeurs</th>
+                      <th>Vérifié</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="field-num">1, 2, 3</td>
+                      <td>Room</td>
+                      <td>Create <span class="template-placeholder">(plusieurs lignes, une transaction)</span></td>
+                      <td>
+                        <details class="values-drop" name="side-effects-1.6.0-f1">
+                          <summary><span class="checklist-status pending" title="Valeurs pas encore déterminées"></span><span>3 champs</span></summary>
+                          <div class="values-drop-body">
+                            <div>type = type coché dans le bloc du niveau</div>
+                            <div>name = généré (type + numéro suivant disponible sur tout le bien)</div>
+                            <div>level = niveau du bloc de la modale</div>
+                          </div>
+                        </details>
+                      </td>
+                      <td><span class="cov oui" title="Vérifié réellement en base (pas supposé), une fois codé">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">n/a</td>
+                      <td>Room <span class="template-placeholder">(migration schéma existant)</span></td>
+                      <td>Alter</td>
+                      <td>
+                        <details class="values-drop" name="side-effects-1.6.0-f1">
+                          <summary><span class="checklist-status pending" title="Valeurs pas encore déterminées"></span><span>2 changements</span></summary>
+                          <div class="values-drop-body">
+                            <div>Ajout du champ level (absent du schéma actuel)</div>
+                            <div>surface/floorFinition/wallFinition/ceilingFinition passent de requis à optionnels (non collectés par cette modale, cf champs 5-8 de la Page d'une pièce)</div>
+                          </div>
+                        </details>
+                      </td>
+                      <td><span class="cov oui" title="Vérifié réellement en base (pas supposé), une fois codé">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">1</td>
+                      <td>roomType <span class="template-placeholder">(enum existant)</span></td>
+                      <td>Alter</td>
+                      <td>
+                        <details class="values-drop" name="side-effects-1.6.0-f1">
+                          <summary><span class="checklist-status pending" title="Valeurs pas encore déterminées"></span><span>1 changement</span></summary>
+                          <div class="values-drop-body">
+                            <div>Enum étendu de 3 valeurs (BEDROOM, KITCHEN, LIVING_ROOM) à la liste complète des types proposés, en gardant une valeur Prisma en dur (cohérent avec les 5 autres enums déjà en place sur ce projet : houseType, projectStatus, taskStatus, documentType, transmissionStatus), pas de table de référence en base</div>
+                          </div>
+                        </details>
+                      </td>
+                      <td><span class="cov oui" title="Vérifié réellement en base (pas supposé), une fois codé">✓</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="field-coverage-divider"></div>
+
+              <div class="field-coverage">
+                <p class="field-coverage-form-title is-page">Page d'une pièce (RoomPage) <span class="status-tag neutre">À créer</span></p>
+                <p class="field-coverage-meta"><strong>Modifications :</strong></p>
+                <ul class="field-coverage-meta-list">
+                  <li>Nouvel écran, affiche les infos de la pièce (type, nom, niveau), ses documents attachés, bouton "Ajouter un projet" grisé, action Modifier (renvoie vers le Formulaire 4 ci-dessous). Pas de bouton Supprimer ici, cf Formulaire 4. Champs déjà présents en base (surface, finitions sol/mur/plafond) affichés en grisé avec bulle info, même traitement que le bouton "Ajouter un projet".</li>
+                </ul>
+                <p class="field-coverage-subtitle">Tableau de couverture des champs</p>
+                <table>
+                  <thead>
+                    <tr>
+                      <th class="field-num">#</th>
+                      <th>Champ</th>
+                      <th>Requis</th>
+                      <th>Création</th>
+                      <th>Édition</th>
+                      <th>Effaçable</th>
+                      <th>Affiché</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="field-num">1</td>
+                      <td>type <span class="template-placeholder">(roomType)</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov na" title="Voir Formulaire 2 ci-dessus">n/a</span></td>
+                      <td><span class="cov na" title="Voir Formulaire 4 ci-dessous">n/a</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov oui" title="Icône + nom du type">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">2</td>
+                      <td>name</td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov na" title="Voir Formulaire 2 ci-dessus">n/a</span></td>
+                      <td><span class="cov na" title="Voir Formulaire 4 ci-dessous">n/a</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov oui">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">3</td>
+                      <td>level <span class="template-placeholder">(niveau)</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov na" title="Voir Formulaire 2 ci-dessus">n/a</span></td>
+                      <td><span class="cov na" title="Voir Formulaire 4 ci-dessous">n/a</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov oui">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">4</td>
+                      <td>documents <span class="template-placeholder">(liste)</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov oui" title="Documents attachés à cette pièce, visibles uniquement ici">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">5</td>
+                      <td>surface <span class="template-placeholder">(déjà en base, ajouté au périmètre v1.6.0 le 13/08)</span></td>
+                      <td><span class="req adecider" title="Décision produit explicite avec Gilles : Non, pas de contrainte de saisie forcée">Non</span></td>
+                      <td><span class="cov na" title="Pas collecté à la création (Formulaire 2), simple valeur numérique, éditable seulement après">n/a</span></td>
+                      <td><span class="cov oui" title="Input numérique sur le Formulaire 4 (Page de modification d'une pièce)">✓</span></td>
+                      <td><span class="cov adecider">?</span></td>
+                      <td><span class="cov oui" title="Valeur réelle affichée dans la grille d'infos, plus de bulle « à venir »">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">6</td>
+                      <td>floorFinition <span class="template-placeholder">(finition sol, déjà en base)</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov pending" title="Affiché grisé + bulle info « à venir », même traitement que le bouton Ajouter un projet">✗</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">7</td>
+                      <td>wallFinition <span class="template-placeholder">(finition mur, déjà en base)</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov pending" title="Affiché grisé + bulle info « à venir », même traitement que le bouton Ajouter un projet">✗</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">8</td>
+                      <td>ceilingFinition <span class="template-placeholder">(finition plafond, déjà en base)</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov pending" title="Affiché grisé + bulle info « à venir », même traitement que le bouton Ajouter un projet">✗</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p class="field-coverage-hint template-placeholder">Champs 5-8 déjà présents en base (schéma initial, jamais câblés). Champ 5 (surface) ajouté au périmètre v1.6.0 (13/08), éditable depuis le Formulaire 4. Champs 6-8 (finitions) restent affichés grisés, hors périmètre v1.6.0 (cf backlog design, besoin d'un enum à valider avant de coder). Les 4 nécessitent une migration pour devenir optionnels avant que le Formulaire 2 puisse créer des pièces (actuellement requis/non-null), cf Effets de bord du Formulaire 2 ci-dessus.</p>
+
+                <p class="field-coverage-subtitle">Effets de bord backend <span class="field-coverage-hint">Conséquences en back de chaque champ modifié, référencé par son numéro dans le tableau ci-dessus.</span></p>
+                <table class="side-effects-table">
+                  <thead>
+                    <tr>
+                      <th class="field-num">Champ n°</th>
+                      <th>Table / modèle</th>
+                      <th>Action</th>
+                      <th>Valeurs</th>
+                      <th>Vérifié</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="field-num">n/a</td>
+                      <td>Document.roomId <span class="template-placeholder">(déjà en base, jamais utilisé)</span></td>
+                      <td>Create</td>
+                      <td>
+                        <details class="values-drop" name="side-effects-1.6.0-f2">
+                          <summary><span class="checklist-status pending" title="Valeurs pas encore déterminées"></span><span>1 champ</span></summary>
+                          <div class="values-drop-body">
+                            <div>roomId = déterminé par le contexte d'upload (écran pièce ou fiche bien), jamais renseigné en même temps que propertyId. Colonne <code>String?</code> déjà présente sur Document (avec propertyId et projectId, tous nullable), aucune migration nécessaire ici, juste faire passer la valeur dans le controller/service qui l'ignorent aujourd'hui</div>
+                          </div>
+                        </details>
+                      </td>
+                      <td><span class="cov oui" title="Vérifié réellement en base (pas supposé), une fois codé">✓</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p class="field-coverage-hint template-placeholder">Question ouverte résolue par ce split (13/08) : l'upload de document reste en ligne d'Effets de bord ici, pas de card "Formulaire" dédiée, réutilise le formulaire d'upload existant, action déclenchée depuis cet écran d'affichage et non depuis le Formulaire 4 ci-dessous.</p>
+              </div>
+              <div class="field-coverage-divider"></div>
+
+              <div class="field-coverage">
+                <p class="field-coverage-form-title">Page de modification d'une pièce (RoomFormPage) <span class="status-tag neutre">À créer</span></p>
+                <p class="field-coverage-meta"><strong>Modifications :</strong></p>
+                <ul class="field-coverage-meta-list">
+                  <li>Nouvelle route dédiée, même logique que <code>PropertyFormPage</code> : modification du nom, du niveau, du type (via modale de sélection) et de la surface d'une pièce existante. Bouton Supprimer également ici (pas sur l'Écran 3), avec confirmation et cascade sur les documents attachés.</li>
+                </ul>
+                <p class="field-coverage-subtitle">Tableau de couverture des champs</p>
+                <table>
+                  <thead>
+                    <tr>
+                      <th class="field-num">#</th>
+                      <th>Champ</th>
+                      <th>Requis</th>
+                      <th>Création</th>
+                      <th>Édition</th>
+                      <th>Effaçable</th>
+                      <th>Affiché</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="field-num">1</td>
+                      <td>name <span class="template-placeholder">(limite 50 caractères, cf champ déjà en base)</span></td>
+                      <td><span class="req oui">Oui</span></td>
+                      <td><span class="cov na" title="Voir Formulaire 2 ci-dessus">n/a</span></td>
+                      <td><span class="cov oui" title="Limite conservée à 50 caractères (VarChar(50) déjà en base, cohérent avec Property.name). Contrairement au validateur Property existant, celui-ci ajoute .max(50) côté Zod pour retourner une vraie erreur de validation plutôt qu'une erreur DB">✓</span></td>
+                      <td><span class="cov non" title="Jamais vide, cf cas limite « Nommage automatique et doublons »">Non</span></td>
+                      <td><span class="cov oui" title="Affiché sur l'écran détail, cf Écran 3 ci-dessus">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">2</td>
+                      <td>level <span class="template-placeholder">(niveau)</span></td>
+                      <td><span class="req oui">Oui</span></td>
+                      <td><span class="cov na" title="Voir Formulaire 2 ci-dessus">n/a</span></td>
+                      <td><span class="cov oui" title="Liste déroulante générée depuis les niveaux du bien (RDC, +1, +2...), jamais un champ libre">✓</span></td>
+                      <td><span class="cov non" title="Jamais vide, cf cas limite « Champ niveau de la pièce »">Non</span></td>
+                      <td><span class="cov oui" title="Affiché sur l'écran détail, cf Écran 3 ci-dessus">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">3</td>
+                      <td>type <span class="template-placeholder">(roomType)</span></td>
+                      <td><span class="req oui">Oui</span></td>
+                      <td><span class="cov na" title="Voir Formulaire 2 ci-dessus">n/a</span></td>
+                      <td><span class="cov oui" title="Modifiable via une modale de sélection, réutilise la grille icône + nom déjà construite pour le Formulaire 2">✓</span></td>
+                      <td><span class="cov non" title="Jamais de pièce sans type. Si le type réel est inconnu, choisir « Autre »">Non</span></td>
+                      <td><span class="cov oui" title="Affiché sur l'écran détail, cf Écran 3 ci-dessus">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">4</td>
+                      <td>surface <span class="template-placeholder">(ajouté au périmètre v1.6.0 le 13/08)</span></td>
+                      <td><span class="req adecider" title="Décision produit explicite : Non, pas de contrainte de saisie forcée">Non</span></td>
+                      <td><span class="cov na" title="Voir Formulaire 2 ci-dessus">n/a</span></td>
+                      <td><span class="cov oui" title="Input numérique">✓</span></td>
+                      <td><span class="cov adecider">?</span></td>
+                      <td><span class="cov oui" title="Affiché sur l'écran détail, cf Écran 3 ci-dessus">✓</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <p class="field-coverage-subtitle">Effets de bord backend <span class="field-coverage-hint">Conséquences en back de chaque champ modifié, référencé par son numéro dans le tableau ci-dessus.</span></p>
+                <table class="side-effects-table">
+                  <thead>
+                    <tr>
+                      <th class="field-num">Champ n°</th>
+                      <th>Table / modèle</th>
+                      <th>Action</th>
+                      <th>Valeurs</th>
+                      <th>Vérifié</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="field-num">1, 2, 4</td>
+                      <td>Room</td>
+                      <td>Update</td>
+                      <td>
+                        <details class="values-drop" name="side-effects-1.6.0-f3">
+                          <summary><span class="checklist-status pending" title="Valeurs pas encore déterminées"></span><span>3 champs</span></summary>
+                          <div class="values-drop-body">
+                            <div>name = valeur saisie, vérifiée unique sur tout le bien</div>
+                            <div>level = valeur choisie dans la liste déroulante</div>
+                            <div>surface = valeur numérique saisie, aucune contrainte de validation particulière</div>
+                          </div>
+                        </details>
+                      </td>
+                      <td><span class="cov oui" title="Vérifié réellement en base (pas supposé), une fois codé">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">n/a</td>
+                      <td>Room → Document (cascade)</td>
+                      <td>Delete</td>
+                      <td>
+                        <details class="values-drop" name="side-effects-1.6.0-f3">
+                          <summary><span class="checklist-status pending" title="Valeurs pas encore déterminées"></span><span>1 champ</span></summary>
+                          <div class="values-drop-body">
+                            <div>Suppression d'une pièce (déclenchée depuis ce formulaire) → suppression en cascade de tous ses documents (<code>Document.roomId</code>)</div>
+                          </div>
+                        </details>
+                      </td>
+                      <td><span class="cov oui" title="Vérifié réellement en base (pas supposé), une fois codé">✓</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="field-coverage-divider"></div>
+
+              <div class="field-coverage">
+                <p class="field-coverage-form-title">Page de modification du bien (PropertyFormPage) <span class="status-tag neutre">Existant</span></p>
+                <p class="field-coverage-meta"><strong>Modifications :</strong></p>
+                <ul class="field-coverage-meta-list">
+                  <li>Le champ niveaux, déjà en place, devient une dépendance consommée par les pièces (génère les choix de niveau de la modale et de l'écran détail).</li>
+                  <li>Nouveau champ <code>numberOfBasementLevels</code>, 2e input dédié (niveaux en sous-sol), plafonné à 1.</li>
+                </ul>
+                <p class="field-coverage-subtitle">Tableau de couverture des champs</p>
+                <table>
+                  <thead>
+                    <tr>
+                      <th class="field-num">#</th>
+                      <th>Champ</th>
+                      <th>Requis</th>
+                      <th>Création</th>
+                      <th>Édition</th>
+                      <th>Effaçable</th>
+                      <th>Affiché</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="field-num">1</td>
+                      <td>numberOfLevels <span class="template-placeholder">(niveaux hors-sol)</span></td>
+                      <td><span class="cov oui" title="Déjà en place depuis v1.0.0">✓</span></td>
+                      <td><span class="cov oui" title="Déjà en place depuis v1.0.0">✓</span></td>
+                      <td><span class="cov oui" title="Déjà en place depuis v1.0.0, nouvelle contrainte : bloqué uniquement si la valeur diminue et que le bien a des pièces, l'augmentation reste toujours libre, cf cas limite « Réduction du nombre de niveaux d'un bien avec des pièces existantes ». Éditable aussi depuis la Modale (Formulaire 2, bouton « + Ajouter le niveau +N »), pas seulement ici.">✓</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov oui" title="Déjà en place depuis v1.0.0">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">2</td>
+                      <td>numberOfBasementLevels <span class="template-placeholder">(nouveau champ, niveaux sous-sol)</span></td>
+                      <td><span class="req adecider" title="Défaut 0, jamais explicitement requis à la création d'un bien">Non</span></td>
+                      <td><span class="cov oui" title="Valeur par défaut 0">✓</span></td>
+                      <td><span class="cov oui" title="Toggle 2 choix (« Aucun » / « 1 niveau (-1) »), pas un input numérique : binaire par nature, jamais plus de 1. Même règle de blocage à la diminution que numberOfLevels si le bien a des pièces. Éditable aussi depuis la Modale (Formulaire 2, bouton « + Ajouter un -1 », qui disparaît une fois à 1), pas seulement ici.">✓</span></td>
+                      <td><span class="cov na">n/a</span></td>
+                      <td><span class="cov oui" title="Niveau -1 affiché au-dessus du RDC sur la Page du bien (Écran 1) quand présent">✓</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <p class="field-coverage-subtitle">Effets de bord backend <span class="field-coverage-hint">Conséquences en back de chaque champ modifié, référencé par son numéro dans le tableau ci-dessus.</span></p>
+                <table class="side-effects-table">
+                  <thead>
+                    <tr>
+                      <th class="field-num">Champ n°</th>
+                      <th>Table / modèle</th>
+                      <th>Action</th>
+                      <th>Valeurs</th>
+                      <th>Vérifié</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="field-num">1</td>
+                      <td>Property.numberOfLevels</td>
+                      <td>Update bloqué si diminution (validation)</td>
+                      <td>
+                        <details class="values-drop" name="side-effects-1.6.0-f5">
+                          <summary><span class="checklist-status pending" title="Valeurs pas encore déterminées"></span><span>1 champ</span></summary>
+                          <div class="values-drop-body">
+                            <div>Refuse la requête uniquement si la nouvelle valeur est inférieure à l'actuelle et que le bien a au moins une pièce (<code>Room</code>), quel que soit son niveau</div>
+                            <div>Augmentation toujours autorisée, même si le bien a des pièces (aucune conséquence sur les pièces existantes, ex. aménagement des combles en niveau supplémentaire)</div>
+                          </div>
+                        </details>
+                      </td>
+                      <td><span class="cov oui" title="Vérifié réellement en base (pas supposé), une fois codé">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">2</td>
+                      <td>Property.numberOfBasementLevels <span class="template-placeholder">(nouveau champ, migration)</span></td>
+                      <td>Update bloqué si diminution ou si &gt; 1 (validation)</td>
+                      <td>
+                        <details class="values-drop" name="side-effects-1.6.0-f5">
+                          <summary><span class="checklist-status pending" title="Valeurs pas encore déterminées"></span><span>1 champ</span></summary>
+                          <div class="values-drop-body">
+                            <div>Même règle de blocage à la diminution que numberOfLevels si le bien a au moins une pièce</div>
+                            <div>Validation Zod plafonne explicitement à 1 (max(1)), refuse toute valeur supérieure quel que soit l'état des pièces : ce plafond n'est pas juste une absence de bouton côté front, il est aussi vérifié côté back</div>
+                          </div>
+                        </details>
+                      </td>
+                      <td><span class="cov oui" title="Vérifié réellement en base (pas supposé), une fois codé">✓</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="template-section">
+              <p class="template-section-title template-section-title-callsites">Call sites frontend par endpoint</p>
+              <div class="field-coverage field-coverage-flat">
+                <p class="field-coverage-title field-coverage-title-callsites">Endpoints touchés <span class="field-coverage-hint">Quels contrôleurs déjà existants cette fonctionnalité modifie.</span></p>
+                <table>
+                  <thead>
+                    <tr>
+                      <th class="field-num">#</th>
+                      <th>Endpoint</th>
+                      <th>Contrôleur</th>
+                      <th>Ce qui change dans le contrat</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="field-num">1</td>
+                      <td>GET /api/properties/:id</td>
+                      <td>readOnePropertyController</td>
+                      <td>Réponse doit inclure les pièces (<code>include: { room: true }</code>), actuellement <code>include: { profile: true }</code> seul, pour que la Page du bien (Écran 1) affiche la liste des pièces.</td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">2</td>
+                      <td>PUT /api/properties/:id</td>
+                      <td>updatePropertyController</td>
+                      <td>Nouvelle validation sur <code>numberOfLevels</code> (le vrai nom du champ, pas <code>levels</code>) : refuse la requête si la valeur diminue et que le bien a des pièces, augmentation toujours libre.</td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">3</td>
+                      <td>POST /api/documents</td>
+                      <td>createDocumentController</td>
+                      <td>Doit désormais faire passer <code>roomId</code> en plus de <code>propertyId</code> (exactement un des deux requis). La colonne existe déjà sur <code>Document</code> (<code>roomId String?</code>, avec <code>propertyId</code> et <code>projectId</code>), mais le controller et <code>createDocument()</code> (service) l'ignorent aujourd'hui : pas de migration nécessaire, juste faire circuler la valeur.</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p class="field-coverage-hint template-placeholder">Pas listé ici, à trancher avec toi : récupérer les documents d'une pièce (GET). La route existante <code>GET /api/documents/:propertyId</code> a un paramètre nommé explicitement <code>propertyId</code>, donc soit on la généralise (paramètre renommé, accepte les deux), soit on ajoute une route dédiée <code>GET /api/documents/room/:roomId</code>. Pas un endpoint "touché" au sens strict tant que ce choix n'est pas fait, à traiter dans la Todo Back.</p>
+              </div>
+
+              <div class="field-coverage field-coverage-flat">
+                <p class="field-coverage-title field-coverage-title-callsites">Call sites frontend <span class="info-anchor"><span class="th-info-icon">i</span><span class="th-info-popover">Un call site, c'est un endroit du code qui appelle une fonction ou un endpoint donné. Ex. chaque composant/hook qui appelle <code>updateProperty()</code> est un call site de cette fonction.</span></span></p>
+                <p class="field-coverage-hint">Grep<span class="info-anchor"><span class="th-info-icon">i</span><span class="th-info-popover">Commande qui cherche un texte (nom de fonction, URL...) dans tous les fichiers d'un dossier. Utilisée ici pour retrouver tous les call sites d'un endpoint sans les oublier.</span></span> sur l'URL ou le nom du service/hook : tous les endroits du frontend qui appellent déjà cet endpoint aujourd'hui, pas seulement ceux visés par la fonctionnalité en cours. Un call site par ligne, référencé par le numéro d'endpoint du tableau ci-dessus. "Impacté" et "Fonctionnel" passent à ✓/✗ une fois réellement vérifiés, "Fix appliqué" reste vide tant qu'aucune correction n'a été nécessaire ou faite.</p>
+                <table>
+                  <thead>
+                    <tr>
+                      <th class="field-num">Endpoint n°</th>
+                      <th>Chaîne (composant ← hook ← service)</th>
+                      <th>Impacté</th>
+                      <th>Fonctionnel</th>
+                      <th>Fix appliqué</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="field-num">1</td>
+                      <td>PropertyPage.tsx ← useGetPropertyById ← getPropertyById()</td>
+                      <td><span class="cov oui" title="Vérifié dans le code : IProperty (types/property.ts) n'a pas de champ room, et PropertyPage.tsx n'a aucune section pièces aujourd'hui (seulement Documents). Tout est à ajouter.">✓</span></td>
+                      <td><span class="cov adecider" title="Vérifié réellement (test manuel ou automatisé), pas supposé">?</span></td>
+                      <td class="template-placeholder">[description courte + lien PR une fois corrigé]</td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">1</td>
+                      <td>PropertyFormPage.tsx ← useGetPropertyById ← getPropertyById()</td>
+                      <td><span class="cov oui" title="Vérifié dans le code : ne casse rien (reset(property) ignore les champs en trop), mais property.room devient nécessaire pour le pré-check niveaux ci-dessous, absent de IProperty aujourd'hui.">✓</span></td>
+                      <td><span class="cov adecider" title="Vérifié réellement (test manuel ou automatisé), pas supposé">?</span></td>
+                      <td class="template-placeholder">[description courte + lien PR une fois corrigé]</td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">2</td>
+                      <td>PropertyFormPage.tsx ← useUpdateProperty ← updateProperty()<span class="template-placeholder"><br>Pré-check UX à ajouter : comparer la valeur saisie à <code>property.numberOfLevels</code> (déjà dans le cache TanStack Query de <code>useGetPropertyById</code>, déjà appelé sur cette page) et <code>property.room.length</code> (bientôt inclus dans la réponse, cf endpoint 1) avant soumission, erreur affichée immédiatement sans aller-retour serveur. Pas de nouveau store Zustand : la donnée est déjà en cache, dupliquer la source de vérité créerait un désync possible. Le back reste le garde-fou final, ce pré-check n'est qu'une amélioration UX.</span></td>
+                      <td><span class="cov oui" title="Bug réel confirmé dans le code actuel, pas hypothétique : l'appel updateProperty(...) n'a AUCUN onError. Un rejet de validation serait aujourd'hui totalement silencieux (isPending retombe à false, aucun message affiché).">✓</span></td>
+                      <td><span class="cov adecider" title="Vérifié réellement (test manuel ou automatisé), pas supposé">?</span></td>
+                      <td class="template-placeholder">[description courte + lien PR une fois corrigé]</td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">2</td>
+                      <td>Modale d'ajout (Formulaire 2) ← nouveaux boutons « + Ajouter le niveau +N » / « + Ajouter un -1 » ← updateProperty()<span class="template-placeholder"><br>Nouveau call site (13/08), pas un call site existant à auditer : la Modale appelle désormais aussi cet endpoint pour incrémenter numberOfLevels/numberOfBasementLevels sans se fermer, puis ajoute le bloc de niveau correspondant. Gérer l'erreur si le PUT échoue (peu probable ici, l'augmentation n'est jamais bloquée), et rafraîchir la liste de niveaux affichée sans perdre les tuiles déjà cochées sur les autres niveaux.</span></td>
+                      <td><span class="cov adecider" title="Nouveau call site introduit par cette version, pas un existant impacté">n/a</span></td>
+                      <td><span class="cov adecider" title="Vérifié réellement (test manuel ou automatisé), pas supposé">?</span></td>
+                      <td class="template-placeholder">[description courte + lien PR une fois corrigé]</td>
+                    </tr>
+                    <tr>
+                      <td class="field-num">3</td>
+                      <td>UploadDocumentForm.tsx ← useUploadDocument ← uploadDocument()</td>
+                      <td><span class="cov oui" title="Vérifié dans le code : IUploadDocumentFormProps n'a que propertyId: string, obligatoire et seul. Aucune notion de roomId, à généraliser (prop exclusive propertyId/roomId).">✓</span></td>
+                      <td><span class="cov adecider" title="Vérifié réellement (test manuel ou automatisé), pas supposé">?</span></td>
+                      <td class="template-placeholder">[description courte + lien PR une fois corrigé]</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="template-section" data-tour-id="tour-mockup">
+              <p class="template-section-title template-section-title-mockup">Mockup</p>
+
+              <div class="feature-visual">
+                <div class="visual-topbar">
+                  <div class="visual-tab-groups">
+                    <div class="visual-tab-group">
+                      <span class="visual-tab-group-label">Fiche du bien</span>
+                      <div class="visual-tabs">
+                        <button class="visual-tab active validated" data-template="bien-avant-pieces" data-note="Validé le 13/08. État actuel, inchangé sauf le bouton : &quot;+ Ajouter une pièce&quot; existe déjà aujourd'hui dans PropertyPage.tsx (FeatureComingSoonButton, section &quot;Pièces &amp; travaux&quot;), grisé. v1.6.0 l'active (passe en bleu), les 2 autres (&quot;+ Ajouter des travaux&quot;, &quot;Vue 3D du bien&quot;) restent grisés. Reproduit le vrai code, pas inventé.">Avant ajout</button>
+                        <button class="visual-tab validated" data-template="bien-apres-pieces" data-note="Validé le 13/08. Pièces créées affichées groupées par niveau (RDC, +1, +2..., et -1, -2... si sous-sol), chacune cliquable vers son écran détail. Rangée de boutons déplacée après le listing, pas avant.">Après ajout</button>
+                      </div>
+                    </div>
+                    <div class="visual-tab-group">
+                      <span class="visual-tab-group-label">Modale d'ajout</span>
+                      <div class="visual-tabs">
+                        <button class="visual-tab validated" data-template="modale-ajout-pieces-vide" data-note="Validé le 13/08. Refonte du 13/08 : grille de tuiles (icône + nom, même composant que la référence Types de pièces proposés) au lieu d'une liste de cases à cocher, tous les types disponibles à tous les niveaux (une cuisine peut être à l'étage). Groupes « Espaces courants » ouvert par défaut, « Annexes »/« Autre » repliés, dépliables. Clic sur une tuile → surlignage + contrôle de quantité (bouton −, input centré modifiable au clavier, bouton +). Bouton Valider grisé tant qu'aucune tuile n'est cochée. Boutons « + Ajouter le niveau +N » (bas, toujours proposé) et « + Ajouter un -1 » (haut, disparaît une fois un -1 créé, jamais de -2) : incrémentent le bien sans fermer la modale. Tuiles, pliage et ces 2 boutons réellement cliquables dans ce mockup.">Niveau vide</button>
+                        <button class="visual-tab validated" data-template="modale-ajout-pieces-peuple" data-note="Validé le 13/08. Pièces déjà créées affichées via un badge numéroté sur la tuile (ex. Chambre avec badge « 2 »), en lecture seule, jamais modifiable ni supprimable depuis cette modale. Toute quantité cochée s'ajoute au total existant. Illustre aussi qu'un type déjà présent au RDC (Cuisine) peut être recoché à un autre niveau (Niveau 1). Boutons « + Ajouter un niveau » toujours présents même une fois des pièces créées.">Niveau déjà peuplé</button>
+                      </div>
+                    </div>
+                    <div class="visual-tab-group">
+                      <span class="visual-tab-group-label">Écran d'une pièce</span>
+                      <div class="visual-tabs">
+                        <button class="visual-tab validated" data-template="page-piece" data-note="Validé le 13/08. Écran neuf (RoomPage), pur affichage : grille d'infos (type, niveau, surface réels ; finitions sol/mur/plafond grisées, badge « i » avec tooltip « En développement », hors périmètre v1.6.0 cf backlog design), documents propres à cette pièce (distincts de ceux du bien), bouton &quot;Ajouter un projet&quot; grisé avec le même tooltip. Aucune modification/suppression ici, renvoyées vers l'onglet Modification ci-après.">Détail</button>
+                        <button class="visual-tab validated" data-template="page-modification-piece" data-note="Validé le 13/08. Écran neuf (RoomFormPage), même logique que PropertyFormPage : modification nom/niveau/type/surface (input avec unité m², suffixe non éditable), bouton Supprimer ici (pas sur l'écran détail), avec confirmation avant cascade sur les documents attachés. Le sélecteur de type ouvre la modale de sélection ci-après.">Modification</button>
+                        <button class="visual-tab validated" data-template="modale-selection-type" data-note="Validé le 13/08. Modale de sélection du type, ouverte depuis le Formulaire 4. Réutilise la même grille de tuiles que la Modale d'ajout (Formulaire 2), mais sélection unique (pas de quantité) : une tuile choisie remplace le type actuel, jamais un ajout. Tuile actuelle déjà surlignée à l'ouverture (Chambre). Bouton Valider actif dès l'ouverture (un type est toujours déjà sélectionné), grisé seulement si aucune tuile n'est cochée (cas normalement jamais atteint, la sélection initiale empêche ça, gardé par cohérence avec le reste du système).">Sélection type</button>
+                      </div>
+                    </div>
+                    <div class="visual-tab-group">
+                      <span class="visual-tab-group-label">Modification du bien</span>
+                      <div class="visual-tabs">
+                        <button class="visual-tab validated" data-template="page-modification-bien" data-note="Validé le 13/08. Formulaire 5 (PropertyFormPage, existant depuis v1.0.0), oublié dans le premier passage de mockups du 13/08, ajouté après coup. Nouveau champ « Niveaux en sous-sol » : toggle 2 boutons (« Aucun » / « 1 niveau (-1) »), pas un input numérique, binaire par nature (jamais de -2). Reste du formulaire inchangé (nom, adresse, type, surface, suppression).">Niveaux</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="visual-toggles">
+                    <div class="visual-toggle" data-group="viewport">
+                      <button class="active" data-value="laptop">Laptop</button>
+                      <button data-value="mobile">Mobile</button>
+                    </div>
+                    <div class="visual-toggle" data-group="zoom">
+                      <button class="active" data-value="natif">Zoom natif</button>
+                      <button data-value="travail">Zoom travail</button>
+                    </div>
+                    <div class="visual-toggle" data-group="theme">
+                      <button data-value="dark">Sombre</button>
+                      <button data-value="light">Clair</button>
+                    </div>
+                    <button class="visual-open" type="button" title="Ouvrir dans un nouvel onglet">⤢ Ouvrir</button>
+                  </div>
+                </div>
+                <div class="visual-frame zoom-natif">
+                  <span class="visual-logo"><img src="../images/cerithe-logo.png" alt="Cerithe" /></span>
+                  <div class="visual-scale active" data-template="bien-avant-pieces" data-viewport="laptop"><iframe src="bien-avant-pieces.html"></iframe></div>
+                  <div class="visual-scale" data-template="bien-avant-pieces" data-viewport="mobile"><iframe src="bien-avant-pieces.html"></iframe></div>
+                  <div class="visual-scale" data-template="bien-apres-pieces" data-viewport="laptop"><iframe src="bien-apres-pieces.html"></iframe></div>
+                  <div class="visual-scale" data-template="bien-apres-pieces" data-viewport="mobile"><iframe src="bien-apres-pieces.html"></iframe></div>
+                  <div class="visual-scale" data-template="modale-ajout-pieces-vide" data-viewport="laptop"><iframe src="modale-ajout-pieces-vide.html"></iframe></div>
+                  <div class="visual-scale" data-template="modale-ajout-pieces-vide" data-viewport="mobile"><iframe src="modale-ajout-pieces-vide.html"></iframe></div>
+                  <div class="visual-scale" data-template="modale-ajout-pieces-peuple" data-viewport="laptop"><iframe src="modale-ajout-pieces-peuple.html"></iframe></div>
+                  <div class="visual-scale" data-template="modale-ajout-pieces-peuple" data-viewport="mobile"><iframe src="modale-ajout-pieces-peuple.html"></iframe></div>
+                  <div class="visual-scale" data-template="page-piece" data-viewport="laptop"><iframe src="page-piece.html"></iframe></div>
+                  <div class="visual-scale" data-template="page-piece" data-viewport="mobile"><iframe src="page-piece.html"></iframe></div>
+                  <div class="visual-scale" data-template="page-modification-piece" data-viewport="laptop"><iframe src="page-modification-piece.html"></iframe></div>
+                  <div class="visual-scale" data-template="page-modification-piece" data-viewport="mobile"><iframe src="page-modification-piece.html"></iframe></div>
+                  <div class="visual-scale" data-template="modale-selection-type" data-viewport="laptop"><iframe src="modale-selection-type.html"></iframe></div>
+                  <div class="visual-scale" data-template="modale-selection-type" data-viewport="mobile"><iframe src="modale-selection-type.html"></iframe></div>
+                  <div class="visual-scale" data-template="page-modification-bien" data-viewport="laptop"><iframe src="page-modification-bien.html"></iframe></div>
+                  <div class="visual-scale" data-template="page-modification-bien" data-viewport="mobile"><iframe src="page-modification-bien.html"></iframe></div>
+                </div>
+                <p class="visual-note"></p>
+              </div>
+              <p class="field-coverage-hint template-placeholder">Groupe "Suppressions" retiré de ce mockup (13/08) : la suppression d'une pièce comme celle d'un bien passe par <code>window.confirm()</code>, une boîte de dialogue native du navigateur, pas stylable/mockable de façon utile. Le texte exact du message reste à écrire au codage, pas un sujet visuel.</p>
+            </div>
+
+            <div class="template-section">
+              <p class="template-section-title template-section-title-todo">Todo</p>
+              
+
+              <div class="todo-list" data-tour-id="tour-todo">
+                <div class="checklist-group">
+                  <p class="checklist-group-title todo-label">Front</p>
+                  <div class="todo-grid">
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>AddRoomsModal (Formulaire 2)<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">Modale d'ajout de pièces : grille de tuiles par niveau/type avec quantité, boutons "+ Ajouter le niveau +N" et "+ Ajouter un -1".</p>
+                      <details name="todo-1.6.0-front" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Appelle POST /api/rooms (création groupée) à la validation, et PUT /api/properties/:id sans fermer la modale pour les 2 boutons d'ajout de niveau. Réutilise le RoomTypeSelector (tuiles icône + nom) construit pour la sélection de type.</div>
+                      </details>
+                      <details name="todo-1.6.0-front" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Ouvrir la modale depuis un bien vide, cocher plusieurs types sur plusieurs niveaux avec des quantités différentes, valider : confirmer que toutes les pièces sont créées avec le bon nom généré. Ajouter un niveau +N puis un -1 sans fermer la modale, confirmer que les blocs apparaissent sans perdre les tuiles déjà cochées.</div>
+                      </details>
+                    </div>
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>RoomTypeSelector (modale de sélection de type)<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">Grille de tuiles icône + nom, réutilisée par AddRoomsModal (multi-sélection + quantité) et RoomFormPage (sélection unique).</p>
+                      <details name="todo-1.6.0-front" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Un seul composant, 2 modes (multi/single) via prop, pour éviter la duplication de la grille de tuiles entre Formulaire 2 et Formulaire 4.</div>
+                      </details>
+                      <details name="todo-1.6.0-front" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Ouvrir la sélection de type depuis les deux points d'entrée (AddRoomsModal, RoomFormPage), confirmer le bon comportement dans chaque mode.</div>
+                      </details>
+                    </div>
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>RoomPage (Écran 3)<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">Nouvel écran détail d'une pièce : infos (type/niveau/surface réels, finitions grisées), documents propres à la pièce, bouton "Ajouter un projet" grisé.</p>
+                      <details name="todo-1.6.0-front" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Nouvelle route dédiée. Aucun bouton Supprimer/Modifier direct ici, renvoie vers RoomFormPage. Upload de document réutilise UploadDocumentForm généralisé (roomId).</div>
+                      </details>
+                      <details name="todo-1.6.0-front" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Cliquer une pièce depuis la Page du bien, confirmer l'affichage des bonnes infos, uploader un document et confirmer qu'il n'apparaît que sur cette pièce (pas sur le bien).</div>
+                      </details>
+                    </div>
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>RoomFormPage (Formulaire 4)<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">Modification d'une pièce existante (nom/niveau/type/surface) et suppression avec confirmation.</p>
+                      <details name="todo-1.6.0-front" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Appelle PATCH /api/rooms/:id et DELETE /api/rooms/:id (window.confirm() natif, cf hint du mockup). Niveau en liste déroulante générée depuis les niveaux réels du bien.</div>
+                      </details>
+                      <details name="todo-1.6.0-front" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Modifier chaque champ indépendamment, confirmer la persistance. Supprimer une pièce qui a des documents attachés, confirmer que les documents disparaissent aussi.</div>
+                      </details>
+                    </div>
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>PropertyPage (Écran 1)<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">Section pièces groupées par niveau (-1 affiché au-dessus du RDC), bouton "+ Ajouter une pièce" activé.</p>
+                      <details name="todo-1.6.0-front" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Le bouton existe déjà en grisé (FeatureComingSoonButton) : le passer en actif, ouvrir AddRoomsModal. Les 2 autres boutons restent grisés.</div>
+                      </details>
+                      <details name="todo-1.6.0-front" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Sur un bien avec un niveau -1 et plusieurs pièces par niveau, confirmer l'ordre d'affichage -1 / RDC / +1 et le regroupement correct.</div>
+                      </details>
+                    </div>
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>PropertyFormPage (Formulaire 5)<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">Toggle 2 boutons "Aucun" / "1 niveau (-1)" pour numberOfBasementLevels, + correction du onError manquant sur updateProperty.</p>
+                      <details name="todo-1.6.0-front" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Réutilise le composant Button existant (shadcn), variant outline/default selon sélection, taille sm. Le fix onError est un bug préexistant exposé par la nouvelle validation de diminution bloquée (cf Non-régression ci-dessous).</div>
+                      </details>
+                      <details name="todo-1.6.0-front" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Basculer "Aucun" ↔ "1 niveau (-1)" sur un bien sans pièces, confirmer la persistance. Sur un bien avec pièces, tenter de repasser à "Aucun" : confirmer qu'un message d'erreur clair s'affiche (pas un échec silencieux).</div>
+                      </details>
+                    </div>
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>UploadDocumentForm généralisé<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">Accepte roomId en plus de propertyId (exclusif), pour être réutilisable depuis RoomPage comme depuis PropertyPage.</p>
+                      <details name="todo-1.6.0-front" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">IUploadDocumentFormProps : propertyId et roomId, un seul des deux fourni selon le contexte d'appel.</div>
+                      </details>
+                      <details name="todo-1.6.0-front" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Cf card Non-régression dédiée ci-dessous (call site existant depuis PropertyPage).</div>
+                      </details>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="checklist-group">
+                  <p class="checklist-group-title todo-label">Back</p>
+                  <div class="todo-grid">
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>Migration Prisma<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">Room.level ajouté, roomType étendu à la liste complète des types, 4 champs (surface/floorFinition/wallFinition/ceilingFinition) passés nullable, Property.numberOfBasementLevels ajouté (défaut 0).</p>
+                      <details name="todo-1.6.0-back" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">roomType reste un enum Prisma en dur (cohérent avec les 5 autres enums du projet), pas de table de référence.</div>
+                      </details>
+                      <details name="todo-1.6.0-back" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">npx prisma migrate dev, vérifier le schéma en base (psql \d "Room", \d "Property") après migration.</div>
+                      </details>
+                    </div>
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>POST /api/rooms (nouveau)<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">Création groupée de pièces (plusieurs lignes en une transaction), appelée par AddRoomsModal.</p>
+                      <details name="todo-1.6.0-back" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Nouveau roomController/roomService/roomRoutes. name généré (type + numéro suivant disponible sur tout le bien), type/level fournis par le front. Ownership vérifié via propertyId (même profil que le bien).</div>
+                      </details>
+                      <details name="todo-1.6.0-back" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Requête vide, requête avec quantité 0, requête avec un profil non propriétaire du bien (403 attendu).</div>
+                      </details>
+                    </div>
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>PATCH /api/rooms/:id (nouveau)<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">Modification name/level/type/surface d'une pièce existante.</p>
+                      <details name="todo-1.6.0-back" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">name : max 50 caractères (Zod), jamais vide, unicité sur tout le bien. level : doit correspondre à un niveau existant du bien.</div>
+                      </details>
+                      <details name="todo-1.6.0-back" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Nom en doublon, nom vide, level hors bornes du bien, pièce d'un autre profil (403).</div>
+                      </details>
+                    </div>
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>DELETE /api/rooms/:id (nouveau)<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">Suppression d'une pièce, cascade sur ses documents (Document.roomId).</p>
+                      <details name="todo-1.6.0-back" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Cascade en transaction (documents puis pièce, ou onDelete: Cascade au niveau schéma si le pattern est déjà utilisé ailleurs sur Document).</div>
+                      </details>
+                      <details name="todo-1.6.0-back" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Supprimer une pièce avec documents attachés, vérifier en base qu'ils ont bien disparu. Supprimer une pièce d'un autre profil (403).</div>
+                      </details>
+                    </div>
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>GET / PUT /api/properties/:id (endpoints n°1 et 2)<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">GET inclut désormais les pièces. PUT bloque la diminution de numberOfLevels/numberOfBasementLevels si le bien a des pièces, plafonne numberOfBasementLevels à 1.</p>
+                      <details name="todo-1.6.0-back" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">include: { room: true } en plus de profile. Validation Zod : max(1) sur numberOfBasementLevels, vérification en service (pas juste au schéma) pour le blocage conditionnel à la diminution.</div>
+                      </details>
+                      <details name="todo-1.6.0-back" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Diminuer numberOfLevels sur un bien avec pièces (erreur attendue), augmenter (succès). numberOfBasementLevels à 2 (erreur attendue, même sans pièces).</div>
+                      </details>
+                    </div>
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>POST /api/documents (n°3) + GET /api/documents/room/:roomId (nouveau)<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">roomId ajouté au contrat de création (exclusif avec propertyId). Nouvelle route dédiée pour lister les documents d'une pièce.</p>
+                      <details name="todo-1.6.0-back" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Colonne roomId déjà en base, juste faire circuler la valeur dans createDocumentController/service. Route GET dédiée choisie plutôt que de généraliser la route existante :propertyId (décision du 13/08).</div>
+                      </details>
+                      <details name="todo-1.6.0-back" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Upload avec roomId seul, avec propertyId seul, avec les deux à la fois (erreur attendue), avec aucun des deux (erreur attendue).</div>
+                      </details>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="checklist-group">
+                  <p class="checklist-group-title todo-label">Non-régression</p>
+                  <p class="checklist-group-hint">Un item par call site "Impacté" listé dans Call sites frontend ci-dessus. Une fois validée, reporter le même statut dans la colonne Fonctionnel de Call sites.</p>
+                  <div class="todo-grid">
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>PropertyPage.tsx ← useGetPropertyById, cf Call sites endpoint n°1<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">La section Documents et les infos du bien doivent continuer de s'afficher normalement une fois room ajouté à la réponse.</p>
+                      <details name="todo-1.6.0-nonregression" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Risque : IProperty (types/property.ts) sans le nouveau champ room, ou une erreur de sérialisation côté back sur include: room, pourrait faire planter le rendu de toute la page (pas seulement la nouvelle liste de pièces).</div>
+                      </details>
+                      <details name="todo-1.6.0-nonregression" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Ouvrir la fiche d'un bien qui a déjà des documents uploadés (avant cette version). Confirmer : nom/adresse/type/surface/niveaux toujours affichés, section Documents toujours fonctionnelle (upload, téléchargement, suppression), aucune erreur console.</div>
+                      </details>
+                    </div>
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>PropertyFormPage.tsx ← useGetPropertyById, cf Call sites endpoint n°1<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">Le préremplissage du formulaire d'édition doit continuer de fonctionner une fois room ajouté à la réponse.</p>
+                      <details name="todo-1.6.0-nonregression" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">reset(property) (react-hook-form) ignore normalement les champs en trop, mais à confirmer réellement plutôt que supposé.</div>
+                      </details>
+                      <details name="todo-1.6.0-nonregression" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Ouvrir "Modifier" sur un bien qui a déjà des pièces. Confirmer que les 5 champs (nom, adresse, type, surface, niveaux) sont bien préremplis avec les valeurs actuelles, comme avant cette version.</div>
+                      </details>
+                    </div>
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>PropertyFormPage.tsx ← useUpdateProperty, cf Call sites endpoint n°2<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">Modifier un bien sans toucher aux niveaux doit continuer de fonctionner normalement, et un rejet de validation doit désormais afficher un message (onError manquant aujourd'hui, bug préexistant exposé par cette version).</p>
+                      <details name="todo-1.6.0-nonregression" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Ajouter l'onError manquant sur l'appel updateProperty(...) en plus du pré-check UX, sinon le rejet de validation reste silencieux même avec le pré-check en place (ex. race condition, cache périmé).</div>
+                      </details>
+                      <details name="todo-1.6.0-nonregression" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">1) Modifier le nom d'un bien sans toucher aux niveaux, confirmer que ça marche comme avant. 2) Sur un bien avec pièces, tenter de diminuer les niveaux : confirmer qu'un message d'erreur clair s'affiche (pas un échec silencieux). 3) Sur le même bien, confirmer qu'augmenter les niveaux fonctionne sans blocage.</div>
+                      </details>
+                    </div>
+                    <div class="todo-card">
+                      <p class="todo-card-head"><span class="todo-num"></span><span class="checklist-status done" title="Fait"></span>UploadDocumentForm.tsx ← useUploadDocument, cf Call sites endpoint n°3<span class="status-tag valide">Validé</span></p>
+                      <p class="todo-card-brief">L'upload de document depuis la fiche du bien doit continuer de fonctionner une fois le composant généralisé pour accepter aussi roomId.</p>
+                      <details name="todo-1.6.0-nonregression" class="todo-card-details">
+                        <summary></summary>
+                        <div class="todo-card-details-body">IUploadDocumentFormProps passe de propertyId obligatoire à propertyId/roomId exclusif : vérifier que tous les appels existants (aujourd'hui uniquement depuis PropertyPage) continuent de passer propertyId correctement après la généralisation de la prop.</div>
+                      </details>
+                      <details name="todo-1.6.0-nonregression" class="todo-card-details test">
+                        <summary></summary>
+                        <div class="todo-card-details-body">Depuis la fiche du bien, uploader un document (PDF/JPG/PNG). Confirmer qu'il apparaît bien rattaché au bien (pas à une pièce), exactement comme avant cette version.</div>
+                      </details>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <p class="field-coverage-hint">Statut <code>pending</code> (rond vide) → <code>done</code> (coche verte), lien PR ajouté au moment du merge. Ne passe à <code>done</code> qu'une fois vérifié et validé explicitement, jamais dès que Claude a codé le point.</p>
+
+              <a class="cerithe-link-card" href="https://cerithe.gillescobigo.com" target="_blank" rel="noopener">
+                <img src="../images/cerithe-logo.png" alt="Cerithe" />
+                <span class="cerithe-link-card-text">
+                  <strong>Voir Cerithe en prod</strong>
+                  <span>cerithe.gillescobigo.com</span>
+                </span>
+                <span class="cerithe-link-card-arrow">→</span>
+              </a>
+            </div>
+          </div>
+    </div>
+
+    <script>
+      (function () {
+        var widgets = Array.prototype.slice.call(document.querySelectorAll(".feature-visual"));
+        widgets.forEach(function (widget) {
+          var frame = widget.querySelector(".visual-frame");
+          var note = widget.querySelector(".visual-note");
+          var behavior = widget.querySelector(".visual-behavior");
+          var tabs = Array.prototype.slice.call(widget.querySelectorAll(".visual-tab"));
+          var viewportBtns = Array.prototype.slice.call(widget.querySelectorAll('.visual-toggle[data-group="viewport"] button'));
+          var zoomBtns = Array.prototype.slice.call(widget.querySelectorAll('.visual-toggle[data-group="zoom"] button'));
+          var themeBtns = Array.prototype.slice.call(widget.querySelectorAll('.visual-toggle[data-group="theme"] button'));
+          var scales = Array.prototype.slice.call(widget.querySelectorAll(".visual-scale"));
+          var openBtn = widget.querySelector(".visual-open");
+
+          var pageTheme = document.documentElement.getAttribute("data-theme")
+            || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+          // Onglet de depart lu depuis le HTML (class="active" deja posee sur
+          // le premier bouton), jamais code en dur : ce widget generique sert
+          // a la fois V0 (1er onglet "landing") et v1.4.0 (1er onglet
+          // "dashboard-actuel"), un template fixe cassait le second cas.
+          var initialTab = tabs.filter(function (t) { return t.classList.contains("active"); })[0] || tabs[0];
+          var state = { template: initialTab ? initialTab.dataset.template : "", viewport: "laptop", zoom: "natif", theme: pageTheme };
+
+          // Applique le même thème (sombre/clair) à TOUS les visuels du widget
+          // (Landing, Navbar, Footer, Formulaire, laptop et mobile), pas
+          // seulement à celui affiché au moment du clic.
+          function applyThemeToIframes() {
+            scales.forEach(function (s) {
+              var iframe = s.querySelector("iframe");
+              if (!iframe) { return; }
+              var base = iframe.dataset.baseSrc;
+              if (!base) {
+                base = iframe.getAttribute("src").split("?")[0];
+                iframe.dataset.baseSrc = base;
+              }
+              iframe.setAttribute("src", base + "?theme=" + state.theme);
+            });
+          }
+
+          // Légende par onglet : lue depuis data-note sur chaque bouton, pas
+          // codée en dur, pour marcher sur n'importe quel widget de la page
+          // (V0 comme v1.4.0) sans dupliquer ce mapping.
+          // Zoom natif calcule dynamiquement (05/08) : la page demo doit remplir
+          // le cadre gris disponible plutot que de rester a un facteur fixe
+          // (0.4) pense pour un conteneur plus etroit que la largeur reelle.
+          function applyNatifZoom() {
+            if (state.zoom !== "natif") {
+              // Bug corrige (17/08) : le style inline zoom pose ici en mode natif restait sur
+              // l'element apres bascule vers "travail", et l'emportait sur la regle CSS
+              // .zoom-travail (zoom:1) puisqu'un style inline gagne toujours sur une regle de
+              // feuille de style. Le zoom "travail" semblait alors ne rien faire.
+              scales.forEach(function (s) { s.style.zoom = ""; });
+              return;
+            }
+            var activeScale = scales.filter(function (s) {
+              return s.dataset.template === state.template && s.dataset.viewport === state.viewport;
+            })[0];
+            if (!activeScale) { return; }
+            var frameWidth = frame.clientWidth - 32;
+            var baseWidth = state.viewport === "mobile" ? 375 : 1280;
+            var factor = Math.min(1, frameWidth / baseWidth);
+            if (isFinite(factor) && factor > 0) { activeScale.style.zoom = factor; }
+          }
+          function render() {
+            tabs.forEach(function (t) { t.classList.toggle("active", t.dataset.template === state.template); });
+            viewportBtns.forEach(function (b) { b.classList.toggle("active", b.dataset.value === state.viewport); });
+            zoomBtns.forEach(function (b) { b.classList.toggle("active", b.dataset.value === state.zoom); });
+            themeBtns.forEach(function (b) { b.classList.toggle("active", b.dataset.value === state.theme); });
+            scales.forEach(function (s) {
+              s.classList.toggle("active", s.dataset.template === state.template && s.dataset.viewport === state.viewport);
+            });
+            frame.classList.toggle("zoom-natif", state.zoom === "natif");
+            frame.classList.toggle("zoom-travail", state.zoom === "travail");
+            applyNatifZoom();
+            var activeTab = tabs.filter(function (t) { return t.dataset.template === state.template; })[0];
+            if (note) {
+              note.textContent = (activeTab && activeTab.dataset.note) || "";
+            }
+            if (behavior) {
+              var behaviorText = activeTab && activeTab.dataset.behavior;
+              behavior.innerHTML = behaviorText || "";
+              behavior.hidden = !behaviorText;
+            }
+          }
+
+          tabs.forEach(function (t) { t.addEventListener("click", function () { state.template = t.dataset.template; render(); }); });
+          viewportBtns.forEach(function (b) { b.addEventListener("click", function () { state.viewport = b.dataset.value; render(); }); });
+          zoomBtns.forEach(function (b) { b.addEventListener("click", function () { state.zoom = b.dataset.value; render(); }); });
+          themeBtns.forEach(function (b) {
+            b.addEventListener("click", function () {
+              state.theme = b.dataset.value;
+              applyThemeToIframes();
+              render();
+            });
+          });
+          if (openBtn) {
+            openBtn.addEventListener("click", function () {
+              var activeFrame = widget.querySelector(".visual-scale.active iframe");
+              if (!activeFrame) { return; }
+              var url = activeFrame.getAttribute("src");
+              if (state.viewport === "mobile") {
+                window.open(url, "_blank", "width=390,height=844");
+              } else {
+                window.open(url, "_blank");
+              }
+            });
+          }
+
+          applyThemeToIframes();
+          render();
+        });
+      })();
+    </script>
+    <script>
+      (function () {
+        // Un seul menu deroulant ouvert a la fois par card ("Plus d'infos" vs "Tester"),
+        // meme principe que les popovers a clic : ouvrir l'un ferme l'autre sur la meme card.
+        document.querySelectorAll(".todo-card, .fix-item-card").forEach(function (card) {
+          var detailsEls = Array.prototype.slice.call(card.querySelectorAll(":scope > details"));
+          detailsEls.forEach(function (d) {
+            d.addEventListener("toggle", function () {
+              if (!d.open) return;
+              detailsEls.forEach(function (other) {
+                if (other !== d) other.open = false;
+              });
+            });
+          });
+        });
+      })();
+    </script>
+    <button class="tour-restart" type="button" onclick="startTour()">↻ Relancer la visite guidée</button>
+
+    <div class="tour-bottom-nav" id="tourBottomNav">
+      <button class="tour-comment" type="button" onclick="revealBubble()" title="Revoir le texte de l'étape">💬</button>
+      <span class="tour-bottom-step" id="tourBottomStep"></span>
+      <div class="tour-bottom-nav-right">
+        <button class="tour-prev" type="button" onclick="prevStep()">← Précédent</button>
+        <button class="tour-next" type="button" onclick="nextStep()">Suivant →</button>
+      </div>
+    </div>
+
+    <div class="tour-end-overlay" id="tourEndOverlay" hidden onclick="if(event.target===this) hideEndModal()">
+      <div class="tour-end-card">
+        <h2>Alors, ça vous a plu ?</h2>
+        <p>Si cette façon de travailler vous parle, discutons-en.</p>
+        <a class="tour-end-cta" href="https://gillescobigo.com/contact" target="_blank" rel="noopener">Me contacter →</a>
+      </div>
+    </div>
+
+    <script>
+      // Visite guidee (17/08) : meme mecanique que V1-Echanges/mockups/version-guided-tour.html
+      // (spotlight box-shadow + bulle + Precedent/Suivant/Visiter librement), sans le volet
+      // commercial (pas de CTA "Discutons-en", pas de modale de fin qui vend une prestation) :
+      // public ici, un dev qui visite le portfolio, pas un prospect boutique.
+      var STEPS = [
+        { target: '[data-tour-id="tour-who"]', placement: "fixed-top", text: [
+          "Je m'appelle Gilles, BIM manager de formation, en reconversion développeur.",
+          "Cette page n'est pas une démo : c'est un extrait réel de mon suivi de projet interne, celui que j'utilise vraiment au quotidien.",
+          "Elle montre comment je travaille avec l'IA pour coder : cadrer avant d'écrire, découper en tâches vérifiables, valider chaque étape avant de passer à la suivante.",
+          "Cliquez sur «Suivant» pour continuer, ou «Visiter librement» pour tout parcourir à votre rythme."
+        ] },
+        { target: '[data-tour-id="tour-intro"]', placement: "fixed-top", text: [
+          "Cerithe, c'est le carnet de santé numérique du bâtiment que je développe.",
+          "Il centralise travaux, diagnostics et documents d'un bien immobilier.",
+          "Cette page montre comment j'ai construit la v1.6 : la possibilité d'ajouter des pièces à un bien (salon, cuisine, chambre...).",
+          "Fonctionnalité livrée le 13/08/2026."
+        ] },
+        { target: '[data-tour-id="tour-specs"]', placement: "fixed-top", text: [
+          "Avant toute ligne de code : le résultat attendu, le comportement écran par écran, et les cas limites qui comptent vraiment.",
+          "Niveau du bien (RDC, R+1, ...) déjà peuplé, doublons de nom, suppression en cascade...",
+          "Rien n'est codé tant que ce n'est pas écrit ici."
+        ] },
+        { target: '[data-tour-id="tour-champs"]', placement: "fixed-top", text: [
+          "Un tableau de couverture par écran/formulaire.",
+          "Pour chaque champ : Requis, Création, Édition, Effaçable, Affiché.",
+          "Objectif concret : ne jamais découvrir en prod qu'un champ obligatoire côté serveur n'a pas d'input côté formulaire."
+        ] },
+        { target: '[data-tour-id="tour-mockup"]', placement: "fixed-top", compact: true, text: [
+          "Les maquettes utilisées pour cadrer l'implémentation, avant d'écrire le composant réel.",
+          "Laptop/Mobile, thème sombre/clair, plusieurs écrans regroupés par onglets.",
+          "Je cadre le visuel ici avec l'IA, nous y faisons nos allers-retours avec uniquement des visuels HTML/CSS, avec pour objectif de valider ici avant de coder en React et ainsi accélérer les mises à jour et économiser des tokens."
+        ] },
+        { target: '[data-tour-id="tour-todo"]', placement: "fixed-top", compact: true, text: [
+          "Le découpage en tâches : front, back, non-régression.",
+          "Chaque carte a sa propre zone «Tester» : la démarche exacte pour vérifier ce point précis en local, puis en prod une fois déployé.",
+          "Rien ne passe à «fait» sans être rejoué à la main, pour confirmer que ça marche et que rien d'autre n'a été cassé au passage.",
+          "Cette vérification manuelle s'ajoute aux tests unitaires déjà présents dans le code, elle ne les remplace pas.",
+          "C'est cette discipline, pas la vitesse d'écriture, qui fait la différence sur du code généré par IA."
+        ] }
+      ];
+      var current = 0;
+      var bubble = document.createElement("div");
+      bubble.className = "tour-bubble";
+      document.body.appendChild(bubble);
+      var arrow = document.createElement("div");
+      arrow.className = "tour-arrow";
+      document.body.appendChild(arrow);
+      var lastTarget = null;
+      var lastMarginEl = null;
+      var isProgrammaticScroll = false;
+      // Verrou de scroll (17/08, demande de Gilles) : pendant la visite, impossible de scroller
+      // plus haut ou plus bas que l'encart de l'etape en cours, pour eviter de se perdre et forcer
+      // le passage par Precedent/Suivant. Recalcules a chaque etape (cf render()).
+      var scrollLockMin = null;
+      var scrollLockMax = null;
+
+      var SCROLL_OFFSET_BASE = 88;
+      function positionBubble(el, placement) {
+        var r = el.getBoundingClientRect();
+        var top, left;
+        // "fixed-top" (17/08, demande explicite de Gilles, etape 2 pour l'instant) : la bulle reste
+        // fixee sous le bandeau quel que soit le scroll, pour une section trop haute pour tenir a
+        // l'ecran (tour-specs) — sans ca, scroller pour lire toute la section fait sortir la bulle
+        // (et son bouton Suivant) de l'ecran, obligeant a tout remonter pour continuer la visite.
+        if (placement === "fixed-top") {
+          bubble.style.position = "fixed";
+          arrow.style.display = "none";
+          bubble.style.top = "68px";
+          bubble.style.left = "24px";
+          return;
+        }
+        // Losange retire (17/08, demande de Gilles) : mal positionne au-dessus du feature-title
+        // (chevauchait le numero de version juste au-dessus). Le spotlight + le texte de la bulle
+        // suffisent a montrer la cible, pas besoin d'une fleche en plus.
+        arrow.style.display = "none";
+        if (placement === "below") {
+          top = r.bottom + window.scrollY + 16;
+          left = Math.min(r.left + window.scrollX, window.scrollX + window.innerWidth - 360 - 24);
+          left = Math.max(left, 16);
+          arrow.style.top = (top - 7) + "px";
+          arrow.style.left = (left + 24) + "px";
+        } else {
+          top = r.top + window.scrollY - bubble.offsetHeight - 16;
+          left = Math.min(r.left + window.scrollX, window.scrollX + window.innerWidth - 360 - 24);
+          left = Math.max(left, 16);
+          arrow.style.top = (top + bubble.offsetHeight - 7) + "px";
+          arrow.style.left = (left + 24) + "px";
+        }
+        bubble.style.position = "absolute";
+        bubble.style.top = top + "px";
+        bubble.style.left = left + "px";
+      }
+      function scrollToTarget(el, placement, callback) {
+        var offset = placement === "fixed-top" ? (68 + bubble.offsetHeight + 16) : (SCROLL_OFFSET_BASE + bubble.offsetHeight);
+        var targetY = el.getBoundingClientRect().top + window.scrollY - offset;
+        // Correctif (17/08) : en revenant en arriere (Precedent), le nouveau verrou de scroll
+        // (calcule pour l'etape precedente, donc une plage plus haute dans le document) se battait
+        // avec l'animation "smooth" ci-dessous pendant sa duree : chaque evenement "scroll"
+        // intermediaire de l'animation se faisait aussitot recadrer par le verrou, qui l'empechait
+        // d'atteindre sa position finale (l'auto-scroll semblait ne jamais se declencher). Verrou
+        // suspendu le temps de cette animation programmatique, reactive juste apres.
+        isProgrammaticScroll = true;
+        window.scrollTo({ top: Math.max(targetY, 0), behavior: "smooth" });
+        setTimeout(function () { isProgrammaticScroll = false; callback(); }, 320);
+      }
+      function render() {
+        var step = STEPS[current];
+        if (lastTarget) lastTarget.classList.remove("tour-target");
+        var el = document.querySelector(step.target);
+        if (!el) return;
+        el.classList.add("tour-target");
+        lastTarget = el;
+        var placement = step.placement || "fixed-top";
+        // Precedent/Suivant ramenent toujours au debut de la nouvelle section (17/08, demande de
+        // Gilles) : la bulle doit y etre visible immediatement, jamais attendre que le prochain
+        // evenement "scroll" le detecte de lui-meme (l'animation de scrollToTarget peut prendre
+        // un instant, pas question que la bulle reste cachee entre-temps).
+        document.documentElement.classList.remove("is-mid-scroll");
+        if (lastMarginEl) { lastMarginEl.style.marginTop = ""; lastMarginEl = null; }
+        bubble.classList.toggle("tour-bubble-compact", !!step.compact);
+        bubble.innerHTML =
+          '<div class="tour-step">Étape ' + (current + 1) + ' / ' + STEPS.length + '</div>' +
+          step.text.map(function (t) { return '<p class="tour-text">' + t + '</p>'; }).join('') +
+          '<div class="tour-nav">' +
+            '<button class="tour-skip" type="button" onclick="skipTour()">Visiter librement</button>' +
+            '<div class="tour-nav-buttons">' +
+              '<button class="tour-prev" type="button" onclick="prevStep()"' + (current === 0 ? " disabled" : "") + '>← Précédent</button>' +
+              '<button class="tour-next" type="button" onclick="nextStep()">' + (current === STEPS.length - 1 ? "Terminer" : "Suivant →") + '</button>' +
+            '</div>' +
+          '</div>';
+        // Barre basse (visible seulement pendant le scroll, cf .is-mid-scroll) synchronisee avec
+        // les memes etats que la bulle : jamais desynchronisee de ce qu'affiche "Suivant" au repos.
+        var bottomNav = document.getElementById("tourBottomNav");
+        if (bottomNav) {
+          bottomNav.querySelector(".tour-prev").disabled = current === 0;
+          bottomNav.querySelector(".tour-next").textContent = current === STEPS.length - 1 ? "Terminer" : "Suivant →";
+          bottomNav.querySelector(".tour-bottom-step").textContent = "Étape " + (current + 1) + " / " + STEPS.length;
+        }
+        // offset partage entre le verrou de scroll et la marge de la cible ci-dessous : calcule
+        // maintenant, une fois la bulle remplie (bubble.offsetHeight doit refleter le contenu de
+        // CETTE etape, pas celui de la precedente).
+        var offset = 68 + bubble.offsetHeight + 16;
+        // Marge specifique (17/08, demande explicite de Gilles, etapes 2 et 3) : ces cibles sont
+        // trop pres du haut de la page pour que le scroll seul les pousse sous la bulle fixe, qui
+        // les recouvrait (titre + debut de "Specs" caches derriere la bulle, capture d'ecran de
+        // Gilles a l'appui). Marge posee/retiree sur la cible elle-meme, jamais laissee en dur
+        // (fausserait la mise en page hors visite). Meme offset que le verrou de scroll : une fois
+        // la marge posee, scrollLockMin retombe pres de 0, la cible atterrit pile sous la bulle.
+        if (step.target === '[data-tour-id="tour-intro"]' || step.target === '[data-tour-id="tour-specs"]') {
+          el.style.marginTop = offset + "px";
+          lastMarginEl = el;
+        }
+        // Verrou de scroll, bas ET haut (17/08, demande explicite de Gilles) : on ne peut voir que
+        // la cible de l'etape en cours, jamais remonter dans la precedente ni descendre dans la
+        // suivante.
+        var targetTopDoc = el.getBoundingClientRect().top + window.scrollY;
+        var targetBottomDoc = el.getBoundingClientRect().bottom + window.scrollY;
+        scrollLockMin = Math.max(0, targetTopDoc - offset);
+        scrollLockMax = Math.max(scrollLockMin, targetBottomDoc - window.innerHeight + 80);
+        scrollToTarget(el, placement, function () { positionBubble(el, placement); });
+      }
+      function nextStep() {
+        if (current === STEPS.length - 1) { finishTour(); return; }
+        current++;
+        render();
+      }
+      function prevStep() {
+        if (current === 0) return;
+        current--;
+        render();
+      }
+      function skipTour() {
+        document.documentElement.classList.add("tour-off");
+        document.documentElement.classList.remove("is-mid-scroll");
+        scrollLockMin = null;
+        scrollLockMax = null;
+        if (lastMarginEl) { lastMarginEl.style.marginTop = ""; lastMarginEl = null; }
+      }
+      function finishTour() {
+        document.documentElement.classList.add("tour-off");
+        document.documentElement.classList.remove("is-mid-scroll");
+        scrollLockMin = null;
+        scrollLockMax = null;
+        if (lastMarginEl) { lastMarginEl.style.marginTop = ""; lastMarginEl = null; }
+        document.getElementById("tourEndOverlay").hidden = false;
+      }
+      function hideEndModal() {
+        document.getElementById("tourEndOverlay").hidden = true;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      function startTour() {
+        current = 0;
+        document.documentElement.classList.remove("tour-off");
+        render();
+      }
+      window.addEventListener("resize", function () { if (lastTarget) positionBubble(lastTarget, STEPS[current].placement || "fixed-top"); });
+      // Retour manuel uniquement (17/08) : un retour automatique par delai apres le scroll se
+      // battait contre le scroll inertiel (trackpad/mobile continue a emettre des evenements
+      // "scroll" bien apres le geste, empechant le texte de jamais revenir). Le bouton 💬 de la
+      // barre basse est desormais le seul moyen de rappeler la bulle.
+      function revealBubble() {
+        document.documentElement.classList.remove("is-mid-scroll");
+      }
+      window.addEventListener("scroll", function () {
+        if (lastTarget) positionBubble(lastTarget, STEPS[current].placement || "fixed-top");
+        if (!isProgrammaticScroll && scrollLockMax !== null && !document.documentElement.classList.contains("tour-off")) {
+          if (window.scrollY > scrollLockMax) { window.scrollTo(0, scrollLockMax); }
+          else if (scrollLockMin !== null && window.scrollY < scrollLockMin) { window.scrollTo(0, scrollLockMin); }
+        }
+        // Pendant un scroll actif : bulle cachee, barre basse Precedent/Suivant affichee a la
+        // place, jamais les deux ensemble (une seule classe .is-mid-scroll pilote les deux cote
+        // CSS). Exclu des etapes "tour-who" et "tour-intro" (demande de Gilles, etapes 1 et 2) :
+        // leur plage de scroll est trop courte pour que la bascule bulle/barre basse ait un sens,
+        // la bulle reste affichee en continu sur ces deux steps.
+        var noBottomNavSteps = ['[data-tour-id="tour-who"]', '[data-tour-id="tour-intro"]'];
+        if (!document.documentElement.classList.contains("tour-off") && noBottomNavSteps.indexOf(STEPS[current].target) === -1) {
+          // De retour tout en haut de la zone de l'etape (17/08, demande de Gilles) : la bulle
+          // reapparait toute seule, en plus du bouton manuel 💬, la ou elle etait positionnee au
+          // debut du step, marge de 24px pour absorber les petits ajustements de scroll.
+          if (scrollLockMin !== null && window.scrollY <= scrollLockMin + 24) {
+            document.documentElement.classList.remove("is-mid-scroll");
+          } else {
+            document.documentElement.classList.add("is-mid-scroll");
+          }
+        }
+      }, { passive: true });
+      // Correctif (17/08) : au reload, le scroll vers l'etape 1 ne se faisait pas (page restait
+      // en haut, bulle/card cropee, obligeant a remonter a la main). Deux causes cumulees :
+      // (1) le navigateur restaure sa propre position de scroll a l'arrivee sur la page, apres
+      // ou pendant l'execution de ce script, ecrasant notre scroll ; (2) les iframes/polices pas
+      // encore chargees au moment du calcul faussent la position. Scroll restoration desactivee
+      // + demarrage de la visite differe a l'evenement "load" (tout est charge et stable).
+      if ("scrollRestoration" in history) { history.scrollRestoration = "manual"; }
+      window.scrollTo(0, 0);
+      if (document.readyState === "complete") {
+        startTour();
+      } else {
+        window.addEventListener("load", startTour);
+      }
+    </script>
+  </body>
+</html>
