@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Template Designs, typographie encre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Fraunces:wght@600;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#1c1a17; --accent-dark:#000; --creme:#f4f1ea; --text:#1c1a17;
+    --font-a:'Fraunces',serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{overflow-x:clip;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--text); background:var(--creme); line-height:1.7;}
+  img{max-width:100%; display:block;}
+  .btn{display:inline-block; padding:12px 30px; background:none; color:var(--text); text-decoration:none; font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.1em; border:2px solid var(--text); cursor:pointer; font-family:inherit;}
+  .btn:hover{background:var(--text); color:var(--creme);}
+  .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease;}
+  .reveal.show{opacity:1; transform:translateY(0);}
+
+  .to-top{position:fixed; bottom:16px; right:16px; z-index:999; width:42px; height:42px; border:2px solid var(--text); background:var(--creme); color:var(--text); font-size:16px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease;}
+  .to-top.show{opacity:1; pointer-events:auto;}
+
+  /* Registre "typographie pure, encre sur papier" : monochrome strict,
+     hairlines fines, tres peu de couleur, aucune photo. A l'oppose des
+     templates visuels denses (mosaique, polaroid) : ici le texte porte tout. */
+  .masthead{text-align:center; padding:70px 5vw 40px; border-bottom:3px solid var(--text);}
+  .masthead .kicker{font-size:11px; text-transform:uppercase; letter-spacing:.25em; margin-bottom:18px;}
+  .masthead h1{font-family:var(--font-a); font-weight:900; font-size:clamp(34px,7vw,64px); letter-spacing:-.01em;}
+  .masthead .rule{width:60px; height:2px; background:var(--text); margin:20px auto;}
+  .masthead p{font-size:14.5px; max-width:440px; margin:0 auto 24px; opacity:.85;}
+
+  .cols{max-width:900px; margin:0 auto; padding:56px 5vw; display:grid; grid-template-columns:1fr 1fr; gap:0;}
+  .cols > div{padding:0 30px; border-left:1px solid rgba(28,26,23,.2);}
+  .cols > div:first-child{border-left:none; padding-left:0;}
+  .cols h2{font-family:var(--font-a); font-size:13px; text-transform:uppercase; letter-spacing:.14em; margin-bottom:16px;}
+  .cols p{font-size:14px;}
+  .cols ol{padding-left:18px; font-size:13.5px;}
+  .cols li{margin-bottom:6px;}
+
+  .quote-block{max-width:640px; margin:10px auto 56px; padding:0 5vw; text-align:center;}
+  .quote-block .rule{width:60px; height:2px; background:var(--text); margin:0 auto 24px;}
+  .quote-block p{font-family:var(--font-a); font-style:italic; font-size:26px; line-height:1.5;}
+
+  .facts{max-width:900px; margin:0 auto; padding:0 5vw 56px; display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid rgba(28,26,23,.2); border-bottom:1px solid rgba(28,26,23,.2);}
+  .facts > div{padding:22px 16px; text-align:center; border-left:1px solid rgba(28,26,23,.2);}
+  .facts > div:first-child{border-left:none;}
+  .facts .label{font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; opacity:.65; margin-bottom:6px;}
+  .facts .val{font-family:var(--font-a); font-weight:700; font-size:14px;}
+
+  .closing{max-width:900px; margin:56px auto 0; padding:0 5vw 70px; display:grid; grid-template-columns:1fr 1fr; gap:0;}
+  .closing > div{padding:0 30px;}
+  .closing > div:first-child{padding-left:0; border-right:1px solid rgba(28,26,23,.2);}
+  .map-placeholder{background:repeating-linear-gradient(135deg, rgba(28,26,23,.05), rgba(28,26,23,.05) 10px, rgba(28,26,23,.09) 10px, rgba(28,26,23,.09) 20px); display:flex; align-items:center; justify-content:center; font-size:12.5px; font-weight:700; min-height:200px;}
+  .contact-card h3{font-family:var(--font-a); font-size:15px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:14px;}
+  .contact-card form{display:flex; flex-direction:column; gap:11px;}
+  .contact-card input, .contact-card textarea{padding:10px 12px; border:1px solid var(--text); font-family:inherit; font-size:14px; background:var(--creme);}
+  .contact-card textarea{min-height:76px; resize:vertical;}
+
+  footer{text-align:center; padding:24px; background:var(--text); color:var(--creme); font-size:12px; letter-spacing:.05em;}
+
+  @media(max-width:760px){
+    .cols{grid-template-columns:1fr; padding:44px 22px;}
+    .cols > div{border-left:none; padding:0 0 30px;}
+    .facts{grid-template-columns:1fr 1fr;}
+    .facts > div:nth-child(3){border-left:none;}
+    .closing{grid-template-columns:1fr; padding:0 22px 60px;}
+    .closing > div:first-child{border-right:none; padding-bottom:30px;}
+  }
+</style>
+</head>
+<body>
+
+<button class="to-top" id="toTop" aria-label="Retour en haut">↑</button>
+
+<div class="masthead">
+  <div class="kicker">[Secteur d'activité]</div>
+  <h1>[Nom de la boutique]</h1>
+  <div class="rule"></div>
+  <p>[Accroche courte, une phrase sur ce qui rend la boutique unique]</p>
+  <a href="#" class="btn">Découvrir</a>
+</div>
+
+<div class="cols">
+  <div class="reveal">
+    <h2>Notre parti pris</h2>
+    <p>[Texte de présentation : ce que fait la boutique, pour qui, ce qui la distingue d'un commerce générique du même secteur.]</p>
+  </div>
+  <div class="reveal">
+    <h2>Comment ça marche</h2>
+    <ol>
+      <li>[Étape 1]</li>
+      <li>[Étape 2]</li>
+      <li>[Étape 3]</li>
+    </ol>
+  </div>
+</div>
+
+<div class="quote-block reveal">
+  <div class="rule"></div>
+  <p>« [Phrase signature, courte et mémorable] »</p>
+</div>
+
+<div class="facts reveal">
+  <div><div class="label">Avis</div><div class="val">★★★★★ 4,8/5</div></div>
+  <div><div class="label">Instagram</div><div class="val">[N] abonnés</div></div>
+  <div><div class="label">Horaires</div><div class="val">[Horaires]</div></div>
+  <div><div class="label">Téléphone</div><div class="val">[Numéro]</div></div>
+</div>
+
+<div class="closing">
+  <div class="map-placeholder reveal">Emplacement de la carte Google Maps</div>
+  <div class="reveal">
+    <div class="contact-card">
+      <h3>Nous écrire</h3>
+      <form action="#" method="POST">
+        <input type="text" name="nom" placeholder="Votre nom" required>
+        <input type="email" name="email" placeholder="Votre email" required>
+        <textarea name="message" placeholder="Votre message" required></textarea>
+        <button type="submit" class="btn">Envoyer</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>[NOM DE LA BOUTIQUE] · [Ville] · [Email]</footer>
+
+<script>
+  var revealObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('show'); });
+  }, {threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el){ revealObs.observe(el); });
+
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    if(window.scrollY > window.innerHeight * 0.6){ toTop.classList.add('show'); } else { toTop.classList.remove('show'); }
+  }, {passive:true});
+  toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+</script>
+</body>
+</html>

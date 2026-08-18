@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Template Designs, quartier/carte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#2f6b4f; --accent-dark:#1f4a36; --creme:#f5f8f4; --text:#1e2620;
+    --font-a:'Fraunces',serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{overflow-x:clip;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--text); background:var(--creme); line-height:1.6;}
+  img{max-width:100%; display:block;}
+  h1,h2,h3{font-family:var(--font-a); font-weight:700;}
+  .btn{display:inline-block; padding:13px 28px; background:var(--accent); color:#fff; text-decoration:none; border-radius:10px; font-weight:700; font-size:14.5px; border:none; cursor:pointer; font-family:inherit;}
+  .btn:hover{background:var(--accent-dark);}
+  .reveal{opacity:0; transform:translateY(20px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.show{opacity:1; transform:translateY(0);}
+
+  .to-top{position:fixed; bottom:16px; right:16px; z-index:999; width:44px; height:44px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease; box-shadow:0 6px 16px rgba(0,0,0,.25);}
+  .to-top.show{opacity:1; pointer-events:auto;}
+
+  /* Registre "ancrage local/quartier" : la carte n'est pas releguee en bas de
+     page (cf tous les autres templates), elle ouvre la page, comme argument
+     de vente a part entiere (proximite, facilite d'acces). Pin central avec
+     le nom de la boutique en label, plutot qu'un hero photo/texte classique. */
+  .map-hero{position:relative; min-height:64vh; background:
+    linear-gradient(rgba(47,107,79,.08), rgba(47,107,79,.08)),
+    repeating-linear-gradient(0deg, #dfe8de, #dfe8de 38px, #cfdccd 38px, #cfdccd 39px),
+    repeating-linear-gradient(90deg, #dfe8de, #dfe8de 38px, #cfdccd 38px, #cfdccd 39px);
+    display:flex; align-items:center; justify-content:center;}
+  .map-hero .pin{display:flex; flex-direction:column; align-items:center; text-align:center;}
+  .map-hero .pin-dot{width:22px; height:22px; border-radius:50% 50% 50% 0; background:var(--accent); transform:rotate(-45deg); box-shadow:0 8px 20px rgba(47,107,79,.35); margin-bottom:18px;}
+  .map-hero .label-card{background:#fff; border-radius:16px; padding:26px 32px; box-shadow:0 14px 34px rgba(30,38,32,.16); max-width:360px;}
+  .map-hero .tagline{font-size:11px; text-transform:uppercase; letter-spacing:.14em; color:var(--accent); margin-bottom:8px;}
+  .map-hero h1{font-size:clamp(24px,4vw,34px); margin-bottom:8px;}
+  .map-hero p{font-size:13.5px; opacity:.85; margin-bottom:16px;}
+  .map-hero .addr{font-size:12px; font-weight:700; color:var(--accent-dark); margin-bottom:14px;}
+
+  .concept{max-width:680px; margin:56px auto 0; padding:0 24px; text-align:center;}
+  .concept h2{font-size:26px; margin-bottom:14px; color:var(--accent);}
+
+  /* Bande "reperes du quartier" : mini-cartes acces (a pied, parking,
+     transport) plutot qu'une simple liste d'infos pratiques. */
+  .access{max-width:1000px; margin:56px auto 0; padding:0 5vw; display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .access > div{background:#fff; border-radius:16px; padding:22px; box-shadow:0 8px 22px rgba(47,107,79,.08); text-align:center;}
+  .access .icon{width:44px; height:44px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; font-size:18px;}
+  .access h3{font-size:14.5px; margin-bottom:6px;}
+  .access p{font-size:12.5px; opacity:.8;}
+
+  .split{max-width:1000px; margin:56px auto 0; padding:0 5vw; display:grid; grid-template-columns:1fr 1fr; gap:30px;}
+  .split > div{background:#fff; border-radius:16px; padding:26px; box-shadow:0 8px 22px rgba(47,107,79,.08);}
+  .split h3{font-size:16px; color:var(--accent); margin-bottom:12px;}
+  .split .stars{color:var(--accent); font-size:16px;}
+  .split blockquote{font-family:var(--font-a); font-style:italic; font-size:17px; color:var(--accent-dark);}
+
+  .closing{max-width:1000px; margin:56px auto 0; padding:0 5vw 70px;}
+  .contact-card{background:#fff; border-radius:16px; padding:28px; box-shadow:0 8px 22px rgba(47,107,79,.08); max-width:480px; margin:0 auto;}
+  .contact-card h3{color:var(--accent); font-size:17px; margin-bottom:12px; text-align:center;}
+  .contact-card form{display:flex; flex-direction:column; gap:11px;}
+  .contact-card input, .contact-card textarea{padding:10px 13px; border-radius:9px; border:1px solid rgba(47,107,79,.25); font-family:inherit; font-size:14px; background:var(--creme);}
+  .contact-card textarea{min-height:76px; resize:vertical;}
+
+  footer{text-align:center; padding:26px 24px; background:var(--accent-dark); color:rgba(255,255,255,.75); font-size:12.5px;}
+
+  @media(max-width:760px){
+    .map-hero{min-height:60vh; padding:24px;}
+    .access{grid-template-columns:1fr;}
+    .split{grid-template-columns:1fr; padding:0 22px;}
+    .closing{padding:0 22px 60px;}
+  }
+</style>
+</head>
+<body>
+
+<button class="to-top" id="toTop" aria-label="Retour en haut">↑</button>
+
+<div class="map-hero">
+  <div class="pin">
+    <div class="pin-dot"></div>
+    <div class="label-card">
+      <div class="tagline">[Secteur d'activité]</div>
+      <h1>[Nom de la boutique]</h1>
+      <p>[Accroche courte, une phrase sur ce qui rend la boutique unique]</p>
+      <div class="addr">📍 [Adresse complète]</div>
+      <a href="#" class="btn">Découvrir</a>
+    </div>
+  </div>
+</div>
+
+<div class="concept reveal">
+  <h2>Notre parti pris</h2>
+  <p>[Texte de présentation : ce que fait la boutique, pour qui, ce qui la distingue d'un commerce générique du même secteur.]</p>
+</div>
+
+<div class="access reveal">
+  <div><div class="icon">🚶</div><h3>À pied</h3><p>[Repère à pied depuis un point connu du centre-ville]</p></div>
+  <div><div class="icon">🅿️</div><h3>En voiture</h3><p>[Info parking à proximité]</p></div>
+  <div><div class="icon">🚌</div><h3>En transport</h3><p>[Ligne de bus/arrêt le plus proche]</p></div>
+</div>
+
+<div class="split">
+  <div class="reveal">
+    <h3>Comment ça marche</h3>
+    <ol style="padding-left:18px; font-size:13.5px;">
+      <li>[Étape 1]</li>
+      <li>[Étape 2]</li>
+      <li>[Étape 3]</li>
+    </ol>
+  </div>
+  <div class="reveal">
+    <h3>Avis du quartier</h3>
+    <div class="stars">★★★★★</div>
+    <blockquote>« [Phrase signature, courte et mémorable] »</blockquote>
+  </div>
+</div>
+
+<div class="closing">
+  <div class="contact-card reveal">
+    <h3>Nous écrire</h3>
+    <form action="#" method="POST">
+      <input type="text" name="nom" placeholder="Votre nom" required>
+      <input type="email" name="email" placeholder="Votre email" required>
+      <textarea name="message" placeholder="Votre message" required></textarea>
+      <button type="submit" class="btn">Envoyer</button>
+    </form>
+  </div>
+</div>
+
+<footer>[NOM DE LA BOUTIQUE] · [Ville] · [Email]</footer>
+
+<script>
+  var revealObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('show'); });
+  }, {threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el){ revealObs.observe(el); });
+
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    if(window.scrollY > window.innerHeight * 0.6){ toTop.classList.add('show'); } else { toTop.classList.remove('show'); }
+  }, {passive:true});
+  toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+</script>
+</body>
+</html>
