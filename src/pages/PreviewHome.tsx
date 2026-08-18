@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { Link, useParams, useLocation } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { ArrowRight, Sun, Moon } from "lucide-react";
 import { previewProjects } from "@/data/previewProjects";
 import { useThemeStore } from "@/store/themeStore";
@@ -14,20 +13,8 @@ export default function PreviewHome() {
   const { secret } = useParams<{ project: string; secret: string }>();
   const project = secret ? previewProjects[secret] : undefined;
   const { theme, toggleTheme } = useThemeStore();
-  const { hash } = useLocation();
   usePreviewFavicon(project?.logo);
   usePreviewTitle(project?.projectName);
-
-  // Arrivee depuis /cas-client/* (#tarif) : navigation complete (meme onglet), le navigateur ne
-  // scroll pas tout seul vers le hash tant que React n'a pas rendu la page (id absent du HTML
-  // initial). Meme pattern que Home.tsx (delai court).
-  useEffect(() => {
-    if (!hash) return;
-    const id = hash.slice(1);
-    setTimeout(() => {
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 100);
-  }, [hash]);
 
   if (!project) return <NotFound />;
 
@@ -73,12 +60,14 @@ export default function PreviewHome() {
             // chaleureux que le reste du portfolio (cf fond de page ci-dessus), accents restes
             // sobres/pro (couleurs neutres du systeme, pas de teinte vive) a la demande de Gilles
             // le 14/08.
-            <div className="mb-6 text-left">
+            <div id="tarif" className="mb-6 text-left scroll-mt-8">
               {/* Bandeau identite + retour : rappelle que ce site est bien le sien et permet de
-                  revoir les 2 propositions sans repasser par l'historique du navigateur. */}
+                  revoir les 2 propositions sans repasser par l'historique du navigateur. Logo reel
+                  du prospect (pas une initiale generique, contrairement au placeholder du mockup
+                  vault) : les 5 vrais prospects ont tous un logo scrape en prospection. */}
               <div className="flex items-center gap-2.5 max-w-[420px] mx-auto mb-3 flex-wrap">
-                <span className="h-7 w-7 rounded-full bg-foreground text-background flex items-center justify-center text-[13px] font-bold shrink-0">
-                  {project.projectName.charAt(0).toUpperCase()}
+                <span className="h-7 w-7 rounded-full overflow-hidden shrink-0 bg-foreground/10">
+                  <img src={project.logo} alt="" className="h-full w-full object-cover" />
                 </span>
                 <span className="text-[13px] font-semibold flex-1 min-w-0 truncate">{project.projectName}</span>
                 {project.rounds[0]?.proposals[0]?.htmlPath && (
@@ -91,9 +80,7 @@ export default function PreviewHome() {
                 )}
               </div>
 
-              <div id="tarif" className="scroll-mt-8">
-                <PricingCard projectName={project.projectName} phone={project.phone} />
-              </div>
+              <PricingCard projectName={project.projectName} phone={project.phone} />
 
               {/* bg-foreground/5 plutot que bg-card : bg-card reference le token "carte" pense pour
                   le fond noir/blanc par defaut, pas pour le fond creme/brun chaud de cette page,
