@@ -44,10 +44,10 @@ export default function PricingCard({
   const [confirmed, setConfirmed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  // Un seul popover ouvert a la fois entre la bulle "tarif pilote" et la bulle "nom de domaine"
-  // (regle CLAUDE.md sur les popovers d'une meme carte), fermeture au clic en dehors. Aligne le
-  // 18/08 sur Projets/V1-Echanges/mockups/tarif-pilote-badge.html et preview-prospect.html.
-  const [openPopover, setOpenPopover] = useState<"pilote" | "domain" | null>(null);
+  // Bulle info nom de domaine, fermeture au clic en dehors. Reproduit à la lettre
+  // Projets/V1-Echanges/mockups/preview-prospect.html, seule référence de cette page (jamais
+  // mélangée à tarif-pilote-badge.html, un prototype exploratoire distinct et non retenu ici).
+  const [openPopover, setOpenPopover] = useState<"domain" | null>(null);
 
   useEffect(() => {
     if (!openPopover) return;
@@ -97,33 +97,7 @@ export default function PricingCard({
 
   return (
     <div className="rounded-2xl border border-border bg-card p-6 max-w-md mx-auto text-left">
-      <div className="flex items-center gap-1.5 mb-1 relative">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pour démarrer</p>
-        <button
-          type="button"
-          aria-label="Tarif pilote, en savoir plus"
-          onClick={(e) => {
-            e.stopPropagation();
-            setOpenPopover((p) => (p === "pilote" ? null : "pilote"));
-          }}
-          className={`inline-flex items-center justify-center h-[15px] w-[15px] rounded-full border text-[10px] font-bold italic font-serif transition-colors ${
-            openPopover === "pilote"
-              ? "border-foreground text-foreground"
-              : "border-border text-muted-foreground hover:text-foreground hover:border-foreground"
-          }`}
-        >
-          i
-        </button>
-        {openPopover === "pilote" && (
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="absolute top-[22px] left-0 z-10 w-[220px] rounded-lg bg-foreground text-background text-xs leading-relaxed p-2.5 shadow-lg"
-          >
-            <strong className="block mb-0.5">Tarif pilote</strong>
-            10 places à ce tarif de lancement, 7 encore disponibles.
-          </div>
-        )}
-      </div>
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">Pour démarrer</p>
       <p className="text-3xl font-bold text-foreground mb-4">{total}€</p>
 
       <ul className="text-sm text-foreground space-y-2 mb-4">
