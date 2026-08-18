@@ -54,7 +54,11 @@ export const CASE_STUDY_TOUR_STEPS: ICaseStudyTourStep[] = [
   },
   {
     round: "v6",
-    key: "supporting",
+    // "v6-proposals" cible uniquement le groupe "V6 : à valider" de la grille (resultat final),
+    // jamais "supporting" (bloc "Aperçu du repli automatique" plus bas, hors sujet a cette etape) :
+    // corrige le 18/08 apres retour de Gilles ("l'etape 4 ne pointe pas au bon endroit"), cf
+    // version-guided-tour.html ou seul target: '[data-tour-id="v6-proposals"]' est utilise.
+    key: "v6-proposals",
     text: ["On répète ça jusqu'à la V6 et la version finale qui sera mise en ligne."],
   },
 ];

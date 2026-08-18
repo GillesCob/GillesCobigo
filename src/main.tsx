@@ -5,10 +5,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./globals.css";
 import App from "./App";
 import { Analytics } from "@vercel/analytics/react";
+import { getDefaultTheme } from "@/store/themeStore";
 
-// Applique le thème avant le premier render pour éviter le flash
-const savedTheme = localStorage.getItem("theme") as "dark" | "light" | null;
-const initialTheme = savedTheme ?? "dark";
+// Applique le thème avant le premier render pour éviter le flash. getDefaultTheme() respecte un
+// choix déjà fait par ce visiteur (localStorage), sinon clair par défaut sur /preview et
+// /cas-client (pages Boutiques tournées vers un prospect à froid), sombre ailleurs.
+const initialTheme = getDefaultTheme();
 if (initialTheme === "dark") {
   document.documentElement.classList.add("dark");
 } else {

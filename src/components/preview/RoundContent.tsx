@@ -1,6 +1,8 @@
+import type { MouseEvent } from "react";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GuideCallout from "@/components/preview/GuideCallout";
+import { useCaseStudyTourStore } from "@/store/caseStudyTourStore";
 import type { IPreviewProposal, IPreviewRound } from "@/data/previewProjects";
 
 // Extrait de PreviewRound.tsx (contenu d'un round, sans le formulaire de feedback ni la nav de
@@ -24,6 +26,14 @@ function groupProposals(proposals: IPreviewProposal[]) {
 }
 
 function ProposalCard({ p }: { p: IPreviewProposal }) {
+  // Bloque l'accès aux vraies pages HTML des propositions (celles de Mylène) pendant une visite
+  // guidée active : demande explicite de Gilles, jamais câblée jusqu'ici (statut "idle" en dehors
+  // de /cas-client, cf CaseStudyTour.tsx — sans effet sur la page privée réelle PreviewRound.tsx,
+  // qui ne monte jamais de tour).
+  const isTouring = useCaseStudyTourStore((s) => s.status === "active");
+  function blockDuringTour(e: MouseEvent) {
+    if (isTouring) e.preventDefault();
+  }
   return (
     <div className="rounded-xl border border-border p-4 bg-card">
       <p className="text-sm font-semibold mb-3">{p.label}</p>
@@ -31,12 +41,22 @@ function ProposalCard({ p }: { p: IPreviewProposal }) {
         href={p.htmlPath}
         target="_blank"
         rel="noopener noreferrer"
-        className="block rounded-lg border border-border overflow-hidden mb-3 bg-muted/30"
+        aria-disabled={isTouring}
+        tabIndex={isTouring ? -1 : undefined}
+        onClick={blockDuringTour}
+        className={`block rounded-lg border border-border overflow-hidden mb-3 bg-muted/30 ${isTouring ? "pointer-events-none" : ""}`}
       >
         <img src={p.screenshot} alt={`Aperçu ${p.label}`} className="w-full h-auto" loading="lazy" />
       </a>
-      <Button asChild variant="outline" size="sm">
-        <a href={p.htmlPath} target="_blank" rel="noopener noreferrer">
+      <Button asChild variant="outline" size="sm" className={isTouring ? "pointer-events-none opacity-50" : undefined}>
+        <a
+          href={p.htmlPath}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-disabled={isTouring}
+          tabIndex={isTouring ? -1 : undefined}
+          onClick={blockDuringTour}
+        >
           <ExternalLink size={14} className="mr-1" /> Ouvrir dans un nouvel onglet
         </a>
       </Button>
@@ -69,7 +89,7 @@ export function ProposalsGrid({
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {groups.map((group) => (
-          <div key={group.items[0].label}>
+          <div key={group.items[0].label} data-tour-key={group.label ? tourKeyByGroupLabel?.[group.label] : undefined}>
             {group.label && (
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
                 {group.label}
@@ -134,6 +154,52 @@ export function RoundContent({
     supportingVisuals?: string;
   };
 }) {
+  const roundLower = entry.round.toLowerCase();
+  // V2 : le tour doit pouvoir scroller sur propositions + changements pris en compte + precision
+  // ENSEMBLE (un seul data-tour-key qui regroupe les 3 blocs, mecanique validee sur
+  // version-guided-tour.html : "la visite guidee doit pouvoir scroller sur ces 3 blocs, pas juste
+  // le premier", demande explicite de Gilles le 18/08). V1 reste cible bloc par bloc (les
+  // propositions seules, le retour client separement plus bas), aucun autre round n'est visite.
+  const wrapsTrailingCardsInTour = roundLower === "v2";
+
+  const proposalsBlock = (
+    <div className="mb-10" data-tour-key={roundLower === "v1" ? "proposals" : undefined}>
+      {showGuide && guideTexts?.proposals && <GuideCallout>{guideTexts.proposals}</GuideCallout>}
+      <ProposalsGrid
+        proposals={entry.proposals}
+        calloutsByLabel={showGuide ? guideTexts?.proposalCallouts : undefined}
+        // V6 : le tour ne cible que le groupe "V6 : à valider" (le resultat final), jamais le
+        // groupe "Pour comparer (avant)" juste a cote dans la meme grille (cf version-guided-tour.html,
+        // "la visite guidee ne doit spotlighter/verrouiller que la V6, jamais la V5").
+        tourKeyByGroupLabel={roundLower === "v6" ? { "V6 : à valider": "v6-proposals" } : undefined}
+      />
+    </div>
+  );
+
+  const changesAppliedBlock = entry.changesApplied && entry.changesApplied.length > 0 && (
+    <>
+      {showGuide && guideTexts?.changesApplied && <GuideCallout>{guideTexts.changesApplied}</GuideCallout>}
+      <div className="rounded-xl border border-border p-6 bg-card mb-8">
+        <h2 className="text-sm font-semibold mb-3">Ce qui a été pris en compte suite au retour</h2>
+        <ul className="text-sm text-muted-foreground space-y-1.5 list-disc list-inside">
+          {entry.changesApplied.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
+      </div>
+    </>
+  );
+
+  const ownerNoteBlock = entry.ownerNote && (
+    <>
+      {showGuide && guideTexts?.ownerNote && <GuideCallout>{guideTexts.ownerNote}</GuideCallout>}
+      <div className="rounded-xl border border-border p-6 bg-card mb-8">
+        <h2 className="text-sm font-semibold mb-3">Précision de ma part</h2>
+        <p className="text-sm text-muted-foreground whitespace-pre-line">{entry.ownerNote}</p>
+      </div>
+    </>
+  );
+
   return (
     <>
       <div className="flex flex-wrap items-center gap-2 mb-10">
@@ -141,52 +207,22 @@ export function RoundContent({
         <span className="text-sm text-muted-foreground">{entry.date}</span>
       </div>
 
-      {/* data-tour-key : cibles de la visite guidee (cf CASE_STUDY_TOUR_STEPS), "proposals" sur la
-          V1 (les 2 propositions de depart) et "v2-proposals" sur la V2 (les pistes suite au
-          premier retour), aucun autre round n'est visite par le tour. */}
-      <div
-        className="mb-10"
-        data-tour-key={
-          entry.round.toLowerCase() === "v1"
-            ? "proposals"
-            : entry.round.toLowerCase() === "v2"
-              ? "v2-proposals"
-              : undefined
-        }
-      >
-        {showGuide && guideTexts?.proposals && <GuideCallout>{guideTexts.proposals}</GuideCallout>}
-        <ProposalsGrid
-          proposals={entry.proposals}
-          calloutsByLabel={showGuide ? guideTexts?.proposalCallouts : undefined}
-        />
-      </div>
-
-      {entry.changesApplied && entry.changesApplied.length > 0 && (
+      {wrapsTrailingCardsInTour ? (
+        <div data-tour-key="v2-proposals">
+          {proposalsBlock}
+          {changesAppliedBlock}
+          {ownerNoteBlock}
+        </div>
+      ) : (
         <>
-          {showGuide && guideTexts?.changesApplied && <GuideCallout>{guideTexts.changesApplied}</GuideCallout>}
-          <div className="rounded-xl border border-border p-6 bg-card mb-8">
-            <h2 className="text-sm font-semibold mb-3">Ce qui a été pris en compte suite au retour</h2>
-            <ul className="text-sm text-muted-foreground space-y-1.5 list-disc list-inside">
-              {entry.changesApplied.map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-            </ul>
-          </div>
-        </>
-      )}
-
-      {entry.ownerNote && (
-        <>
-          {showGuide && guideTexts?.ownerNote && <GuideCallout>{guideTexts.ownerNote}</GuideCallout>}
-          <div className="rounded-xl border border-border p-6 bg-card mb-8">
-            <h2 className="text-sm font-semibold mb-3">Précision de ma part</h2>
-            <p className="text-sm text-muted-foreground whitespace-pre-line">{entry.ownerNote}</p>
-          </div>
+          {proposalsBlock}
+          {changesAppliedBlock}
+          {ownerNoteBlock}
         </>
       )}
 
       {entry.supportingVisuals && entry.supportingVisuals.length > 0 && (
-        <div className="mb-8" data-tour-key="supporting">
+        <div className="mb-8">
           {showGuide && guideTexts?.supportingVisuals && <GuideCallout>{guideTexts.supportingVisuals}</GuideCallout>}
           <ProposalsGrid proposals={entry.supportingVisuals} />
         </div>
@@ -197,7 +233,7 @@ export function RoundContent({
           {showGuide && guideTexts?.clientFeedback && <GuideCallout>{guideTexts.clientFeedback}</GuideCallout>}
           <div
             className="rounded-xl bg-muted/40 border border-border p-6 mb-8"
-            data-tour-key={entry.round.toLowerCase() === "v1" ? "feedback" : undefined}
+            data-tour-key={roundLower === "v1" ? "feedback" : undefined}
           >
             <p className="text-xs font-semibold text-muted-foreground mb-1.5">Retour de {contactName}</p>
             <p className="text-sm whitespace-pre-line">{entry.clientFeedback}</p>
