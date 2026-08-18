@@ -141,9 +141,19 @@ export function RoundContent({
         <span className="text-sm text-muted-foreground">{entry.date}</span>
       </div>
 
-      {/* data-tour-key="proposals" : seule cible de la visite guidee sur la V1 (les 2 propositions
-          de depart, cf CASE_STUDY_TOUR_STEPS), aucun autre round n'est plus visite par le tour. */}
-      <div className="mb-10" data-tour-key={entry.round.toLowerCase() === "v1" ? "proposals" : undefined}>
+      {/* data-tour-key : cibles de la visite guidee (cf CASE_STUDY_TOUR_STEPS), "proposals" sur la
+          V1 (les 2 propositions de depart) et "v2-proposals" sur la V2 (les pistes suite au
+          premier retour), aucun autre round n'est visite par le tour. */}
+      <div
+        className="mb-10"
+        data-tour-key={
+          entry.round.toLowerCase() === "v1"
+            ? "proposals"
+            : entry.round.toLowerCase() === "v2"
+              ? "v2-proposals"
+              : undefined
+        }
+      >
         {showGuide && guideTexts?.proposals && <GuideCallout>{guideTexts.proposals}</GuideCallout>}
         <ProposalsGrid
           proposals={entry.proposals}
@@ -185,7 +195,10 @@ export function RoundContent({
       {entry.clientFeedback && (
         <>
           {showGuide && guideTexts?.clientFeedback && <GuideCallout>{guideTexts.clientFeedback}</GuideCallout>}
-          <div className="rounded-xl bg-muted/40 border border-border p-6 mb-8">
+          <div
+            className="rounded-xl bg-muted/40 border border-border p-6 mb-8"
+            data-tour-key={entry.round.toLowerCase() === "v1" ? "feedback" : undefined}
+          >
             <p className="text-xs font-semibold text-muted-foreground mb-1.5">Retour de {contactName}</p>
             <p className="text-sm whitespace-pre-line">{entry.clientFeedback}</p>
           </div>
