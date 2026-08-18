@@ -49,8 +49,8 @@ export default function CGVBoutiques() {
               <ul className="list-disc list-outside pl-5 space-y-1">
                 <li>500€ le forfait initial (520€ si un nom de domaine doit être acheté).</li>
                 <li>Nom de domaine : 20€/an, ou 85€ pour 5 ans prépayés.</li>
-                <li>Version supplémentaire (V7, V8...) ou modification après mise en ligne : 40€ (30€ avec l'abonnement Sérénité).</li>
-                <li>Abonnement Sérénité : 75€/an (renouvellement du domaine inclus, 2 modifications mineures par an, délai prioritaire 48h ouvrées).</li>
+                <li>Version supplémentaire (V7, V8...) ou modification après mise en ligne : 40€ (30€ avec la Formule Sérénité).</li>
+                <li>Formule Sérénité : 75€ pour 12 mois (nom de domaine inclus pour cette période, 2 modifications, délai prioritaire 48h ouvrées, tarif réduit sur les modifications suivantes). Non reconduite automatiquement : à reprendre l'année suivante si vous le souhaitez.</li>
                 <li>Toute évolution ou projet plus ambitieux (nouvelle fonctionnalité, boutique en ligne, site multi-pages...) : devis séparé, jamais ce tarif.</li>
               </ul>
               <p className="text-xs text-muted-foreground mt-2">TVA non applicable, art. 293 B du CGI.</p>
