@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { CASE_STUDY_TOUR_STEPS, useCaseStudyTourStore } from "@/store/caseStudyTourStore";
+import { useThemeStore } from "@/store/themeStore";
 
 interface ICaseStudyTourProps {
   /** Round affiche par la page qui monte ce composant, ex "V1". */
@@ -23,6 +24,8 @@ const FIXED_TOP_OFFSET = 92; // sous le bandeau fixe de CaseStudyRound.tsx (~76-
 
 export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseStudyTourProps) {
   const navigate = useNavigate();
+  const theme = useThemeStore((s) => s.theme);
+  const [scrollBlocked, setScrollBlocked] = useState(false);
   const status = useCaseStudyTourStore((s) => s.status);
   const stepIndex = useCaseStudyTourStore((s) => s.stepIndex);
   const hasAutoStarted = useCaseStudyTourStore((s) => s.hasAutoStarted);
@@ -65,11 +68,27 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
     // Etape narree (pas de "key", cf ICaseStudyTourStep) : aucun ecran reel a montrer, la bulle
     // reste affichee seule. Retour en haut de page pour un contexte neutre plutot que de laisser
     // la bulle flotter sur le scroll laisse par l'etape precedente, aucun spotlight/verrou a poser.
+    // "blockScroll" (V0) : en plus, scroll totalement bloque et page entierement grisee, pas juste
+    // ramenee en douceur a 0 comme les autres etapes narrees, cf version-guided-tour.html (18/08).
     if (!step.key) {
       lastRoundRef.current = step.round;
-      window.scrollTo({ top: 0, behavior: "smooth" });
       if (bubbleRef.current) bubbleRef.current.style.display = "";
       if (bottomNavRef.current) bottomNavRef.current.style.display = "none";
+      if (step.blockScroll) {
+        window.scrollTo(0, 0);
+        document.documentElement.style.overflow = "hidden";
+        setScrollBlocked(true);
+        const forceZeroScroll = () => {
+          if (window.scrollY !== 0) window.scrollTo(0, 0);
+        };
+        window.addEventListener("scroll", forceZeroScroll, { passive: true });
+        return () => {
+          document.documentElement.style.overflow = "";
+          setScrollBlocked(false);
+          window.removeEventListener("scroll", forceZeroScroll);
+        };
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
@@ -79,11 +98,15 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
     const roundChanged = lastRoundRef.current !== step.round;
     lastRoundRef.current = step.round;
 
+    // Opacite differenciee clair/sombre (18/08, alignee sur version-guided-tour.html) : le meme
+    // rgba(0,0,0,.72) pense pour le sombre paraissait trop sombre sur le fond clair par defaut de
+    // cette page (cf CaseStudyRound.tsx, bg-background clair par defaut).
+    const overlayColor = theme === "dark" ? "rgba(0,0,0,.72)" : "rgba(9,9,11,.55)";
     el.style.position = "relative";
     el.style.zIndex = "60";
     el.style.borderRadius = "14px";
     el.style.transition = "box-shadow .25s ease, margin-top .2s ease";
-    el.style.boxShadow = "0 0 0 9999px rgba(0,0,0,.72)";
+    el.style.boxShadow = `0 0 0 9999px ${overlayColor}`;
 
     let cancelled = false;
     let isProgrammaticScroll = false;
@@ -245,6 +268,14 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
 
   return (
     <>
+      {/* Cache plein ecran (V0 uniquement, "blockScroll") : aucune cible reelle a decouper autour,
+          simple overlay theme-aware, meme couleur que le spotlight ci-dessus. */}
+      {scrollBlocked && (
+        <div
+          className="fixed inset-0 z-[59]"
+          style={{ background: theme === "dark" ? "rgba(0,0,0,.72)" : "rgba(9,9,11,.55)" }}
+        />
+      )}
       <div
         ref={bubbleRef}
         className="fixed top-[104px] sm:top-[92px] left-4 sm:left-6 z-[61] max-w-[340px] rounded-lg bg-foreground px-4 py-3 text-sm leading-relaxed text-background shadow-xl"

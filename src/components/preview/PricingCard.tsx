@@ -26,13 +26,9 @@ const FORMSPREE_ENDPOINT = "https://formspree.io/f/mykarjar";
 export default function PricingCard({
   projectName,
   phone,
-  autoOpenDialog,
 }: {
   projectName: string;
   phone?: string;
-  /** Ouvre la modale de confirmation directement au montage (lien "Discutons-en" de la visite
-      guidee, ?discuter=1 lu par PreviewHome.tsx), sans preselection (memes defauts que d'habitude). */
-  autoOpenDialog?: boolean;
 }) {
   const [withSubscription, setWithSubscription] = useState(false);
   // Non pertinente une fois l'abonnement coche (nom de domaine deja inclus dedans) : decochee
@@ -48,15 +44,23 @@ export default function PricingCard({
   const [confirmed, setConfirmed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  // Un seul popover ouvert a la fois entre la bulle "tarif pilote" et la bulle "nom de domaine"
+  // (regle CLAUDE.md sur les popovers d'une meme carte), fermeture au clic en dehors. Aligne le
+  // 18/08 sur Projets/V1-Echanges/mockups/tarif-pilote-badge.html et preview-prospect.html.
+  const [openPopover, setOpenPopover] = useState<"pilote" | "domain" | null>(null);
+
+  useEffect(() => {
+    if (!openPopover) return;
+    function onDocClick() {
+      setOpenPopover(null);
+    }
+    document.addEventListener("click", onDocClick);
+    return () => document.removeEventListener("click", onDocClick);
+  }, [openPopover]);
 
   function openDialog() {
     setDialogOpen(true);
   }
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    if (autoOpenDialog) setDialogOpen(true);
-  }, []);
 
   async function handleConfirm() {
     setSubmitting(true);
@@ -93,7 +97,33 @@ export default function PricingCard({
 
   return (
     <div className="rounded-2xl border border-border bg-card p-6 max-w-md mx-auto text-left">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">Première facture</p>
+      <div className="flex items-center gap-1.5 mb-1 relative">
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pour démarrer</p>
+        <button
+          type="button"
+          aria-label="Tarif pilote, en savoir plus"
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpenPopover((p) => (p === "pilote" ? null : "pilote"));
+          }}
+          className={`inline-flex items-center justify-center h-[15px] w-[15px] rounded-full border text-[10px] font-bold italic font-serif transition-colors ${
+            openPopover === "pilote"
+              ? "border-foreground text-foreground"
+              : "border-border text-muted-foreground hover:text-foreground hover:border-foreground"
+          }`}
+        >
+          i
+        </button>
+        {openPopover === "pilote" && (
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="absolute top-[22px] left-0 z-10 w-[220px] rounded-lg bg-foreground text-background text-xs leading-relaxed p-2.5 shadow-lg"
+          >
+            <strong className="block mb-0.5">Tarif pilote</strong>
+            10 places à ce tarif de lancement, 7 encore disponibles.
+          </div>
+        )}
+      </div>
       <p className="text-3xl font-bold text-foreground mb-4">{total}€</p>
 
       <ul className="text-sm text-foreground space-y-2 mb-4">
@@ -103,7 +133,7 @@ export default function PricingCard({
         </li>
         <li className="flex items-center gap-2 whitespace-nowrap">
           <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
-          5 allers-retours (V1 à V6)
+          5 allers-retours (V1 à V6) pour affiner votre site avec vous
         </li>
         <li className="flex items-center gap-2 whitespace-nowrap">
           <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
@@ -133,6 +163,8 @@ export default function PricingCard({
         )}
       </ul>
 
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2 mt-1">Options</p>
+
       <label className="flex items-start gap-3 rounded-xl border border-border p-3 mb-2 cursor-pointer hover:border-foreground/30 transition-colors">
         <input
           type="checkbox"
@@ -153,26 +185,54 @@ export default function PricingCard({
         </span>
       </label>
 
-      <label
-        className={`flex items-start gap-3 rounded-xl border border-border p-3 mb-2 transition-colors ${
-          withSubscription ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:border-foreground/30"
-        }`}
-      >
-        <input
-          type="checkbox"
-          checked={withDomain}
-          disabled={withSubscription}
-          onChange={(e) => setWithDomain(e.target.checked)}
-          className="mt-0.5 h-4 w-4 rounded border-input accent-foreground"
-        />
-        <span className="block text-sm text-foreground">
-          <span className="font-medium">Nom de domaine, +{DOMAIN_PRICE_YEAR}€</span>
-          <span className="text-muted-foreground">
-            {" "}
-            : couvre la 1ère année, renouvelable ensuite chaque année ({DOMAIN_PRICE_YEAR}€/an).
+      <div className="relative mb-2">
+        <label
+          className={`flex items-start gap-3 rounded-xl border border-border p-3 pr-8 transition-colors ${
+            withSubscription ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:border-foreground/30"
+          }`}
+        >
+          <input
+            type="checkbox"
+            checked={withDomain}
+            disabled={withSubscription}
+            onChange={(e) => setWithDomain(e.target.checked)}
+            className="mt-0.5 h-4 w-4 rounded border-input accent-foreground"
+          />
+          <span className="block text-sm text-foreground">
+            <span className="font-medium">Nom de domaine, +{DOMAIN_PRICE_YEAR}€</span>
+            <span className="text-muted-foreground">
+              {" "}
+              : couvre la 1ère année, renouvelable ensuite chaque année ({DOMAIN_PRICE_YEAR}€/an).
+            </span>
           </span>
-        </span>
-      </label>
+        </label>
+        {/* Bouton "i" hors du <label> (frere, pas descendant) : un clic dessus ne doit jamais
+            cocher/decocher l'option, meme principe que preview-prospect.html (retour 17/08). */}
+        <button
+          type="button"
+          aria-label="Qu'est-ce qu'un nom de domaine ?"
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpenPopover((p) => (p === "domain" ? null : "domain"));
+          }}
+          className={`absolute top-2.5 right-2.5 inline-flex items-center justify-center h-5 w-5 rounded-full border text-[11px] transition-colors ${
+            openPopover === "domain"
+              ? "border-foreground text-foreground"
+              : "border-muted-foreground text-muted-foreground hover:text-foreground hover:border-foreground"
+          }`}
+        >
+          ⓘ
+        </button>
+        {openPopover === "domain" && (
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="mt-2 rounded-lg bg-foreground/[0.06] border border-border p-2.5 text-xs leading-relaxed text-muted-foreground"
+          >
+            Le nom de domaine, c'est l'adresse de votre site (ex. gillescobigo.com). Il ne s'achète jamais une fois
+            pour toutes : le paiement se renouvelle chaque année pour qu'il continue à pointer vers votre site.
+          </div>
+        )}
+      </div>
       {withSubscription && (
         <p className="text-xs text-muted-foreground mb-2 ml-1">Déjà inclus dans l'abonnement Sérénité.</p>
       )}
