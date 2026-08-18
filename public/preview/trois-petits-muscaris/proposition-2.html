@@ -111,6 +111,10 @@
   .map-placeholder iframe{width:100%; height:160px; border:0; display:block;}
 
   .contact-bloc{max-width:480px; margin:0 auto; padding:0 24px 64px; text-align:center;}
+  .contact-bloc form{display:flex; flex-direction:column; gap:14px; text-align:left;}
+  .contact-bloc input, .contact-bloc textarea{padding:12px 16px; border:1px solid var(--accent); background:rgba(255,255,255,.5); color:var(--text); font-family:inherit; font-size:16px; border-radius:6px;}
+  .contact-bloc input::placeholder, .contact-bloc textarea::placeholder{color:rgba(0,0,0,.4);}
+  .contact-bloc textarea{min-height:100px; resize:vertical;}
   .contact-bloc h2{font-size:26px; margin-bottom:14px;}
   .contact-bloc p{font-size:15px; opacity:.8; margin-bottom:18px;}
 
@@ -161,7 +165,7 @@
 
 <div class="proposition-nav">
   <a href="./v1.html">← Revoir la proposition 1</a>
-  <p class="proposition-nav-reassure">Une autre piste, volontairement différente. Ce qui vous plaît dans l'une ou l'autre devient le point de départ.</p>
+  <p class="proposition-nav-reassure">Voici une autre piste, volontairement différente. Ce qui vous plaît dans l'une ou l'autre devient le point de départ.</p>
 </div>
 
 <div class="hero">
@@ -224,8 +228,12 @@
 
 <div class="contact-bloc" id="contact">
   <h2>Nous écrire</h2>
-  <p>contact@troispetitsmuscaris.fr</p>
-  <a class="btn" href="mailto:contact@troispetitsmuscaris.fr">Prendre rendez-vous</a>
+  <form action="#" method="POST">
+    <input type="text" name="nom" placeholder="Votre nom" required>
+    <input type="email" name="email" placeholder="Votre email" required>
+    <textarea name="message" placeholder="Votre message" required></textarea>
+    <button type="submit" class="btn">Envoyer</button>
+  </form>
 </div>
 
 <footer>TROIS PETITS MUSCARIS · Mont-de-Marsan · contact@troispetitsmuscaris.fr · <a href="https://www.facebook.com/p/Trois-Petits-Muscaris-100089334460640/" target="_blank" rel="noopener noreferrer">Facebook</a></footer>
