@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Template Designs, portraits en cercle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#c46a52; --accent-dark:#8f4433; --creme:#fdf5ef; --text:#2c211c;
+    --font-a:'Fraunces',serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{overflow-x:clip;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--text); background:var(--creme); line-height:1.6;}
+  img{max-width:100%; display:block;}
+  h1,h2,h3{font-family:var(--font-a); font-weight:700;}
+  .btn{display:inline-block; padding:13px 28px; background:var(--accent); color:#fff; text-decoration:none; border-radius:999px; font-weight:700; font-size:14.5px; border:none; cursor:pointer; font-family:inherit;}
+  .btn:hover{background:var(--accent-dark);}
+  .reveal{opacity:0; transform:translateY(20px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.show{opacity:1; transform:translateY(0);}
+
+  .to-top{position:fixed; bottom:16px; right:16px; z-index:999; width:44px; height:44px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease; box-shadow:0 6px 16px rgba(0,0,0,.25);}
+  .to-top.show{opacity:1; pointer-events:auto;}
+
+  /* Registre "portrait/artisan", chaleureux et organique : le cercle (photo,
+     logo, chiffres cles) est la forme recurrente de toute la page, jamais un
+     rectangle. Rompt volontairement l'alignement en grille strict. */
+  .hero{max-width:1000px; margin:0 auto; padding:70px 5vw 30px; display:flex; align-items:center; gap:48px;}
+  .hero .portrait{width:260px; height:260px; border-radius:50%; flex-shrink:0; background:repeating-linear-gradient(135deg, rgba(196,106,82,.14), rgba(196,106,82,.14) 10px, rgba(196,106,82,.22) 10px, rgba(196,106,82,.22) 20px); display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--accent-dark); font-weight:700; border:6px solid #fff; box-shadow:0 14px 34px rgba(196,106,82,.22); position:relative; margin-top:20px;}
+  .hero .logo-badge{position:absolute; bottom:-6px; right:-6px; width:64px; height:64px; border-radius:50%; background:var(--accent); border:4px solid var(--creme); display:flex; align-items:center; justify-content:center; color:#fff; font-size:10px; font-weight:700;}
+  .hero .tagline{font-size:12px; text-transform:uppercase; letter-spacing:.16em; color:var(--accent); margin-bottom:10px;}
+  .hero h1{font-size:clamp(30px,5vw,46px); margin-bottom:12px;}
+  .hero p{font-size:15px; max-width:400px; margin-bottom:20px;}
+
+  /* Trio de cercles chiffres, offsets verticalement (organique plutot que
+     grille figee) plutot que 3 cartes rectangulaires alignees. */
+  .facts{max-width:1000px; margin:20px auto 0; padding:0 5vw; display:flex; justify-content:center; gap:36px; flex-wrap:wrap;}
+  .facts > div{width:150px; height:150px; border-radius:50%; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; box-shadow:0 10px 24px rgba(196,106,82,.14); padding:14px;}
+  .facts > div:nth-child(2){margin-top:26px;}
+  .facts > div:nth-child(3){margin-top:-14px;}
+  .facts .val{font-family:var(--font-a); font-size:22px; color:var(--accent); font-weight:700;}
+  .facts .label{font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; opacity:.7; margin-top:4px;}
+
+  .concept{max-width:640px; margin:60px auto 0; padding:0 24px; text-align:center;}
+  .concept h2{font-size:26px; margin-bottom:14px; color:var(--accent);}
+
+  .steps{max-width:900px; margin:56px auto 0; padding:0 5vw; display:flex; justify-content:center; gap:34px; flex-wrap:wrap; text-align:center;}
+  .steps > div{width:170px;}
+  .steps .num{width:56px; height:56px; border-radius:50%; background:var(--accent); color:#fff; font-family:var(--font-a); font-size:20px; font-weight:700; display:flex; align-items:center; justify-content:center; margin:0 auto 12px;}
+  .steps p{font-size:13.5px;}
+
+  .quote{max-width:600px; margin:60px auto 0; padding:0 24px; text-align:center;}
+  .quote p{font-family:var(--font-a); font-style:italic; font-size:24px; color:var(--accent-dark);}
+
+  .closing{max-width:1000px; margin:60px auto 0; padding:0 5vw 70px; display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+  .map-placeholder{border-radius:20px; background:repeating-linear-gradient(135deg, rgba(196,106,82,.08), rgba(196,106,82,.08) 10px, rgba(196,106,82,.13) 10px, rgba(196,106,82,.13) 20px); display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--accent); font-weight:700; min-height:220px;}
+  .contact-card{background:#fff; border-radius:20px; padding:28px; box-shadow:0 8px 22px rgba(196,106,82,.1);}
+  .contact-card h3{color:var(--accent); font-size:18px; margin-bottom:14px;}
+  .contact-card form{display:flex; flex-direction:column; gap:12px;}
+  .contact-card input, .contact-card textarea{padding:11px 14px; border-radius:12px; border:1px solid rgba(196,106,82,.25); font-family:inherit; font-size:14px; background:var(--creme);}
+  .contact-card textarea{min-height:80px; resize:vertical;}
+
+  footer{text-align:center; padding:26px 24px; background:var(--accent-dark); color:rgba(255,255,255,.75); font-size:12.5px;}
+
+  @media(max-width:760px){
+    .hero{flex-direction:column; text-align:center; padding:56px 22px 20px;}
+    .hero .portrait{width:190px; height:190px;}
+    .facts > div{width:120px; height:120px; margin-top:0 !important;}
+    .closing{grid-template-columns:1fr; padding:0 22px 60px;}
+  }
+</style>
+</head>
+<body>
+
+<button class="to-top" id="toTop" aria-label="Retour en haut">↑</button>
+
+<div class="hero">
+  <div class="portrait">Photo de l'artisan<div class="logo-badge">LOGO</div></div>
+  <div>
+    <div class="tagline">[Secteur d'activité]</div>
+    <h1>[Nom de la boutique]</h1>
+    <p>[Accroche courte, une phrase sur ce qui rend la boutique unique]</p>
+    <a href="#" class="btn">Découvrir</a>
+  </div>
+</div>
+
+<div class="facts reveal">
+  <div><div class="val">★★★★★</div><div class="label">4,8/5 sur [N] avis</div></div>
+  <div><div class="val">[N]</div><div class="label">abonnés Instagram</div></div>
+  <div><div class="val">[N]</div><div class="label">ans d'expérience</div></div>
+</div>
+
+<div class="concept reveal">
+  <h2>Notre parti pris</h2>
+  <p>[Texte de présentation : ce que fait la boutique, pour qui, ce qui la distingue d'un commerce générique du même secteur.]</p>
+</div>
+
+<div class="steps reveal">
+  <div><div class="num">1</div><p>[Étape 1]</p></div>
+  <div><div class="num">2</div><p>[Étape 2]</p></div>
+  <div><div class="num">3</div><p>[Étape 3]</p></div>
+</div>
+
+<div class="quote reveal">
+  <p>« [Phrase signature, courte et mémorable] »</p>
+</div>
+
+<div class="closing">
+  <div class="map-placeholder reveal">Emplacement de la carte Google Maps</div>
+  <div class="contact-card reveal">
+    <h3>Nous écrire</h3>
+    <form action="#" method="POST">
+      <input type="text" name="nom" placeholder="Votre nom" required>
+      <input type="email" name="email" placeholder="Votre email" required>
+      <textarea name="message" placeholder="Votre message" required></textarea>
+      <button type="submit" class="btn">Envoyer</button>
+    </form>
+  </div>
+</div>
+
+<footer>[NOM DE LA BOUTIQUE] · [Ville] · [Email]</footer>
+
+<script>
+  var revealObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('show'); });
+  }, {threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el){ revealObs.observe(el); });
+
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    if(window.scrollY > window.innerHeight * 0.6){ toTop.classList.add('show'); } else { toTop.classList.remove('show'); }
+  }, {passive:true});
+  toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+</script>
+</body>
+</html>
