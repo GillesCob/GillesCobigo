@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { CASE_STUDY_TOUR_STEPS, useCaseStudyTourStore } from "@/store/caseStudyTourStore";
@@ -10,16 +10,18 @@ interface ICaseStudyTourProps {
   search: string;
   /** Destination du CTA de fin de visite, absente si la page est ouverte sans contexte prospect. */
   ctaHref?: string;
-  /** Destination du CTA "Discutons-en" affiche des l'etape 1, absente sans contexte prospect. */
-  discussHref?: string;
 }
 
-// Visite guidee multi-versions sur /cas-client/<round> : porte le prototype valide dans le vault
-// (Projets/V1-Echanges/mockups/version-guided-tour.html, 16/08) en composant React. Spotlight par
-// box-shadow demesure (pas de masque SVG/canvas), bulle positionnee par calcul (au-dessus ou a
-// droite selon l'etape), navigation reelle entre rounds pilotee par le store (CaseStudyRound.tsx
-// est demonte/remonte a chaque changement de route, le store Zustand survit).
-export default function CaseStudyTour({ currentRound, search, ctaHref, discussHref }: ICaseStudyTourProps) {
+// Bulle fixed-top + verrou de scroll + bascule bulle/barre basse pendant un scroll actif : porte
+// integralement le 17/08 la mecanique validee sur public/cerithe-v1-6-0/index.html (demandee
+// explicitement par Gilles, "toutes les regles appliquees dans ce lien doivent etre transposees").
+// Remplace l'ancien positionnement "above"/"right" par calcul de rect (rAF loop), abandonne sur
+// Cerithe apres plusieurs bugs de rognage corriges le 17/08 : bulle qui sortait de l'ecran sur une
+// section haute, texte tronque en haut de page. Fixed-top n'a plus ce probleme par construction
+// (position CSS constante, jamais calculee depuis la cible).
+const FIXED_TOP_OFFSET = 92; // sous le bandeau fixe de CaseStudyRound.tsx (~76-92px selon le viewport)
+
+export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseStudyTourProps) {
   const navigate = useNavigate();
   const status = useCaseStudyTourStore((s) => s.status);
   const stepIndex = useCaseStudyTourStore((s) => s.stepIndex);
@@ -35,7 +37,7 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, discussHr
   const isOnRightRound = status === "active" && step.round === roundLower;
 
   const bubbleRef = useRef<HTMLDivElement>(null);
-  const [bubblePos, setBubblePos] = useState<{ top: number; left: number } | null>(null);
+  const bottomNavRef = useRef<HTMLDivElement>(null);
   const lastRoundRef = useRef<string | null>(null);
 
   // Auto-demarrage uniquement en arrivant sur la V1, une seule fois par session de navigation
@@ -55,14 +57,24 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, discussHr
     }
   }, [status, step, roundLower, search, navigate]);
 
-  // Spotlight + positionnement de la bulle, uniquement quand l'etape correspond a la version
-  // reellement affichee (sinon la navigation ci-dessus est en cours).
+  // Spotlight + verrou de scroll + bascule bulle/barre basse, uniquement quand l'etape correspond
+  // a la version reellement affichee (sinon la navigation ci-dessus est en cours).
   useEffect(() => {
     if (!isOnRightRound) return;
 
-    const found = document.querySelector<HTMLElement>(`[data-tour-key="${step.key}"]`);
-    if (!found) return;
-    const el = found;
+    // Etape narree (pas de "key", cf ICaseStudyTourStep) : aucun ecran reel a montrer, la bulle
+    // reste affichee seule. Retour en haut de page pour un contexte neutre plutot que de laisser
+    // la bulle flotter sur le scroll laisse par l'etape precedente, aucun spotlight/verrou a poser.
+    if (!step.key) {
+      lastRoundRef.current = step.round;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (bubbleRef.current) bubbleRef.current.style.display = "";
+      if (bottomNavRef.current) bottomNavRef.current.style.display = "none";
+      return;
+    }
+
+    const el = document.querySelector<HTMLElement>(`[data-tour-key="${step.key}"]`);
+    if (!el) return;
 
     const roundChanged = lastRoundRef.current !== step.round;
     lastRoundRef.current = step.round;
@@ -70,102 +82,101 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, discussHr
     el.style.position = "relative";
     el.style.zIndex = "60";
     el.style.borderRadius = "14px";
-    el.style.transition = "box-shadow .25s ease";
+    el.style.transition = "box-shadow .25s ease, margin-top .2s ease";
     el.style.boxShadow = "0 0 0 9999px rgba(0,0,0,.72)";
 
-    let lastTop = NaN;
-    let lastLeft = NaN;
-    function place() {
-      const r = el.getBoundingClientRect();
-      let top: number;
-      let left: number;
-      if (step.placement === "right" && window.innerWidth - r.right >= 360) {
-        top = r.top + window.scrollY;
-        left = r.right + window.scrollX + 20;
-      } else if (step.placement === "right") {
-        // Pas assez de place a droite (mobile, la nav de versions prend toute la largeur) :
-        // repli sous la cible plutot que hors ecran, retour de Gilles le 16/08.
-        top = r.bottom + window.scrollY + 16;
-        left = Math.max(Math.min(r.left + window.scrollX, window.scrollX + window.innerWidth - 340 - 24), 16);
-      } else {
-        const bubbleHeight = bubbleRef.current?.offsetHeight ?? 0;
-        top = r.top + window.scrollY - bubbleHeight - 16;
-        left = Math.max(Math.min(r.left + window.scrollX, window.scrollX + window.innerWidth - 340 - 24), 16);
-      }
-      // Evite un re-render (donc un nouvel objet bubblePos) a chaque frame de la boucle rAF quand
-      // rien n'a bouge : la cible/le scroll sont stables la plupart du temps entre deux frames.
-      if (top === lastTop && left === lastLeft) return;
-      lastTop = top;
-      lastLeft = left;
-      setBubblePos({ top, left });
-    }
-
-    // Reset instantane du scroll au changement de version : la nouvelle page peut etre bien
-    // plus courte ou plus longue que la precedente, un reset evite un saut visuel imprevisible
-    // avant notre propre scroll anime (meme bug que sur le prototype vault, 16/08).
-    // Offset "above" derive de la vraie hauteur de la bulle (deja rendue avec le contenu de cette
-    // etape a ce stade) plutot qu'un chiffre fige : l'etape 1 (CTA "Discutons-en" en plus) est
-    // plus haute que les autres, un offset fixe la laissait deborder sous le bandeau (meme bug
-    // que sur le prototype vault, 16/08).
-    const bubbleHeight = bubbleRef.current?.offsetHeight ?? 130;
-    const scrollOffset = step.placement === "right" ? 130 : (96 + bubbleHeight);
-    function scrollToEl() {
-      const targetY = el.getBoundingClientRect().top + window.scrollY - scrollOffset;
-      window.scrollTo({ top: Math.max(targetY, 0), behavior: "smooth" });
-    }
-
-    // Repositionnement en boucle (requestAnimationFrame) tant que l'etape est affichee, au lieu
-    // d'un delai fixe apres le scroll : un setTimeout devine une duree d'animation, une boucle
-    // rAF s'aligne toujours sur l'etat reel, quel que soit le temps que prend le scroll (cause
-    // des rognages constates en prod le 16/08 sur l'etape sidenav et l'etape V3).
-    let rafId = 0;
-    function loop() {
-      place();
-      rafId = requestAnimationFrame(loop);
-    }
-
-    // Attendre que les images de la page (captures d'ecran des propositions) aient fini de
-    // charger avant de calculer le scroll : tant qu'une image au-dessus de la cible n'a pas sa
-    // taille reelle, la page est plus courte qu'elle ne le sera, et le scroll calcule s'arrete
-    // trop tot (cause du "ca ne descend pas assez" sur les etapes V2/V6, retour de Gilles le
-    // 16/08). La bulle (boucle rAF ci-dessus) se recale d'elle-meme sans attendre, seul le
-    // scroll a besoin d'etre differe. "cancelled" evite qu'un appel differe d'une etape deja
-    // quittee (clic rapide Suivant/Precedent) ne vienne re-scroller au mauvais endroit.
     let cancelled = false;
-    function waitForImages(maxWaitMs: number): Promise<void> {
-      return new Promise((resolve) => {
-        const pending = Array.from(document.images).filter((img) => !img.complete);
-        if (pending.length === 0) {
-          resolve();
-          return;
-        }
-        let remaining = pending.length;
-        const done = () => {
-          remaining -= 1;
-          if (remaining <= 0) resolve();
-        };
-        pending.forEach((img) => {
-          img.addEventListener("load", done, { once: true });
-          img.addEventListener("error", done, { once: true });
-        });
-        setTimeout(resolve, maxWaitMs);
-      });
+    let isProgrammaticScroll = false;
+    let lockMin: number | null = null;
+    let lockMax: number | null = null;
+
+    // Marge dynamique quand la cible est trop pres du haut du document pour que le scroll seul
+    // la degage de la bulle fixe (meme bug que Cerithe sur "tour-intro"/"tour-specs", corrige ici
+    // par un calcul generique plutot que par une liste d'etapes en dur : la marge injectee est
+    // exactement le manque constate, quelle que soit l'etape concernee).
+    function applyTopMargin(offset: number) {
+      const targetTopDoc = el!.getBoundingClientRect().top + window.scrollY - (parseFloat(el!.style.marginTop) || 0);
+      const shortfall = offset - targetTopDoc;
+      el!.style.marginTop = shortfall > 0 ? `${shortfall}px` : "";
+    }
+
+    function computeLock(offset: number) {
+      const r = el!.getBoundingClientRect();
+      const targetTopDoc = r.top + window.scrollY;
+      const targetBottomDoc = r.bottom + window.scrollY;
+      lockMin = Math.max(0, targetTopDoc - offset);
+      lockMax = Math.max(lockMin, targetBottomDoc - window.innerHeight + 80);
+    }
+
+    function scrollToTarget(offset: number) {
+      const targetY = el!.getBoundingClientRect().top + window.scrollY - offset;
+      isProgrammaticScroll = true;
+      window.scrollTo({ top: Math.max(targetY, 0), behavior: "smooth" });
+      setTimeout(() => {
+        isProgrammaticScroll = false;
+      }, 320);
+    }
+
+    function settle() {
+      const bubbleHeight = bubbleRef.current?.offsetHeight ?? 140;
+      const offset = FIXED_TOP_OFFSET + bubbleHeight + 16;
+      applyTopMargin(offset);
+      computeLock(offset);
+      scrollToTarget(offset);
     }
 
     if (roundChanged) window.scrollTo(0, 0);
-    scrollToEl();
-    rafId = requestAnimationFrame(loop);
-    waitForImages(1200).then(() => {
-      if (!cancelled) scrollToEl();
-    });
+    settle();
 
-    window.addEventListener("resize", place);
+    // Attendre que les images (captures d'ecran des propositions) aient fini de charger avant de
+    // recalculer : tant qu'une image au-dessus de la cible n'a pas sa taille reelle, la page est
+    // plus courte qu'elle ne le sera, et le scroll s'arrete trop tot.
+    const pendingImages = Array.from(document.images).filter((img) => !img.complete);
+    let imgTimeout: ReturnType<typeof setTimeout> | undefined;
+    if (pendingImages.length > 0) {
+      let remaining = pendingImages.length;
+      const done = () => {
+        remaining -= 1;
+        if (remaining <= 0 && !cancelled) settle();
+      };
+      pendingImages.forEach((img) => {
+        img.addEventListener("load", done, { once: true });
+        img.addEventListener("error", done, { once: true });
+      });
+      imgTimeout = setTimeout(() => {
+        if (!cancelled) settle();
+      }, 1200);
+    }
+
+    function onScroll() {
+      if (lockMin === null || lockMax === null) return;
+      if (!isProgrammaticScroll) {
+        if (window.scrollY > lockMax!) window.scrollTo(0, lockMax!);
+        else if (window.scrollY < lockMin!) window.scrollTo(0, lockMin!);
+      }
+      // Pendant un scroll actif, loin du haut de la zone verrouillee : bulle cachee, barre basse
+      // Precedent/Suivant a la place (jamais les deux ensemble). Manipulation directe du DOM via
+      // ref plutot qu'un setState, pour ne pas re-render a chaque evenement de scroll.
+      const nearTop = window.scrollY <= lockMin! + 24;
+      if (bubbleRef.current) bubbleRef.current.style.display = nearTop ? "" : "none";
+      if (bottomNavRef.current) bottomNavRef.current.style.display = nearTop ? "none" : "grid";
+    }
+
+    function onResize() {
+      const bubbleHeight = bubbleRef.current?.offsetHeight ?? 140;
+      computeLock(FIXED_TOP_OFFSET + bubbleHeight + 16);
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
 
     return () => {
       cancelled = true;
+      if (imgTimeout) clearTimeout(imgTimeout);
       el.style.boxShadow = "none";
-      window.removeEventListener("resize", place);
-      cancelAnimationFrame(rafId);
+      el.style.marginTop = "";
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOnRightRound, step]);
@@ -181,6 +192,11 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, discussHr
     }
     window.scrollTo(0, 0);
   }, [status, roundLower, search, navigate]);
+
+  function revealBubble() {
+    if (bubbleRef.current) bubbleRef.current.style.display = "";
+    if (bottomNavRef.current) bottomNavRef.current.style.display = "none";
+  }
 
   // bottom-left, pas bottom-right : ScrollToTop.tsx (bouton "remonter en haut", deja present sur
   // toutes les pages) occupe deja ce coin avec un z-index plus eleve, il cachait ce bouton
@@ -207,17 +223,17 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, discussHr
         }}
       >
         <div className="max-w-lg rounded-2xl border border-border bg-card p-14 text-center shadow-2xl">
-          <h2 className="mb-5 text-2xl font-bold">Alors, ça vous plaît ?</h2>
+          <h2 className="mb-5 text-2xl font-bold">Vous avez vu comment on y arrive ensemble.</h2>
           <p className="mb-9 text-base leading-relaxed text-muted-foreground">
-            Vous venez de voir tout le parcours, du premier jet à la version finale. Je peux faire pareil pour
-            votre site.
+            Le point de départ de Mylène n'était pas parfait non plus. C'est l'échange qui a fait la différence, pas
+            la première version. Pour votre site, ce sera exactement la même méthode.
           </p>
           {ctaHref && (
             <a
               href={ctaHref}
               className="inline-flex items-center gap-2 rounded-full bg-foreground px-7 py-3.5 text-base font-semibold text-background"
             >
-              Découvrez comment <ArrowRight size={16} />
+              On passe à la suite <ArrowRight size={16} />
             </a>
           )}
         </div>
@@ -225,53 +241,89 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, discussHr
     );
   }
 
-  if (!isOnRightRound || !bubblePos) return null;
-
-  const bubbleStyle: CSSProperties = { position: "absolute", top: bubblePos.top, left: bubblePos.left, zIndex: 61 };
+  if (!isOnRightRound) return null;
 
   return (
-    <div
-      ref={bubbleRef}
-      style={bubbleStyle}
-      className="max-w-[340px] rounded-lg bg-foreground px-4 py-3 text-sm leading-relaxed text-background shadow-xl"
-    >
-      <div className="mb-1.5 text-[11px] font-bold uppercase tracking-wide opacity-55">
-        Étape {stepIndex + 1} / {CASE_STUDY_TOUR_STEPS.length}
-      </div>
-      <p className="mb-3.5">{step.text}</p>
-      {/* Discutons-en : generalise a toutes les etapes (16/08, propose comme prototype sur l'etape 1
-          seule puis valide sur les 6 etapes le meme jour). Ouvre la page tarif du prospect avec
-          ?discuter=1, lu par PreviewHome/PricingCard pour ouvrir directement la modale de
-          confirmation du numero (rien de preselectionne, options discutees au telephone). */}
-      {discussHref && (
-        <div className="mb-3 border-t border-background/25 pt-3">
-          <a href={discussHref} className="inline-flex items-center gap-1.5 text-[13px] font-bold opacity-90 hover:opacity-100 hover:underline">
-            🎯 Discutons-en →
-          </a>
+    <>
+      <div
+        ref={bubbleRef}
+        className="fixed top-[104px] sm:top-[92px] left-4 sm:left-6 z-[61] max-w-[340px] rounded-lg bg-foreground px-4 py-3 text-sm leading-relaxed text-background shadow-xl"
+      >
+        {/* V0 (index 0) n'est pas comptee dans les "4 etapes" annoncees a Gilles (cf
+            caseStudyTourStore.ts) : pas de compteur sur l'intro, "Étape 1/4" demarre au premier
+            ecran reellement montre. */}
+        {stepIndex > 0 && (
+          <div className="mb-1.5 text-[11px] font-bold uppercase tracking-wide opacity-55">
+            Étape {stepIndex} / {CASE_STUDY_TOUR_STEPS.length - 1}
+          </div>
+        )}
+        {step.text.map((line, i) => (
+          <p key={i} className="mb-3.5">
+            {line}
+          </p>
+        ))}
+        <div className="flex items-center justify-between gap-2.5">
+          <button type="button" onClick={skip} className="text-xs underline opacity-55">
+            Visiter librement
+          </button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={prev}
+              disabled={stepIndex === 0}
+              className="rounded-md border border-current px-3 py-1.5 text-xs font-semibold opacity-60 disabled:opacity-25"
+            >
+              ← Précédent
+            </button>
+            <button
+              type="button"
+              onClick={next}
+              className="rounded-md bg-background px-3 py-1.5 text-xs font-semibold text-foreground"
+            >
+              {stepIndex === CASE_STUDY_TOUR_STEPS.length - 1 ? "Terminer" : "Suivant →"}
+            </button>
+          </div>
         </div>
-      )}
-      <div className="flex items-center justify-between gap-2.5">
-        <button type="button" onClick={skip} className="text-xs underline opacity-55">
-          Visiter librement
+      </div>
+
+      {/* Barre basse, visible uniquement pendant un scroll actif loin du haut de la zone verrouillee
+          (bascule geree en dehors de React, cf onScroll ci-dessus, pour ne pas re-render a chaque
+          frame de scroll). Grid 3 colonnes : le compteur d'etape reste au centre exact de la barre,
+          jamais decale par un groupe de gauche/droite de largeur differente. */}
+      <div
+        ref={bottomNavRef}
+        style={{ display: "none" }}
+        className="fixed inset-x-0 bottom-0 z-[62] grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-t border-border bg-card px-4 py-2.5 shadow-[0_-8px_20px_rgba(0,0,0,.25)]"
+      >
+        <button
+          type="button"
+          onClick={revealBubble}
+          title="Revoir le texte de l'étape"
+          className="justify-self-start rounded-md border border-border px-3 py-2 text-[15px] leading-none"
+        >
+          💬
         </button>
-        <div className="flex gap-2">
+        <span className="justify-self-center text-[11.5px] font-bold uppercase tracking-wide text-muted-foreground">
+          Étape {stepIndex} / {CASE_STUDY_TOUR_STEPS.length - 1}
+        </span>
+        <div className="justify-self-end flex items-center gap-2">
           <button
             type="button"
             onClick={prev}
             disabled={stepIndex === 0}
-            className="rounded-md border border-current px-3 py-1.5 text-xs font-semibold opacity-60 disabled:opacity-25"
+            className="rounded-md border border-border px-4 py-2 text-xs font-semibold disabled:opacity-35"
           >
             ← Précédent
           </button>
           <button
             type="button"
             onClick={next}
-            className="rounded-md bg-background px-3 py-1.5 text-xs font-semibold text-foreground"
+            className="rounded-md bg-foreground px-4 py-2 text-xs font-semibold text-background"
           >
             {stepIndex === CASE_STUDY_TOUR_STEPS.length - 1 ? "Terminer" : "Suivant →"}
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 }

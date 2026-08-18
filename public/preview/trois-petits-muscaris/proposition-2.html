@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/jpeg" href="./logo.jpg">
+<title>Trois Petits Muscaris, proposition de site (2/2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Special+Elite&family=Caveat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#121356; --accent-dark:#0b0c3f; --creme:#e9e6f2; --text:#1c1d3d;
+    --font-a:'Special Elite',serif;
+    --font-signature:'Caveat',cursive;
+    --paper:#f7f6fb;
+    --paper-line:rgba(18,19,86,.08);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{overflow-x:clip;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--text); background:var(--creme); line-height:1.65;}
+  img{max-width:100%; display:block;}
+  h1,h2,h3{font-family:var(--font-a); font-weight:700;}
+  .btn{display:inline-block; padding:14px 32px; background:var(--accent); color:#fff; text-decoration:none; border-radius:4px; font-weight:700; font-size:15px; border:none; cursor:pointer; font-family:inherit;}
+  .btn:hover{background:var(--accent-dark);}
+  .to-top{position:fixed; bottom:76px; right:16px; z-index:999; width:44px; height:44px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease; box-shadow:0 6px 16px rgba(0,0,0,.25);}
+  .to-top.show{opacity:1; pointer-events:auto;}
+
+  /* ===== Concept lettre artisan (adapte de design-letter-artisan) ===== */
+
+  body{
+    background:
+      radial-gradient(ellipse at top, #f0eef8 0%, var(--creme) 60%);
+    padding:56px 20px 40px;
+  }
+
+  .enveloppe-intro{
+    max-width:640px;
+    margin:0 auto 28px;
+    text-align:center;
+  }
+  .enveloppe-intro .tampon{
+    display:inline-block;
+    font-family:var(--font-a);
+    font-size:12px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--accent);
+    border:2px solid var(--accent);
+    border-radius:50%;
+    width:76px; height:76px;
+    line-height:1.3;
+    padding-top:22px;
+    transform:rotate(-8deg);
+    opacity:.75;
+  }
+
+  .lettre-page{
+    max-width:640px;
+    margin:0 auto;
+    background:var(--paper);
+    background-image:repeating-linear-gradient(
+      var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px
+    );
+    border:1px solid rgba(28,29,61,.08);
+    box-shadow:0 24px 60px rgba(28,29,61,.18), 0 4px 14px rgba(28,29,61,.1);
+    padding:52px 46px 60px;
+    position:relative;
+  }
+  .lettre-page::before{
+    content:"";
+    position:absolute;
+    inset:14px;
+    border:1px solid rgba(18,19,86,.15);
+    pointer-events:none;
+  }
+
+  .entete{
+    padding-bottom:24px;
+    margin-bottom:30px;
+    border-bottom:2px solid var(--accent);
+    position:relative;
+    z-index:1;
+  }
+  .entete .nom-boutique{
+    font-family:var(--font-a);
+    font-size:26px;
+    color:var(--accent);
+    letter-spacing:.5px;
+  }
+  .entete .baseline{
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    opacity:.65;
+    margin-top:6px;
+  }
+  .entete .lieu-date{
+    margin-top:18px;
+    font-family:var(--font-a);
+    font-size:13.5px;
+    text-align:right;
+    opacity:.8;
+  }
+
+  .corps-lettre{
+    position:relative;
+    z-index:1;
+    font-size:16px;
+  }
+  .corps-lettre .salutation{
+    font-family:var(--font-a);
+    font-size:19px;
+    margin-bottom:18px;
+    color:var(--accent);
+  }
+  .corps-lettre p{
+    margin-bottom:16px;
+    text-indent:26px;
+  }
+  .corps-lettre p:first-of-type::first-letter{
+    font-family:var(--font-a);
+    font-size:38px;
+    color:var(--accent);
+    float:left;
+    line-height:1;
+    padding-right:8px;
+    padding-top:4px;
+  }
+
+  .photo-jointe{position:relative; z-index:1; max-width:220px; margin:28px auto; transform:rotate(-2.5deg);}
+  .photo-jointe .cadre{background:#fff; padding:10px 10px 30px; box-shadow:0 10px 24px rgba(28,29,61,.22);}
+  .photo-jointe img{width:100%; height:170px; object-fit:cover; filter:sepia(.12) contrast(1.03);}
+  .photo-jointe .legende{font-family:var(--font-signature); font-size:16px; text-align:center; margin-top:6px; color:var(--accent-dark);}
+
+  .proposition{
+    position:relative;
+    z-index:1;
+    margin:34px 0;
+    padding:26px 26px 22px;
+    background:rgba(18,19,86,.05);
+    border-left:3px solid var(--accent);
+  }
+  .proposition h2{
+    font-size:18px;
+    color:var(--accent);
+    margin-bottom:16px;
+  }
+  .proposition ul{
+    list-style:none;
+  }
+  .proposition li{
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    padding:10px 0;
+    border-bottom:1px dashed rgba(28,29,61,.2);
+    font-size:15px;
+  }
+  .proposition li:last-child{
+    border-bottom:none;
+  }
+  .proposition li .produit{
+    font-weight:700;
+  }
+  .proposition li .detail{
+    opacity:.65;
+    font-size:13.5px;
+    display:block;
+    font-weight:400;
+    margin-top:2px;
+  }
+  .proposition li .prix{
+    font-family:var(--font-a);
+    color:var(--accent);
+    white-space:nowrap;
+  }
+
+  .cloture-lettre{
+    position:relative;
+    z-index:1;
+    margin-top:36px;
+    text-indent:26px;
+  }
+
+  .signature-bloc{
+    position:relative;
+    z-index:1;
+    margin-top:30px;
+    text-align:right;
+  }
+  .signature-bloc .signature{
+    font-family:var(--font-signature);
+    font-size:38px;
+    color:var(--accent-dark);
+    transform:rotate(-2deg);
+    display:inline-block;
+  }
+  .signature-bloc .fonction{
+    font-size:13px;
+    opacity:.65;
+    margin-top:2px;
+  }
+
+  .post-scriptum{
+    position:relative;
+    z-index:1;
+    margin-top:34px;
+    padding-top:18px;
+    border-top:1px dashed rgba(28,29,61,.25);
+    font-size:14.5px;
+    font-style:italic;
+  }
+  .post-scriptum strong{
+    font-family:var(--font-a);
+    font-style:normal;
+    color:var(--accent);
+    margin-right:4px;
+  }
+
+  .avis-note-bloc{
+    max-width:640px;
+    margin:44px auto 0;
+    padding:22px 24px;
+    background:var(--paper);
+    border:1px solid rgba(28,29,61,.1);
+    box-shadow:0 8px 20px rgba(28,29,61,.12);
+    text-align:center;
+  }
+  .avis-note-bloc .etoiles{color:var(--accent); font-size:20px; letter-spacing:3px; margin-bottom:8px;}
+  .avis-note-bloc p{font-size:14px; opacity:.75;}
+
+  .infos-pratiques{
+    max-width:640px;
+    margin:40px auto 0;
+    background:var(--paper);
+    border:1px solid rgba(28,29,61,.1);
+    box-shadow:0 8px 20px rgba(28,29,61,.12);
+    padding:26px 30px;
+    text-align:center;
+  }
+  .infos-pratiques h3{
+    font-size:16px;
+    color:var(--accent);
+    margin-bottom:12px;
+  }
+  .infos-pratiques p{
+    font-size:14px;
+    margin-bottom:6px;
+  }
+  .infos-pratiques iframe{width:100%; height:200px; border:0; border-radius:12px; margin-top:16px;}
+
+  @media(max-width:520px){
+    .lettre-page{ padding:36px 24px 44px; }
+    .entete .nom-boutique{ font-size:22px; }
+    .corps-lettre{ font-size:15px; }
+  }
+
+  footer{text-align:center; padding:26px 24px 88px; background:var(--accent-dark); color:rgba(255,255,255,.7); font-size:12.5px;}
+
+  /* Bandeau + nav + modale, com' de Gilles : couleur neutre fixe #18181b, jamais la palette du
+     site propose. Reference : V1-Echanges/mockups/proposition-2.html (cf workflow-cc.md). */
+  .proposition-nav{display:flex; align-items:center; justify-content:center; gap:14px; padding:16px 24px; flex-wrap:wrap; background:#18181b; margin:-56px -20px 28px;}
+  .proposition-nav a{color:#fff; opacity:.9; font-weight:700; font-size:13px; text-decoration:none;}
+  .proposition-nav a:hover{text-decoration:underline; opacity:1;}
+  .proposition-nav-reassure{width:100%; text-align:center; font-size:14.5px; font-weight:600; color:#fff; opacity:.9; margin:8px 0 0;}
+  .proposition-badge{display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); color:#fff; border-radius:999px; padding:5px 14px; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;}
+
+  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:#18181b; color:#fff; padding:22px 20px; text-align:center; font-family:'Nunito',-apple-system,sans-serif; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
+  .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
+
+  .result-modal-overlay{position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .3s ease;}
+  .result-modal-overlay.show{opacity:1; pointer-events:auto;}
+  .result-modal{position:relative; max-width:380px; width:100%; background:var(--creme); border-radius:20px; padding:38px 30px 32px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.35); transform:translateY(14px); transition:transform .3s ease;}
+  .result-modal-overlay.show .result-modal{transform:translateY(0);}
+  .result-modal h2{font-family:var(--font-a); font-size:23px; margin:0 0 10px; color:var(--text);}
+  .result-modal p{font-size:14.5px; color:var(--text); opacity:.7; margin:0 0 24px; line-height:1.5;}
+  .result-modal-close{position:absolute; top:12px; right:12px; background:none; border:0; font-size:18px; line-height:1; color:var(--text); opacity:.5; cursor:pointer; padding:8px;}
+
+  @media(max-width:640px){ .proposition-nav{margin:-56px -20px 28px;} }
+</style>
+</head>
+<body>
+<div class="result-modal-overlay" id="resultModalOverlay">
+  <div class="result-modal">
+    <button type="button" class="result-modal-close" aria-label="Fermer" onclick="closeResultModal()">✕</button>
+    <h2>Le résultat vous plaît ?</h2>
+    <p>Ce point de départ peut encore évoluer. On peut en discuter ensemble dès maintenant.</p>
+    <a class="btn" href="/preview/trois-petits-muscaris/PKpURvgnT5#tarif">On passe à la suite →</a>
+  </div>
+</div>
+
+<div class="retour-bandeau">
+  <a href="/preview/trois-petits-muscaris/PKpURvgnT5#tarif">On passe à la suite →</a>
+</div>
+
+<button class="to-top" id="toTop" aria-label="Retour en haut">↑</button>
+
+<div class="proposition-nav">
+  <a href="./v1.html">← Revoir la proposition 1</a>
+  <span class="proposition-badge">Proposition 2 / 2</span>
+  <p class="proposition-nav-reassure">Une autre piste, volontairement différente. Ce qui vous plaît dans l'une ou l'autre devient le point de départ.</p>
+</div>
+
+<div class="enveloppe-intro">
+  <span class="tampon">Fait main</span>
+</div>
+
+<main class="lettre-page">
+
+  <header class="entete">
+    <div class="nom-boutique">Trois Petits Muscaris</div>
+    <div class="baseline">Atelier de couture et retouches</div>
+    <div class="lieu-date">Mont-de-Marsan, aujourd'hui</div>
+  </header>
+
+  <section class="corps-lettre">
+    <p class="salutation">Cher visiteur,</p>
+
+    <p>Je m'appelle Claire et je tiens Trois Petits Muscaris, mon atelier de couture, place Porte Campet, en plein cœur de Mont-de-Marsan. Ce que vous allez découvrir ici n'est pas une vitrine comme les autres, c'est un peu mon atelier ouvert, avec l'odeur du tissu neuf et le bruit familier des machines à coudre.</p>
+
+    <p>Je fais des retouches classiques, ourlets, fermetures éclair, ajustements sur mesure, et j'anime aussi des cours de couture en petit groupe, pour les débutants comme pour celles et ceux déjà à l'aise avec une machine. Je n'ai jamais voulu aller vite, je préfère prendre le temps qu'il faut pour que chaque pièce reparte comme il faut.</p>
+
+    <p>Si vous passez par Mont-de-Marsan, la porte est ouverte. Vous pourrez voir l'atelier, poser vos questions et repartir avec votre vêtement réparé ou simplement l'envie de vous inscrire à un prochain cours.</p>
+  </section>
+
+  <div class="photo-jointe">
+    <div class="cadre">
+      <img src="../_stock/couture-textile/couture-textile-02.jpg" alt="Atelier de couture">
+      <div class="legende">l'atelier</div>
+    </div>
+  </div>
+
+  <section class="proposition">
+    <h2>Ce que je vous propose</h2>
+    <ul>
+      <li>
+        <span>
+          <span class="produit">Retouches classiques</span>
+          <span class="detail">Ourlets, fermetures éclair, ajustements sur mesure</span>
+        </span>
+        <span class="prix">Sur devis</span>
+      </li>
+      <li>
+        <span>
+          <span class="produit">Cours de couture collectifs</span>
+          <span class="detail">En petit groupe, tous niveaux</span>
+        </span>
+        <span class="prix">Sur devis</span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="cloture-lettre">
+    <p>J'espère avoir l'occasion de vous rencontrer bientôt, entre deux retouches ou lors d'un prochain cours. En attendant, prenez soin de vous.</p>
+  </section>
+
+  <div class="signature-bloc">
+    <div class="signature">Claire</div>
+    <div class="fonction">Trois Petits Muscaris</div>
+  </div>
+
+  <div class="post-scriptum">
+    <strong>PS :</strong>les cours de couture se font en petit groupe, contactez-moi pour connaître les prochaines places disponibles.
+  </div>
+
+</main>
+
+<section class="avis-note-bloc">
+  <div class="etoiles">★★★★★</div>
+  <p>5/5 sur les avis disponibles. Vrais avis affichés dès la connexion du widget Google, une fois le site en ligne.</p>
+</section>
+
+<section class="infos-pratiques">
+  <h3>Venir à l'atelier</h3>
+  <p>5 place Porte Campet, 40000 Mont-de-Marsan</p>
+  <p>Mercredi-vendredi, 10h-18h</p>
+  <p>06 37 77 62 43 · contact@troispetitsmuscaris.fr</p>
+  <a class="btn" href="mailto:contact@troispetitsmuscaris.fr">Prendre rendez-vous</a>
+  <iframe loading="lazy" src="https://maps.google.com/maps?q=5%20place%20Porte%20Campet%2C%2040000%20Mont-de-Marsan&output=embed"></iframe>
+</section>
+
+<footer>TROIS PETITS MUSCARIS · Mont-de-Marsan · contact@troispetitsmuscaris.fr · <a href="https://www.facebook.com/p/Trois-Petits-Muscaris-100089334460640/" target="_blank" rel="noopener noreferrer" style="color:inherit;">Facebook</a></footer>
+
+<script>
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    toTop.classList.toggle('show', window.scrollY > 500);
+  }, {passive:true});
+  toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+  (function(){
+    var overlay = document.getElementById('resultModalOverlay');
+    if(!overlay) return;
+    var shown = false;
+    function openModal(){ if(shown) return; shown = true; overlay.classList.add('show'); }
+    function closeModal(){ overlay.classList.remove('show'); }
+    window.closeResultModal = closeModal;
+    overlay.addEventListener('click', function(e){ if(e.target === overlay) closeModal(); });
+    function checkNearBottom(){
+      if(shown) return;
+      var doc = document.documentElement;
+      var scrollBottom = window.scrollY + window.innerHeight;
+      var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight);
+      if(scrollBottom >= pageHeight - 80) openModal();
+    }
+    window.addEventListener('scroll', checkNearBottom, {passive:true});
+    window.addEventListener('resize', checkNearBottom);
+    checkNearBottom();
+  })();
+</script>
+</body>
+</html>

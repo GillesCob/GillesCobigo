@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/jpeg" href="./logo.jpg">
-<title>Trois Petits Muscaris, proposition de site</title>
+<title>Trois Petits Muscaris, proposition de site (1/2)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Cormorant+Garamond:wght@600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --accent:#121356; --accent2:#6a68a0; --creme:#f7f6fb; --text:#1c1d3d;
@@ -20,6 +20,7 @@
   h1,h2,h3{font-family:var(--font-a); font-weight:700;}
   .btn{display:inline-block; padding:14px 32px; background:var(--accent); color:#fff; text-decoration:none; border-radius:30px; font-weight:700; transition:.2s; border:none; cursor:pointer; font-size:15px; font-family:inherit;}
   .btn:hover{background:#0b0c3f; transform:scale(1.03);}
+
   .to-top{position:fixed; bottom:78px; right:16px; z-index:999; width:44px; height:44px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; box-shadow:0 6px 16px rgba(0,0,0,.25);}
   .to-top.show{opacity:1; pointer-events:auto;}
   .to-top:hover{transform:translateY(-3px);}
@@ -41,22 +42,16 @@
   .hero-content h1{font-size:clamp(30px,6vw,52px); margin-bottom:10px;}
   .hero-content p.sub{font-size:17px; opacity:.95; margin-bottom:20px;}
 
+  /* Badge "Proposition 1/2" : reference V1-Echanges/mockups/proposition-1.html, cf
+     Projets/Boutiques/workflow-cc.md "Reference unique du funnel prospect". */
+  .proposition-badge{display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); border-radius:999px; padding:5px 14px; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#fff; margin-bottom:16px;}
+
   .concept{max-width:680px; margin:0 auto; padding:56px 24px 20px; text-align:center;}
   .concept h2{font-size:30px; margin-bottom:18px; color:var(--accent);}
   .concept p{font-size:16.5px; margin-bottom:14px;}
 
-  /* Prestations en zigzag (rangees alternees gauche/droite, relief cousu par
-     un fil pointille) : evoque le geste de l'atelier couture, tres eloigne
-     des grilles de cards ou bandes empilees utilisees par ailleurs. Choisi
-     specifiquement pour Trois Petits Muscaris : activite de service (pas de
-     "collection" a montrer), le zigzag met en regard un repere visuel et une
-     explication, comme une notice cousue main. */
   .zigzag{max-width:900px; margin:0 auto; padding:50px 24px 60px; position:relative;}
   .zigzag::before{content:""; position:absolute; left:50%; top:20px; bottom:20px; width:2px; background-image:repeating-linear-gradient(to bottom, var(--accent2) 0 7px, transparent 7px 15px); transform:translateX(-50%); z-index:0;}
-  /* Grille a 2 colonnes : le contenu (badge+texte) reste confine a une
-     moitie de la ligne, jamais a cheval sur le fil central. Le badge est
-     toujours colle au fil (justify-self vers le centre), le texte s'eloigne
-     vers le bord exterieur. */
   .zz-row{display:grid; grid-template-columns:1fr 1fr; gap:0 36px; align-items:center; margin-bottom:56px; position:relative; z-index:1;}
   .zz-row:last-child{margin-bottom:0;}
   .zz-content{display:flex; align-items:center; gap:16px;}
@@ -83,7 +78,6 @@
   .avis-card p{font-size:13.5px; opacity:.85;}
   .avis-note{margin-top:20px; font-size:12px; opacity:.6;}
 
-
   dl{display:grid; grid-template-columns:auto 1fr; gap:9px 18px; font-size:14.5px; max-width:400px; margin:16px auto 0; text-align:left;}
   dt{font-weight:700; color:var(--accent);}
   dd{opacity:.85;}
@@ -96,47 +90,48 @@
 
   footer{text-align:center; padding:32px 24px 100px; background:var(--accent); color:rgba(255,255,255,.65); font-size:13px;}
 
-  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:1000; background:#090a3d; color:#fff; padding:22px 20px; text-align:center; font-family:'Nunito',sans-serif; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
+  /* Bandeau + modale, com' de Gilles : couleur neutre fixe #18181b, jamais la palette du site
+     propose. Reference : V1-Echanges/mockups/proposition-1.html (cf workflow-cc.md). */
+  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:#18181b; color:#fff; padding:22px 20px; text-align:center; font-family:'Nunito',sans-serif; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
   .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
+  .retour-bandeau-reassure{font-size:13px; font-weight:600; opacity:.85; margin:0 0 6px;}
+
+  .result-modal-overlay{position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .3s ease;}
+  .result-modal-overlay.show{opacity:1; pointer-events:auto;}
+  .result-modal{position:relative; max-width:380px; width:100%; background:var(--creme); border-radius:20px; padding:38px 30px 32px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.35); transform:translateY(14px); transition:transform .3s ease;}
+  .result-modal-overlay.show .result-modal{transform:translateY(0);}
+  .result-modal h2{font-family:var(--font-a); font-size:23px; margin:0 0 10px; color:var(--text);}
+  .result-modal p{font-size:14.5px; color:var(--text); opacity:.7; margin:0 0 24px; line-height:1.5;}
+  .result-modal-close{position:absolute; top:12px; right:12px; background:none; border:0; font-size:18px; line-height:1; color:var(--text); opacity:.5; cursor:pointer; padding:8px;}
 
   @media(max-width:680px){
     .avis-grid{grid-template-columns:1fr;}
   }
-
-  /* Modale "fin de page" (17/08, demande de Gilles) : affichee une seule fois quand le visiteur
-     atteint le bas de la page, avant meme d'envisager une nouvelle modif du bandeau fixe. Meme
-     lien que le bandeau (coherence, pas un 2e chemin different), fermeture au clic en dehors ou
-     sur la croix, jamais reaffichee une fois fermee sur ce chargement de page. */
-  .result-modal-overlay{position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .3s ease;}
-  .result-modal-overlay.show{opacity:1; pointer-events:auto;}
-  .result-modal{position:relative; max-width:380px; width:100%; background:#fff; border-radius:20px; padding:38px 30px 32px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.35); transform:translateY(14px); transition:transform .3s ease;}
-  .result-modal-overlay.show .result-modal{transform:translateY(0);}
-  .result-modal h2{font-family:var(--font-a); font-size:23px; margin:0 0 10px; color:#1a1a1a;}
-  .result-modal p{font-size:14.5px; color:#5a5a5a; margin:0 0 24px; line-height:1.5;}
-  .result-modal-close{position:absolute; top:12px; right:12px; background:none; border:0; font-size:18px; line-height:1; color:#999; cursor:pointer; padding:8px;}
 </style>
 </head>
 <body>
+
 <div class="result-modal-overlay" id="resultModalOverlay">
   <div class="result-modal">
     <button type="button" class="result-modal-close" aria-label="Fermer" onclick="closeResultModal()">✕</button>
-    <h2>Le résultat vous plaît ?</h2>
-    <p>Ce premier jet peut encore évoluer. On peut en discuter ensemble dès maintenant.</p>
-    <a class="btn" href="/preview/trois-petits-muscaris/PKpURvgnT5?discuter=1#tarif">Discutons-en →</a>
+    <h2>Envie de voir une autre direction ?</h2>
+    <p>Ceci est une première proposition. J'en ai imaginé une deuxième, différente, pour vous aider à choisir ce qui vous ressemble.</p>
+    <a class="btn" href="./proposition-2.html">Voir la 2e proposition →</a>
   </div>
 </div>
-
 
 
 <button class="to-top" id="toTop" aria-label="Retour en haut de page" title="Retour en haut">↑</button>
 
 <div class="retour-bandeau">
-  Ça vous plaît ? <a href="/preview/trois-petits-muscaris/PKpURvgnT5?discuter=1#tarif">Découvrez comment on le rend réel →</a>
+  <p class="retour-bandeau-reassure">Point de départ, pas figé. On l'affine ensemble par la suite.</p>
+  <a href="./proposition-2.html">Découvrez une 2e proposition, différente →</a>
 </div>
 
 <section class="hero">
   <div class="hero-content">
     <div class="logo-ring"><img src="./logo.jpg" alt="Trois Petits Muscaris"></div>
+    <div class="proposition-badge">Proposition 1 / 2</div>
     <div class="tagline">Atelier de couture</div>
     <h1>Trois Petits Muscaris</h1>
     <p class="sub">Retouches &amp; cours de couture à Mont-de-Marsan</p>
@@ -231,11 +226,6 @@
   }, {passive:true});
   toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
 
-  // Modale "fin de page" (retour Gilles 17/08, 2e passe : la 1ere version base sur un sentinel
-  // + IntersectionObserver ne se declenchait pas de façon fiable) : verification directe de la
-  // position de scroll a chaque evenement scroll, meme pattern deja utilise plus haut pour le
-  // bouton "remonter" de cette page. Marge de 80px : pas besoin d'atteindre le pixel exact du
-  // bas de page. Jamais reaffichee une fois fermee sur ce chargement (variable shown).
   (function(){
     var overlay = document.getElementById('resultModalOverlay');
     if(!overlay) return;

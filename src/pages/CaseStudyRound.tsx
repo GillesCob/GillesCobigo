@@ -39,7 +39,6 @@ export default function CaseStudyRound() {
         currentRound={entry.round}
         search={search}
         ctaHref={from ? `/preview/${from}#tarif` : undefined}
-        discussHref={from ? `/preview/${from}?discuter=1#tarif` : undefined}
       />
 
       {/* Bandeau figé en haut, visible pendant tout le scroll (demande explicite du 15/08 : un
@@ -85,9 +84,7 @@ export default function CaseStudyRound() {
       <div className="flex-1 px-6 md:px-12 pt-[165px] sm:pt-[150px] pb-10 md:pb-16">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row gap-8">
-            {/* data-tour-key="sidenav" : cible de l'etape de transition de CaseStudyTour, avant
-                le saut vers la V2 (cf caseStudyTourStore.ts). */}
-            <div data-tour-key="sidenav">
+            <div>
               <CaseStudyVersionsNav
                 basePath="/cas-client"
                 currentRound={entry.round}
