@@ -62,7 +62,12 @@ export default function PricingCard({
     setDialogOpen(true);
   }
 
-  async function handleConfirm() {
+  // overrideContact : utilise par le lien "Je préfère qu'on échange par mail" (cf mockup
+  // preview-prospect.html), qui soumet sans attendre que l'utilisateur retape quoi que ce soit
+  // dans le champ. setState etant asynchrone, passer la valeur directement evite de lire
+  // contactValue perime dans la meme frappe.
+  async function handleConfirm(overrideContact?: string) {
+    const contact = overrideContact ?? contactValue;
     setSubmitting(true);
     setSubmitError(null);
     try {
@@ -75,11 +80,11 @@ export default function PricingCard({
           formule: `${total}€ (${withSubscription ? "avec" : "sans"} abonnement Sérénité${
             domainActive ? ", avec nom de domaine" : ""
           })`,
-          contact: contactValue || "Non précisé",
+          contact: contact || "Non précisé",
           message: `${projectName} est intéressé(e) par son site, première facture à ${total}€ (${
             withSubscription ? "avec" : "sans"
           } abonnement Sérénité${domainActive ? ", avec nom de domaine" : ""}). Rappel : ${
-            contactValue || "canal non précisé"
+            contact || "canal non précisé"
           }.`,
         }),
       });
@@ -250,8 +255,8 @@ export default function PricingCard({
           ) : (
             <>
               <DialogHeader className="items-center">
-                <DialogTitle className="text-xl">Une dernière confirmation</DialogTitle>
-                <DialogDescription>Je vous contacte à ce numéro ?</DialogDescription>
+                <DialogTitle className="text-xl">Comment vous joindre ?</DialogTitle>
+                <DialogDescription>Je vous recontacte au numéro indiqué.</DialogDescription>
               </DialogHeader>
 
               <div className="text-left">
@@ -259,22 +264,29 @@ export default function PricingCard({
                   type="text"
                   value={contactValue}
                   onChange={(e) => setContactValue(e.target.value)}
-                  placeholder="Numéro de téléphone, ou « plutôt par mail »..."
+                  placeholder="Votre numéro de téléphone"
                   // text-base (16px) et non text-sm (14px) : sous 16px, Safari iOS zoome automatiquement
                   // la page au focus du champ, zoom qui persiste ensuite meme la modale fermee (scroll
                   // horizontal constate le 15/08). 16px est le seuil qui desactive ce comportement.
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-ring"
                 />
-                {phone && (
-                  <p className="text-xs text-muted-foreground mt-1.5">Vous pouvez le corriger si besoin.</p>
-                )}
               </div>
 
-              <Button className="w-full rounded-full" onClick={handleConfirm} disabled={submitting}>
+              <Button className="w-full rounded-full" onClick={() => handleConfirm()} disabled={submitting}>
                 {submitting ? "Envoi..." : "Confirmer"}
               </Button>
+              <button
+                type="button"
+                onClick={() => handleConfirm("Préfère être contacté par mail")}
+                className="block w-full text-center text-xs text-muted-foreground underline mt-3"
+              >
+                Je préfère qu'on échange par mail →
+              </button>
+              <p className="text-[11px] text-muted-foreground text-center mt-2.5">
+                Aucune sollicitation commerciale, seulement pour donner suite à votre demande.
+              </p>
               {submitError && (
-                <p className="text-xs text-destructive text-center" role="alert">
+                <p className="text-xs text-destructive text-center mt-2" role="alert">
                   {submitError}
                 </p>
               )}
