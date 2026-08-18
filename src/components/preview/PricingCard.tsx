@@ -77,13 +77,13 @@ export default function PricingCard({
         body: JSON.stringify({
           source: "Boutiques - PricingCard",
           projet: projectName,
-          formule: `${total}€ (${withSubscription ? "avec" : "sans"} abonnement Sérénité${
+          formule: `${total}€ (${withSubscription ? "avec" : "sans"} Formule Sérénité${
             domainActive ? ", avec nom de domaine" : ""
           })`,
           contact: contact || "Non précisé",
           message: `${projectName} est intéressé(e) par son site, première facture à ${total}€ (${
             withSubscription ? "avec" : "sans"
-          } abonnement Sérénité${domainActive ? ", avec nom de domaine" : ""}). Rappel : ${
+          } Formule Sérénité${domainActive ? ", avec nom de domaine" : ""}). Rappel : ${
             contact || "canal non précisé"
           }.`,
         }),
