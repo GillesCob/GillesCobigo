@@ -43,3 +43,9 @@ Banque partagée pour les mockups V1 Boutiques, pas liée à un prospect précis
 ## _discarded/ (10, gardées mais non utilisables telles quelles)
 
 Écartées pour visage identifiable en premier plan, plusieurs personnes reconnaissables, enseigne de marque réelle visible, ou hors-thème (café, fête foraine). Ajout du 16/08 : une photo de vitrine avec enseigne partiellement lisible correspondant à une marque française réelle de décoration (lampions/pompons), même logique que Penhaligon's. Détail non repris ici, cf noms de fichiers d'origine conservés.
+
+## Couverture par secteur, à vérifier avant chaque nouveau prospect (18/08)
+
+5 catégories seulement, chacune déjà rattachée à un des 5 prospects actuels : mode-vintage (Frip'ouilles, L'Intemporel), cave-epicerie (Cave Velours), bijouterie (Création Saint Roch), couture-textile (Trois Petits Muscaris), devanture (transversale, réutilisable pour tout secteur en dernier recours). Aucune autre catégorie n'existe.
+
+**Règle avant de démarrer un nouveau prospect** : si son secteur ne correspond à aucune des 5 catégories ci-dessus (boulangerie, coiffeur, fleuriste, restaurant, etc.), le signaler explicitement à Gilles avant de construire la V1, pas après. Ne jamais réutiliser une catégorie hors-sujet par défaut (ex. des photos de bijouterie pour une boulangerie) : mieux vaut attendre un apport de photos réellement adaptées que de livrer un mockup avec des visuels qui ne correspondent pas au commerce.
