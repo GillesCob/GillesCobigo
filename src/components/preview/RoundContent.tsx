@@ -141,23 +141,20 @@ export function RoundContent({
         <span className="text-sm text-muted-foreground">{entry.date}</span>
       </div>
 
-      {/* data-tour-key="proposals" sur le conteneur entier uniquement quand la grille reste
-          courte (V1, 2 cartes sans groupe) : sur un round avec plusieurs groupes (V3, comparaison
-          + choix), la cible est trop haute pour un placement fiable, cf tourKeyByGroupLabel qui
-          cible alors uniquement le groupe "a choisir" via ProposalsGrid. */}
+      {/* data-tour-key="proposals" : seule cible de la visite guidee sur la V1 (les 2 propositions
+          de depart, cf CASE_STUDY_TOUR_STEPS), aucun autre round n'est plus visite par le tour. */}
       <div className="mb-10" data-tour-key={entry.round.toLowerCase() === "v1" ? "proposals" : undefined}>
         {showGuide && guideTexts?.proposals && <GuideCallout>{guideTexts.proposals}</GuideCallout>}
         <ProposalsGrid
           proposals={entry.proposals}
           calloutsByLabel={showGuide ? guideTexts?.proposalCallouts : undefined}
-          tourKeyByGroupLabel={entry.round.toLowerCase() === "v3" ? { "V3 : à choisir": "proposals" } : undefined}
         />
       </div>
 
       {entry.changesApplied && entry.changesApplied.length > 0 && (
         <>
           {showGuide && guideTexts?.changesApplied && <GuideCallout>{guideTexts.changesApplied}</GuideCallout>}
-          <div className="rounded-xl border border-border p-6 bg-card mb-8" data-tour-key="changes">
+          <div className="rounded-xl border border-border p-6 bg-card mb-8">
             <h2 className="text-sm font-semibold mb-3">Ce qui a été pris en compte suite au retour</h2>
             <ul className="text-sm text-muted-foreground space-y-1.5 list-disc list-inside">
               {entry.changesApplied.map((line) => (
@@ -188,7 +185,7 @@ export function RoundContent({
       {entry.clientFeedback && (
         <>
           {showGuide && guideTexts?.clientFeedback && <GuideCallout>{guideTexts.clientFeedback}</GuideCallout>}
-          <div className="rounded-xl bg-muted/40 border border-border p-6 mb-8" data-tour-key="feedback">
+          <div className="rounded-xl bg-muted/40 border border-border p-6 mb-8">
             <p className="text-xs font-semibold text-muted-foreground mb-1.5">Retour de {contactName}</p>
             <p className="text-sm whitespace-pre-line">{entry.clientFeedback}</p>
           </div>

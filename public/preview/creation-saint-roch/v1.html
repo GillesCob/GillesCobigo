@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/gif" href="./logo.gif">
-<title>Création Saint Roch, proposition de site</title>
+<title>Création Saint Roch, proposition de site (1/2)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
@@ -21,14 +21,9 @@
   .to-top{position:fixed; bottom:78px; right:16px; z-index:999; width:44px; height:44px; border-radius:50%; border:1px solid var(--gold); background:var(--ink); color:var(--gold); font-size:18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease;}
   .to-top.show{opacity:1; pointer-events:auto;}
 
-  /* Petites etincelles pres des titres (bijouterie), discretes. */
   .sparkle::after{content:"✦"; font-size:13px; color:var(--gold); opacity:.65; margin-left:9px; display:inline-block; animation:twinkle 2.6s ease-in-out infinite;}
   @keyframes twinkle{0%,100%{opacity:.25; transform:scale(.85);} 50%{opacity:.9; transform:scale(1.1);}}
 
-  /* Chaque slide occupe l'ecran entier, revelee par un effet rideau (clip-path)
-     plutot qu'un simple fondu : registre premium/evenementiel adapte a une
-     bijouterie, tres different du gabarit "bandes empilees" partage jusque-la
-     par les 5 prospects. */
   .slide{min-height:auto; display:flex; align-items:center; justify-content:center; text-align:center; padding:64px 24px; clip-path:inset(0% 0% 100% 0%); transition:clip-path 1.1s cubic-bezier(.65,0,.35,1);}
   .slide-hero{min-height:82vh;}
   .slide.show{clip-path:inset(0% 0% 0% 0%);}
@@ -41,8 +36,10 @@
   .slide-hero h1{font-size:clamp(30px,5.5vw,50px); margin-bottom:10px; color:#fff;}
   .slide-hero p{opacity:.8; margin-bottom:26px;}
 
-  /* Poincon "depuis 1991", garde tel quel : mise en scene du tampon de garantie,
-     deja une bonne idee, reportee dans le nouveau registre. */
+  /* Badge "Proposition 1/2" : reference V1-Echanges/mockups/proposition-1.html, cf
+     Projets/Boutiques/workflow-cc.md "Reference unique du funnel prospect". */
+  .proposition-badge{display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); border-radius:999px; padding:5px 14px; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#fff; margin-bottom:16px;}
+
   .poincon{width:112px; height:112px; border-radius:50%; border:2px double var(--gold); display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0 auto 24px; background:var(--ink-2);}
   .poincon .year{font-family:var(--font-a); font-size:22px; color:var(--gold); font-weight:700; line-height:1;}
   .poincon .label{font-size:9px; text-transform:uppercase; letter-spacing:.09em; color:var(--gold); opacity:.8; margin-top:5px;}
@@ -53,8 +50,6 @@
 
   .slide-alt{background:var(--ink-2);}
 
-  /* Slide avec photo de fond (atelier/bijouterie), voile sombre pour garder
-     le texte lisible sans casser le registre premium des autres slides. */
   .slide-photo{position:relative; background-size:cover; background-position:center;}
   .slide-photo::before{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(17,18,20,.7), rgba(17,18,20,.92)); z-index:0;}
   .slide-photo .slide-inner{position:relative; z-index:1;}
@@ -81,13 +76,14 @@
 
   footer{text-align:center; padding:32px 24px 100px; background:var(--ink); color:rgba(255,255,255,.5); font-size:12.5px; border-top:1px solid rgba(201,168,105,.2);}
 
-  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:1000; background:#0c0c1c; color:#fff; padding:22px 20px; text-align:center; font-family:'Nunito',sans-serif; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
-  .retour-bandeau a{color:var(--gold); font-weight:800; text-decoration:underline; margin-left:6px;}
+  /* Bandeau + modale, com' de Gilles : couleur neutre fixe #18181b, jamais la palette du site
+     propose. Reference : V1-Echanges/mockups/proposition-1.html (cf workflow-cc.md). */
+  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:#18181b; color:#fff; padding:22px 20px; text-align:center; font-family:'Nunito',sans-serif; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
+  .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
+  .retour-bandeau-reassure{font-size:13px; font-weight:600; opacity:.85; margin:0 0 6px;}
 
-  /* Modale "fin de page" (17/08, demande de Gilles) : affichee une seule fois quand le visiteur
-     atteint le bas de la page, avant meme d'envisager une nouvelle modif du bandeau fixe. Meme
-     lien que le bandeau (coherence, pas un 2e chemin different), fermeture au clic en dehors ou
-     sur la croix, jamais reaffichee une fois fermee sur ce chargement de page. */
+  /* Pas de --creme claire dans ce theme (Proposition 1 100% sombre) : boite de modale forcee en
+     clair pour rester lisible, meme choix deja fait sur les Proposition 2 sombres du lot. */
   .result-modal-overlay{position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .3s ease;}
   .result-modal-overlay.show{opacity:1; pointer-events:auto;}
   .result-modal{position:relative; max-width:380px; width:100%; background:#fff; border-radius:20px; padding:38px 30px 32px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.35); transform:translateY(14px); transition:transform .3s ease;}
@@ -98,25 +94,27 @@
 </style>
 </head>
 <body>
+
 <div class="result-modal-overlay" id="resultModalOverlay">
   <div class="result-modal">
     <button type="button" class="result-modal-close" aria-label="Fermer" onclick="closeResultModal()">✕</button>
-    <h2>Le résultat vous plaît ?</h2>
-    <p>Ce premier jet peut encore évoluer. On peut en discuter ensemble dès maintenant.</p>
-    <a class="btn" href="/preview/creation-saint-roch/H2g7uNKQu4?discuter=1#tarif">Discutons-en →</a>
+    <h2>Envie de voir une autre direction ?</h2>
+    <p>Ceci est une première proposition. J'en ai imaginé une deuxième, différente, pour vous aider à choisir ce qui vous ressemble.</p>
+    <a class="btn" href="./proposition-2.html">Voir la 2e proposition →</a>
   </div>
 </div>
-
 
 <button class="to-top" id="toTop" aria-label="Retour en haut de page" title="Retour en haut">↑</button>
 
 <div class="retour-bandeau">
-  Ça vous plaît ? <a href="/preview/creation-saint-roch/H2g7uNKQu4?discuter=1#tarif">Découvrez comment on le rend réel →</a>
+  <p class="retour-bandeau-reassure">Point de départ, pas figé. On l'affine ensemble par la suite.</p>
+  <a href="./proposition-2.html">Découvrez une 2e proposition, différente →</a>
 </div>
 
 <section class="slide slide-hero show">
   <div class="slide-inner">
     <div class="logo-badge"><img src="./logo.gif" alt="Création Saint Roch"></div>
+    <div class="proposition-badge">Proposition 1 / 2</div>
     <div class="tagline">Bijouterie &amp; joaillerie</div>
     <h1>Création Saint Roch</h1>
     <p>À Mont-de-Marsan</p>
@@ -214,11 +212,6 @@
   }, {passive:true});
   toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
 
-  // Modale "fin de page" (retour Gilles 17/08, 2e passe : la 1ere version base sur un sentinel
-  // + IntersectionObserver ne se declenchait pas de façon fiable) : verification directe de la
-  // position de scroll a chaque evenement scroll, meme pattern deja utilise plus haut pour le
-  // bouton "remonter" de cette page. Marge de 80px : pas besoin d'atteindre le pixel exact du
-  // bas de page. Jamais reaffichee une fois fermee sur ce chargement (variable shown).
   (function(){
     var overlay = document.getElementById('resultModalOverlay');
     if(!overlay) return;

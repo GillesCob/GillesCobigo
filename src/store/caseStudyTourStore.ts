@@ -2,22 +2,47 @@ import { create } from "zustand";
 
 export interface ICaseStudyTourStep {
   round: string;
-  key: string;
-  placement?: "above" | "right";
-  text: string;
+  /** Cible spotlight sur la page ([data-tour-key]). Absente = etape narree (V0, "vos retours",
+      "la V2 avec vos retours") : aucun ecran reel a montrer, la bulle reste affichee seule, sans
+      spotlight ni verrou de scroll, cf CaseStudyTour.tsx. */
+  key?: string;
+  text: string[];
 }
 
-// Sequence validee sur le prototype vault (Projets/V1-Echanges/mockups/version-guided-tour.html,
-// 16/08) : V1 -> V2 -> V3 -> V6, V4/V5 sautees (aucun commentaire de Mylene dessus, comme dans
-// ROUND_GUIDE historique de CaseStudyRound.tsx). "sidenav" pointe la nav de versions avant de
-// naviguer vers la V2, pour que le saut de version ne ressemble jamais a un bug.
+// Structure V0 + 4 etapes (18/08, remplace les 6 etapes V1->V2->V3->V6 precedentes) : seules la V1
+// et la V6 restent des ecrans reellement visites (les 2 propositions de depart, le resultat final
+// mis en ligne), les etapes intermediaires ("vos retours", "je reviens avec une V2") sont racontees
+// plutot que rejouees round par round, pour rester court (2 minutes) plutot que de visiter 6 ecrans.
+// V0 n'est pas comptee dans les "4 etapes" (cf CaseStudyTour.tsx, le compteur commence a l'index 1).
+// Mecanique de positionnement (bulle fixed-top, verrou de scroll) reprise le 17/08 de
+// public/cerithe-v1-6-0/index.html, inchangee.
 export const CASE_STUDY_TOUR_STEPS: ICaseStudyTourStep[] = [
-  { round: "v1", key: "proposals", text: "Propositions de versions pour votre site" },
-  { round: "v1", key: "feedback", text: "Ajout de votre message de retour afin de toujours garder une trace de vos souhaits" },
-  { round: "v1", key: "sidenav", placement: "right", text: "Les versions de ce projet sont listées ici. On va les suivre dans l'ordre : cliquez sur Suivant pour aller directement à la V2." },
-  { round: "v2", key: "changes", text: "Sur la V2, ce qui a changé suite à votre précédent retour" },
-  { round: "v3", key: "proposals", text: "Sur la V3, une même version peut proposer plusieurs pistes à comparer, ici 4 options de police : ça reste un seul aller-retour, pas un par option testée" },
-  { round: "v6", key: "supporting", text: "Sur la V6, un aperçu complémentaire, pour un cas particulier (ici, si le quota Instagram est dépassé)" },
+  {
+    round: "v1",
+    text: [
+      "Le site que vous avez vu n'était qu'une première ébauche.",
+      "On l'affine ensemble jusqu'au résultat final, exactement comme je l'ai fait pour Mylène, gérante du Dressing de Maïlys.",
+      "Suivez le guide, ça prend 2 minutes.",
+    ],
+  },
+  {
+    round: "v1",
+    key: "proposals",
+    text: ["Voici les 2 premières propositions envoyées à Mylène, son point de départ."],
+  },
+  {
+    round: "v1",
+    text: ["Mylène m'a dit ce qu'elle aimait, n'aimait pas, ce qu'elle voulait ajouter ou changer."],
+  },
+  {
+    round: "v1",
+    text: ["Je reviens avec une V2 qui prend en compte ses retours, parfois plusieurs pistes pour trancher ensemble."],
+  },
+  {
+    round: "v6",
+    key: "supporting",
+    text: ["On répète ça jusqu'à la V6, mise en ligne : le résultat final, construit avec elle."],
+  },
 ];
 
 type ICaseStudyTourStatus = "idle" | "active" | "off" | "finished";

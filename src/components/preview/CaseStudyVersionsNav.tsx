@@ -36,9 +36,8 @@ export default function CaseStudyVersionsNav({ basePath, currentRound, rounds }:
 
       {/* Rangee horizontale mobile, en haut du contenu (plus le pattern icone flottante + drawer,
           retire le 16/08 : sur mobile le bouton flottant se retrouvait couvert par les cartes de
-          propositions, en plus de rendre la cible de la visite guidee non fonctionnelle puisque
-          fixed et hors flux, cf CaseStudyTour.tsx data-tour-key="sidenav"). Element normal, dans
-          le flux, pour que le cheminement fonctionne pareil qu'au clavier/desktop. */}
+          propositions). Element normal, dans le flux, pour que le cheminement fonctionne pareil
+          qu'au clavier/desktop. */}
       <nav className="md:hidden flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
         {rounds.map((r) => (
           <Link
