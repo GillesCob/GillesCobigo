@@ -259,6 +259,12 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
               On passe à la suite <ArrowRight size={16} />
             </a>
           )}
+          {/* Seul endroit ou "Visiter librement" reapparait (retiree des bulles de chaque etape,
+              cf ci-dessous) : discret, sous le CTA principal, pour qui a fini et veut fouiller par
+              lui-meme. Conforme a .tour-end-skip de version-guided-tour.html. */}
+          <button type="button" onClick={skip} className="mt-4 block w-full text-center text-sm text-muted-foreground underline">
+            Visiter librement
+          </button>
         </div>
       </div>
     );
@@ -293,27 +299,25 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
             {line}
           </p>
         ))}
-        <div className="flex items-center justify-between gap-2.5">
-          <button type="button" onClick={skip} className="text-xs underline opacity-55">
-            Visiter librement
+        {/* "Visiter librement" retiree de cette bulle (comme de toutes les etapes) : ne
+            reapparait qu'a la toute fin, dans la modale (cf .tour-end-skip ci-dessus),
+            conforme a version-guided-tour.html. */}
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={prev}
+            disabled={stepIndex === 0}
+            className="rounded-md border border-current px-3 py-1.5 text-xs font-semibold opacity-60 disabled:opacity-25"
+          >
+            ← Précédent
           </button>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={prev}
-              disabled={stepIndex === 0}
-              className="rounded-md border border-current px-3 py-1.5 text-xs font-semibold opacity-60 disabled:opacity-25"
-            >
-              ← Précédent
-            </button>
-            <button
-              type="button"
-              onClick={next}
-              className="rounded-md bg-background px-3 py-1.5 text-xs font-semibold text-foreground"
-            >
-              {stepIndex === CASE_STUDY_TOUR_STEPS.length - 1 ? "Terminer" : "Suivant →"}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={next}
+            className="rounded-md bg-background px-3 py-1.5 text-xs font-semibold text-foreground"
+          >
+            {stepIndex === CASE_STUDY_TOUR_STEPS.length - 1 ? "Terminer" : "Suivant →"}
+          </button>
         </div>
       </div>
 
