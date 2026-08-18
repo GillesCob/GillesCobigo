@@ -122,11 +122,11 @@ export default function PricingCard({
           <>
             <li className="flex items-center gap-2 font-medium whitespace-nowrap">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-              {SUBSCRIPTION_INCLUDED_MODIFS} modifications incluses/an
+              {SUBSCRIPTION_INCLUDED_MODIFS} modifications valables 12 mois
             </li>
             <li className="flex items-center gap-2 font-medium whitespace-nowrap">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-              Nom de domaine renouvelé automatiquement
+              Nom de domaine
             </li>
             <li className="flex items-center gap-2 font-medium whitespace-nowrap">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
@@ -158,7 +158,7 @@ export default function PricingCard({
           <span className="font-medium">Abonnement Sérénité, +{SUBSCRIPTION_PRICE_YEAR}€/an</span>
           <span className="text-muted-foreground">
             {" "}
-            : nom de domaine renouvelé automatiquement, {SUBSCRIPTION_INCLUDED_MODIFS} modifications/an, retours
+            : nom de domaine, {SUBSCRIPTION_INCLUDED_MODIFS} modifications valables 12 mois, retours
             sous 48h ouvrées.
           </span>
         </span>
@@ -181,7 +181,7 @@ export default function PricingCard({
             <span className="font-medium">Nom de domaine, +{DOMAIN_PRICE_YEAR}€</span>
             <span className="text-muted-foreground">
               {" "}
-              : couvre la 1ère année, renouvelable ensuite chaque année ({DOMAIN_PRICE_YEAR}€/an).
+              : couvre la 1ère année.
             </span>
           </span>
         </label>
