@@ -5,16 +5,59 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/jpeg" href="./logo.jpg">
 <title>Trois Petits Muscaris, proposition de site (2/2)</title>
+<!-- Composition de ce mockup (3 couches, jamais melangees, cf Projets/Boutiques/workflow-cc.md
+     "Reference unique du funnel prospect") :
+
+     1. STRUCTURE DU SITE : template "Frise chronologique" (design-timeline-frise, bibliotheque
+        de templates Design, cf Boutiques/suivi.html sidenav "Design", visuel de reference
+        public/preview/design-timeline-frise/mockup-v1.html). Sections, disposition, mecaniques
+        d'interaction (ligne verticale continue, etapes alternees gauche/droite, reveal au
+        scroll) : celles de ce template. Reconstruit le 18/08 en remplacement de l'ancien
+        contenu de ce fichier, qui referencait un slug "design-letter-artisan" absent de la
+        bibliotheque Design reelle (25 templates), repere par Gilles ("trouve un autre modele
+        present dans la section design").
+
+     2. STRUCTURE DE PROSPECTION (commune a tous les prospects, jamais reecrite par prospect) :
+        bandeau bas, modale de fin de scroll, badge "Proposition 2/2". Contenu et
+        comportement identiques pour tous, reference unique
+        Projets/V1-Echanges/mockups/proposition-2.html (jamais un autre fichier du
+        dossier, cf regle ci-dessus). Toute divergence avec cette reference est un bug a
+        corriger, jamais une variation volontaire.
+
+     3. DA (direction artistique) :
+        - Couleurs : extraites du logo du prospect (bleu marine, inchangees, cf proposition-1.html).
+        - Contenu (textes) : issu du scraping (fiche Prospects/Mont-de-Marsan/trois-petits-muscaris/trois-petits-muscaris.md),
+          coherent avec proposition-1.html (mêmes services, mêmes horaires/adresse/contact).
+        - Photos : banque d'images, categorie "couture-textile" (public/preview/_stock/couture-textile/).
+          Aucune photo dans cette section "timeline" : le template de reference n'en propose pas
+          (texte seul), fidelite au template plutot qu'un ajout non prevu.
+        - Style des elements structurels (polices, boutons, espacements) : celui du template
+          "Frise chronologique" ci-dessus (police Fraunces pour les titres). Selecteur de police
+          du template de reference retire (regle "Un seul choix de police, jamais de selecteur
+          sur la V1", deja appliquee aux 5 prospects reels).
+        - Exception fixe : le bandeau/la modale/le badge (couche 2) restent toujours en
+          couleur neutre #18181b, jamais dans la palette du prospect, pour que le prospect
+          distingue clairement le site propose de la communication de Gilles autour.
+
+     Choix du template, justifie le 18/08 (cf Projets/Boutiques/workflow-cc.md "Modele en 3
+     couches" et systeme de mots-cles Design) : "Frise chronologique" est explicitement decrit
+     comme pertinent pour "un commerce avec une histoire a raconter (artisan, atelier, commerce
+     ancien)", ce que confirme le scraping (atelier de couture tenu par Claire Faure). Jamais
+     utilise ailleurs dans les 5 prospects actuels (diversite visuelle preservee), et visuellement
+     tres eloigne de "Storytelling alterne" deja utilise sur proposition-1.html du meme prospect
+     (ligne verticale continue vs rangees zigzag), condition explicite de Gilles ("l'idee est de
+     proposer des choses differentes").
+
+     Objectif de ce decoupage (18/08, a la demande explicite de Gilles) : 0 debordement en cas
+     de mise a jour de cette page ou de generation d'un nouveau prospect, aucune zone d'ombre
+     sur ce qui est fixe (couches 1 et 2) vs propre a ce commerce (couche 3). -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Special+Elite&family=Caveat:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --accent:#121356; --accent-dark:#0b0c3f; --creme:#e9e6f2; --text:#1c1d3d;
-    --font-a:'Special Elite',serif;
-    --font-signature:'Caveat',cursive;
-    --paper:#f7f6fb;
-    --paper-line:rgba(18,19,86,.08);
+    --font-a:'Fraunces',serif;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html,body{overflow-x:clip;}
@@ -26,241 +69,57 @@
   .to-top{position:fixed; bottom:76px; right:16px; z-index:999; width:44px; height:44px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease; box-shadow:0 6px 16px rgba(0,0,0,.25);}
   .to-top.show{opacity:1; pointer-events:auto;}
 
-  /* ===== Concept lettre artisan (adapte de design-letter-artisan) ===== */
+  .hero{padding:96px 24px 56px; text-align:center; max-width:640px; margin:0 auto;}
+  .hero .logo-ring{width:72px; height:72px; border-radius:50%; margin:0 auto 20px; overflow:hidden; box-shadow:0 10px 24px rgba(18,19,86,.3);}
+  .hero .logo-ring img{width:100%; height:100%; object-fit:cover;}
+  .hero h1{font-size:clamp(30px,5vw,44px); margin-bottom:10px;}
+  .hero .tagline{font-size:12px; text-transform:uppercase; letter-spacing:.18em; color:var(--accent); font-weight:700; margin-bottom:20px;}
+  .hero p{font-size:16px; opacity:.8; margin-bottom:28px;}
 
-  body{
-    background:
-      radial-gradient(ellipse at top, #f0eef8 0%, var(--creme) 60%);
-    padding:56px 20px 40px;
-  }
+  /* Frise centrale : ligne verticale continue (::before sur .timeline), chaque etape alternee
+     gauche/droite de part et d'autre, reliee par un point sur la ligne. Registre "parcours/histoire",
+     conforme a public/preview/design-timeline-frise/mockup-v1.html. */
+  .timeline{position:relative; max-width:900px; margin:0 auto; padding:40px 24px 80px;}
+  .timeline::before{content:""; position:absolute; left:50%; top:0; bottom:0; width:2px; background:linear-gradient(var(--accent), rgba(18,19,86,.15)); transform:translateX(-50%);}
+  .t-item{position:relative; width:calc(50% - 40px); margin-bottom:56px; opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
+  .t-item.show{opacity:1; transform:translateY(0);}
+  .t-item:nth-child(odd){margin-right:auto; text-align:right;}
+  .t-item:nth-child(even){margin-left:auto; text-align:left;}
+  .t-dot{position:absolute; top:4px; width:14px; height:14px; border-radius:50%; background:var(--accent); border:3px solid var(--creme); box-shadow:0 0 0 2px var(--accent);}
+  .t-item:nth-child(odd) .t-dot{right:-47px;}
+  .t-item:nth-child(even) .t-dot{left:-47px;}
+  .t-num{font-family:var(--font-a); font-size:13px; letter-spacing:.2em; color:var(--accent); margin-bottom:6px;}
+  .t-item h2{font-size:23px; margin-bottom:10px;}
+  .t-item p{font-size:15px; opacity:.85;}
+  .t-item .quote{font-family:var(--font-a); font-style:italic; font-size:18px; color:var(--accent); margin-top:10px;}
 
-  .enveloppe-intro{
-    max-width:640px;
-    margin:0 auto 28px;
-    text-align:center;
-  }
-  .enveloppe-intro .tampon{
-    display:inline-block;
-    font-family:var(--font-a);
-    font-size:12px;
-    letter-spacing:2px;
-    text-transform:uppercase;
-    color:var(--accent);
-    border:2px solid var(--accent);
-    border-radius:50%;
-    width:76px; height:76px;
-    line-height:1.3;
-    padding-top:22px;
-    transform:rotate(-8deg);
-    opacity:.75;
-  }
+  .etapes{list-style:none; counter-reset:step; display:inline-block; text-align:left;}
+  .t-item:nth-child(odd) .etapes{text-align:right;}
+  .etapes li{counter-increment:step; margin-bottom:8px; font-size:14.5px;}
+  .etapes li::before{content:counter(step) ". ";font-weight:800; color:var(--accent);}
 
-  .lettre-page{
-    max-width:640px;
-    margin:0 auto;
-    background:var(--paper);
-    background-image:repeating-linear-gradient(
-      var(--paper) 0px, var(--paper) 33px, var(--paper-line) 34px
-    );
-    border:1px solid rgba(28,29,61,.08);
-    box-shadow:0 24px 60px rgba(28,29,61,.18), 0 4px 14px rgba(28,29,61,.1);
-    padding:52px 46px 60px;
-    position:relative;
-  }
-  .lettre-page::before{
-    content:"";
-    position:absolute;
-    inset:14px;
-    border:1px solid rgba(18,19,86,.15);
-    pointer-events:none;
-  }
+  .stat-row{display:flex; gap:20px; margin-top:10px;}
+  .t-item:nth-child(odd) .stat-row{justify-content:flex-end;}
+  .stat b{display:block; font-family:var(--font-a); font-size:22px; color:var(--accent);}
+  .stat span{font-size:11.5px; opacity:.65;}
 
-  .entete{
-    padding-bottom:24px;
-    margin-bottom:30px;
-    border-bottom:2px solid var(--accent);
-    position:relative;
-    z-index:1;
-  }
-  .entete .nom-boutique{
-    font-family:var(--font-a);
-    font-size:26px;
-    color:var(--accent);
-    letter-spacing:.5px;
-  }
-  .entete .baseline{
-    font-size:13px;
-    text-transform:uppercase;
-    letter-spacing:1.5px;
-    opacity:.65;
-    margin-top:6px;
-  }
-  .entete .lieu-date{
-    margin-top:18px;
-    font-family:var(--font-a);
-    font-size:13.5px;
-    text-align:right;
-    opacity:.8;
-  }
+  .rs-links{display:flex; gap:12px; margin-top:8px;}
+  .t-item:nth-child(odd) .rs-links{justify-content:flex-end;}
+  .rs-links a{color:var(--accent); font-weight:700; text-decoration:none; border-bottom:2px solid rgba(18,19,86,.3); font-size:14px;}
 
-  .corps-lettre{
-    position:relative;
-    z-index:1;
-    font-size:16px;
-  }
-  .corps-lettre .salutation{
-    font-family:var(--font-a);
-    font-size:19px;
-    margin-bottom:18px;
-    color:var(--accent);
-  }
-  .corps-lettre p{
-    margin-bottom:16px;
-    text-indent:26px;
-  }
-  .corps-lettre p:first-of-type::first-letter{
-    font-family:var(--font-a);
-    font-size:38px;
-    color:var(--accent);
-    float:left;
-    line-height:1;
-    padding-right:8px;
-    padding-top:4px;
-  }
+  .map-placeholder{margin-top:14px; border-radius:12px; overflow:hidden;}
+  .map-placeholder iframe{width:100%; height:160px; border:0; display:block;}
 
-  .photo-jointe{position:relative; z-index:1; max-width:220px; margin:28px auto; transform:rotate(-2.5deg);}
-  .photo-jointe .cadre{background:#fff; padding:10px 10px 30px; box-shadow:0 10px 24px rgba(28,29,61,.22);}
-  .photo-jointe img{width:100%; height:170px; object-fit:cover; filter:sepia(.12) contrast(1.03);}
-  .photo-jointe .legende{font-family:var(--font-signature); font-size:16px; text-align:center; margin-top:6px; color:var(--accent-dark);}
-
-  .proposition{
-    position:relative;
-    z-index:1;
-    margin:34px 0;
-    padding:26px 26px 22px;
-    background:rgba(18,19,86,.05);
-    border-left:3px solid var(--accent);
-  }
-  .proposition h2{
-    font-size:18px;
-    color:var(--accent);
-    margin-bottom:16px;
-  }
-  .proposition ul{
-    list-style:none;
-  }
-  .proposition li{
-    display:flex;
-    justify-content:space-between;
-    gap:16px;
-    padding:10px 0;
-    border-bottom:1px dashed rgba(28,29,61,.2);
-    font-size:15px;
-  }
-  .proposition li:last-child{
-    border-bottom:none;
-  }
-  .proposition li .produit{
-    font-weight:700;
-  }
-  .proposition li .detail{
-    opacity:.65;
-    font-size:13.5px;
-    display:block;
-    font-weight:400;
-    margin-top:2px;
-  }
-  .proposition li .prix{
-    font-family:var(--font-a);
-    color:var(--accent);
-    white-space:nowrap;
-  }
-
-  .cloture-lettre{
-    position:relative;
-    z-index:1;
-    margin-top:36px;
-    text-indent:26px;
-  }
-
-  .signature-bloc{
-    position:relative;
-    z-index:1;
-    margin-top:30px;
-    text-align:right;
-  }
-  .signature-bloc .signature{
-    font-family:var(--font-signature);
-    font-size:38px;
-    color:var(--accent-dark);
-    transform:rotate(-2deg);
-    display:inline-block;
-  }
-  .signature-bloc .fonction{
-    font-size:13px;
-    opacity:.65;
-    margin-top:2px;
-  }
-
-  .post-scriptum{
-    position:relative;
-    z-index:1;
-    margin-top:34px;
-    padding-top:18px;
-    border-top:1px dashed rgba(28,29,61,.25);
-    font-size:14.5px;
-    font-style:italic;
-  }
-  .post-scriptum strong{
-    font-family:var(--font-a);
-    font-style:normal;
-    color:var(--accent);
-    margin-right:4px;
-  }
-
-  .avis-note-bloc{
-    max-width:640px;
-    margin:44px auto 0;
-    padding:22px 24px;
-    background:var(--paper);
-    border:1px solid rgba(28,29,61,.1);
-    box-shadow:0 8px 20px rgba(28,29,61,.12);
-    text-align:center;
-  }
-  .avis-note-bloc .etoiles{color:var(--accent); font-size:20px; letter-spacing:3px; margin-bottom:8px;}
-  .avis-note-bloc p{font-size:14px; opacity:.75;}
-
-  .infos-pratiques{
-    max-width:640px;
-    margin:40px auto 0;
-    background:var(--paper);
-    border:1px solid rgba(28,29,61,.1);
-    box-shadow:0 8px 20px rgba(28,29,61,.12);
-    padding:26px 30px;
-    text-align:center;
-  }
-  .infos-pratiques h3{
-    font-size:16px;
-    color:var(--accent);
-    margin-bottom:12px;
-  }
-  .infos-pratiques p{
-    font-size:14px;
-    margin-bottom:6px;
-  }
-  .infos-pratiques iframe{width:100%; height:200px; border:0; border-radius:12px; margin-top:16px;}
-
-  @media(max-width:520px){
-    .lettre-page{ padding:36px 24px 44px; }
-    .entete .nom-boutique{ font-size:22px; }
-    .corps-lettre{ font-size:15px; }
-  }
+  .contact-bloc{max-width:480px; margin:0 auto; padding:0 24px 64px; text-align:center;}
+  .contact-bloc h2{font-size:26px; margin-bottom:14px;}
+  .contact-bloc p{font-size:15px; opacity:.8; margin-bottom:18px;}
 
   footer{text-align:center; padding:26px 24px 88px; background:var(--accent-dark); color:rgba(255,255,255,.7); font-size:12.5px;}
+  footer a{color:inherit;}
 
   /* Bandeau + nav + modale, com' de Gilles : couleur neutre fixe #18181b, jamais la palette du
      site propose. Reference : V1-Echanges/mockups/proposition-2.html (cf workflow-cc.md). */
-  .proposition-nav{display:flex; align-items:center; justify-content:center; gap:14px; padding:16px 24px; flex-wrap:wrap; background:#18181b; margin:-56px -20px 28px;}
+  .proposition-nav{display:flex; align-items:center; justify-content:center; gap:14px; padding:16px 24px; flex-wrap:wrap; background:#18181b;}
   .proposition-nav a{color:#fff; opacity:.9; font-weight:700; font-size:13px; text-decoration:none;}
   .proposition-nav a:hover{text-decoration:underline; opacity:1;}
   .proposition-nav-reassure{width:100%; text-align:center; font-size:14.5px; font-weight:600; color:#fff; opacity:.9; margin:8px 0 0;}
@@ -277,7 +136,12 @@
   .result-modal p{font-size:14.5px; color:var(--text); opacity:.7; margin:0 0 24px; line-height:1.5;}
   .result-modal-close{position:absolute; top:12px; right:12px; background:none; border:0; font-size:18px; line-height:1; color:var(--text); opacity:.5; cursor:pointer; padding:8px;}
 
-  @media(max-width:640px){ .proposition-nav{margin:-56px -20px 28px;} }
+  @media(max-width:760px){
+    .timeline::before{left:20px;}
+    .t-item, .t-item:nth-child(odd), .t-item:nth-child(even){width:calc(100% - 52px); margin-left:52px; margin-right:0; text-align:left;}
+    .t-item:nth-child(odd) .etapes, .t-item:nth-child(odd) .stat-row, .t-item:nth-child(odd) .rs-links{text-align:left; justify-content:flex-start;}
+    .t-item:nth-child(odd) .t-dot, .t-item:nth-child(even) .t-dot{left:-40px; right:auto;}
+  }
 </style>
 </head>
 <body>
@@ -302,87 +166,78 @@
   <p class="proposition-nav-reassure">Une autre piste, volontairement différente. Ce qui vous plaît dans l'une ou l'autre devient le point de départ.</p>
 </div>
 
-<div class="enveloppe-intro">
-  <span class="tampon">Fait main</span>
+<div class="hero">
+  <div class="logo-ring"><img src="./logo.jpg" alt="Trois Petits Muscaris"></div>
+  <div class="tagline">Atelier de couture</div>
+  <h1>Trois Petits Muscaris</h1>
+  <p>Retouches &amp; cours de couture à Mont-de-Marsan, dans une ambiance conviviale et bienveillante.</p>
+  <a href="#contact" class="btn">Nous écrire</a>
 </div>
 
-<main class="lettre-page">
+<div class="timeline">
+  <div class="t-item reveal">
+    <span class="t-dot"></span>
+    <div class="t-num">01 · Le concept</div>
+    <h2>Notre parti pris</h2>
+    <p>Claire Faure vous accueille dans son atelier de couture, place Porte Campet, pour des retouches classiques comme pour des cours de couture en petit groupe, tous niveaux.</p>
+    <p class="quote">« Chacun avance à son rythme »</p>
+  </div>
 
-  <header class="entete">
-    <div class="nom-boutique">Trois Petits Muscaris</div>
-    <div class="baseline">Atelier de couture et retouches</div>
-    <div class="lieu-date">Mont-de-Marsan, aujourd'hui</div>
-  </header>
+  <div class="t-item reveal">
+    <span class="t-dot"></span>
+    <div class="t-num">02 · Comment ça marche</div>
+    <h2>Le parcours client</h2>
+    <ol class="etapes">
+      <li>Prise de contact (téléphone, email ou passage à l'atelier)</li>
+      <li>Retouche sur mesure ou inscription à un cours collectif</li>
+      <li>Réalisation à l'atelier, remise en main propre</li>
+    </ol>
+  </div>
 
-  <section class="corps-lettre">
-    <p class="salutation">Cher visiteur,</p>
+  <div class="t-item reveal">
+    <span class="t-dot"></span>
+    <div class="t-num">03 · Ce qu'on en dit</div>
+    <h2>Leurs retours</h2>
+    <div class="stat-row">
+      <div class="stat"><b>5/5</b><span>sur Google</span></div>
+    </div>
+    <p style="margin-top:10px; font-size:13px; opacity:.65;">Note réelle vérifiée sur la fiche Google, avis affichés dès la connexion du widget.</p>
+  </div>
 
-    <p>Je m'appelle Claire et je tiens Trois Petits Muscaris, mon atelier de couture, place Porte Campet, en plein cœur de Mont-de-Marsan. Ce que vous allez découvrir ici n'est pas une vitrine comme les autres, c'est un peu mon atelier ouvert, avec l'odeur du tissu neuf et le bruit familier des machines à coudre.</p>
-
-    <p>Je fais des retouches classiques, ourlets, fermetures éclair, ajustements sur mesure, et j'anime aussi des cours de couture en petit groupe, pour les débutants comme pour celles et ceux déjà à l'aise avec une machine. Je n'ai jamais voulu aller vite, je préfère prendre le temps qu'il faut pour que chaque pièce reparte comme il faut.</p>
-
-    <p>Si vous passez par Mont-de-Marsan, la porte est ouverte. Vous pourrez voir l'atelier, poser vos questions et repartir avec votre vêtement réparé ou simplement l'envie de vous inscrire à un prochain cours.</p>
-  </section>
-
-  <div class="photo-jointe">
-    <div class="cadre">
-      <img src="../_stock/couture-textile/couture-textile-02.jpg" alt="Atelier de couture">
-      <div class="legende">l'atelier</div>
+  <div class="t-item reveal">
+    <span class="t-dot"></span>
+    <div class="t-num">04 · Nous suivre</div>
+    <h2>Sur les réseaux</h2>
+    <div class="rs-links">
+      <a href="https://www.facebook.com/p/Trois-Petits-Muscaris-100089334460640/" target="_blank" rel="noopener noreferrer">👍 Facebook</a>
     </div>
   </div>
 
-  <section class="proposition">
-    <h2>Ce que je vous propose</h2>
-    <ul>
-      <li>
-        <span>
-          <span class="produit">Retouches classiques</span>
-          <span class="detail">Ourlets, fermetures éclair, ajustements sur mesure</span>
-        </span>
-        <span class="prix">Sur devis</span>
-      </li>
-      <li>
-        <span>
-          <span class="produit">Cours de couture collectifs</span>
-          <span class="detail">En petit groupe, tous niveaux</span>
-        </span>
-        <span class="prix">Sur devis</span>
-      </li>
-    </ul>
-  </section>
-
-  <section class="cloture-lettre">
-    <p>J'espère avoir l'occasion de vous rencontrer bientôt, entre deux retouches ou lors d'un prochain cours. En attendant, prenez soin de vous.</p>
-  </section>
-
-  <div class="signature-bloc">
-    <div class="signature">Claire</div>
-    <div class="fonction">Trois Petits Muscaris</div>
+  <div class="t-item reveal">
+    <span class="t-dot"></span>
+    <div class="t-num">05 · Nous trouver</div>
+    <h2>Bon à savoir</h2>
+    <p>5 place Porte Campet, 40000 Mont-de-Marsan · Mercredi-vendredi, 10h-18h · 06 37 77 62 43</p>
+    <div class="map-placeholder">
+      <iframe loading="lazy" src="https://maps.google.com/maps?q=5%20place%20Porte%20Campet%2C%2040000%20Mont-de-Marsan&output=embed"></iframe>
+    </div>
   </div>
+</div>
 
-  <div class="post-scriptum">
-    <strong>PS :</strong>les cours de couture se font en petit groupe, contactez-moi pour connaître les prochaines places disponibles.
-  </div>
-
-</main>
-
-<section class="avis-note-bloc">
-  <div class="etoiles">★★★★★</div>
-  <p>5/5 sur les avis disponibles. Vrais avis affichés dès la connexion du widget Google, une fois le site en ligne.</p>
-</section>
-
-<section class="infos-pratiques">
-  <h3>Venir à l'atelier</h3>
-  <p>5 place Porte Campet, 40000 Mont-de-Marsan</p>
-  <p>Mercredi-vendredi, 10h-18h</p>
-  <p>06 37 77 62 43 · contact@troispetitsmuscaris.fr</p>
+<div class="contact-bloc" id="contact">
+  <h2>Nous écrire</h2>
+  <p>contact@troispetitsmuscaris.fr</p>
   <a class="btn" href="mailto:contact@troispetitsmuscaris.fr">Prendre rendez-vous</a>
-  <iframe loading="lazy" src="https://maps.google.com/maps?q=5%20place%20Porte%20Campet%2C%2040000%20Mont-de-Marsan&output=embed"></iframe>
-</section>
+</div>
 
-<footer>TROIS PETITS MUSCARIS · Mont-de-Marsan · contact@troispetitsmuscaris.fr · <a href="https://www.facebook.com/p/Trois-Petits-Muscaris-100089334460640/" target="_blank" rel="noopener noreferrer" style="color:inherit;">Facebook</a></footer>
+<footer>TROIS PETITS MUSCARIS · Mont-de-Marsan · contact@troispetitsmuscaris.fr · <a href="https://www.facebook.com/p/Trois-Petits-Muscaris-100089334460640/" target="_blank" rel="noopener noreferrer">Facebook</a></footer>
 
 <script>
+  var revealObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('show'); });
+  }, {threshold:.2});
+  document.querySelectorAll('.reveal').forEach(function(el){ revealObs.observe(el); });
+
   var toTop = document.getElementById('toTop');
   window.addEventListener('scroll', function(){
     toTop.classList.toggle('show', window.scrollY > 500);
