@@ -106,63 +106,43 @@ export default function PricingCard({
       <p className="text-3xl font-bold text-foreground mb-4">{total}€</p>
 
       <ul className="text-sm text-foreground space-y-2 mb-4">
-        <li className="flex items-center gap-2 whitespace-nowrap">
-          <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
-          Votre site
+        <li className="flex items-start gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0 mt-1.5" />
+          <span className="min-w-0">Votre site</span>
         </li>
-        <li className="flex items-center gap-2 whitespace-nowrap">
-          <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
-          5 allers-retours (V1 à V6) pour affiner votre site avec vous
+        <li className="flex items-start gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0 mt-1.5" />
+          <span className="min-w-0">5 allers-retours (V1 à V6) pour affiner votre site avec vous</span>
         </li>
-        <li className="flex items-center gap-2 whitespace-nowrap">
-          <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
-          Mise en ligne
+        <li className="flex items-start gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0 mt-1.5" />
+          <span className="min-w-0">Mise en ligne</span>
         </li>
         {withSubscription && (
           <>
-            <li className="flex items-center gap-2 font-medium whitespace-nowrap">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-              {SUBSCRIPTION_INCLUDED_MODIFS} modifications valables 12 mois
+            <li className="flex items-start gap-2 font-medium">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1.5" />
+              <span className="min-w-0">Nom de domaine</span>
             </li>
-            <li className="flex items-center gap-2 font-medium whitespace-nowrap">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-              Nom de domaine
+            <li className="flex items-start gap-2 font-medium">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1.5" />
+              <span className="min-w-0">{SUBSCRIPTION_INCLUDED_MODIFS} modifications valables 12 mois</span>
             </li>
-            <li className="flex items-center gap-2 font-medium whitespace-nowrap">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-              Retours sous 48h ouvrées
+            <li className="flex items-start gap-2 font-medium">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1.5" />
+              <span className="min-w-0">Retours sous 48h ouvrées</span>
             </li>
           </>
         )}
         {domainActive && (
-          <li className="flex items-center gap-2 font-medium whitespace-nowrap">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-            Nom de domaine
+          <li className="flex items-start gap-2 font-medium">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1.5" />
+            <span className="min-w-0">Nom de domaine</span>
           </li>
         )}
       </ul>
 
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2 mt-1">Options</p>
-
-      <label className="flex items-start gap-3 rounded-xl border border-border p-3 mb-2 cursor-pointer hover:border-foreground/30 transition-colors">
-        <input
-          type="checkbox"
-          checked={withSubscription}
-          onChange={(e) => {
-            setWithSubscription(e.target.checked);
-            if (e.target.checked) setWithDomain(false);
-          }}
-          className="mt-0.5 h-4 w-4 rounded border-input accent-foreground"
-        />
-        <span className="block text-sm text-foreground">
-          <span className="font-medium">Abonnement Sérénité, +{SUBSCRIPTION_PRICE_YEAR}€/an</span>
-          <span className="text-muted-foreground">
-            {" "}
-            : nom de domaine, {SUBSCRIPTION_INCLUDED_MODIFS} modifications valables 12 mois, retours
-            sous 48h ouvrées.
-          </span>
-        </span>
-      </label>
 
       <div className="relative mb-2">
         <label
@@ -178,7 +158,7 @@ export default function PricingCard({
             className="mt-0.5 h-4 w-4 rounded border-input accent-foreground"
           />
           <span className="block text-sm text-foreground">
-            <span className="font-medium">Nom de domaine, +{DOMAIN_PRICE_YEAR}€</span>
+            <span className="font-medium">Nom de domaine, {withSubscription ? "inclus" : `+${DOMAIN_PRICE_YEAR}€`}</span>
             <span className="text-muted-foreground">
               {" "}
               : couvre la 1ère année.
@@ -212,9 +192,26 @@ export default function PricingCard({
           </div>
         )}
       </div>
-      {withSubscription && (
-        <p className="text-xs text-muted-foreground mb-2 ml-1">Déjà inclus dans l'abonnement Sérénité.</p>
-      )}
+
+      <label className="flex items-start gap-3 rounded-xl border border-border p-3 mb-2 cursor-pointer hover:border-foreground/30 transition-colors">
+        <input
+          type="checkbox"
+          checked={withSubscription}
+          onChange={(e) => {
+            setWithSubscription(e.target.checked);
+            if (e.target.checked) setWithDomain(false);
+          }}
+          className="mt-0.5 h-4 w-4 rounded border-input accent-foreground"
+        />
+        <span className="block text-sm text-foreground">
+          <span className="font-medium">Formule Sérénité, +{SUBSCRIPTION_PRICE_YEAR}€</span>
+          <span className="text-muted-foreground">
+            {" "}
+            : inclut "Nom de domaine" ci-dessus, + {SUBSCRIPTION_INCLUDED_MODIFS} modifications, retours sous 48h
+            ouvrées et tarif réduit sur les suivantes (valables 12 mois).
+          </span>
+        </span>
+      </label>
 
       <p className="text-xs text-muted-foreground mb-2 mt-3.5 pt-3.5 border-t border-border">
         Au-delà de la V6 (V7, V8...) ou pour toute modification après mise en ligne :{" "}
