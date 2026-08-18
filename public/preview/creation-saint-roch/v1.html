@@ -81,16 +81,37 @@
 
   footer{text-align:center; padding:32px 24px 100px; background:var(--ink); color:rgba(255,255,255,.5); font-size:12.5px; border-top:1px solid rgba(201,168,105,.2);}
 
-  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:1000; background:#0c0c1c; color:#fff; padding:14px 20px; text-align:center; font-family:'Nunito',sans-serif; font-size:14px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
+  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:1000; background:#0c0c1c; color:#fff; padding:22px 20px; text-align:center; font-family:'Nunito',sans-serif; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
   .retour-bandeau a{color:var(--gold); font-weight:800; text-decoration:underline; margin-left:6px;}
+
+  /* Modale "fin de page" (17/08, demande de Gilles) : affichee une seule fois quand le visiteur
+     atteint le bas de la page, avant meme d'envisager une nouvelle modif du bandeau fixe. Meme
+     lien que le bandeau (coherence, pas un 2e chemin different), fermeture au clic en dehors ou
+     sur la croix, jamais reaffichee une fois fermee sur ce chargement de page. */
+  .result-modal-overlay{position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .3s ease;}
+  .result-modal-overlay.show{opacity:1; pointer-events:auto;}
+  .result-modal{position:relative; max-width:380px; width:100%; background:#fff; border-radius:20px; padding:38px 30px 32px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.35); transform:translateY(14px); transition:transform .3s ease;}
+  .result-modal-overlay.show .result-modal{transform:translateY(0);}
+  .result-modal h2{font-family:var(--font-a); font-size:23px; margin:0 0 10px; color:#1a1a1a;}
+  .result-modal p{font-size:14.5px; color:#5a5a5a; margin:0 0 24px; line-height:1.5;}
+  .result-modal-close{position:absolute; top:12px; right:12px; background:none; border:0; font-size:18px; line-height:1; color:#999; cursor:pointer; padding:8px;}
 </style>
 </head>
 <body>
+<div class="result-modal-overlay" id="resultModalOverlay">
+  <div class="result-modal">
+    <button type="button" class="result-modal-close" aria-label="Fermer" onclick="closeResultModal()">✕</button>
+    <h2>Le résultat vous plaît ?</h2>
+    <p>Ce premier jet peut encore évoluer. On peut en discuter ensemble dès maintenant.</p>
+    <a class="btn" href="/preview/creation-saint-roch/H2g7uNKQu4?discuter=1#tarif">Discutons-en →</a>
+  </div>
+</div>
+
 
 <button class="to-top" id="toTop" aria-label="Retour en haut de page" title="Retour en haut">↑</button>
 
 <div class="retour-bandeau">
-  Ça vous plaît ? <a href="/preview/creation-saint-roch/H2g7uNKQu4#exemple">Découvrez comment on le rend réel →</a>
+  Ça vous plaît ? <a href="/preview/creation-saint-roch/H2g7uNKQu4?discuter=1#tarif">Découvrez comment on le rend réel →</a>
 </div>
 
 <section class="slide slide-hero show">
@@ -192,6 +213,31 @@
     if(window.scrollY > window.innerHeight * 0.6){ toTop.classList.add('show'); } else { toTop.classList.remove('show'); }
   }, {passive:true});
   toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+  // Modale "fin de page" (retour Gilles 17/08, 2e passe : la 1ere version base sur un sentinel
+  // + IntersectionObserver ne se declenchait pas de façon fiable) : verification directe de la
+  // position de scroll a chaque evenement scroll, meme pattern deja utilise plus haut pour le
+  // bouton "remonter" de cette page. Marge de 80px : pas besoin d'atteindre le pixel exact du
+  // bas de page. Jamais reaffichee une fois fermee sur ce chargement (variable shown).
+  (function(){
+    var overlay = document.getElementById('resultModalOverlay');
+    if(!overlay) return;
+    var shown = false;
+    function openModal(){ if(shown) return; shown = true; overlay.classList.add('show'); }
+    function closeModal(){ overlay.classList.remove('show'); }
+    window.closeResultModal = closeModal;
+    overlay.addEventListener('click', function(e){ if(e.target === overlay) closeModal(); });
+    function checkNearBottom(){
+      if(shown) return;
+      var doc = document.documentElement;
+      var scrollBottom = window.scrollY + window.innerHeight;
+      var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight);
+      if(scrollBottom >= pageHeight - 80) openModal();
+    }
+    window.addEventListener('scroll', checkNearBottom, {passive:true});
+    window.addEventListener('resize', checkNearBottom);
+    checkNearBottom();
+  })();
 </script>
 </body>
 </html>

@@ -241,7 +241,7 @@ export const previewProjects: Record<string, IPreviewProject> = {
         round: "V1",
         date: "15 août 2026",
         proposals: [
-          { label: "Votre site, premier jet", screenshot: "/preview/cave-velours/logo.jpg", htmlPath: "/preview/cave-velours/mockup-v1.html" },
+          { label: "Votre site, premier jet", screenshot: "/preview/cave-velours/logo.jpg", htmlPath: "/preview/cave-velours/v1.html" },
         ],
         missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
       },
@@ -265,7 +265,7 @@ export const previewProjects: Record<string, IPreviewProject> = {
         round: "V1",
         date: "15 août 2026",
         proposals: [
-          { label: "Votre site, premier jet", screenshot: "/preview/lintemporel/logo.jpg", htmlPath: "/preview/lintemporel/mockup-v1.html" },
+          { label: "Votre site, premier jet", screenshot: "/preview/lintemporel/logo.jpg", htmlPath: "/preview/lintemporel/v1.html" },
         ],
         missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
       },
@@ -289,7 +289,7 @@ export const previewProjects: Record<string, IPreviewProject> = {
         round: "V1",
         date: "15 août 2026",
         proposals: [
-          { label: "Votre site, premier jet", screenshot: "/preview/fripouilles/logo.jpg", htmlPath: "/preview/fripouilles/mockup-v1.html" },
+          { label: "Votre site, premier jet", screenshot: "/preview/fripouilles/logo.jpg", htmlPath: "/preview/fripouilles/v1.html" },
         ],
         missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
       },
@@ -311,7 +311,7 @@ export const previewProjects: Record<string, IPreviewProject> = {
         round: "V1",
         date: "15 août 2026",
         proposals: [
-          { label: "Votre site, premier jet", screenshot: "/preview/trois-petits-muscaris/logo.jpg", htmlPath: "/preview/trois-petits-muscaris/mockup-v1.html" },
+          { label: "Votre site, premier jet", screenshot: "/preview/trois-petits-muscaris/logo.jpg", htmlPath: "/preview/trois-petits-muscaris/v1.html" },
         ],
         missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
       },
@@ -334,7 +334,7 @@ export const previewProjects: Record<string, IPreviewProject> = {
         round: "V1",
         date: "15 août 2026",
         proposals: [
-          { label: "Votre site, premier jet", screenshot: "/preview/creation-saint-roch/logo.gif", htmlPath: "/preview/creation-saint-roch/mockup-v1.html" },
+          { label: "Votre site, premier jet", screenshot: "/preview/creation-saint-roch/logo.gif", htmlPath: "/preview/creation-saint-roch/v1.html" },
         ],
         missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
       },
