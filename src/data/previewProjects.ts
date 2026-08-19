@@ -196,34 +196,9 @@ export const previewProjects: Record<string, IPreviewProject> = {
       },
     ],
   },
-  // Entree de demo pour le prototype "premier contact a froid" (prospection Boutiques, cf
-  // Projets/Boutiques/ dans le vault) : donnees fictives, sert uniquement a visualiser le rendu
-  // du champ coldIntro en local, jamais destinee a etre deployee telle quelle.
-  "demo-boutique": {
-    slug: "demo-boutique",
-    projectName: "Boulangerie du Centre (exemple fictif)",
-    logo: "/images/logo-gc-white.png",
-    contactName: "Madame Dupont",
-    phone: "05 58 00 00 00",
-    currentRound: "V1",
-    nextAction: "Premier contact, en attente de retour",
-    feedbackFormId: "xgoggnej",
-    coldIntro:
-      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre commerce.",
-    rounds: [
-      {
-        round: "V1",
-        date: "14 août 2026",
-        proposals: [
-          { label: "Votre site, premier jet", screenshot: `${BASE}/screenshots/v1.png`, htmlPath: "/preview/demo-boutique/mockup-v1.html" },
-        ],
-        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
-      },
-    ],
-  },
   // Prospects reels, prospection a froid Mont-de-Marsan (cf Projets/Boutiques/ dans le vault,
-  // suivi.html + Prospects/Mont-de-Marsan/<nom>/). Meme mecanisme coldIntro que demo-boutique
-  // ci-dessus, htmlPath pointant vers leur propre mockup-v1.html statique. Pas encore signes :
+  // suivi.html + Prospects/Mont-de-Marsan/<nom>/). htmlPath pointant vers leur propre
+  // mockup-v1.html statique. Pas encore signes :
   // aucune page /preview/<slug>/<secret>/<round> pour eux, uniquement cette page d'accueil.
   Ru4wE22dUd: {
     slug: "cave-velours",

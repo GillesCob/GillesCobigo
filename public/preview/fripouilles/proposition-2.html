@@ -8,9 +8,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Caveat:wght@600;700&family=Fraunces:wght@600&display=swap" rel="stylesheet">
+<!-- Carte OpenStreetMap en Leaflet.js (19/08, item 31 etape 3), meme pattern que le mockup de
+     reference Projets/V1-Echanges/mockups/proposition-1.html : remplace l'iframe Google Maps. -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   :root{
-    --accent:#c2555a; --accent-dark:#8c383c; --creme:#f7f2eb; --text:#2a2320;
+    --accent:#e0722f; --accent-dark:#a8501a; --creme:#f7f2eb; --text:#2a2320;
     --font-a:'Fraunces',serif; --font-hand:'Caveat',cursive;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
@@ -24,6 +28,8 @@
   .to-top.show{opacity:1; pointer-events:auto;}
 
   .hero{padding:96px 24px 40px; text-align:center; max-width:640px; margin:0 auto;}
+  .hero-logo{width:64px; height:64px; border-radius:50%; overflow:hidden; margin:0 auto 18px; box-shadow:0 4px 14px rgba(0,0,0,.15);}
+  .hero-logo img{width:100%; height:100%; object-fit:cover;}
   .hero h1{font-size:clamp(30px,5vw,46px); margin-bottom:12px;}
   .hero p{font-size:16px; opacity:.8; margin-bottom:24px;}
 
@@ -37,7 +43,7 @@
   .polaroid:nth-child(2){transform:rotate(3deg); margin-top:26px;} .polaroid:nth-child(2).show{transform:rotate(3deg) translateY(0);}
   .polaroid:nth-child(3){transform:rotate(-2deg);} .polaroid:nth-child(3).show{transform:rotate(-2deg) translateY(0);}
   .polaroid:nth-child(4){transform:rotate(5deg); margin-top:14px;} .polaroid:nth-child(4).show{transform:rotate(5deg) translateY(0);}
-  .polaroid .ph{aspect-ratio:1/1; overflow:hidden; background:linear-gradient(150deg, rgba(194,85,90,.18), rgba(194,85,90,.05));}
+  .polaroid .ph{aspect-ratio:1/1; overflow:hidden; background:linear-gradient(150deg, rgba(224,114,47,.18), rgba(224,114,47,.05));}
   .polaroid .ph img{width:100%; height:100%; object-fit:cover;}
   .polaroid .tape{position:absolute; top:-10px; left:50%; transform:translateX(-50%) rotate(-3deg); width:70px; height:22px; background:rgba(242,230,168,.85); box-shadow:0 2px 3px rgba(0,0,0,.1);}
   .polaroid .cap{position:absolute; bottom:10px; left:14px; right:14px; font-family:var(--font-hand); font-size:19px; color:var(--text); text-align:center;}
@@ -52,23 +58,25 @@
   .stat span{font-size:11.5px; opacity:.65;}
 
   .rs-links{display:flex; gap:14px; justify-content:center; margin-top:16px;}
-  .rs-links a{color:var(--accent); font-weight:700; text-decoration:none; border-bottom:2px solid rgba(194,85,90,.3); font-size:14px;}
+  .rs-links a{color:var(--accent); font-weight:700; text-decoration:none; border-bottom:2px solid rgba(224,114,47,.3); font-size:14px;}
 
   .contact-bloc{max-width:480px; margin:0 auto; padding:0 24px 64px; text-align:center;}
   .contact-bloc h2{font-size:26px; margin-bottom:18px;}
   .contact-bloc form{display:flex; flex-direction:column; gap:14px; text-align:left;}
-  .contact-bloc input, .contact-bloc textarea{padding:12px 16px; border-radius:8px; border:1px solid rgba(194,85,90,.25); font-family:inherit; font-size:16px; background:#fff;}
+  .contact-bloc input, .contact-bloc textarea{padding:12px 16px; border-radius:8px; border:1px solid rgba(224,114,47,.25); font-family:inherit; font-size:16px; background:#fff;}
   .contact-bloc textarea{min-height:100px; resize:vertical;}
-  .contact-bloc iframe{width:100%; height:220px; border:0; border-radius:14px; margin-top:22px;}
+  .map-wrap{position:relative; margin-top:22px;}
+  .map-embed{width:100%; height:220px; border-radius:14px; overflow:hidden; background:#eee;}
+  .map-lock{position:absolute; inset:0; border-radius:14px; background:rgba(0,0,0,.25); color:#fff; display:flex; align-items:center; justify-content:center; text-align:center; font-size:13px; font-weight:700; padding:12px; cursor:pointer; transition:opacity .2s ease; z-index:401;}
+  .map-lock.hidden{opacity:0; pointer-events:none;}
+  .map-recenter{position:absolute; bottom:10px; left:10px; z-index:401; background:#fff; color:var(--text); border:1px solid rgba(0,0,0,.15); border-radius:8px; padding:6px 10px; font-size:11.5px; font-family:inherit; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.15);}
+  .leaflet-control-attribution{font-size:10px; background:rgba(255,255,255,.75); padding:1px 6px;}
 
-  footer{text-align:center; padding:26px 24px 88px; background:var(--accent-dark); color:rgba(255,255,255,.7); font-size:12.5px;}
+  footer{text-align:center; padding:26px 24px; background:var(--accent-dark); color:rgba(255,255,255,.7); font-size:12.5px;}
 
   /* Bandeau + nav + modale, com' de Gilles : couleur neutre fixe #18181b, jamais la palette du
      site propose. Reference : V1-Echanges/mockups/proposition-2.html (cf workflow-cc.md). */
-  .proposition-nav{display:flex; align-items:center; justify-content:center; gap:14px; padding:16px 24px; flex-wrap:wrap; background:#18181b;}
-  .proposition-nav a{color:#fff; opacity:.9; font-weight:700; font-size:13px; text-decoration:none;}
-  .proposition-nav a:hover{text-decoration:underline; opacity:1;}
-  .proposition-nav-reassure{width:100%; text-align:center; font-size:14.5px; font-weight:600; color:#fff; opacity:.9; margin:8px 0 0;}
+  .proposition-banner{position:fixed; top:0; left:0; right:0; z-index:1000; background:var(--accent); color:#fff; text-align:center; padding:10px 16px; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;}
 
   .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:#18181b; color:#fff; padding:22px 20px; text-align:center; font-family:'Nunito',-apple-system,sans-serif; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
   .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
@@ -91,24 +99,22 @@
 <div class="result-modal-overlay" id="resultModalOverlay">
   <div class="result-modal">
     <button type="button" class="result-modal-close" aria-label="Fermer" onclick="closeResultModal()">✕</button>
-    <h2>Le résultat vous plaît ?</h2>
-    <p>Ce point de départ peut encore évoluer. On peut en discuter ensemble dès maintenant.</p>
-    <a class="btn" href="/preview/fripouilles/WnbclCyz2v#tarif">On passe à la suite →</a>
+    <h2>Séduit par le visuel ?</h2>
+    <p>Il suffit d'ajouter quelques éléments de personnalisation pour modeler le site à votre image !</p>
+    <a class="btn" href="/preview/fripouilles/WnbclCyz2v#tarif">Obtenir plus d'informations →</a>
   </div>
 </div>
 
 <div class="retour-bandeau">
-  <a href="/preview/fripouilles/WnbclCyz2v#tarif">On passe à la suite →</a>
+  <a href="/preview/fripouilles/WnbclCyz2v#tarif">Obtenir plus d'informations →</a>
 </div>
 
 <button class="to-top" id="toTop" aria-label="Retour en haut">↑</button>
 
-<div class="proposition-nav">
-  <a href="./v1.html">← Revoir la proposition 1</a>
-  <p class="proposition-nav-reassure">Voici une autre piste, volontairement différente. Ce qui vous plaît dans l'une ou l'autre devient le point de départ.</p>
-</div>
+<div class="proposition-banner">2ème proposition</div>
 
 <div class="hero">
+  <div class="hero-logo"><img src="./logo.jpg" alt="Frip'ouilles"></div>
   <h1>Frip'ouilles</h1>
   <p>Vintage &amp; upcyclé, pièces uniques imaginées à Mont-de-Marsan.</p>
   <a href="#contact" class="btn">Nous écrire</a>
@@ -148,12 +154,48 @@
     <textarea name="message" placeholder="Votre message" required></textarea>
     <button type="submit" class="btn">Envoyer</button>
   </form>
-  <iframe loading="lazy" src="https://maps.google.com/maps?q=9%20rue%20du%20Mirail%2C%2040000%20Mont-de-Marsan&output=embed"></iframe>
+  <div class="map-wrap">
+    <div class="map-embed" id="mapEmbed"></div>
+    <div class="map-lock" id="mapLock" onclick="unlockMap()">Cliquez pour interagir avec la carte</div>
+    <button type="button" class="map-recenter" onclick="recenterMap()" aria-label="Recentrer la carte">↺ Recentrer</button>
+  </div>
 </div>
 
 <footer>LES FRIP'OUILLES · Mont-de-Marsan · fripouilles.vintage@gmail.com</footer>
 
 <script>
+  // Bandeaux haut/bas en couches externes au contenu (19/08, meme mecanique que la
+  // reference Projets/V1-Echanges/mockups/proposition-2.html) : hauteur reelle mesuree
+  // au lieu d'un padding fixe, body.padding-{top,bottom} recale dessus.
+  function syncBandeauSpacing() {
+    var top = document.querySelector('.proposition-banner');
+    var bottom = document.querySelector('.retour-bandeau');
+    if (top) document.body.style.paddingTop = top.offsetHeight + 'px';
+    if (bottom) document.body.style.paddingBottom = bottom.offsetHeight + 'px';
+  }
+  syncBandeauSpacing();
+  window.addEventListener('resize', syncBandeauSpacing);
+
+  // Adresse reelle : 9 rue du Mirail, 40000 Mont-de-Marsan (geocodee via Nominatim/OSM, 19/08).
+  var MAP_CENTER = [43.8911205, -0.4997978];
+  var MAP_ZOOM = 16;
+  var map = L.map('mapEmbed', {
+    center: MAP_CENTER, zoom: MAP_ZOOM,
+    scrollWheelZoom: false, dragging: false, touchZoom: false, doubleClickZoom: false, zoomControl: false
+  });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  }).addTo(map);
+  map.attributionControl.setPrefix(false);
+  L.marker(MAP_CENTER).addTo(map);
+  function unlockMap() {
+    document.getElementById('mapLock').classList.add('hidden');
+    map.scrollWheelZoom.enable(); map.dragging.enable(); map.touchZoom.enable(); map.doubleClickZoom.enable();
+    map.addControl(L.control.zoom());
+  }
+  function recenterMap() { map.setView(MAP_CENTER, MAP_ZOOM); }
+
   var revealObs = new IntersectionObserver(function(entries){
     entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('show'); });
   }, {threshold:.2});

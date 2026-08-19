@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Bloque tout commit qui touche un fichier "funnel" (miroir d'un mockup vault Boutiques/V1-Echanges)
+# sans confirmation explicite que la checklist git-diff-du-mockup a ete faite (cf
+# Moi/regle-portage-mockup-prod.md, vault-perso, acte le 19/08 a la demande de Gilles).
+# MOCKUP_DIFF_CHECKED=1 doit etre pose explicitement avant `git commit`, jamais par defaut.
+FUNNEL_PATTERN='^src/components/preview/|^src/pages/PreviewHome\.tsx$|^src/pages/CaseStudyRound\.tsx$|^src/components/ui/dialog\.tsx$|^public/preview/'
+
+STAGED=$(git diff --cached --name-only)
+if echo "$STAGED" | grep -Eq "$FUNNEL_PATTERN"; then
+  if [ "$MOCKUP_DIFF_CHECKED" != "1" ]; then
+    echo ""
+    echo "BLOQUE : ce commit touche un fichier du funnel prospect (miroir d'un mockup vault)."
+    echo "La checklist git-diff-du-mockup (Moi/regle-portage-mockup-prod.md, vault-perso) doit"
+    echo "etre faite avant de commit."
+    echo "Une fois verifiee, relancer avec : MOCKUP_DIFF_CHECKED=1 git commit ..."
+    echo ""
+    exit 1
+  fi
+fi
+exit 0

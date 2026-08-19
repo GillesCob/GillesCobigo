@@ -8,6 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<!-- Carte OpenStreetMap en Leaflet.js (19/08, item 31 etape 3), meme pattern que le mockup de
+     reference Projets/V1-Echanges/mockups/proposition-1.html : remplace l'iframe Google Maps. -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   :root{ --gold:#c9a869; --accent:#333366; --ink:#141428; --ink-2:#1e1e3a; --text:#eae9f2; --font-a:'Playfair Display',serif; }
   *{box-sizing:border-box; margin:0; padding:0;}
@@ -68,10 +72,16 @@
   .slide-contact input::placeholder, .slide-contact textarea::placeholder{color:rgba(255,255,255,.5);}
   .slide-contact textarea{min-height:100px; resize:vertical;}
   .map-mini{margin-top:20px; border-radius:0; overflow:hidden; border:1px solid rgba(201,168,105,.3);}
-  .map-mini iframe{width:100%; height:180px; border:0; display:block;}
+    .map-wrap{position:relative; margin-top:22px;}
+  .map-embed{width:100%; height:220px; border-radius:14px; overflow:hidden; background:#eee;}
+  .map-lock{position:absolute; inset:0; border-radius:14px; background:rgba(0,0,0,.25); color:#fff; display:flex; align-items:center; justify-content:center; text-align:center; font-size:13px; font-weight:700; padding:12px; cursor:pointer; transition:opacity .2s ease; z-index:401;}
+  .map-lock.hidden{opacity:0; pointer-events:none;}
+  .map-recenter{position:absolute; bottom:10px; left:10px; z-index:401; background:#fff; color:var(--text); border:1px solid rgba(0,0,0,.15); border-radius:8px; padding:6px 10px; font-size:11.5px; font-family:inherit; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.15);}
+  .leaflet-control-attribution{font-size:10px; background:rgba(255,255,255,.75); padding:1px 6px;}
 
-  footer{text-align:center; padding:32px 24px 100px; background:var(--ink); color:rgba(255,255,255,.5); font-size:12.5px; border-top:1px solid rgba(201,168,105,.2);}
+  footer{text-align:center; padding:32px 24px; background:var(--ink); color:rgba(255,255,255,.5); font-size:12.5px; border-top:1px solid rgba(201,168,105,.2);}
 
+  .proposition-banner{position:fixed; top:0; left:0; right:0; z-index:1000; background:var(--accent); color:#fff; text-align:center; padding:10px 16px; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;}
   /* Bandeau + modale, com' de Gilles : couleur neutre fixe #18181b, jamais la palette du site
      propose. Reference : V1-Echanges/mockups/proposition-1.html (cf workflow-cc.md). */
   .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:#18181b; color:#fff; padding:22px 20px; text-align:center; font-family:'Nunito',sans-serif; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
@@ -90,21 +100,20 @@
 </style>
 </head>
 <body>
+<div class="proposition-banner">1ère proposition</div>
 
 <div class="result-modal-overlay" id="resultModalOverlay">
   <div class="result-modal">
     <button type="button" class="result-modal-close" aria-label="Fermer" onclick="closeResultModal()">✕</button>
-    <h2>Envie de voir une autre direction ?</h2>
-    <p>Ceci est une première proposition. J'en ai imaginé une deuxième, différente, pour vous aider à choisir ce qui vous ressemble.</p>
-    <a class="btn" href="./proposition-2.html">Voir la 2e proposition →</a>
+    <h2>Vous souhaitez visualiser une alternative ?</h2>
+    <a class="btn" href="./proposition-2.html">Découvrir la 2ème proposition →</a>
   </div>
 </div>
 
 <button class="to-top" id="toTop" aria-label="Retour en haut de page" title="Retour en haut">↑</button>
 
 <div class="retour-bandeau">
-  <p class="retour-bandeau-reassure">Point de départ, pas figé. On l'affine ensemble par la suite.</p>
-  <a href="./proposition-2.html">Découvrez une 2e proposition, différente →</a>
+  <a href="./proposition-2.html">Découvrir la 2ème proposition →</a>
 </div>
 
 <section class="slide slide-hero show">
@@ -174,7 +183,11 @@
       <button type="submit" class="btn">Envoyer</button>
     </form>
     <div class="map-mini">
-      <iframe loading="lazy" src="https://maps.google.com/maps?q=71%20rue%20L%C3%A9on%20Gambetta%2C%2040000%20Mont-de-Marsan&output=embed"></iframe>
+      <div class="map-wrap">
+    <div class="map-embed" id="mapEmbed"></div>
+    <div class="map-lock" id="mapLock" onclick="unlockMap()">Cliquez pour interagir avec la carte</div>
+    <button type="button" class="map-recenter" onclick="recenterMap()" aria-label="Recentrer la carte">↺ Recentrer</button>
+  </div>
     </div>
   </div>
 </section>
@@ -184,6 +197,38 @@
 </footer>
 
 <script>
+  // Bandeaux haut/bas en couches externes au contenu (19/08, meme mecanique que la
+  // reference Projets/V1-Echanges/mockups/proposition-1.html) : hauteur reelle mesuree
+  // au lieu d'un padding fixe, body.padding-{top,bottom} recale dessus.
+  function syncBandeauSpacing() {
+    var top = document.querySelector('.proposition-banner');
+    var bottom = document.querySelector('.retour-bandeau');
+    if (top) document.body.style.paddingTop = top.offsetHeight + 'px';
+    if (bottom) document.body.style.paddingBottom = bottom.offsetHeight + 'px';
+  }
+  syncBandeauSpacing();
+  window.addEventListener('resize', syncBandeauSpacing);
+
+
+  // Adresse reelle : 71 rue Leon Gambetta, 40000 Mont-de-Marsan (geocodee via Nominatim/OSM, 19/08).
+  var MAP_CENTER = [43.889129, -0.5007929];
+  var MAP_ZOOM = 16;
+  var map = L.map('mapEmbed', {
+    center: MAP_CENTER, zoom: MAP_ZOOM,
+    scrollWheelZoom: false, dragging: false, touchZoom: false, doubleClickZoom: false, zoomControl: false
+  });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  }).addTo(map);
+  map.attributionControl.setPrefix(false);
+  L.marker(MAP_CENTER).addTo(map);
+  function unlockMap() {
+    document.getElementById('mapLock').classList.add('hidden');
+    map.scrollWheelZoom.enable(); map.dragging.enable(); map.touchZoom.enable(); map.doubleClickZoom.enable();
+    map.addControl(L.control.zoom());
+  }
+  function recenterMap() { map.setView(MAP_CENTER, MAP_ZOOM); }
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
   var ticking = false;
   function revealSlides(){

@@ -188,7 +188,7 @@ export default function PricingCard({
             className="mt-2 rounded-lg bg-foreground/[0.06] border border-border p-2.5 text-xs leading-relaxed text-muted-foreground"
           >
             Le nom de domaine, c'est l'adresse de votre site (ex. gillescobigo.com). Il ne s'achète jamais une fois
-            pour toutes : le paiement se renouvelle chaque année pour qu'il continue à pointer vers votre site.
+            pour toutes : le paiement se renouvelle chaque année pour qu'il continue à rediriger vers votre site.
           </div>
         )}
       </div>
@@ -236,11 +236,9 @@ export default function PricingCard({
       </Button>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        {/* Positionnee pres du haut sur mobile plutot que centree verticalement (15/08) : une
-            modale centree sur 100% de la hauteur se retrouve, une fois le clavier ouvert, avec
-            son champ et son bouton "Confirmer" caches derriere le clavier. Pres du haut, il reste
-            toujours de la place en dessous. Centrage classique conserve a partir de sm. */}
-        <DialogContent className="max-w-sm text-center top-[8%] translate-y-0 sm:top-[50%] sm:-translate-y-1/2">
+        {/* Centrage vertical (et repositionnement au-dessus du clavier mobile) gere par
+            DialogContent lui-meme (dialog.tsx, resynchronise sur window.visualViewport). */}
+        <DialogContent className="max-w-sm text-center">
           {confirmed ? (
             <DialogHeader className="items-center">
               <CheckCircle2 className="text-emerald-500 mb-2" size={40} />
@@ -269,7 +267,14 @@ export default function PricingCard({
                 />
               </div>
 
-              <Button className="w-full rounded-full" onClick={() => handleConfirm()} disabled={submitting}>
+              {/* Desactive tant que le champ est vide (19/08, item 23) : ne bloque jamais le lien
+                  "echanger par mail" ci-dessous, qui exprime deja a lui seul une preference de
+                  contact sans avoir besoin du champ rempli. */}
+              <Button
+                className="w-full rounded-full"
+                onClick={() => handleConfirm()}
+                disabled={submitting || contactValue.trim() === ""}
+              >
                 {submitting ? "Envoi..." : "Confirmer"}
               </Button>
               <button
