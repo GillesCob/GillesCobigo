@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { CASE_STUDY_TOUR_STEPS, useCaseStudyTourStore } from "@/store/caseStudyTourStore";
-import { useThemeStore } from "@/store/themeStore";
 
 interface ICaseStudyTourProps {
   /** Round affiche par la page qui monte ce composant, ex "V1". */
@@ -24,7 +23,6 @@ const FIXED_TOP_OFFSET = 92; // sous le bandeau fixe de CaseStudyRound.tsx (~76-
 
 export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseStudyTourProps) {
   const navigate = useNavigate();
-  const theme = useThemeStore((s) => s.theme);
   const [scrollBlocked, setScrollBlocked] = useState(false);
   const status = useCaseStudyTourStore((s) => s.status);
   const stepIndex = useCaseStudyTourStore((s) => s.stepIndex);
@@ -98,15 +96,22 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
     const roundChanged = lastRoundRef.current !== step.round;
     lastRoundRef.current = step.round;
 
-    // Opacite differenciee clair/sombre (18/08, alignee sur version-guided-tour.html) : le meme
-    // rgba(0,0,0,.72) pense pour le sombre paraissait trop sombre sur le fond clair par defaut de
-    // cette page (cf CaseStudyRound.tsx, bg-background clair par defaut).
-    const overlayColor = theme === "dark" ? "rgba(0,0,0,.72)" : "rgba(9,9,11,.55)";
+    // Toggle theme retire (19/08, item 26) : page toujours claire, plus de variante sombre a
+    // calculer, cf CaseStudyRound.tsx.
+    const overlayColor = "rgba(9,9,11,.55)";
     el.style.position = "relative";
     el.style.zIndex = "60";
     el.style.borderRadius = "14px";
     el.style.transition = "box-shadow .25s ease, margin-top .2s ease";
     el.style.boxShadow = `0 0 0 9999px ${overlayColor}`;
+    // Encart V6 (19/08, porte depuis version-guided-tour.html) : ce sous-bloc n'a pas de padding
+    // propre (contrairement aux autres cibles qui embarquent une card ou une grille avec gap), le
+    // spotlight collait directement au texte/a la carte proposal. box-sizing:border-box pour garder
+    // la meme largeur de colonne grid qu'en dehors du tour.
+    if (step.key === "v6-proposals") {
+      el.style.padding = "16px";
+      el.style.boxSizing = "border-box";
+    }
 
     let cancelled = false;
     let isProgrammaticScroll = false;
@@ -198,6 +203,8 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
       if (imgTimeout) clearTimeout(imgTimeout);
       el.style.boxShadow = "none";
       el.style.marginTop = "";
+      el.style.padding = "";
+      el.style.boxSizing = "";
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
     };
@@ -275,13 +282,8 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
   return (
     <>
       {/* Cache plein ecran (V0 uniquement, "blockScroll") : aucune cible reelle a decouper autour,
-          simple overlay theme-aware, meme couleur que le spotlight ci-dessus. */}
-      {scrollBlocked && (
-        <div
-          className="fixed inset-0 z-[59]"
-          style={{ background: theme === "dark" ? "rgba(0,0,0,.72)" : "rgba(9,9,11,.55)" }}
-        />
-      )}
+          meme couleur que le spotlight ci-dessus (theme toggle retire, page toujours claire). */}
+      {scrollBlocked && <div className="fixed inset-0 z-[59]" style={{ background: "rgba(9,9,11,.55)" }} />}
       <div
         ref={bubbleRef}
         className="fixed top-[104px] sm:top-[92px] left-4 sm:left-6 z-[61] max-w-[340px] rounded-lg bg-foreground px-4 py-3 text-sm leading-relaxed text-background shadow-xl"
@@ -303,14 +305,17 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
             reapparait qu'a la toute fin, dans la modale (cf .tour-end-skip ci-dessus),
             conforme a version-guided-tour.html. */}
         <div className="flex items-center justify-end gap-2">
-          <button
-            type="button"
-            onClick={prev}
-            disabled={stepIndex === 0}
-            className="rounded-md border border-current px-3 py-1.5 text-xs font-semibold opacity-60 disabled:opacity-25"
-          >
-            ← Précédent
-          </button>
+          {/* Bouton omis (pas juste desactive) a la 1ere etape, cf version-guided-tour.html
+              (`current === 0 ? "" : '<button...`) : ecart trouve et corrige le 19/08, item 4. */}
+          {stepIndex !== 0 && (
+            <button
+              type="button"
+              onClick={prev}
+              className="rounded-md border border-current px-3 py-1.5 text-xs font-semibold opacity-60"
+            >
+              ← Précédent
+            </button>
+          )}
           <button
             type="button"
             onClick={next}
@@ -342,14 +347,17 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
           Étape {stepIndex} / {CASE_STUDY_TOUR_STEPS.length - 1}
         </span>
         <div className="justify-self-end flex items-center gap-2">
-          <button
-            type="button"
-            onClick={prev}
-            disabled={stepIndex === 0}
-            className="rounded-md border border-border px-4 py-2 text-xs font-semibold disabled:opacity-35"
-          >
-            ← Précédent
-          </button>
+          {/* Bouton omis (pas juste desactive) a la 1ere etape, meme correctif que la bulle
+              ci-dessus (19/08, item 4). */}
+          {stepIndex !== 0 && (
+            <button
+              type="button"
+              onClick={prev}
+              className="rounded-md border border-border px-4 py-2 text-xs font-semibold"
+            >
+              ← Précédent
+            </button>
+          )}
           <button
             type="button"
             onClick={next}

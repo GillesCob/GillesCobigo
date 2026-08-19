@@ -32,17 +32,22 @@ export default function PreviewHome() {
   return (
     <div
       className={`min-h-dvh flex flex-col relative ${
-        isColdProspect ? "bg-headline-bg dark:bg-background" : "bg-background"
+        isColdProspect ? "bg-headline-bg" : "bg-background"
       }`}
     >
-      <button
-        type="button"
-        onClick={toggleTheme}
-        aria-label="Basculer le thème"
-        className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors p-2"
-      >
-        {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-      </button>
+      {/* Toggle clair/sombre retire pour les pages cold-intro Boutiques (19/08, item 26) : cette
+          page reste toujours claire, alignee sur preview-prospect.html ("plus de bouton de
+          bascule ni de logique data-theme"). Conserve pour les autres clients (Mylene). */}
+      {!isColdProspect && (
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label="Basculer le thème"
+          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors p-2"
+        >
+          {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+      )}
 
       <div
         className={
@@ -61,15 +66,17 @@ export default function PreviewHome() {
             // sobres/pro (couleurs neutres du systeme, pas de teinte vive) a la demande de Gilles
             // le 14/08.
             <div id="tarif" className="mb-6 text-left scroll-mt-8">
-              {/* Bandeau identite + retour : rappelle que ce site est bien le sien et permet de
-                  revoir les 2 propositions sans repasser par l'historique du navigateur. Logo reel
-                  du prospect (pas une initiale generique, contrairement au placeholder du mockup
-                  vault) : les 5 vrais prospects ont tous un logo scrape en prospection. */}
-              <div className="flex items-center gap-2.5 max-w-[420px] mx-auto mb-3 flex-wrap">
-                <span className="h-7 w-7 rounded-full overflow-hidden shrink-0 bg-foreground/10">
+              {/* Bandeau identite + retour (19/08, item 17 : logo agrandi 28px->64px, nom en
+                  dessous au lieu d'a cote, lien repositionne) : rappelle que ce site est bien le
+                  sien et permet de revoir les 2 propositions sans repasser par l'historique du
+                  navigateur. Logo reel du prospect (pas une initiale generique, contrairement au
+                  placeholder du mockup vault) : les 5 vrais prospects ont tous un logo scrape en
+                  prospection. Aligne sur preview-prospect.html (.tarif-context). */}
+              <div className="flex flex-col items-center text-center gap-2 max-w-[420px] mx-auto mb-5">
+                <span className="h-16 w-16 rounded-full overflow-hidden shrink-0 bg-foreground/10">
                   <img src={project.logo} alt="" className="h-full w-full object-cover" />
                 </span>
-                <span className="text-[13px] font-semibold flex-1 min-w-0 truncate">{project.projectName}</span>
+                <span className="text-[17px] font-semibold">{project.projectName}</span>
                 {project.rounds[0]?.proposals[0]?.htmlPath && (
                   <a
                     href={project.rounds[0].proposals[0].htmlPath}

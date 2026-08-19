@@ -1,15 +1,20 @@
+import { useEffect, useRef, useState } from "react";
 import { useParams, useSearchParams, useLocation, Link } from "react-router-dom";
-import { Sun, Moon, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CaseStudyVersionsNav from "@/components/preview/CaseStudyVersionsNav";
 import PreviewCredit from "@/components/preview/PreviewCredit";
 import { RoundContent } from "@/components/preview/RoundContent";
 import CaseStudyTour from "@/components/preview/CaseStudyTour";
 import { previewProjects } from "@/data/previewProjects";
-import { useThemeStore } from "@/store/themeStore";
+import { useCaseStudyTourStore } from "@/store/caseStudyTourStore";
 import { usePreviewFavicon } from "@/hooks/usePreviewFavicon";
 import { usePreviewTitle } from "@/hooks/usePreviewTitle";
 import NotFound from "@/pages/NotFound";
+
+// Espace ajoute a la hauteur mesuree du bandeau, en dehors du tour actif (19/08, item 25, meme
+// convention que le mockup version-guided-tour.html/proposition-1.html).
+const BANDEAU_GAP_PX = 24;
 
 // Page "cas client" publique (/cas-client/<round>) : reproduit a l'identique l'interface privee
 // que Mylene a utilisee (/preview/dressing-mailys/EuMLnfc8Uk/<round>), donnees figees sur son
@@ -27,9 +32,38 @@ export default function CaseStudyRound() {
   const from = searchParams.get("from");
   const project = previewProjects[CASE_STUDY_SECRET];
   const entry = project.rounds.find((r) => r.round.toLowerCase() === round?.toLowerCase());
-  const { theme, toggleTheme } = useThemeStore();
   usePreviewFavicon(project.logo);
   usePreviewTitle(entry ? `${entry.round} · ${project.projectName} (exemple)` : undefined);
+
+  // Espace reserve sous le bandeau fixe : deux besoins differents selon l'etat du tour, jamais
+  // une seule valeur devinee comme avant (19/08, item 25). Pendant le tour actif, la bulle de
+  // l'etape 1 a besoin d'une marge fixe deja calibree le 16/08 (150/165px, intacte, aucune
+  // regression prise ici). Hors tour actif (idle, termine, "visite libre") : plus besoin de cette
+  // marge bulle, seule la hauteur reelle du bandeau compte, mesuree en JS plutot que devinee (le
+  // bandeau peut wrapper differemment selon l'ecran), meme mecanique que
+  // Projets/V1-Echanges/mockups/version-guided-tour.html.
+  // Bandeau masque pendant tout le tour (19/08, item 5, porte depuis version-guided-tour.html :
+  // ":root:not(.tour-off) .topbar{display:none}") : visible seulement une fois "off" (reellement
+  // sorti du parcours via "Visiter librement"), jamais pendant "active" ni juste apres "Terminer"
+  // ("finished", modale de fin encore affichee).
+  const tourStatus = useCaseStudyTourStore((s) => s.status);
+  const bandeauVisible = tourStatus === "off";
+  const bandeauRef = useRef<HTMLDivElement>(null);
+  const [bandeauPadding, setBandeauPadding] = useState<number | null>(null);
+  const usesFixedTourPadding = tourStatus === "active";
+
+  useEffect(() => {
+    if (!bandeauVisible) {
+      setBandeauPadding(null);
+      return;
+    }
+    function sync() {
+      if (bandeauRef.current) setBandeauPadding(bandeauRef.current.offsetHeight + BANDEAU_GAP_PX);
+    }
+    sync();
+    window.addEventListener("resize", sync);
+    return () => window.removeEventListener("resize", sync);
+  }, [bandeauVisible]);
 
   if (!entry) return <NotFound />;
 
@@ -42,12 +76,14 @@ export default function CaseStudyRound() {
       />
 
       {/* Bandeau figé en haut, visible pendant tout le scroll (demande explicite du 15/08 : un
-          encart qui ne reste que le temps de le croiser une fois se rate trop facilement). Le
-          toggle theme, auparavant seul en absolute top-4 right-4, est integre a la meme barre
-          fixed pour ne jamais se faire recouvrir par elle. Lien personnalise si ?from=<slug>/<secret>
-          est present (transmis depuis PreviewHome.tsx), sinon repli generique (acces direct a la
-          page sans ce contexte). */}
-      <div className="fixed top-0 inset-x-0 z-50 bg-card border-b border-border shadow-sm">
+          encart qui ne reste que le temps de le croiser une fois se rate trop facilement). Masque
+          pendant tout le tour, visible seulement une fois "off" (19/08, item 5, cf useEffect
+          ci-dessus). Toggle theme retire (19/08, item 26) : page toujours claire, alignee sur
+          version-guided-tour.html, y compris pour Mylene (site termine, ne devrait plus y
+          retourner). Lien personnalise si ?from=<slug>/<secret> est present (transmis depuis
+          PreviewHome.tsx), sinon repli generique (acces direct a la page sans ce contexte). */}
+      {bandeauVisible && (
+      <div ref={bandeauRef} className="fixed top-0 inset-x-0 z-50 bg-card border-b border-border shadow-sm">
         <div className="max-w-6xl mx-auto px-6 md:px-12 py-3 flex items-center justify-between gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 min-w-0">
             <p className="text-sm text-foreground shrink-0">Envie de la même chose pour votre site ?</p>
@@ -63,25 +99,19 @@ export default function CaseStudyRound() {
               </p>
             )}
           </div>
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label="Basculer le thème"
-            className="text-muted-foreground hover:text-foreground transition-colors p-2 shrink-0"
-          >
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
         </div>
       </div>
+      )}
 
-      {/* pt-[165px]/sm:pt-[150px] : compense la hauteur du bandeau fixed ci-dessus (96px suffisait
-          seul), mais aussi la bulle de la visite guidee sur l'etape 1 ("proposals"), qui a besoin
-          d'assez de place au-dessus de sa cible pour ne pas etre rognee en haut d'ecran quand la
-          page est deja scrollee tout en haut (meme bug et meme correctif que sur le prototype
-          vault, Projets/V1-Echanges/mockups/version-guided-tour.html, 16/08 : passe de 96 a 150px
-          desktop/165px mobile). max-w-6xl : memes proportions que PreviewRound.tsx, page dont
-          celle-ci est la copie. */}
-      <div className="flex-1 px-6 md:px-12 pt-[165px] sm:pt-[150px] pb-10 md:pb-16">
+      {/* Pendant le tour actif (usesFixedTourPadding) : pt-[165px]/sm:pt-[150px] fixe, calibre le
+          16/08 pour laisser assez de place a la bulle de l'etape 1 au-dessus de sa cible, jamais
+          touche ici. Hors tour actif : bandeauPadding mesure dynamiquement (cf useEffect
+          ci-dessus), corrige le rognage du bandeau en mode "visite libre" (19/08, item 25).
+          max-w-6xl : memes proportions que PreviewRound.tsx, page dont celle-ci est la copie. */}
+      <div
+        className={`flex-1 px-6 md:px-12 pb-10 md:pb-16 ${usesFixedTourPadding ? "pt-[165px] sm:pt-[150px]" : ""}`}
+        style={!usesFixedTourPadding && bandeauPadding !== null ? { paddingTop: bandeauPadding } : undefined}
+      >
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row gap-8">
             <div>
