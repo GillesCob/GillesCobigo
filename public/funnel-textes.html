@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Funnel Boutiques, textes à relire</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --accent-bg: rgba(88, 166, 255, 0.12);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+    padding: 32px 16px 64px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  h1 { font-size: 20px; font-weight: 600; margin: 0 0 8px; }
+  .sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+  .parcours-track { display: flex; align-items: flex-start; gap: 2px; margin: 20px 0 28px; }
+  .parcours-node { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; min-width: 0; cursor: pointer; background: none; border: 0; font-family: inherit; padding: 0; overflow: visible; }
+  .parcours-dot { width: 30px; height: 30px; border-radius: 50%; background: var(--accent-bg); border: 2px solid var(--accent); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; transition: background .15s ease, color .15s ease; }
+  .parcours-node.active .parcours-dot { background: var(--accent); color: #fff; }
+  .parcours-node-label { font-size: 11.5px; text-align: center; color: var(--muted); line-height: 1.3; white-space: normal; overflow: visible; }
+  .parcours-node.active .parcours-node-label { color: var(--text); font-weight: 600; }
+  .parcours-line { flex: 0 0 6px; height: 2px; background: var(--border); margin-top: 15px; }
+  .funnel-panel { border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; }
+  .funnel-panel h4 { margin: 0 0 4px; font-size: 15px; }
+  .funnel-panel .funnel-intro { font-size: 13px; color: var(--muted); margin: 0 0 16px; }
+  .funnel-substep { margin: 0 0 18px; }
+  .funnel-substep:last-child { margin-bottom: 0; }
+  .funnel-substep h5 { margin: 0 0 8px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
+  .parcours-mail-block { white-space: pre-line; overflow-wrap: anywhere; font-size: 13.5px; line-height: 1.6; background: var(--accent-bg); border-radius: 8px; padding: 14px 16px; margin: 0 0 10px; }
+  .funnel-source { display: none; }
+  .empty-hint { color: var(--muted); font-size: 13.5px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Funnel Boutiques : textes à relire</h1>
+    <p class="sub">8 étapes du parcours d'un prospect, du premier mail reçu jusqu'à la visite guidée. Clique sur une étape pour voir son texte exact.</p>
+
+    <div class="parcours-track" id="funnelTrack">
+      <button type="button" class="parcours-node" data-funnel="mail"><div class="parcours-dot">1</div><div class="parcours-node-label">Mail</div></button>
+      <div class="parcours-line"></div>
+      <button type="button" class="parcours-node" data-funnel="bandeau-p1"><div class="parcours-dot">2</div><div class="parcours-node-label">Bandeau bas<br>P1</div></button>
+      <div class="parcours-line"></div>
+      <button type="button" class="parcours-node" data-funnel="modale-p1"><div class="parcours-dot">3</div><div class="parcours-node-label">Modale<br>P1</div></button>
+      <div class="parcours-line"></div>
+      <button type="button" class="parcours-node" data-funnel="bandeau-p2-haut"><div class="parcours-dot">4</div><div class="parcours-node-label">Bandeau haut<br>P2</div></button>
+      <div class="parcours-line"></div>
+      <button type="button" class="parcours-node" data-funnel="bandeau-p2-bas"><div class="parcours-dot">5</div><div class="parcours-node-label">Bandeau bas<br>P2</div></button>
+      <div class="parcours-line"></div>
+      <button type="button" class="parcours-node" data-funnel="modale-p2"><div class="parcours-dot">6</div><div class="parcours-node-label">Modale<br>P2</div></button>
+      <div class="parcours-line"></div>
+      <button type="button" class="parcours-node" data-funnel="page-finale"><div class="parcours-dot">7</div><div class="parcours-node-label">Page<br>finale</div></button>
+      <div class="parcours-line"></div>
+      <button type="button" class="parcours-node" data-funnel="visite"><div class="parcours-dot">8</div><div class="parcours-node-label">Visite guidée<br>Mylène</div></button>
+    </div>
+
+    <div class="funnel-panel" id="funnelPanel">
+      <p class="empty-hint">Clique sur une étape ci-dessus pour afficher son texte.</p>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var FUNNEL_CONTENT = {
+        "mail": '<h4>1. Le mail reçu par le prospect</h4>' +
+          '<p class="funnel-intro">Premier contact, exemple réel (Cave Velours). Corps identique pour les 5 prospects, seuls le nom/l\'adresse/l\'URL changent.</p>' +
+          '<div class="parcours-mail-block">À : bonjour@cave-velours.fr\nObjet : Cave Velours : un aperçu de votre futur site\n\nBonjour,\n\nDéveloppeur à Mont-de-Marsan, j\'ai constaté que votre site était resté sur la page "en construction" par défaut de l\'hébergeur. J\'ai réalisé deux propositions de ce à quoi il pourrait ressembler.\n\nVous pouvez les découvrir ci-dessous\nhttps://gillescobigo.com/preview/cave-velours/v1.html\n\nJe les affine ensuite avec vous jusqu\'à un site qui vous ressemble.\n\nSeriez-vous disponible 5 minutes au téléphone cette semaine afin d\'échanger sur ma proposition ?\n\nBien cordialement,</div>',
+        "bandeau-p1": '<h4>2. Bandeau bas, Proposition 1</h4>' +
+          '<p class="funnel-intro">Fixe en bas de page pendant tout le scroll de la P1.</p>' +
+          '<div class="parcours-mail-block">Point de départ, pas figé. On l\'affine ensemble par la suite.\n\nDécouvrez une 2e proposition, différente →</div>',
+        "modale-p1": '<h4>3. Modale de fin de scroll, Proposition 1</h4>' +
+          '<p class="funnel-intro">S\'ouvre quand le prospect arrive en bas de la P1.</p>' +
+          '<div class="parcours-mail-block">Envie de voir une autre direction ?\n\nCeci est une première proposition. J\'en ai imaginé une deuxième, différente, pour vous aider à choisir ce qui vous ressemble.\n\n[Voir la 2e proposition →]</div>',
+        "bandeau-p2-haut": '<h4>4. Bandeau haut, Proposition 2</h4>' +
+          '<p class="funnel-intro">Fixe en haut de page sur toute la P2, porte aussi le lien retour vers la P1.</p>' +
+          '<div class="parcours-mail-block">← Revoir la proposition 1\n\nVoici une autre piste, volontairement différente. Ce qui vous plaît dans l\'une ou l\'autre devient le point de départ.</div>',
+        "bandeau-p2-bas": '<h4>5. Bandeau bas, Proposition 2</h4>' +
+          '<p class="funnel-intro">Fixe en bas de page pendant tout le scroll de la P2. Contrairement au bandeau bas de la P1, aucun texte de réassurance ici, juste le lien.</p>' +
+          '<div class="parcours-mail-block">On passe à la suite →</div>',
+        "modale-p2": '<h4>6. Modale de fin de scroll, Proposition 2</h4>' +
+          '<p class="funnel-intro">S\'ouvre quand le prospect arrive en bas de la P2.</p>' +
+          '<div class="parcours-mail-block">Le résultat vous plaît ?\n\nCe point de départ peut encore évoluer. On peut en discuter ensemble dès maintenant.\n\n[On passe à la suite →]</div>',
+        "page-finale": '<h4>7. Page finale</h4>' +
+          '<div class="funnel-substep"><h5>En-tête</h5><div class="parcours-mail-block">Revoir les 2 propositions →</div></div>' +
+          '<div class="funnel-substep"><h5>Card tarif : label + inclus de base</h5><div class="parcours-mail-block">Pour démarrer\n\nInclus :\n– Votre site\n– 5 allers-retours (V1 à V6) pour affiner votre site avec vous\n– Mise en ligne</div></div>' +
+          '<div class="funnel-substep"><h5>Option : nom de domaine</h5><div class="parcours-mail-block">Nom de domaine, +20€ (ou "inclus" si Formule Sérénité cochée)\nCouvre la 1ère année.\n\nBulle d\'info (clic sur ⓘ) :\nLe nom de domaine, c\'est l\'adresse de votre site (ex. gillescobigo.com). Il ne s\'achète jamais une fois pour toutes : le paiement se renouvelle chaque année pour qu\'il continue à rediriger vers votre site.</div></div>' +
+          '<div class="funnel-substep"><h5>Option : Formule Sérénité</h5><div class="parcours-mail-block">Formule Sérénité, +75€\nInclut "Nom de domaine" ci-dessus, + 2 modifications, retours sous 48h ouvrées et tarif réduit sur les suivantes (valables 12 mois).</div></div>' +
+          '<div class="funnel-substep"><h5>Notes de bas de card</h5><div class="parcours-mail-block">Au-delà de la V6 (V7, V8...) ou pour toute modification après mise en ligne : 40€.\n\nÉvolution plus importante (plusieurs pages, boutique en ligne...) : devis à part.\n\nVous n\'avez rien à gérer techniquement, je m\'occupe de tout : le site vous appartient entièrement, export du code fourni dès la mise en ligne, aucun verrouillage.\n\nVoir les conditions générales complètes</div></div>' +
+          '<div class="funnel-substep"><h5>CTA principal</h5><div class="parcours-mail-block">Ça m\'intéresse, on en parle →</div></div>' +
+          '<div class="funnel-substep"><h5>Encart visite guidée</h5><div class="parcours-mail-block">Besoin de plus d\'infos ? Suivez une visite guidée de tous les échanges que j\'ai eus avec Mylène, gérante du Dressing de Maïlys, pour voir concrètement comment nous travaillerons ensemble à la réalisation de votre nouveau site.\n\nSuivre la visite guidée →</div></div>' +
+          '<div class="funnel-substep"><h5>Modale contact, avant confirmation</h5><div class="parcours-mail-block">Comment vous joindre ?\n\nJe vous recontacte au numéro indiqué.\n\n[Indiquez votre numéro]\n\n[Confirmer]\n\nJe préfère qu\'on échange par mail →\n\nAucune sollicitation commerciale n\'aura lieu après ce premier échange.</div></div>' +
+          '<div class="funnel-substep"><h5>Modale contact, confirmée</h5><div class="parcours-mail-block">C\'est noté !\n\nJe reviens vers vous rapidement !</div></div>',
+        "visite": '<h4>8. Visite guidée, cas client Mylène</h4>' +
+          '<p class="funnel-intro">Accessible depuis la Page finale ("Besoin de plus d\'infos ?"). 5 étapes (0 à 4), puis la modale de fin. Le bandeau ne s\'affiche que si le prospect clique "Visiter librement" dans cette modale, jamais avant.</p>' +
+          '<div class="funnel-substep"><h5>Étape 0 (bloquante, avant tout scroll)</h5><div class="parcours-mail-block">Les sites que je vous ai proposés sont un point de départ, pas un résultat figé.\n\nÀ partir de là, on avance ensemble vers votre site personnalisé, exactement comme je l\'ai fait pour Mylène, gérante du Dressing de Maïlys.\n\nSuivez le guide pour découvrir comment on va travailler ensemble jusqu\'à la version finale de votre site.</div></div>' +
+          '<div class="funnel-substep"><h5>Étape 1, V1 (propositions)</h5><div class="parcours-mail-block">Ce que vous allez voir, c\'est exactement le chemin que nous allons suivre ensemble.\n\nOn est sur la V1 avec les 2 premières propositions envoyées à Mylène. C\'est son point de départ.</div></div>' +
+          '<div class="funnel-substep"><h5>Étape 2, V1 (retour de Mylène)</h5><div class="parcours-mail-block">Mylène m\'a dit ce qu\'elle aimait, n\'aimait pas, ce qu\'elle voulait ajouter ou changer. Voici son message réel.</div></div>' +
+          '<div class="funnel-substep"><h5>Étape 3, V2 (propositions)</h5><div class="parcours-mail-block">Je lui ai fourni une nouvelle proposition suite à son retour, la V2 de son site.\n\nJe reviens avec plusieurs pistes à chaque fois pour trancher ensemble ainsi qu\'avec le détail de ce qui a été pris en compte et des précisions sur les rendus fournis.</div></div>' +
+          '<div class="funnel-substep"><h5>Étape 4, V6 (version finale)</h5><div class="parcours-mail-block">On répète ça jusqu\'à la V6 et la version finale qui sera mise en ligne.</div></div>' +
+          '<div class="funnel-substep"><h5>Modale de fin de visite</h5><div class="parcours-mail-block">Vous avez vu comment on y arrive ensemble.\n\nLe point de départ de Mylène n\'était pas parfait non plus. C\'est l\'échange qui a fait la différence, pas la première version. Pour votre site, ce sera exactement la même méthode.\n\n[On passe à la suite →] · [Visiter librement →]</div></div>' +
+          '<div class="funnel-substep"><h5>Bandeau haut (visite libre uniquement)</h5><div class="parcours-mail-block">Envie de la même chose pour votre site ?\n\n[Découvrez comment →]</div></div>'
+      };
+      var track = document.getElementById("funnelTrack");
+      var panel = document.getElementById("funnelPanel");
+      track.querySelectorAll(".parcours-node").forEach(function (node) {
+        node.addEventListener("click", function () {
+          track.querySelectorAll(".parcours-node").forEach(function (n) { n.classList.remove("active"); });
+          node.classList.add("active");
+          panel.innerHTML = FUNNEL_CONTENT[node.dataset.funnel] || "";
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
