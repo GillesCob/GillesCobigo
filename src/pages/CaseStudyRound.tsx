@@ -60,7 +60,6 @@ export default function CaseStudyRound() {
   const bandeauVisible = tourStatus === "off" || tourStatus === "idle";
   const bandeauRef = useRef<HTMLDivElement>(null);
   const [bandeauPadding, setBandeauPadding] = useState<number | null>(null);
-  const usesFixedTourPadding = tourStatus === "active";
 
   useEffect(() => {
     if (!bandeauVisible) {
@@ -119,14 +118,15 @@ export default function CaseStudyRound() {
       </div>
       )}
 
-      {/* Pendant le tour actif (usesFixedTourPadding) : pt-[165px]/sm:pt-[150px] fixe, calibre le
-          16/08 pour laisser assez de place a la bulle de l'etape 1 au-dessus de sa cible, jamais
-          touche ici. Hors tour actif : bandeauPadding mesure dynamiquement (cf useEffect
-          ci-dessus), corrige le rognage du bandeau en mode "visite libre" (19/08, item 25).
-          max-w-6xl : memes proportions que PreviewRound.tsx, page dont celle-ci est la copie. */}
+      {/* pt-8 par defaut (tour actif, aucun bandeau fixe au-dessus depuis la refonte du 20/08 : la
+          bulle du tour n'est plus position:fixed, plus besoin d'une marge fixe pre-calibree pour
+          lui faire de la place). bandeauPadding mesure dynamiquement (cf useEffect ci-dessus)
+          remplace ce padding par defaut quand le bandeau est visible (hors tour actif), corrige le
+          rognage du bandeau en mode "visite libre" (19/08, item 25). max-w-6xl : memes proportions
+          que PreviewRound.tsx, page dont celle-ci est la copie. */}
       <div
-        className={`flex-1 px-6 md:px-12 pb-10 md:pb-16 ${usesFixedTourPadding ? "pt-[165px] sm:pt-[150px]" : ""}`}
-        style={!usesFixedTourPadding && bandeauPadding !== null ? { paddingTop: bandeauPadding } : undefined}
+        className="flex-1 px-6 md:px-12 pt-8 pb-10 md:pb-16"
+        style={bandeauPadding !== null ? { paddingTop: bandeauPadding } : undefined}
       >
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row gap-8">

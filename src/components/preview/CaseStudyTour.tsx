@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { CASE_STUDY_TOUR_STEPS, useCaseStudyTourStore } from "@/store/caseStudyTourStore";
@@ -16,23 +17,22 @@ interface ICaseStudyTourProps {
   slug?: string;
 }
 
-// Bulle fixed-top + verrou de scroll : porte integralement le 17/08 la mecanique validee sur
-// public/cerithe-v1-6-0/index.html (demandee explicitement par Gilles, "toutes les regles
-// appliquees dans ce lien doivent etre transposees"). Remplace l'ancien positionnement
-// "above"/"right" par calcul de rect (rAF loop), abandonne sur Cerithe apres plusieurs bugs de
-// rognage corriges le 17/08 : bulle qui sortait de l'ecran sur une section haute, texte tronque en
-// haut de page. Fixed-top n'a plus ce probleme par construction (position CSS constante, jamais
-// calculee depuis la cible). Bascule bulle/barre basse retiree le 20/08 (portee depuis
-// Projets/V1-Echanges/mockups/version-guided-tour.html, decision de Gilles du 19/08 jamais portee
-// jusqu'ici : "mecanique 'double UI' jugee pas propre pour laptop/mobile"). La bulle reste
-// desormais fixe et visible en permanence pendant tout le tour ; sur mobile seul son texte se
-// replie/deplie selon la proximite du haut de la zone verrouillee (cf etat `expanded`), jamais de
-// bascule vers un second bloc d'UI.
-// 76 : aligne sur .tour-bubble{top:76px} de version-guided-tour.html (corrige le 20/08, ecart
-// trouve par Gilles : la classe CSS reelle ci-dessous utilisait 92/104px, jamais alignee sur cette
-// constante qui ne sert que de repli avant premiere mesure, cf getOffset()).
-const FIXED_TOP_OFFSET = 76;
-
+// Refonte du 20/08 (demande explicite de Gilles, apres plusieurs tours de rustines qui
+// corrigeaient chaque symptome sans regler la cause : bulle qui ne se rouvrait pas, se rouvrait
+// trop tot, se refermait hors du haut de page, s'ouvrait par-dessus le contenu). Cause racine de
+// tous ces bugs : l'ancienne bulle etait en position:fixed, avec une hauteur qui changeait
+// (repliee/depliee sur mobile), et un verrou de scroll + une marge injectee + un offset recalcules
+// a la main en JS pour que bulle et cible restent toujours correctement l'une sous l'autre. Trop de
+// variables a garder synchronisees manuellement (hauteur de bulle, position de scroll, limites du
+// verrou, marge du document, chargement asynchrone des images).
+//
+// Nouvelle mecanique : la bulle est un element normal du flux du document (via createPortal dans
+// un conteneur insere juste avant la cible), plus jamais positionnee par calcul JS. Le scroll natif
+// du navigateur (scrollIntoView) l'amene a l'ecran avec la cible, dans le bon ordre, sans aucun
+// calcul de position/marge/verrou a maintenir. Consequence assumee : plus de "bulle toujours
+// visible en haut de l'ecran" ni de verrou qui empeche de scroller ailleurs (l'utilisateur peut
+// scroller librement ; s'il s'eloigne de la bulle, un scroll manuel en arriere la retrouve, comme
+// n'importe quel contenu de page normal).
 export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: ICaseStudyTourProps) {
   const navigate = useNavigate();
   const status = useCaseStudyTourStore((s) => s.status);
@@ -48,19 +48,13 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
   const step = CASE_STUDY_TOUR_STEPS[stepIndex];
   const isOnRightRound = status === "active" && step.round === roundLower;
 
-  const bubbleRef = useRef<HTMLDivElement>(null);
-  const lastRoundRef = useRef<string | null>(null);
-  // Texte de la bulle replie/deplie sur mobile uniquement (cf media query Tailwind sur le rendu
-  // plus bas, desktop/laptop toujours deplie). Ouvert par defaut a chaque arrivee sur une etape
-  // (meme comportement que le mockup, "precise par Gilles" le 19/08), se referme automatiquement
-  // au premier scroll qui eloigne de la zone verrouillee.
-  const [expanded, setExpanded] = useState(true);
+  // Conteneur DOM insere juste avant la cible, dans lequel la bulle est portee (cf effet
+  // ci-dessous). null tant qu'aucune cible n'est trouvee/montee.
+  const [bubbleContainer, setBubbleContainer] = useState<HTMLElement | null>(null);
 
   // Auto-demarrage uniquement en arrivant sur la V1, une seule fois par session de navigation
   // (hasAutoStarted persiste dans le store, jamais relance meme si on revient sur la V1 apres
-  // avoir arrete la visite volontairement). Tracking funnel (cf trackFunnelBeacon("visite-guidee")
-  // du mockup version-guided-tour.html) uniquement ici, au demarrage automatique reel, jamais sur
-  // un "Relancer le parcours" manuel (deja compte une fois, meme logique que le mockup).
+  // avoir arrete la visite volontairement).
   useEffect(() => {
     if (roundLower === "v1" && status === "idle" && !hasAutoStarted) {
       start();
@@ -76,199 +70,69 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
     }
   }, [status, step, roundLower, search, navigate]);
 
-  // Bulle ouverte a chaque nouvelle etape (cf mockup, bubble.classList.add("expanded") dans
-  // render()), avant meme que le spotlight/verrou de scroll ci-dessous ne s'installe.
-  // useLayoutEffect (pas useEffect, corrige le 20/08, ecart trouve par Gilles) : la mise a jour
-  // doit etre repercutee dans le DOM AVANT que l'effet de spotlight ci-dessous ne mesure
-  // bubbleRef.current.offsetHeight, sinon une bulle repliee (mobile) d'une etape precedente
-  // fausse la hauteur mesuree pour la nouvelle etape, offset trop court, chevauchement bulle/
-  // encart spotlighte. useLayoutEffect flush son setState de facon synchrone avant peinture,
-  // contrairement a useEffect (asynchrone, aurait pu s'executer apres la mesure).
-  useLayoutEffect(() => {
-    setExpanded(true);
-  }, [stepIndex]);
-
-  // Spotlight + verrou de scroll, uniquement quand l'etape correspond a la version reellement
-  // affichee (sinon la navigation ci-dessus est en cours).
+  // Spotlight sur la cible + insertion de la bulle juste avant elle dans le DOM, uniquement quand
+  // l'etape correspond a la version reellement affichee (sinon la navigation ci-dessus est en
+  // cours). Un seul effet, plus aucun calcul de scroll/marge/verrou : scrollIntoView natif fait
+  // tout le travail de positionnement.
   useEffect(() => {
-    if (!isOnRightRound) return;
+    if (!isOnRightRound) {
+      setBubbleContainer(null);
+      return;
+    }
 
-    const el = document.querySelector<HTMLElement>(`[data-tour-key="${step.key}"]`);
-    if (!el) return;
+    const target = document.querySelector<HTMLElement>(`[data-tour-key="${step.key}"]`);
+    if (!target) {
+      setBubbleContainer(null);
+      return;
+    }
 
-    const roundChanged = lastRoundRef.current !== step.round;
-    lastRoundRef.current = step.round;
-
-    // Toggle theme retire (19/08, item 26) : page toujours claire, plus de variante sombre a
-    // calculer, cf CaseStudyRound.tsx.
-    const overlayColor = "rgba(9,9,11,.55)";
-    el.style.position = "relative";
-    el.style.zIndex = "60";
-    el.style.borderRadius = "14px";
-    // Pas de transition sur margin-top (corrige le 20/08, ecart trouve par Gilles : la bulle
-    // "s'ouvrait trop tot" en scrollant vers le haut, le haut de la zone spotlightee restait
-    // cache derriere) : applyTopMargin()/computeLock() lisent getBoundingClientRect() juste
-    // apres avoir change cette propriete, une transition anime la retournait dans son etat
-    // intermediaire (pas encore etabli), lockMin calcule trop bas. Aligne sur .tour-target du
-    // mockup, qui n'anime que box-shadow, jamais margin-top (mecanisme different : spacer
-    // separe plutot que marge posee directement sur la cible).
-    el.style.transition = "box-shadow .25s ease";
-    el.style.boxShadow = `0 0 0 9999px ${overlayColor}`;
-    // Encart V6 (19/08, porte depuis version-guided-tour.html) : ce sous-bloc n'a pas de padding
-    // propre (contrairement aux autres cibles qui embarquent une card ou une grille avec gap), le
-    // spotlight collait directement au texte/a la carte proposal. box-sizing:border-box pour garder
-    // la meme largeur de colonne grid qu'en dehors du tour.
+    target.style.position = "relative";
+    target.style.zIndex = "60";
+    target.style.borderRadius = "14px";
+    target.style.transition = "box-shadow .25s ease";
+    target.style.boxShadow = "0 0 0 9999px rgba(9,9,11,.55)";
+    // Encart V6 (etape 4) : ce sous-bloc n'a pas de padding propre (contrairement aux autres
+    // cibles qui embarquent une card ou une grille avec gap), le spotlight collait directement au
+    // texte/a la carte proposal. box-sizing:border-box pour garder la meme largeur de colonne grid
+    // qu'en dehors du tour.
     if (step.key === "v6-proposals") {
-      el.style.padding = "16px";
-      el.style.boxSizing = "border-box";
+      target.style.padding = "16px";
+      target.style.boxSizing = "border-box";
     }
 
-    let cancelled = false;
-    let isProgrammaticScroll = false;
-    let lockMin: number | null = null;
-    let lockMax: number | null = null;
-
-    // Marge dynamique quand la cible est trop pres du haut du document pour que le scroll seul
-    // la degage de la bulle fixe (meme bug que Cerithe sur "tour-intro"/"tour-specs", corrige ici
-    // par un calcul generique plutot que par une liste d'etapes en dur : la marge injectee est
-    // exactement le manque constate, quelle que soit l'etape concernee).
-    function applyTopMargin(offset: number) {
-      const targetTopDoc = el!.getBoundingClientRect().top + window.scrollY - (parseFloat(el!.style.marginTop) || 0);
-      const shortfall = offset - targetTopDoc;
-      el!.style.marginTop = shortfall > 0 ? `${shortfall}px` : "";
-    }
-
-    function computeLock(offset: number) {
-      const r = el!.getBoundingClientRect();
-      const targetTopDoc = r.top + window.scrollY;
-      const targetBottomDoc = r.bottom + window.scrollY;
-      lockMin = Math.max(0, targetTopDoc - offset);
-      // SANS marge quand la cible tient deja entierement dans la fenetre (corrige le 20/08, ecart
-      // trouve par Gilles : un "mini-scroll" restait possible en prod alors que le mockup est
-      // completement bloque). Les +80 ne servent que de confort visuel une fois qu'un vrai scroll
-      // est deja necessaire, jamais pour decider s'il l'est, cf version-guided-tour.html
-      // (computeLock, retour de Gilles a 100% de zoom, 19/08).
-      const neededMax = targetBottomDoc - window.innerHeight;
-      lockMax = neededMax > lockMin ? neededMax + 80 : lockMin;
-    }
-
-    // Saut instantane, jamais "smooth" (corrige le 20/08, ecart trouve en comparant au mockup) :
-    // ce dernier est passe a un saut instantane le 19/08 precisement pour ce type de bug ("le
-    // scroll est degueulasse, ca bug" remonte par Gilles) - un scroll anime "smooth" s'enchainant
-    // avec un second scroll anime (changement de version juste apres) se percutait en plein vol,
-    // donnant un rendu bugue. Un saut instantane retire cette classe de bug de fait, pas seulement
-    // esthetique. requestAnimationFrame (pas setTimeout) : l'evenement "scroll" du navigateur reste
-    // asynchrone meme pour un saut instantane, un seul frame suffit a le laisser se declencher
-    // avant de relever le flag, sans reintroduire de delai percu.
-    function scrollToTarget(offset: number, callback?: () => void) {
-      const targetY = el!.getBoundingClientRect().top + window.scrollY - offset;
-      isProgrammaticScroll = true;
-      window.scrollTo(0, Math.max(targetY, 0));
-      requestAnimationFrame(() => {
-        isProgrammaticScroll = false;
-        if (callback) callback();
-      });
-    }
-
-    // Offset = bas reel de la bulle (mesure, pas devine) + 16px de respiration. Corrige le 20/08
-    // (ecart trouve par Gilles) : l'ancien calcul FIXED_TOP_OFFSET (constante unique 92) +
-    // bubbleHeight ne correspondait plus a la position reelle de la bulle des que son `top` CSS
-    // varie selon le viewport (top-[104px] mobile vs sm:top-[92px] desktop) - offset trop court
-    // sur mobile, bulle qui chevauchait la cible spotlightee. getBoundingClientRect().bottom d'un
-    // element position:fixed est deja relatif au haut du viewport, quel que soit le breakpoint qui
-    // s'applique : plus besoin de connaitre/deviner le `top` CSS en dur pour le reconstituer.
-    function getOffset() {
-      const bubbleRect = bubbleRef.current?.getBoundingClientRect();
-      return (bubbleRect ? bubbleRect.bottom : FIXED_TOP_OFFSET + 140) + 16;
-    }
-
-    function settle() {
-      const offset = getOffset();
-      applyTopMargin(offset);
-      computeLock(offset);
-      // Verrou dur (overflow:hidden), pose seulement une fois le scroll d'installation termine
-      // (jamais avant, risquerait d'interferer avec l'animation "smooth" selon les navigateurs) :
-      // corrige le 20/08, ecart trouve par Gilles ("scroll toujours possible", "ca bug"). Le verrou
-      // souple ci-dessous (onScroll, snapback JS) ne suffit pas seul a bloquer un scroll inertiel
-      // de trackpad qui depasse la zone avant que le listener ne reagisse, cf version-guided-tour.html
-      // (meme mecanique, "retour Gilles a 100% de zoom", 19/08) : quand lockMax<=lockMin (aucun
-      // scroll reellement necessaire), le blocage doit etre total, pas juste rattrape apres coup.
-      scrollToTarget(offset, () => {
-        document.documentElement.style.overflow = lockMax !== null && lockMin !== null && lockMax <= lockMin ? "hidden" : "";
-      });
-    }
-
-    if (roundChanged) window.scrollTo(0, 0);
-    settle();
-
-    // Attendre que les images (captures d'ecran des propositions) aient fini de charger avant de
-    // recalculer : tant qu'une image au-dessus de la cible n'a pas sa taille reelle, la page est
-    // plus courte qu'elle ne le sera, et le scroll s'arrete trop tot.
-    const pendingImages = Array.from(document.images).filter((img) => !img.complete);
-    let imgTimeout: ReturnType<typeof setTimeout> | undefined;
-    if (pendingImages.length > 0) {
-      let remaining = pendingImages.length;
-      const done = () => {
-        remaining -= 1;
-        if (remaining <= 0 && !cancelled) settle();
-      };
-      pendingImages.forEach((img) => {
-        img.addEventListener("load", done, { once: true });
-        img.addEventListener("error", done, { once: true });
-      });
-      imgTimeout = setTimeout(() => {
-        if (!cancelled) settle();
-      }, 1200);
-    }
-
-    function onScroll() {
-      if (lockMin === null || lockMax === null) return;
-      if (!isProgrammaticScroll) {
-        if (window.scrollY > lockMax!) window.scrollTo(0, lockMax!);
-        else if (window.scrollY < lockMin!) window.scrollTo(0, lockMin!);
-      }
-      // Texte replie/deplie selon la proximite du haut de la zone verrouillee (mobile uniquement) :
-      // ferme des qu'on s'en eloigne, se rouvre automatiquement en y revenant. Jamais sur un scroll
-      // programmatique (nos propres sauts entre etapes). Reouverture exactement a lockMin, pas
-      // lockMin+24 (corrige le 20/08, demande explicite de Gilles) : le seuil +24 rouvrait le texte
-      // (bulle collapsed -> expanded, donc plus haute) AVANT d'atteindre le vrai haut de la zone.
-      // Comme la bulle collapsed est plus courte, son bas (fixe en position:fixed) reste au-dessus
-      // du haut de la cible sur une bonne partie du scroll de remontee, jusqu'a ce que la cible
-      // finisse par passer dessous : la cible apparaissait alors partiellement cachee derriere la
-      // bulle. En ne rouvrant qu'a lockMin exactement (l'etat d'arrivee initial sur l'etape, deja
-      // calibre pour la bulle expanded), plus de fenetre ou une bulle trop courte masque le haut de
-      // la cible pendant qu'on scroll encore vers lockMin.
-      setExpanded(window.scrollY <= lockMin!);
-    }
-
-    function onResize() {
-      computeLock(getOffset());
-    }
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onResize);
+    // Conteneur de la bulle : meme z-index/position que la cible pour rester au-dessus du cache
+    // plein ecran (box-shadow ci-dessus), sinon la bulle se retrouverait assombrie comme le reste
+    // de la page.
+    const container = document.createElement("div");
+    container.style.position = "relative";
+    container.style.zIndex = "60";
+    target.parentNode?.insertBefore(container, target);
+    // setBubbleContainer declenche le rendu du portail (bulle) DANS ce conteneur, mais de facon
+    // asynchrone (mise a jour d'etat React) : le scroll ne doit se faire qu'une fois ce contenu
+    // reellement monte, cf effet dedie plus bas qui depend de bubbleContainer, jamais ici avant
+    // que le conteneur n'ait sa hauteur finale (sinon scrollIntoView vise un conteneur encore
+    // vide, hauteur 0, et le repositionnement une fois la bulle montee est visible/saccade).
+    setBubbleContainer(container);
 
     return () => {
-      cancelled = true;
-      if (imgTimeout) clearTimeout(imgTimeout);
-      el.style.position = "";
-      el.style.zIndex = "";
-      el.style.boxShadow = "none";
-      el.style.marginTop = "";
-      el.style.padding = "";
-      el.style.boxSizing = "";
-      // Leve le verrou dur avant de quitter l'etape (corrige le 20/08, ecart trouve en comparant
-      // au mockup : render() y remet overflow a "" en tout debut de fonction, avant tout recalcul
-      // pour la nouvelle etape). Sans ce reset, un verrou pose a l'etape N restait actif pendant la
-      // transition vers l'etape N+1 et pouvait bloquer le scrollTo() programmatique lui-meme
-      // (overflow:hidden sur <html> empeche tout scroll, y compris programmatique), symptome
-      // compatible avec "le scroll est degueulasse, ca bug" remonte par Gilles.
-      document.documentElement.style.overflow = "";
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onResize);
+      target.style.position = "";
+      target.style.zIndex = "";
+      target.style.boxShadow = "none";
+      target.style.padding = "";
+      target.style.boxSizing = "";
+      container.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOnRightRound, step]);
+
+  // Scroll dedie, separe de l'effet ci-dessus : ne se declenche qu'une fois bubbleContainer mis a
+  // jour ET le rendu (portail de la bulle dedans) reellement commite par React, donc une fois le
+  // conteneur a sa hauteur finale. Saut instantane (pas "smooth", meme convention que le reste du
+  // funnel) : evite qu'une animation ne s'enchaine avec un autre scroll et donne un rendu bugue.
+  useEffect(() => {
+    if (!bubbleContainer) return;
+    bubbleContainer.scrollIntoView({ behavior: "instant", block: "start" });
+  }, [bubbleContainer]);
 
   // Fin reelle de la visite ("Terminer" sur la derniere etape) : retour propre sur la V1 en
   // haut de page plutot que de laisser le prospect sur la V6 au milieu du scroll, puis affichage
@@ -284,15 +148,11 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
 
   // bottom-left, pas bottom-right : ScrollToTop.tsx (bouton "remonter en haut", deja present sur
   // toutes les pages) occupe deja ce coin avec un z-index plus eleve, il cachait ce bouton
-  // (retour de Gilles le 16/08, prod).
+  // (retour de Gilles le 16/08, prod). Affiche aussi en statut "idle" (pas seulement "off") : le
+  // store ne survit pas a un reload et l'auto-demarrage ne se declenche que sur la V1 - un reload
+  // en cours de tour sur un autre round retombe en "idle" sans autre moyen de relancer.
   if (status === "idle" || status === "off") {
-    // "idle" affiche aussi ce bouton, pas seulement "off" (corrige le 20/08, ecart trouve par
-    // Gilles) : le store ne survit pas a un reload (volontaire, cf caseStudyTourStore.ts), et
-    // l'auto-demarrage ne se declenche que sur la V1 (cf effet plus haut) - un reload sur V2/V6
-    // pendant le tour retombe donc en "idle" sans jamais redevenir "active" automatiquement.
-    // Sans ce cas, l'utilisateur perdait toute possibilite de relancer le parcours (bouton
-    // absent, uniquement affiche pour "off").
-    return status === "off" || status === "idle" ? (
+    return (
       <button
         type="button"
         onClick={restart}
@@ -300,7 +160,7 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       >
         ↻ Relancer le parcours
       </button>
-    ) : null;
+    );
   }
 
   if (status === "finished") {
@@ -312,12 +172,9 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
           if (e.target === e.currentTarget) skip();
         }}
       >
-        {/* Dimensions/typo alignees sur .tour-end-card du mockup (corrige le 20/08, ecart trouve
-            par Gilles : max-w-lg/p-14/px-7 py-3.5/text-base arrondis au pas Tailwind le plus
-            proche au lieu des valeurs exactes 520px/56px+48px/30px+14px/15px). */}
         <div className="max-w-[520px] rounded-2xl border border-border bg-card py-14 px-12 text-center shadow-2xl">
           <p className="mb-9 text-base leading-relaxed text-muted-foreground">
-            <strong className="text-foreground">Ce parcours pourrait être le vôtre !</strong>
+            Ce parcours pourrait être le vôtre !
             <br />
             La communication est la clé pour réussir à construire un site à votre image.
             <br />
@@ -332,10 +189,6 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
               Obtenir des informations <ArrowRight size={16} />
             </a>
           )}
-          {/* Seul endroit ou "Visiter librement" reapparait (retiree des bulles de chaque etape,
-              cf ci-dessous) : discret, sous le CTA principal, pour qui a fini et veut fouiller par
-              lui-meme. Conforme a .tour-end-skip de version-guided-tour.html (fleche "→" ajoutee
-              le 20/08, ecart trouve par Gilles : texte sans fleche avant, contrairement au mockup). */}
           <button type="button" onClick={skip} className="mt-4 block w-full text-center text-sm text-muted-foreground underline">
             Visiter librement →
           </button>
@@ -344,48 +197,19 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
     );
   }
 
-  if (!isOnRightRound) return null;
+  if (!isOnRightRound || !bubbleContainer) return null;
 
-  return (
-    <div
-      ref={bubbleRef}
-      // top-[76px] : aligne sur .tour-bubble{top:76px} du mockup, meme valeur toutes tailles
-      // d'ecran (corrige le 20/08, ecart trouve par Gilles : 104/92px avant, jamais aligne).
-      // left-4 right-4 sur mobile (insets symetriques, sans max-width) : porte du mockup (18/08,
-      // correctif "bulle rognee a droite sur iPhone SE/mini"), jamais applique ici avant ce
-      // correctif (max-w-[340px] restait actif sur mobile, meme bug reproduit en prod).
-      // shadow/padding alignes sur les valeurs exactes du mockup plutot que les presets Tailwind
-      // (shadow-xl, py-3) qui divergeaient legerement.
-      className="fixed top-[76px] left-4 right-4 sm:left-6 sm:right-auto sm:max-w-[340px] z-[61] rounded-lg bg-foreground px-[18px] py-4 text-sm leading-relaxed text-background shadow-[0_12px_32px_rgba(0,0,0,0.35)]"
-    >
-      <div className="mb-1.5 flex items-center justify-between gap-2.5">
-        <div className="text-[11px] font-bold uppercase tracking-wide opacity-55">
-          Étape {stepIndex + 1} / {CASE_STUDY_TOUR_STEPS.length}
-        </div>
-        {/* Bouton replier/deplier, mobile uniquement (cf .tour-toggle du mockup, masque par
-            defaut sur desktop/laptop ou le texte est deja visible directement). Breakpoint
-            760px (max-[760px]:), pas sm: (640px, corrige le 20/08, ecart trouve par Gilles) :
-            aligne sur la media query reelle du mockup (@media(max-width:760px)). */}
-        <button
-          type="button"
-          onClick={() => setExpanded((e) => !e)}
-          aria-label="Afficher/masquer le texte"
-          className="hidden max-[760px]:flex items-center justify-center h-[26px] w-[26px] rounded-full border border-current opacity-70 text-[12px] font-bold shrink-0"
-        >
-          ⓘ
-        </button>
+  return createPortal(
+    <div className="mb-6 rounded-lg border border-border bg-foreground px-5 py-4 text-sm leading-relaxed text-background shadow-lg">
+      <div className="mb-2 text-[11px] font-bold uppercase tracking-wide opacity-55">
+        Étape {stepIndex + 1} / {CASE_STUDY_TOUR_STEPS.length}
       </div>
       {step.text.map((line, i) => (
-        <p key={i} className={`mb-3.5 ${expanded ? "block" : "block max-[760px]:hidden"}`}>
+        <p key={i} className="mb-3.5 last:mb-4">
           {line}
         </p>
       ))}
-      {/* "Visiter librement" retiree de cette bulle (comme de toutes les etapes) : ne
-          reapparait qu'a la toute fin, dans la modale (cf .tour-end-skip ci-dessus),
-          conforme a version-guided-tour.html. */}
       <div className="flex items-center justify-end gap-2">
-        {/* Bouton omis (pas juste desactive) a la 1ere etape, cf version-guided-tour.html
-            (`current === 0 ? "" : '<button...`) : ecart trouve et corrige le 19/08, item 4. */}
         {stepIndex !== 0 && (
           <button
             type="button"
@@ -403,6 +227,7 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
           {stepIndex === CASE_STUDY_TOUR_STEPS.length - 1 ? "Terminer" : "Suivant →"}
         </button>
       </div>
-    </div>
+    </div>,
+    bubbleContainer
   );
 }
