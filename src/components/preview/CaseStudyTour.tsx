@@ -105,7 +105,14 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
     el.style.position = "relative";
     el.style.zIndex = "60";
     el.style.borderRadius = "14px";
-    el.style.transition = "box-shadow .25s ease, margin-top .2s ease";
+    // Pas de transition sur margin-top (corrige le 20/08, ecart trouve par Gilles : la bulle
+    // "s'ouvrait trop tot" en scrollant vers le haut, le haut de la zone spotlightee restait
+    // cache derriere) : applyTopMargin()/computeLock() lisent getBoundingClientRect() juste
+    // apres avoir change cette propriete, une transition anime la retournait dans son etat
+    // intermediaire (pas encore etabli), lockMin calcule trop bas. Aligne sur .tour-target du
+    // mockup, qui n'anime que box-shadow, jamais margin-top (mecanisme different : spacer
+    // separe plutot que marge posee directement sur la cible).
+    el.style.transition = "box-shadow .25s ease";
     el.style.boxShadow = `0 0 0 9999px ${overlayColor}`;
     // Encart V6 (19/08, porte depuis version-guided-tour.html) : ce sous-bloc n'a pas de padding
     // propre (contrairement aux autres cibles qui embarquent une card ou une grille avec gap), le
@@ -271,7 +278,13 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
   // toutes les pages) occupe deja ce coin avec un z-index plus eleve, il cachait ce bouton
   // (retour de Gilles le 16/08, prod).
   if (status === "idle" || status === "off") {
-    return status === "off" ? (
+    // "idle" affiche aussi ce bouton, pas seulement "off" (corrige le 20/08, ecart trouve par
+    // Gilles) : le store ne survit pas a un reload (volontaire, cf caseStudyTourStore.ts), et
+    // l'auto-demarrage ne se declenche que sur la V1 (cf effet plus haut) - un reload sur V2/V6
+    // pendant le tour retombe donc en "idle" sans jamais redevenir "active" automatiquement.
+    // Sans ce cas, l'utilisateur perdait toute possibilite de relancer le parcours (bouton
+    // absent, uniquement affiche pour "off").
+    return status === "off" || status === "idle" ? (
       <button
         type="button"
         onClick={restart}
@@ -296,7 +309,7 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
             proche au lieu des valeurs exactes 520px/56px+48px/30px+14px/15px). */}
         <div className="max-w-[520px] rounded-2xl border border-border bg-card py-14 px-12 text-center shadow-2xl">
           <p className="mb-9 text-base leading-relaxed text-muted-foreground">
-            Ce parcours pourrait être le vôtre !
+            <strong className="text-foreground">Ce parcours pourrait être le vôtre !</strong>
             <br />
             La communication est la clé pour réussir à construire un site à votre image.
             <br />
