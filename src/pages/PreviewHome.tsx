@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowRight, Sun, Moon } from "lucide-react";
 import { previewProjects } from "@/data/previewProjects";
@@ -7,6 +8,7 @@ import PreviewCredit from "@/components/preview/PreviewCredit";
 import PricingCard from "@/components/preview/PricingCard";
 import { usePreviewFavicon } from "@/hooks/usePreviewFavicon";
 import { usePreviewTitle } from "@/hooks/usePreviewTitle";
+import { trackFunnelBeacon } from "@/lib/funnelTracking";
 import NotFound from "@/pages/NotFound";
 
 export default function PreviewHome() {
@@ -15,6 +17,14 @@ export default function PreviewHome() {
   const { theme, toggleTheme } = useThemeStore();
   usePreviewFavicon(project?.logo);
   usePreviewTitle(project?.projectName);
+
+  // Tracking funnel Boutiques Tier 1 (cf Projets/V1-Echanges/mockups/preview-prospect.html,
+  // trackFunnelBeacon("page-finale")) : uniquement pour un prospect a froid (coldIntro), jamais
+  // pour Mylene (relation deja etablie, page hors perimetre du funnel de prospection).
+  useEffect(() => {
+    if (project?.coldIntro) trackFunnelBeacon(project.slug, "page-finale");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [project?.slug]);
 
   if (!project) return <NotFound />;
 
@@ -87,7 +97,11 @@ export default function PreviewHome() {
                 )}
               </div>
 
-              <PricingCard projectName={project.projectName} phone={project.phone} />
+              <PricingCard
+                projectName={project.projectName}
+                phone={project.phone}
+                slug={project.coldIntro ? project.slug : undefined}
+              />
 
               {/* bg-foreground/5 plutot que bg-card : bg-card reference le token "carte" pense pour
                   le fond noir/blanc par defaut, pas pour le fond creme/brun chaud de cette page,

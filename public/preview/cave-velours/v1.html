@@ -287,5 +287,21 @@
     checkNearBottom();
   })();
 </script>
+<script>
+  // Tracking funnel Boutiques Tier 1 (cf Projets/Boutiques/workflow-cc.md). Beacon fire-and-forget,
+  // aucun cookie pose, jamais bloquant pour la page (erreur avalee silencieusement). Porte depuis
+  // le mockup de reference Projets/V1-Echanges/mockups/proposition-1.html le 20/08.
+  (function(){
+    try {
+      var payload = JSON.stringify({slug:"cave-velours", step:"p1"});
+      var url = "https://boutiques-api.gillescobigo.com/track";
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(url, new Blob([payload], {type:"application/json"}));
+      } else {
+        fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body: payload, keepalive: true}).catch(function(){});
+      }
+    } catch (e) {}
+  })();
+</script>
 </body>
 </html>
