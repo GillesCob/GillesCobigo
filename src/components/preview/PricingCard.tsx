@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { trackFunnelBeacon } from "@/lib/funnelTracking";
 
 // Tarifs pilote Boutiques (cadres le 14/08, cf Projets/Boutiques/workflow-cc.md) : chiffres a
 // ajuster une fois les premiers clients reels convertis, pas figes dans le marbre. La case a
@@ -26,9 +27,14 @@ const FORMSPREE_ENDPOINT = "https://formspree.io/f/mykarjar";
 export default function PricingCard({
   projectName,
   phone,
+  slug,
 }: {
   projectName: string;
   phone?: string;
+  // Tracking funnel Boutiques Tier 1 (cf trackFunnelBeacon("modale-numero") du mockup
+  // preview-prospect.html) : undefined pour un client deja engage (Mylene), le composant ne
+  // trace jamais en dehors du funnel de prospection a froid.
+  slug?: string;
 }) {
   const [withSubscription, setWithSubscription] = useState(false);
   // Non pertinente une fois l'abonnement coche (nom de domaine deja inclus dedans) : decochee
@@ -63,6 +69,7 @@ export default function PricingCard({
 
   function openDialog() {
     setDialogOpen(true);
+    if (slug) trackFunnelBeacon(slug, "modale-numero");
   }
 
   // overrideContact : utilise par le lien "Je préfère qu'on échange par mail" (cf mockup
