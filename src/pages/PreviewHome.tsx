@@ -152,7 +152,7 @@ export default function PreviewHome() {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-emerald-500 font-bold shrink-0 leading-relaxed">✓</span>
-                    <span>Vous êtes propriétaire de votre site, l'export du code vous sera fourni dès sa mise en ligne.</span>
+                    <span>Vous êtes propriétaire de votre site, l'export du code vous sera fourni lors de sa mise en ligne ou à votre demande.</span>
                   </li>
                 </ul>
               </PreviewDropdown>
