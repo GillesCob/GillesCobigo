@@ -143,13 +143,13 @@ export default function PreviewHome() {
                   Gilles : rendu plus visible qu'un simple bouton outline). */}
               <PreviewDropdown title="Besoin de plus d'infos ?">
                 <p className="text-muted-foreground mb-3">
-                  Suivez une visite guidée de tous les échanges que j'ai eus avec Mylène, gérante du Dressing de
-                  Maïlys, pour voir concrètement comment nous travaillerons ensemble à la réalisation de votre
-                  nouveau site.
+                  Suivez la création du site du Dressing de Maïlys, de la 1ère version à la version finale ! Je vous
+                  propose de parcourir les échanges que j'ai eus avec Mylène, gérante du Dressing de Maïlys, afin de
+                  mieux comprendre comment nous travaillerons ensemble à la réalisation de votre nouveau site.
                 </p>
                 <Button asChild size="sm" className="rounded-full">
                   <Link to={`/cas-client/v1?from=${caseStudyFrom}`}>
-                    Suivre la visite guidée <ArrowRight size={14} />
+                    Suivre le parcours de création d'un site <ArrowRight size={14} />
                   </Link>
                 </Button>
               </PreviewDropdown>

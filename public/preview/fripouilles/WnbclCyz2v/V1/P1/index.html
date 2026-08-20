@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/jpeg" href="./logo.jpg">
+<link rel="icon" type="image/jpeg" href="/preview/fripouilles/logo.jpg">
 <title>Les Frip'ouilles, proposition de site (1/2)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -107,12 +107,12 @@
   .proposition-banner{position:fixed; top:0; left:0; right:0; z-index:1000; background:var(--accent); color:#fff; text-align:center; padding:10px 16px; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;}
   /* Bandeau + modale, com' de Gilles : couleur neutre fixe #18181b, jamais la palette du site
      propose. Reference : V1-Echanges/mockups/proposition-1.html (cf workflow-cc.md). */
-  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:#18181b; color:#fff; padding:22px 72px 22px 20px; text-align:center; font-family:'Nunito',sans-serif; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
+  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:#18181b; color:#fff; padding:22px 20px; text-align:center; font-family:'Nunito',sans-serif; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
   .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
-  .retour-bandeau a.retour-bandeau-confidentialite{position:absolute; right:12px; top:9px; margin:0; font-size:10.5px; font-weight:600; opacity:.55; white-space:nowrap;}
+  .retour-bandeau a.retour-bandeau-confidentialite{display:block; text-align:right; margin:6px 0 0; font-size:10.5px; font-weight:600; opacity:.55;}
   @media(max-width:480px){
-    .retour-bandeau{font-size:13.5px; padding:20px 64px 20px 16px;}
-    .retour-bandeau a.retour-bandeau-confidentialite{right:10px; top:7px; font-size:10px;}
+    .retour-bandeau{font-size:13.5px; padding:20px 16px;}
+    .retour-bandeau a.retour-bandeau-confidentialite{text-align:center; margin-top:16px;}
   }
   .retour-bandeau-reassure{font-size:13px; font-weight:600; opacity:.85; margin:0 0 6px;}
 
@@ -136,20 +136,20 @@
   <div class="result-modal">
     <button type="button" class="result-modal-close" aria-label="Fermer" onclick="closeResultModal()">✕</button>
     <h2>Vous souhaitez visualiser une alternative ?</h2>
-    <a class="btn" href="./proposition-2.html">Découvrir la 2ème proposition →</a>
+    <a class="btn" href="/preview/fripouilles/WnbclCyz2v/V1/P2/">Découvrir la 2ème proposition →</a>
   </div>
 </div>
 
 <button class="to-top" id="toTop" aria-label="Retour en haut de page" title="Retour en haut">↑</button>
 
 <div class="retour-bandeau">
-  <a href="./proposition-2.html">Découvrir la 2ème proposition →</a>
+  <a href="/preview/fripouilles/WnbclCyz2v/V1/P2/">Découvrir la 2ème proposition →</a>
   <a class="retour-bandeau-confidentialite" href="/cgv-boutiques" target="_blank" rel="noopener noreferrer">Confidentialité</a>
 </div>
 
 <section class="hero">
   <div class="hero-content">
-    <div class="logo-ring"><img src="./logo.jpg" alt="Les Frip'ouilles"></div>
+    <div class="logo-ring"><img src="/preview/fripouilles/logo.jpg" alt="Les Frip'ouilles"></div>
     <div class="tagline">Friperie &amp; créateurs</div>
     <h1>Frip'ouilles</h1>
     <p class="sub">Vintage &amp; upcyclé à Mont-de-Marsan</p>
@@ -163,10 +163,10 @@
     <span>Glisser pour découvrir →</span>
   </div>
   <div class="lookbook-track" id="lookTrack">
-    <div class="look-card"><img src="../_stock/mode-vintage/mode-vintage-02.jpg" alt="" loading="lazy"><span>Pièce upcyclée 1</span></div>
-    <div class="look-card"><img src="../_stock/mode-vintage/mode-vintage-03.jpg" alt="" loading="lazy"><span>Pièce upcyclée 2</span></div>
-    <div class="look-card"><img src="../_stock/mode-vintage/mode-vintage-01.jpg" alt="" loading="lazy"><span>Pièce upcyclée 3</span></div>
-    <div class="look-card"><img src="../_stock/mode-vintage/mode-vintage-04.jpg" alt="" loading="lazy"><span>Pièce upcyclée 4</span></div>
+    <div class="look-card"><img src="/preview/_stock/mode-vintage/mode-vintage-02.jpg" alt="" loading="lazy"><span>Pièce upcyclée 1</span></div>
+    <div class="look-card"><img src="/preview/_stock/mode-vintage/mode-vintage-03.jpg" alt="" loading="lazy"><span>Pièce upcyclée 2</span></div>
+    <div class="look-card"><img src="/preview/_stock/mode-vintage/mode-vintage-01.jpg" alt="" loading="lazy"><span>Pièce upcyclée 3</span></div>
+    <div class="look-card"><img src="/preview/_stock/mode-vintage/mode-vintage-04.jpg" alt="" loading="lazy"><span>Pièce upcyclée 4</span></div>
   </div>
   <div class="lookbook-progress"><div class="bar" id="lookBar"></div></div>
 </section>
