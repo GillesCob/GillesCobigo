@@ -30,6 +30,10 @@ export default function CaseStudyRound() {
   const [searchParams] = useSearchParams();
   const { search } = useLocation();
   const from = searchParams.get("from");
+  // Slug du prospect (avant le "/<secret>"), pour le tracking funnel uniquement (cf
+  // trackFunnelBeacon("visite-guidee") dans CaseStudyTour.tsx). Absent si la page est ouverte
+  // sans contexte prospect (from absent), jamais de tracking dans ce cas.
+  const prospectSlug = from?.split("/")[0];
   const project = previewProjects[CASE_STUDY_SECRET];
   const entry = project.rounds.find((r) => r.round.toLowerCase() === round?.toLowerCase());
   usePreviewFavicon(project.logo);
@@ -73,6 +77,7 @@ export default function CaseStudyRound() {
         currentRound={entry.round}
         search={search}
         ctaHref={from ? `/preview/${from}#tarif` : undefined}
+        slug={prospectSlug}
       />
 
       {/* Bandeau figé en haut, visible pendant tout le scroll (demande explicite du 15/08 : un
