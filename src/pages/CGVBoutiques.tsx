@@ -19,8 +19,8 @@ const ROUND_VALUE = (500 - MISE_EN_LIGNE_VALUE) / BASE_STEPS.length;
 const BASE_ACQUIS = BASE_STEPS.map((_, i) => Math.round(ROUND_VALUE * (i + 1)));
 const V6_ACQUIS = BASE_ACQUIS[BASE_ACQUIS.length - 1];
 // Formule Serenite (75€) : 20€ nom de domaine (acquis immediatement, meme regle que l'option
-// domaine seule) + 55€ pour 2 modifications incluses, acquises seulement au fur et a mesure de
-// leur utilisation (27,50€ chacune). Une modification utilisee pour une version supplementaire
+// domaine seule) + 55€ pour 2 allers-retours inclus, acquis seulement au fur et a mesure de
+// leur utilisation (27,50€ chacun). Un allers-retours utilise pour une version supplementaire
 // (V7, V8...) avant la mise en ligne ajoute une ligne au tableau ; utilisee apres la mise en
 // ligne, elle n'a aucun impact ici (plus de remboursement possible a ce stade de toute facon).
 const MODIF_CREDIT_VALUE = 27.5;
@@ -95,7 +95,7 @@ export default function CGVBoutiques() {
                 <li>Version supplémentaire (V7, V8...) ou modification après mise en ligne : 40€.</li>
                 <li>
                   Formule Sérénité, +75€ (paiement unique) : nom de domaine inclus pour la période, 2
-                  modifications incluses (utilisables pour une version en plus avant mise en ligne ou une
+                  allers-retours inclus (utilisables pour une version en plus avant mise en ligne ou une
                   modification après), retours sous 48h ouvrées. Non reconduite automatiquement.
                 </li>
                 <li>Toute évolution ou projet plus ambitieux (nouvelle fonctionnalité, boutique en ligne, site multi-pages...) : devis séparé, jamais ce tarif.</li>
@@ -208,8 +208,8 @@ export default function CGVBoutiques() {
                   conception (V2 à V6) et 30€ pour la mise en ligne (déploiement technique, pas un round de
                   conception). Le nom de domaine, une fois acheté, est immédiatement enregistré à votre nom :
                   les 20€ (seul ou inclus dans la Formule Sérénité) sont acquis dès la signature,
-                  indépendamment de la suite. Avec la Formule Sérénité, les 2 modifications incluses (55€) ne
-                  sont acquises qu'au fur et à mesure de leur utilisation (27,50€ chacune) : une version
+                  indépendamment de la suite. Avec la Formule Sérénité, les 2 allers-retours inclus (55€) ne
+                  sont acquis qu'au fur et à mesure de leur utilisation (27,50€ chacun) : une version
                   supplémentaire (V7, V8...) faite avant l'arrêt ajoute une ligne au tableau, la part non
                   utilisée reste remboursable. Un crédit utilisé pour une modification après la mise en ligne
                   n'apparaît pas ici : une fois le site en ligne, la prestation est de toute façon rendue en
@@ -225,6 +225,28 @@ export default function CGVBoutiques() {
                 garantissez disposer des droits nécessaires sur ces contenus (droits d'auteur, droit à l'image)
                 et en assumez l'entière responsabilité. En cas de réclamation d'un tiers liée à ces contenus,
                 vous garantissez le prestataire contre toute conséquence de cette réclamation.
+              </p>
+            </section>
+
+            <section id="donnees-confidentialite">
+              <h2 className="text-base font-semibold text-foreground mb-2">7. Données et confidentialité</h2>
+              <p>
+                Le prestataire (Gilles Cobigo) traite deux types de données personnelles vous concernant :
+                celles que vous transmettez via le formulaire de contact du site (nom, email, message), et un
+                suivi de votre progression sur les pages de proposition qui vous sont adressées (quelle page a
+                été consultée, à quel moment), pour comprendre où en est l'échange et améliorer la
+                présentation. Ce suivi ne dépose aucun cookie ni traceur dans votre navigateur.
+              </p>
+              <p className="mt-2">
+                Ces données sont utilisées uniquement dans le cadre du suivi commercial de votre projet et de
+                l'amélioration du service, sur la base de l'intérêt légitime du prestataire à mener sa relation
+                commerciale avec vous. Elles ne sont jamais partagées avec un tiers, ni revendues, ni utilisées
+                à des fins publicitaires.
+              </p>
+              <p className="mt-2">
+                Conservées le temps de la relation commerciale, puis 3 ans maximum après le dernier échange.
+                Vous pouvez à tout moment demander l'accès, la rectification ou la suppression de vos données
+                par simple mail au prestataire.
               </p>
             </section>
           </div>
