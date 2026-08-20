@@ -58,8 +58,8 @@ export const previewProjects: Record<string, IPreviewProject> = {
         round: "V6",
         date: "11 août 2026",
         proposals: [
-          { label: "V5", screenshot: `${BASE}/screenshots/v7.png`, htmlPath: `${BASE}/mockup-v7.html`, group: "Pour comparer (avant)" },
-          { label: "V6 · avis Google et Instagram réels", screenshot: `${BASE}/screenshots/v8.png`, htmlPath: `${BASE}/mockup-v8.html`, group: "V6 : à valider" },
+          { label: "V5", screenshot: `${BASE}/screenshots/v7.webp`, htmlPath: `${BASE}/mockup-v7.html`, group: "Pour comparer (avant)" },
+          { label: "V6 · avis Google et Instagram réels", screenshot: `${BASE}/screenshots/v8.webp`, htmlPath: `${BASE}/mockup-v8.html`, group: "V6 : à valider" },
         ],
         changesApplied: [
           "Avis Google branchés en vrai (les 5 plus récents envoyés par Google, mis à jour automatiquement toutes les heures), avec un bouton \"Voir tous les avis\" qui renvoie vers ta fiche Google Maps",
@@ -71,19 +71,19 @@ export const previewProjects: Record<string, IPreviewProject> = {
         ownerNote:
           "Deux limites à connaître avant de valider :\n\n- Google ne nous donne jamais plus de 5 avis (c'est une limite fixe de leur API, impossible à contourner), et parmi ces 5 un avis sans commentaire écrit (juste une note en étoiles) n'est pas affiché : ça peut arriver que tu voies moins de 5 avis à l'écran selon le moment, ce n'est pas un bug (aperçus avec 4, 3, 2 et 1 avis ci-dessous, pour te donner une idée du rendu dans chaque cas).\n\n- Le widget Instagram est sur un plan gratuit : un badge \"Free Instagram Feed Widget\" reste visible sous les posts, et l'affichage est limité à 200 vues par mois. Au-delà, la section Instagram bascule automatiquement sur 3 photos fixes (qui ne se mettent pas à jour toutes seules, contrairement au reste) et un lien direct vers ton compte (aperçu ci-dessous, \"Si le quota Instagram gratuit est dépassé\") le temps que ça se réinitialise le mois suivant. Passer sur le plan payant (4$/mois, environ 3,70€) retire le badge et cette limite, à toi de voir si ça vaut le coup pour toi.",
         supportingVisuals: [
-          { label: "Si le quota Instagram gratuit est dépassé", screenshot: `${BASE}/screenshots/v8-instagram-repli.png`, htmlPath: `${BASE}/mockup-v8-instagram-repli.html`, group: "Aperçu du repli automatique" },
-          { label: "4 avis avec commentaire", screenshot: `${BASE}/screenshots/v8-avis-4.png`, htmlPath: `${BASE}/mockup-v8-avis-4.html`, group: "Aperçu selon le nombre d'avis avec commentaire" },
-          { label: "3 avis avec commentaire", screenshot: `${BASE}/screenshots/v8-avis-3.png`, htmlPath: `${BASE}/mockup-v8-avis-3.html`, group: "Aperçu selon le nombre d'avis avec commentaire" },
-          { label: "2 avis avec commentaire", screenshot: `${BASE}/screenshots/v8-avis-2.png`, htmlPath: `${BASE}/mockup-v8-avis-2.html`, group: "Aperçu selon le nombre d'avis avec commentaire" },
-          { label: "1 avis avec commentaire", screenshot: `${BASE}/screenshots/v8-avis-1.png`, htmlPath: `${BASE}/mockup-v8-avis-1.html`, group: "Aperçu selon le nombre d'avis avec commentaire" },
+          { label: "Si le quota Instagram gratuit est dépassé", screenshot: `${BASE}/screenshots/v8-instagram-repli.webp`, htmlPath: `${BASE}/mockup-v8-instagram-repli.html`, group: "Aperçu du repli automatique" },
+          { label: "4 avis avec commentaire", screenshot: `${BASE}/screenshots/v8-avis-4.webp`, htmlPath: `${BASE}/mockup-v8-avis-4.html`, group: "Aperçu selon le nombre d'avis avec commentaire" },
+          { label: "3 avis avec commentaire", screenshot: `${BASE}/screenshots/v8-avis-3.webp`, htmlPath: `${BASE}/mockup-v8-avis-3.html`, group: "Aperçu selon le nombre d'avis avec commentaire" },
+          { label: "2 avis avec commentaire", screenshot: `${BASE}/screenshots/v8-avis-2.webp`, htmlPath: `${BASE}/mockup-v8-avis-2.html`, group: "Aperçu selon le nombre d'avis avec commentaire" },
+          { label: "1 avis avec commentaire", screenshot: `${BASE}/screenshots/v8-avis-1.webp`, htmlPath: `${BASE}/mockup-v8-avis-1.html`, group: "Aperçu selon le nombre d'avis avec commentaire" },
         ],
       },
       {
         round: "V5",
         date: "10 août 2026",
         proposals: [
-          { label: "V4", screenshot: `${BASE}/screenshots/v5.png`, htmlPath: `${BASE}/mockup-v5.html`, group: "Pour comparer (avant)" },
-          { label: "V5 · logo agrandi + aperçu Instagram", screenshot: `${BASE}/screenshots/v7.png`, htmlPath: `${BASE}/mockup-v7.html`, group: "V5 : à valider" },
+          { label: "V4", screenshot: `${BASE}/screenshots/v5.webp`, htmlPath: `${BASE}/mockup-v5.html`, group: "Pour comparer (avant)" },
+          { label: "V5 · logo agrandi + aperçu Instagram", screenshot: `${BASE}/screenshots/v7.webp`, htmlPath: `${BASE}/mockup-v7.html`, group: "V5 : à valider" },
         ],
         changesApplied: [
           "Logo agrandi dans le hero, une première fois puis une deuxième sur ton retour",
@@ -99,11 +99,11 @@ export const previewProjects: Record<string, IPreviewProject> = {
         round: "V4",
         date: "10 août 2026",
         proposals: [
-          { label: "V3", screenshot: `${BASE}/screenshots/v4-fredoka.png`, htmlPath: `${BASE}/mockup-v4-fredoka.html`, group: "Pour comparer (avant)" },
-          { label: "V4 · titres Fredoka", screenshot: `${BASE}/screenshots/v5.png`, htmlPath: `${BASE}/mockup-v5.html`, group: "V4 : à choisir" },
-          { label: "V4 · titres Grandstander", screenshot: `${BASE}/screenshots/v6-grandstander.png`, htmlPath: `${BASE}/mockup-v6-grandstander.html`, group: "V4 : à choisir" },
-          { label: "V4 · titres M PLUS Rounded 1c", screenshot: `${BASE}/screenshots/v6-mplusrounded.png`, htmlPath: `${BASE}/mockup-v6-mplusrounded.html`, group: "V4 : à choisir" },
-          { label: "Comparatif rapide (2 nouvelles polices vs Fredoka)", screenshot: `${BASE}/screenshots/v6-comparatif-titres.png`, htmlPath: `${BASE}/mockup-v6-comparatif-titres.html`, group: "V4 : à choisir" },
+          { label: "V3", screenshot: `${BASE}/screenshots/v4-fredoka.webp`, htmlPath: `${BASE}/mockup-v4-fredoka.html`, group: "Pour comparer (avant)" },
+          { label: "V4 · titres Fredoka", screenshot: `${BASE}/screenshots/v5.webp`, htmlPath: `${BASE}/mockup-v5.html`, group: "V4 : à choisir" },
+          { label: "V4 · titres Grandstander", screenshot: `${BASE}/screenshots/v6-grandstander.webp`, htmlPath: `${BASE}/mockup-v6-grandstander.html`, group: "V4 : à choisir" },
+          { label: "V4 · titres M PLUS Rounded 1c", screenshot: `${BASE}/screenshots/v6-mplusrounded.webp`, htmlPath: `${BASE}/mockup-v6-mplusrounded.html`, group: "V4 : à choisir" },
+          { label: "Comparatif rapide (2 nouvelles polices vs Fredoka)", screenshot: `${BASE}/screenshots/v6-comparatif-titres.webp`, htmlPath: `${BASE}/mockup-v6-comparatif-titres.html`, group: "V4 : à choisir" },
         ],
         changesApplied: [
           "Calque blanc remplacé par un calque vert transparent sur l'ensemble de la photo (dégradé vertical uniforme, comme la toute première version), couleur de marque réelle",
@@ -125,11 +125,11 @@ export const previewProjects: Record<string, IPreviewProject> = {
         round: "V3",
         date: "10 août 2026",
         proposals: [
-          { label: "V2", screenshot: `${BASE}/screenshots/v3-optionD.png`, htmlPath: `${BASE}/mockup-v3-optionD.html`, group: "Pour comparer (avant)" },
-          { label: "V3 · titres Fredoka", screenshot: `${BASE}/screenshots/v4-fredoka.png`, htmlPath: `${BASE}/mockup-v4-fredoka.html`, group: "V3 : à choisir" },
-          { label: "V3 · titres Caveat", screenshot: `${BASE}/screenshots/v4-caveat.png`, htmlPath: `${BASE}/mockup-v4-caveat.html`, group: "V3 : à choisir" },
-          { label: "V3 · titres Baloo 2", screenshot: `${BASE}/screenshots/v4-baloo.png`, htmlPath: `${BASE}/mockup-v4-baloo.html`, group: "V3 : à choisir" },
-          { label: "Comparatif rapide des 3 polices", screenshot: `${BASE}/screenshots/v4-comparatif-titres.png`, htmlPath: `${BASE}/mockup-v4-comparatif-titres.html`, group: "V3 : à choisir" },
+          { label: "V2", screenshot: `${BASE}/screenshots/v3-optionD.webp`, htmlPath: `${BASE}/mockup-v3-optionD.html`, group: "Pour comparer (avant)" },
+          { label: "V3 · titres Fredoka", screenshot: `${BASE}/screenshots/v4-fredoka.webp`, htmlPath: `${BASE}/mockup-v4-fredoka.html`, group: "V3 : à choisir" },
+          { label: "V3 · titres Caveat", screenshot: `${BASE}/screenshots/v4-caveat.webp`, htmlPath: `${BASE}/mockup-v4-caveat.html`, group: "V3 : à choisir" },
+          { label: "V3 · titres Baloo 2", screenshot: `${BASE}/screenshots/v4-baloo.webp`, htmlPath: `${BASE}/mockup-v4-baloo.html`, group: "V3 : à choisir" },
+          { label: "Comparatif rapide des 3 polices", screenshot: `${BASE}/screenshots/v4-comparatif-titres.webp`, htmlPath: `${BASE}/mockup-v4-comparatif-titres.html`, group: "V3 : à choisir" },
         ],
         changesApplied: [
           "Accroche \"Le neuf n'est plus à la mode\" retirée, remplacée par \"Dépôt-vente et friperie\" / \"Mont-de-Marsan\" sur deux lignes, en plus gros",
@@ -151,12 +151,12 @@ export const previewProjects: Record<string, IPreviewProject> = {
         round: "V2",
         date: "7 août 2026",
         proposals: [
-          { label: "Option A", screenshot: `${BASE}/screenshots/v2-optionA.png`, htmlPath: `${BASE}/mockup-v2-optionA.html` },
-          { label: "Option B", screenshot: `${BASE}/screenshots/v2-optionB.png`, htmlPath: `${BASE}/mockup-v2-optionB.html` },
-          { label: "Option C", screenshot: `${BASE}/screenshots/v3-optionA.png`, htmlPath: `${BASE}/mockup-v3-optionA.html` },
-          { label: "Option D", screenshot: `${BASE}/screenshots/v3-optionB.png`, htmlPath: `${BASE}/mockup-v3-optionB.html` },
-          { label: "Option E", screenshot: `${BASE}/screenshots/v3-optionC.png`, htmlPath: `${BASE}/mockup-v3-optionC.html` },
-          { label: "Option F", screenshot: `${BASE}/screenshots/v3-optionD.png`, htmlPath: `${BASE}/mockup-v3-optionD.html` },
+          { label: "Option A", screenshot: `${BASE}/screenshots/v2-optionA.webp`, htmlPath: `${BASE}/mockup-v2-optionA.html` },
+          { label: "Option B", screenshot: `${BASE}/screenshots/v2-optionB.webp`, htmlPath: `${BASE}/mockup-v2-optionB.html` },
+          { label: "Option C", screenshot: `${BASE}/screenshots/v3-optionA.webp`, htmlPath: `${BASE}/mockup-v3-optionA.html` },
+          { label: "Option D", screenshot: `${BASE}/screenshots/v3-optionB.webp`, htmlPath: `${BASE}/mockup-v3-optionB.html` },
+          { label: "Option E", screenshot: `${BASE}/screenshots/v3-optionC.webp`, htmlPath: `${BASE}/mockup-v3-optionC.html` },
+          { label: "Option F", screenshot: `${BASE}/screenshots/v3-optionD.webp`, htmlPath: `${BASE}/mockup-v3-optionD.html` },
         ],
         changesApplied: [
           "Palette remplacée par tes vraies couleurs de marque, les couleurs trop vives retirées",
@@ -181,8 +181,8 @@ export const previewProjects: Record<string, IPreviewProject> = {
         round: "V1",
         date: "3 août 2026",
         proposals: [
-          { label: "Proposition 1", screenshot: `${BASE}/screenshots/v1.png`, htmlPath: `${BASE}/mockup-v1.html` },
-          { label: "Proposition 2", screenshot: `${BASE}/screenshots/v2.png`, htmlPath: `${BASE}/mockup-v2.html` },
+          { label: "Proposition 1", screenshot: `${BASE}/screenshots/v1.webp`, htmlPath: `${BASE}/mockup-v1.html` },
+          { label: "Proposition 2", screenshot: `${BASE}/screenshots/v2.webp`, htmlPath: `${BASE}/mockup-v2.html` },
         ],
         missingInfo: [
           "Pouvoir se connecter à ton compte Instagram professionnel, pour afficher automatiquement tes derniers posts sur le site",
@@ -330,8 +330,8 @@ export const previewProjects: Record<string, IPreviewProject> = {
         round: "V1",
         date: "3 août 2026",
         proposals: [
-          { label: "Exemple proposition A", screenshot: `${BASE}/screenshots/v1.png`, htmlPath: `${BASE}/mockup-v1.html` },
-          { label: "Exemple proposition B", screenshot: `${BASE}/screenshots/v2.png`, htmlPath: `${BASE}/mockup-v2.html` },
+          { label: "Exemple proposition A", screenshot: `${BASE}/screenshots/v1.webp`, htmlPath: `${BASE}/mockup-v1.html` },
+          { label: "Exemple proposition B", screenshot: `${BASE}/screenshots/v2.webp`, htmlPath: `${BASE}/mockup-v2.html` },
         ],
         missingInfo: ["Exemple d'information encore nécessaire de la part du client"],
       },

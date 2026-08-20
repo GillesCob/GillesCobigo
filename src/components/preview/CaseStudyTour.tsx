@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { CASE_STUDY_TOUR_STEPS, useCaseStudyTourStore } from "@/store/caseStudyTourStore";
@@ -75,7 +75,13 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
 
   // Bulle ouverte a chaque nouvelle etape (cf mockup, bubble.classList.add("expanded") dans
   // render()), avant meme que le spotlight/verrou de scroll ci-dessous ne s'installe.
-  useEffect(() => {
+  // useLayoutEffect (pas useEffect, corrige le 20/08, ecart trouve par Gilles) : la mise a jour
+  // doit etre repercutee dans le DOM AVANT que l'effet de spotlight ci-dessous ne mesure
+  // bubbleRef.current.offsetHeight, sinon une bulle repliee (mobile) d'une etape precedente
+  // fausse la hauteur mesuree pour la nouvelle etape, offset trop court, chevauchement bulle/
+  // encart spotlighte. useLayoutEffect flush son setState de facon synchrone avant peinture,
+  // contrairement a useEffect (asynchrone, aurait pu s'executer apres la mesure).
+  useLayoutEffect(() => {
     setExpanded(true);
   }, [stepIndex]);
 
@@ -127,7 +133,13 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       const targetTopDoc = r.top + window.scrollY;
       const targetBottomDoc = r.bottom + window.scrollY;
       lockMin = Math.max(0, targetTopDoc - offset);
-      lockMax = Math.max(lockMin, targetBottomDoc - window.innerHeight + 80);
+      // SANS marge quand la cible tient deja entierement dans la fenetre (corrige le 20/08, ecart
+      // trouve par Gilles : un "mini-scroll" restait possible en prod alors que le mockup est
+      // completement bloque). Les +80 ne servent que de confort visuel une fois qu'un vrai scroll
+      // est deja necessaire, jamais pour decider s'il l'est, cf version-guided-tour.html
+      // (computeLock, retour de Gilles a 100% de zoom, 19/08).
+      const neededMax = targetBottomDoc - window.innerHeight;
+      lockMax = neededMax > lockMin ? neededMax + 80 : lockMin;
     }
 
     function scrollToTarget(offset: number) {
@@ -193,6 +205,8 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
     return () => {
       cancelled = true;
       if (imgTimeout) clearTimeout(imgTimeout);
+      el.style.position = "";
+      el.style.zIndex = "";
       el.style.boxShadow = "none";
       el.style.marginTop = "";
       el.style.padding = "";
