@@ -28,7 +28,6 @@ const FORMSPREE_ENDPOINT = "https://formspree.io/f/mykarjar";
 
 export default function PricingCard({
   projectName,
-  phone,
   slug,
 }: {
   projectName: string;
