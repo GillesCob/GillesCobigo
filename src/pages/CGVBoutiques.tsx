@@ -1,33 +1,76 @@
-import { useState } from "react";
-import { Sun, Moon } from "lucide-react";
-import { useThemeStore } from "@/store/themeStore";
+import { useEffect, useState } from "react";
 
 // Page publique des CGV du flux "Boutiques" (prospection a froid de commerces locaux, cf
-// Projets/Boutiques/ dans le vault). Contenu copie tel quel depuis le brouillon valide dans
-// Projets/Boutiques/suivi.html (section CGV), y compris le tableau de remboursement par etape.
+// Projets/Boutiques/ dans le vault). Contenu porte depuis le mockup de reference
+// _templates/cgv-template-v1.html (vault), source de verite pour toute evolution future (cf
+// Moi/regle-portage-mockup-prod.md section 6) : ne jamais modifier ce fichier directement sans
+// passer par le mockup d'abord.
 // Layout bare (pas de navbar/footer du portfolio), meme traitement que /cas-client et /preview,
-// cf App.tsx isBareLayout.
+// cf App.tsx isBareLayout. Theme force clair (themeStore.ts, isProspectFacing), aucun bouton de
+// bascule sur cette page (20/08, alignee sur le mockup).
 
-const REFUND_STEPS = ["V2", "V3", "V4", "V5", "V6", "Mise en ligne"];
-// 500E repartis sur les 6 etapes payantes (V2 a mise en ligne), la V1 etant gratuite/prospection.
-const ACQUIS_SANS_DOMAINE = [83, 167, 250, 333, 417, 500];
+// Repartition du forfait 500€ (20/08) : 30€ fixes pour la mise en ligne (deploiement technique,
+// pas un round de conception), le reste (470€) divise a parts egales sur les 5 rounds de
+// conception (V2 a V6) = 94€ chacun. Remplace l'ancienne repartition egale sur 6 etapes (500/6),
+// qui surevaluait la mise en ligne au meme niveau qu'un round de conception.
+const BASE_STEPS = ["V2", "V3", "V4", "V5", "V6"];
+const MISE_EN_LIGNE_VALUE = 30;
+const ROUND_VALUE = (500 - MISE_EN_LIGNE_VALUE) / BASE_STEPS.length;
+const BASE_ACQUIS = BASE_STEPS.map((_, i) => Math.round(ROUND_VALUE * (i + 1)));
+const V6_ACQUIS = BASE_ACQUIS[BASE_ACQUIS.length - 1];
+// Formule Serenite (75€) : 20€ nom de domaine (acquis immediatement, meme regle que l'option
+// domaine seule) + 55€ pour 2 modifications incluses, acquises seulement au fur et a mesure de
+// leur utilisation (27,50€ chacune). Une modification utilisee pour une version supplementaire
+// (V7, V8...) avant la mise en ligne ajoute une ligne au tableau ; utilisee apres la mise en
+// ligne, elle n'a aucun impact ici (plus de remboursement possible a ce stade de toute facon).
+const MODIF_CREDIT_VALUE = 27.5;
+
+type Scenario = "none" | "domain" | "serenite";
 
 export default function CGVBoutiques() {
-  const { theme, toggleTheme } = useThemeStore();
-  const [withDomain, setWithDomain] = useState(false);
-  const total = withDomain ? 520 : 500;
+  const [scenario, setScenario] = useState<Scenario>("none");
+  const [v7Done, setV7Done] = useState(false);
+  const [v8Done, setV8Done] = useState(false);
+
+  // Scroll vers l'ancre au chargement (20/08, lien depuis la checklist "Appel" de
+  // Boutiques/suivi.html vers /cgv-boutiques#remboursement) : sur une navigation complete
+  // (nouvel onglet), le scroll natif du navigateur tente de s'executer avant que React ait
+  // peint le DOM, donc rate sa cible. Meme pattern que Home.tsx (scrollIntoView differe apres
+  // un court delai plutot que de compter sur le scroll natif).
+  useEffect(() => {
+    const hash = window.location.hash.replace(/^#/, "");
+    if (!hash) return;
+    const timeout = setTimeout(() => {
+      document.getElementById(hash)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  const total = scenario === "domain" ? 520 : scenario === "serenite" ? 575 : 500;
+  const domainPart = scenario === "domain" || scenario === "serenite" ? 20 : 0;
+  const modifsUsed = scenario === "serenite" ? (v8Done ? 2 : v7Done ? 1 : 0) : 0;
+
+  const rows: { label: string; acquis: number }[] = BASE_STEPS.map((label, i) => ({
+    label,
+    acquis: BASE_ACQUIS[i] + domainPart,
+  }));
+  if (scenario === "serenite") {
+    if (modifsUsed >= 1) rows.push({ label: "V7", acquis: V6_ACQUIS + domainPart + MODIF_CREDIT_VALUE });
+    if (modifsUsed >= 2) rows.push({ label: "V8", acquis: V6_ACQUIS + domainPart + MODIF_CREDIT_VALUE * 2 });
+  }
+  rows.push({ label: "Mise en ligne", acquis: total });
+
+  function toggleV7(checked: boolean) {
+    setV7Done(checked);
+    if (!checked) setV8Done(false);
+  }
+  function toggleV8(checked: boolean) {
+    setV8Done(checked);
+    if (checked) setV7Done(true);
+  }
 
   return (
     <div className="min-h-dvh bg-background flex flex-col relative">
-      <button
-        type="button"
-        onClick={toggleTheme}
-        aria-label="Basculer le thème"
-        className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors p-2"
-      >
-        {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-      </button>
-
       <div className="flex-1 px-6 md:px-12 py-14 md:py-20">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Conditions générales de vente</h1>
@@ -49,8 +92,12 @@ export default function CGVBoutiques() {
               <ul className="list-disc list-outside pl-5 space-y-1">
                 <li>500€ le forfait initial (520€ si un nom de domaine doit être acheté).</li>
                 <li>Nom de domaine : 20€/an, ou 85€ pour 5 ans prépayés.</li>
-                <li>Version supplémentaire (V7, V8...) ou modification après mise en ligne : 40€ (30€ avec la Formule Sérénité).</li>
-                <li>Formule Sérénité : 75€ pour 12 mois (nom de domaine inclus pour cette période, 2 modifications, délai prioritaire 48h ouvrées, tarif réduit sur les modifications suivantes). Non reconduite automatiquement : à reprendre l'année suivante si vous le souhaitez.</li>
+                <li>Version supplémentaire (V7, V8...) ou modification après mise en ligne : 40€.</li>
+                <li>
+                  Formule Sérénité, +75€ (paiement unique) : nom de domaine inclus pour la période, 2
+                  modifications incluses (utilisables pour une version en plus avant mise en ligne ou une
+                  modification après), retours sous 48h ouvrées. Non reconduite automatiquement.
+                </li>
                 <li>Toute évolution ou projet plus ambitieux (nouvelle fonctionnalité, boutique en ligne, site multi-pages...) : devis séparé, jamais ce tarif.</li>
               </ul>
               <p className="text-xs text-muted-foreground mt-2">TVA non applicable, art. 293 B du CGI.</p>
@@ -78,7 +125,7 @@ export default function CGVBoutiques() {
               </p>
             </section>
 
-            <section>
+            <section id="remboursement">
               <h2 className="text-base font-semibold text-foreground mb-2">5. Durée et résiliation</h2>
               <p className="mb-4">
                 Le forfait est réglé à la signature. La V1 (premier jet) est réalisée gratuitement dans le
@@ -91,23 +138,46 @@ export default function CGVBoutiques() {
               <div className="inline-flex rounded-md border border-border overflow-hidden mb-4">
                 <button
                   type="button"
-                  onClick={() => setWithDomain(false)}
+                  onClick={() => setScenario("none")}
                   className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-                    !withDomain ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:text-foreground"
+                    scenario === "none" ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   Sans nom de domaine (500€)
                 </button>
                 <button
                   type="button"
-                  onClick={() => setWithDomain(true)}
+                  onClick={() => setScenario("domain")}
                   className={`px-3 py-1.5 text-xs font-medium border-l border-border transition-colors ${
-                    withDomain ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:text-foreground"
+                    scenario === "domain" ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   Avec nom de domaine (520€)
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setScenario("serenite")}
+                  className={`px-3 py-1.5 text-xs font-medium border-l border-border transition-colors ${
+                    scenario === "serenite" ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Avec Formule Sérénité (575€)
+                </button>
               </div>
+
+              {scenario === "serenite" && (
+                <div className="flex items-center flex-wrap gap-3 mb-4">
+                  <span className="text-xs text-muted-foreground">Versions supplémentaires déjà livrées avant l'arrêt :</span>
+                  <label className="inline-flex items-center gap-1.5 text-sm cursor-pointer">
+                    <input type="checkbox" checked={v7Done} onChange={(e) => toggleV7(e.target.checked)} />
+                    V7
+                  </label>
+                  <label className="inline-flex items-center gap-1.5 text-sm cursor-pointer">
+                    <input type="checkbox" checked={v8Done} onChange={(e) => toggleV8(e.target.checked)} />
+                    V8
+                  </label>
+                </div>
+              )}
 
               <table className="w-full text-sm mb-2">
                 <thead>
@@ -118,11 +188,11 @@ export default function CGVBoutiques() {
                   </tr>
                 </thead>
                 <tbody>
-                  {REFUND_STEPS.map((label, i) => {
-                    const acquis = ACQUIS_SANS_DOMAINE[i] + (withDomain ? 20 : 0);
+                  {rows.map((row) => {
+                    const acquis = Math.round(row.acquis);
                     return (
-                      <tr key={label} className="border-b border-border/60">
-                        <td className="py-1.5 pr-2">{label}</td>
+                      <tr key={row.label} className="border-b border-border/60">
+                        <td className="py-1.5 pr-2">{row.label}</td>
                         <td className="py-1.5 pr-2">{acquis}€</td>
                         <td className="py-1.5">{total - acquis}€</td>
                       </tr>
@@ -130,11 +200,22 @@ export default function CGVBoutiques() {
                   })}
                 </tbody>
               </table>
-              <p className="text-xs text-muted-foreground">
-                Montants arrondis à l'euro (500€ répartis sur les 6 étapes V2 à mise en ligne). Le nom de
-                domaine, une fois acheté, est immédiatement enregistré à votre nom : les 20€ sont acquis dès la
-                signature, indépendamment de la suite.
-              </p>
+
+              <details className="text-xs text-muted-foreground">
+                <summary className="cursor-pointer list-none text-foreground hover:underline">+ d'infos sur ce calcul</summary>
+                <p className="mt-2">
+                  Montants arrondis à l'euro. Les 500€ du forfait se répartissent en 94€ par round de
+                  conception (V2 à V6) et 30€ pour la mise en ligne (déploiement technique, pas un round de
+                  conception). Le nom de domaine, une fois acheté, est immédiatement enregistré à votre nom :
+                  les 20€ (seul ou inclus dans la Formule Sérénité) sont acquis dès la signature,
+                  indépendamment de la suite. Avec la Formule Sérénité, les 2 modifications incluses (55€) ne
+                  sont acquises qu'au fur et à mesure de leur utilisation (27,50€ chacune) : une version
+                  supplémentaire (V7, V8...) faite avant l'arrêt ajoute une ligne au tableau, la part non
+                  utilisée reste remboursable. Un crédit utilisé pour une modification après la mise en ligne
+                  n'apparaît pas ici : une fois le site en ligne, la prestation est de toute façon rendue en
+                  totalité (aucun remboursement, cf plus haut).
+                </p>
+              </details>
             </section>
 
             <section>
