@@ -9,14 +9,16 @@ import { trackFunnelBeacon } from "@/lib/funnelTracking";
 // ajuster une fois les premiers clients reels convertis, pas figes dans le marbre. La case a
 // cocher ne declenche aucun achat (V1 statique, pas de paiement en ligne) : elle sert uniquement a
 // comparer visuellement les deux scenarios avant contact.
-// Volontairement condense (retex du 14/08 : premiere version jugee trop dense) : chaque idee tient
-// en 1 ligne courte, le detail (variations possibles par version, devis sur mesure) part vers
-// l'exemple concret plutot que d'etre explique en toutes lettres ici.
+// Structure alignee a la lettre sur Projets/V1-Echanges/mockups/preview-prospect.html (variante
+// A5, tranchee avec Gilles le 20/08) : le forfait de base reste a prix fixe (500€, ce nombre
+// nomme une offre, il ne doit jamais varier avec les options), le montant reel a payer vit dans
+// une ligne "Total de la prestation" separee, avec le detail chiffre des options cochees juste
+// en dessous. Palier reduit a 30€ pour un abonne Serenite retire le 19/08 (Gilles) : ADHOC_MODIF_PRICE
+// s'applique desormais a tout le monde, avec ou sans Formule Serenite.
 const BASE_PRICE = 500;
 const DOMAIN_PRICE_YEAR = 20;
 const ADHOC_MODIF_PRICE = 40;
 const SUBSCRIPTION_PRICE_YEAR = 75;
-const SUBSCRIPTION_MODIF_PRICE = 30;
 const SUBSCRIPTION_INCLUDED_MODIFS = 2;
 // Meme endpoint Formspree que Contact.tsx (pas de compte dedie a creer pour l'instant, cf
 // "ne pas construire d'outil par anticipation" dans workflow-cc.md) : le payload precise
@@ -53,10 +55,11 @@ export default function PricingCard({
   const [confirmed, setConfirmed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  // Bulle info nom de domaine, fermeture au clic en dehors. Reproduit à la lettre
-  // Projets/V1-Echanges/mockups/preview-prospect.html, seule référence de cette page (jamais
-  // mélangée à tarif-pilote-badge.html, un prototype exploratoire distinct et non retenu ici).
-  const [openPopover, setOpenPopover] = useState<"domain" | null>(null);
+  // Bulles info (nom de domaine + "5 allers-retours"), fermeture au clic en dehors. Reproduit à
+  // la lettre Projets/V1-Echanges/mockups/preview-prospect.html, seule référence de cette page
+  // (jamais mélangée à tarif-pilote-badge.html, un prototype exploratoire distinct et non retenu
+  // ici).
+  const [openPopover, setOpenPopover] = useState<"domain" | "allersRetours" | null>(null);
 
   useEffect(() => {
     if (!openPopover) return;
@@ -112,9 +115,10 @@ export default function PricingCard({
 
   return (
     <div className="rounded-2xl border border-border bg-card p-6 max-w-md mx-auto text-left">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">Pour démarrer</p>
-      <p className="text-3xl font-bold text-foreground mb-4">{total}€</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Forfait de base de création d'un site web</p>
+      <p className="text-3xl font-bold text-foreground mb-4">{BASE_PRICE}€</p>
 
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Comprend :</p>
       <ul className="text-sm text-foreground space-y-2 mb-4">
         <li className="flex items-start gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0 mt-1.5" />
@@ -122,34 +126,39 @@ export default function PricingCard({
         </li>
         <li className="flex items-start gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0 mt-1.5" />
-          <span className="min-w-0">5 allers-retours (V1 à V6) pour affiner votre site avec vous</span>
+          <span className="min-w-0">
+            5 allers-retours, pour progresser de la version 1 à la version 6 de votre site
+            <button
+              type="button"
+              aria-label="Comment ça se passe concrètement ?"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenPopover((p) => (p === "allersRetours" ? null : "allersRetours"));
+              }}
+              className="inline-flex items-center justify-center h-[18px] w-[18px] rounded-full border border-muted-foreground text-muted-foreground text-[10px] ml-1.5 align-middle hover:text-foreground hover:border-foreground"
+            >
+              ⓘ
+            </button>
+            {openPopover === "allersRetours" && (
+              <span
+                onClick={(e) => e.stopPropagation()}
+                className="block mt-1 text-xs text-muted-foreground font-normal"
+              >
+                Par écrit, vous listez les modifications que vous souhaitez apporter sur la version en cours :
+                rédaction de contenu, insertion d'image, modification du design… Tout est personnalisable à la
+                carte !
+                <br />
+                <br />
+                Les corrections sont appliquées puis mises à jour dans la version suivante. La version 6 sera à
+                votre image !
+              </span>
+            )}
+          </span>
         </li>
         <li className="flex items-start gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0 mt-1.5" />
           <span className="min-w-0">Mise en ligne</span>
         </li>
-        {withSubscription && (
-          <>
-            <li className="flex items-start gap-2 font-medium">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1.5" />
-              <span className="min-w-0">Nom de domaine</span>
-            </li>
-            <li className="flex items-start gap-2 font-medium">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1.5" />
-              <span className="min-w-0">{SUBSCRIPTION_INCLUDED_MODIFS} modifications valables 12 mois</span>
-            </li>
-            <li className="flex items-start gap-2 font-medium">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1.5" />
-              <span className="min-w-0">Retours sous 48h ouvrées</span>
-            </li>
-          </>
-        )}
-        {domainActive && (
-          <li className="flex items-start gap-2 font-medium">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1.5" />
-            <span className="min-w-0">Nom de domaine</span>
-          </li>
-        )}
       </ul>
 
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2 mt-1">Options</p>
@@ -168,11 +177,10 @@ export default function PricingCard({
             className="mt-0.5 h-4 w-4 rounded border-input accent-foreground"
           />
           <span className="block text-sm text-foreground">
-            <span className="font-medium">Nom de domaine, {withSubscription ? "inclus" : `+${DOMAIN_PRICE_YEAR}€`}</span>
-            <span className="text-muted-foreground">
-              {" "}
-              : couvre la 1ère année.
+            <span className="font-medium">
+              Nom de domaine, {withSubscription ? "inclus dans la formule" : `+${DOMAIN_PRICE_YEAR}€`}
             </span>
+            <span className="block text-xs text-muted-foreground mt-0.5">Valable 1 an.</span>
           </span>
         </label>
         {/* Bouton "i" hors du <label> (frere, pas descendant) : un clic dessus ne doit jamais
@@ -197,8 +205,8 @@ export default function PricingCard({
             onClick={(e) => e.stopPropagation()}
             className="mt-2 rounded-lg bg-foreground/[0.06] border border-border p-2.5 text-xs leading-relaxed text-muted-foreground"
           >
-            Le nom de domaine, c'est l'adresse de votre site (ex. gillescobigo.com). Il ne s'achète jamais une fois
-            pour toutes : le paiement se renouvelle chaque année pour qu'il continue à rediriger vers votre site.
+            Le nom de domaine correspond à l'adresse de votre site (ex. gillescobigo.com). Il ne peut pas être
+            acheté, il est réservé pour une durée valable 1 an, renouvelable.
           </div>
         )}
       </div>
@@ -215,25 +223,51 @@ export default function PricingCard({
         />
         <span className="block text-sm text-foreground">
           <span className="font-medium">Formule Sérénité, +{SUBSCRIPTION_PRICE_YEAR}€</span>
-          <span className="text-muted-foreground">
-            {" "}
-            : inclut "Nom de domaine" ci-dessus, + {SUBSCRIPTION_INCLUDED_MODIFS} modifications, retours sous 48h
-            ouvrées et tarif réduit sur les suivantes (valables 12 mois).
+          <span className="block text-xs text-muted-foreground mt-0.5">
+            Nom de domaine, + {SUBSCRIPTION_INCLUDED_MODIFS} allers-retours, retours sous 48h ouvrées.
           </span>
         </span>
       </label>
 
-      <p className="text-xs text-muted-foreground mb-2 mt-3.5 pt-3.5 border-t border-border">
-        Au-delà de la V6 (V7, V8...) ou pour toute modification après mise en ligne :{" "}
-        {withSubscription ? SUBSCRIPTION_MODIF_PRICE : ADHOC_MODIF_PRICE}€.
+      {/* Ligne "Total de la prestation" (20/08, tranchee avec Gilles) : le prix du forfait
+          ci-dessus reste fixe, le montant reel a payer (forfait + options cochees) vit ici. */}
+      <div className="flex items-baseline justify-between mt-1.5 mb-6 pt-3.5 border-t border-border">
+        <span className="text-[13px] font-semibold text-foreground">Total de la prestation</span>
+        <span className="text-xl font-extrabold text-foreground">{total}€</span>
+      </div>
+
+      {/* Detail chiffre sous le Total : "Creation et mise en ligne du site" (toujours 500€) puis,
+          si cochee, une seule ligne resumee et chiffree pour l'option active. La description
+          complete de chaque option reste dans la card Options ci-dessus, jamais dupliquee ici
+          (retour de Gilles, 20/08 : on doit savoir ce qu'on coche avant de cocher). */}
+      <ul className="flex flex-col gap-1 -mt-2.5 mb-3.5">
+        <li className="flex items-start gap-2 text-[12.5px] font-semibold text-foreground">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1" />
+          <span className="min-w-0">Création et mise en ligne du site</span>
+          <span className="ml-auto whitespace-nowrap">{BASE_PRICE}€</span>
+        </li>
+        {withSubscription && (
+          <li className="flex items-start gap-2 text-[12.5px] font-semibold text-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1" />
+            <span className="min-w-0">Formule Sérénité</span>
+            <span className="ml-auto whitespace-nowrap">{SUBSCRIPTION_PRICE_YEAR}€</span>
+          </li>
+        )}
+        {!withSubscription && domainActive && (
+          <li className="flex items-start gap-2 text-[12.5px] font-semibold text-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1" />
+            <span className="min-w-0">Nom de domaine</span>
+            <span className="ml-auto whitespace-nowrap">{DOMAIN_PRICE_YEAR}€</span>
+          </li>
+        )}
+      </ul>
+
+      <p className="text-xs text-muted-foreground mb-2 mt-4 pt-3.5 border-t border-border">
+        Au-delà de la V6 (V7, V8...) ou pour toute modification après la mise en ligne : {ADHOC_MODIF_PRICE}€ chacune.
       </p>
 
       <p className="text-xs text-muted-foreground mt-4 mb-2">
         Évolution plus importante (plusieurs pages, boutique en ligne...) : devis à part.
-      </p>
-      <p className="text-xs text-muted-foreground mb-2">
-        Vous n'avez rien à gérer techniquement, je m'occupe de tout : le site vous appartient entièrement, export
-        du code fourni dès la mise en ligne, aucun verrouillage.
       </p>
       <p className="text-xs text-muted-foreground mb-5">
         <Link to="/cgv-boutiques" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">

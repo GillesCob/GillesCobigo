@@ -45,6 +45,7 @@
   .stack-card form{display:flex; flex-direction:column; gap:12px; max-width:380px;}
   .stack-card input, .stack-card textarea{padding:11px 14px; border-radius:10px; border:1px solid rgba(74,90,140,.25); font-family:inherit; font-size:14.5px; background:var(--creme);}
   .stack-card textarea{min-height:80px; resize:vertical;}
+  .map-placeholder{margin-top:14px; height:130px; border-radius:14px; background:repeating-linear-gradient(135deg, rgba(74,90,140,.08), rgba(74,90,140,.08) 10px, rgba(74,90,140,.13) 10px, rgba(74,90,140,.13) 20px); display:flex; align-items:center; justify-content:center; font-size:12.5px; color:var(--accent); font-weight:700; text-align:center;}
   /* Decalage de profondeur : chaque carte suivante part legerement plus bas
      et un poil plus petite, pour que la precedente reste visible dessous
      quand la nouvelle se stabilise (empilement, pas juste un scroll-snap). */
@@ -87,6 +88,7 @@
       <dt>Téléphone</dt><dd>[Numéro]</dd>
       <dt>Email</dt><dd>[Adresse email]</dd>
     </dl>
+    <div class="map-placeholder">Emplacement de la carte Google Maps</div>
   </div>
   <div class="stack-card">
     <h2>Nous écrire</h2>

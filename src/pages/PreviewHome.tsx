@@ -6,6 +6,7 @@ import { useThemeStore } from "@/store/themeStore";
 import { Button } from "@/components/ui/button";
 import PreviewCredit from "@/components/preview/PreviewCredit";
 import PricingCard from "@/components/preview/PricingCard";
+import PreviewDropdown from "@/components/preview/PreviewDropdown";
 import { usePreviewFavicon } from "@/hooks/usePreviewFavicon";
 import { usePreviewTitle } from "@/hooks/usePreviewTitle";
 import { trackFunnelBeacon } from "@/lib/funnelTracking";
@@ -45,6 +46,18 @@ export default function PreviewHome() {
         isColdProspect ? "bg-headline-bg" : "bg-background"
       }`}
     >
+      {/* Logo en filigrane (19/08, mockup preview-prospect.html) : grand, noir, semi-transparent
+          en fond de page, jamais au-dessus du contenu. Taille fixe unique sur tous les ecrans
+          (retire le 20/08 a la demande de Gilles : plus de variante mobile plus petite). */}
+      {isColdProspect && (
+        <img
+          src="/images/logo-gc-black.png"
+          alt=""
+          aria-hidden="true"
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[640px] h-auto opacity-[0.12] pointer-events-none select-none z-0"
+        />
+      )}
+
       {/* Toggle clair/sombre retire pour les pages cold-intro Boutiques (19/08, item 26) : cette
           page reste toujours claire, alignee sur preview-prospect.html ("plus de bouton de
           bascule ni de logique data-theme"). Conserve pour les autres clients (Mylene). */}
@@ -60,11 +73,11 @@ export default function PreviewHome() {
       )}
 
       <div
-        className={
+        className={`relative z-10 ${
           project.coldIntro
             ? "flex-1 flex items-start justify-center px-6 py-8"
             : "flex-1 flex items-center justify-center px-6 py-16"
-        }
+        }`}
       >
         <div className="w-full max-w-2xl text-center">
           {project.coldIntro ? (
@@ -103,21 +116,43 @@ export default function PreviewHome() {
                 slug={project.coldIntro ? project.slug : undefined}
               />
 
-              {/* bg-foreground/5 plutot que bg-card : bg-card reference le token "carte" pense pour
-                  le fond noir/blanc par defaut, pas pour le fond creme/brun chaud de cette page,
-                  un overlay relatif au texte s'adapte correctement aux deux. */}
-              <div className="rounded-2xl bg-foreground/5 border border-foreground/10 px-6 py-5 max-w-[420px] mx-auto mt-6 text-center">
-                <p className="text-[13.5px] text-foreground/80 leading-relaxed mb-3">
-                  Besoin de plus d'infos ? Suivez une visite guidée de tous les échanges que j'ai eus avec Mylène,
-                  gérante du Dressing de Maïlys, pour voir concrètement comment nous travaillerons ensemble à la
-                  réalisation de votre nouveau site.
+              {/* "Les plus" (20/08, aligne a la lettre sur preview-prospect.html, variante A5/4) :
+                  toujours ouvert, non interactif, chaque item precede d'une coche verte. */}
+              <PreviewDropdown title="Les plus" locked>
+                <ul className="flex flex-col gap-2.5 text-foreground">
+                  <li className="flex items-start gap-2">
+                    <span className="text-emerald-500 font-bold shrink-0 leading-relaxed">✓</span>
+                    <span>Vous bénéficiez d'un interlocuteur unique qui vous accompagne personnellement sur votre projet</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-emerald-500 font-bold shrink-0 leading-relaxed">✓</span>
+                    <span>
+                      Vous vous focalisez sur le contenu et le design de votre site, l'aspect technique et la
+                      sécurisation sont inclus dans mes services.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-emerald-500 font-bold shrink-0 leading-relaxed">✓</span>
+                    <span>Vous êtes propriétaire de votre site, l'export du code vous sera fourni dès sa mise en ligne.</span>
+                  </li>
+                </ul>
+              </PreviewDropdown>
+
+              {/* "Besoin de plus d'infos ?" (20/08) : accordeon ferme par defaut, meme accroche que
+                  preview-prospect.html. Lien "Suivre la visite guidee" en pill plein (retour de
+                  Gilles : rendu plus visible qu'un simple bouton outline). */}
+              <PreviewDropdown title="Besoin de plus d'infos ?">
+                <p className="text-muted-foreground mb-3">
+                  Suivez une visite guidée de tous les échanges que j'ai eus avec Mylène, gérante du Dressing de
+                  Maïlys, pour voir concrètement comment nous travaillerons ensemble à la réalisation de votre
+                  nouveau site.
                 </p>
-                <Button asChild variant="outline" size="sm">
+                <Button asChild size="sm" className="rounded-full">
                   <Link to={`/cas-client/v1?from=${caseStudyFrom}`}>
                     Suivre la visite guidée <ArrowRight size={14} />
                   </Link>
                 </Button>
-              </div>
+              </PreviewDropdown>
             </div>
           ) : (
             <>
@@ -168,7 +203,9 @@ export default function PreviewHome() {
         </div>
       </div>
 
-      <PreviewCredit />
+      <div className="relative z-10">
+        <PreviewCredit />
+      </div>
     </div>
   );
 }
