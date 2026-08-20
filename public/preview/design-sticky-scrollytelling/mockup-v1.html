@@ -36,6 +36,7 @@
   .sv-panel{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px; text-align:center; opacity:0; transition:opacity .5s ease;}
   .sv-panel.active{opacity:1;}
   .sv-panel .ph{width:100%; height:100%; background:linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,0)); position:absolute; inset:0;}
+  .sv-panel[data-panel="3"] .ph{display:flex; align-items:center; justify-content:center; font-size:12.5px; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.5);}
   .sv-panel .sv-num{font-family:var(--font-a); font-size:15px; letter-spacing:.3em; color:rgba(255,255,255,.55); margin-bottom:14px; position:relative;}
   .sv-panel .sv-title{font-family:var(--font-a); font-size:clamp(28px,3.2vw,40px); color:#fff; position:relative;}
 
@@ -110,7 +111,7 @@
     <div class="sv-panel active" data-panel="0"><div class="ph"></div><div class="sv-num">01</div><div class="sv-title">Le concept</div></div>
     <div class="sv-panel" data-panel="1"><div class="ph"></div><div class="sv-num">02</div><div class="sv-title">Ce qu'on en dit</div></div>
     <div class="sv-panel" data-panel="2"><div class="ph"></div><div class="sv-num">03</div><div class="sv-title">Nous suivre</div></div>
-    <div class="sv-panel" data-panel="3"><div class="ph"></div><div class="sv-num">04</div><div class="sv-title">Nous trouver</div></div>
+    <div class="sv-panel" data-panel="3"><div class="ph">Carte Google Maps</div><div class="sv-num">04</div><div class="sv-title">Nous trouver</div></div>
   </div>
   <div class="scrolly-text">
     <div class="sv-section sv-trigger" data-panel="0">

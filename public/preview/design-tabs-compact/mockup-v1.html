@@ -51,6 +51,7 @@
   .tab-panel form{display:flex; flex-direction:column; gap:12px; max-width:380px;}
   .tab-panel input, .tab-panel textarea{padding:11px 14px; border-radius:10px; border:1px solid rgba(47,111,94,.25); font-family:inherit; font-size:14.5px; background:var(--creme);}
   .tab-panel textarea{min-height:80px; resize:vertical;}
+  .map-placeholder{margin-top:14px; height:130px; border-radius:12px; background:repeating-linear-gradient(135deg, rgba(47,111,94,.08), rgba(47,111,94,.08) 10px, rgba(47,111,94,.13) 10px, rgba(47,111,94,.13) 20px); display:flex; align-items:center; justify-content:center; font-size:12.5px; color:var(--accent); font-weight:700; text-align:center;}
 
   @media(max-width:640px){
     .panel{margin:-40px 18px 50px; border-radius:16px;}
@@ -94,6 +95,7 @@
         <dt>Téléphone</dt><dd>[Numéro]</dd>
         <dt>Email</dt><dd>[Adresse email]</dd>
       </dl>
+      <div class="map-placeholder">Emplacement de la carte Google Maps</div>
     </div>
     <div class="tab-panel" data-tab="contact">
       <h2>Nous écrire</h2>
