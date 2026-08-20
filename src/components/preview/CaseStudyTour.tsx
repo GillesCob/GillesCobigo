@@ -142,21 +142,50 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       lockMax = neededMax > lockMin ? neededMax + 80 : lockMin;
     }
 
-    function scrollToTarget(offset: number) {
+    // Saut instantane, jamais "smooth" (corrige le 20/08, ecart trouve en comparant au mockup) :
+    // ce dernier est passe a un saut instantane le 19/08 precisement pour ce type de bug ("le
+    // scroll est degueulasse, ca bug" remonte par Gilles) - un scroll anime "smooth" s'enchainant
+    // avec un second scroll anime (changement de version juste apres) se percutait en plein vol,
+    // donnant un rendu bugue. Un saut instantane retire cette classe de bug de fait, pas seulement
+    // esthetique. requestAnimationFrame (pas setTimeout) : l'evenement "scroll" du navigateur reste
+    // asynchrone meme pour un saut instantane, un seul frame suffit a le laisser se declencher
+    // avant de relever le flag, sans reintroduire de delai percu.
+    function scrollToTarget(offset: number, callback?: () => void) {
       const targetY = el!.getBoundingClientRect().top + window.scrollY - offset;
       isProgrammaticScroll = true;
-      window.scrollTo({ top: Math.max(targetY, 0), behavior: "smooth" });
-      setTimeout(() => {
+      window.scrollTo(0, Math.max(targetY, 0));
+      requestAnimationFrame(() => {
         isProgrammaticScroll = false;
-      }, 320);
+        if (callback) callback();
+      });
+    }
+
+    // Offset = bas reel de la bulle (mesure, pas devine) + 16px de respiration. Corrige le 20/08
+    // (ecart trouve par Gilles) : l'ancien calcul FIXED_TOP_OFFSET (constante unique 92) +
+    // bubbleHeight ne correspondait plus a la position reelle de la bulle des que son `top` CSS
+    // varie selon le viewport (top-[104px] mobile vs sm:top-[92px] desktop) - offset trop court
+    // sur mobile, bulle qui chevauchait la cible spotlightee. getBoundingClientRect().bottom d'un
+    // element position:fixed est deja relatif au haut du viewport, quel que soit le breakpoint qui
+    // s'applique : plus besoin de connaitre/deviner le `top` CSS en dur pour le reconstituer.
+    function getOffset() {
+      const bubbleRect = bubbleRef.current?.getBoundingClientRect();
+      return (bubbleRect ? bubbleRect.bottom : FIXED_TOP_OFFSET + 140) + 16;
     }
 
     function settle() {
-      const bubbleHeight = bubbleRef.current?.offsetHeight ?? 140;
-      const offset = FIXED_TOP_OFFSET + bubbleHeight + 16;
+      const offset = getOffset();
       applyTopMargin(offset);
       computeLock(offset);
-      scrollToTarget(offset);
+      // Verrou dur (overflow:hidden), pose seulement une fois le scroll d'installation termine
+      // (jamais avant, risquerait d'interferer avec l'animation "smooth" selon les navigateurs) :
+      // corrige le 20/08, ecart trouve par Gilles ("scroll toujours possible", "ca bug"). Le verrou
+      // souple ci-dessous (onScroll, snapback JS) ne suffit pas seul a bloquer un scroll inertiel
+      // de trackpad qui depasse la zone avant que le listener ne reagisse, cf version-guided-tour.html
+      // (meme mecanique, "retour Gilles a 100% de zoom", 19/08) : quand lockMax<=lockMin (aucun
+      // scroll reellement necessaire), le blocage doit etre total, pas juste rattrape apres coup.
+      scrollToTarget(offset, () => {
+        document.documentElement.style.overflow = lockMax !== null && lockMin !== null && lockMax <= lockMin ? "hidden" : "";
+      });
     }
 
     if (roundChanged) window.scrollTo(0, 0);
@@ -195,8 +224,7 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
     }
 
     function onResize() {
-      const bubbleHeight = bubbleRef.current?.offsetHeight ?? 140;
-      computeLock(FIXED_TOP_OFFSET + bubbleHeight + 16);
+      computeLock(getOffset());
     }
 
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -211,6 +239,13 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       el.style.marginTop = "";
       el.style.padding = "";
       el.style.boxSizing = "";
+      // Leve le verrou dur avant de quitter l'etape (corrige le 20/08, ecart trouve en comparant
+      // au mockup : render() y remet overflow a "" en tout debut de fonction, avant tout recalcul
+      // pour la nouvelle etape). Sans ce reset, un verrou pose a l'etape N restait actif pendant la
+      // transition vers l'etape N+1 et pouvait bloquer le scrollTo() programmatique lui-meme
+      // (overflow:hidden sur <html> empeche tout scroll, y compris programmatique), symptome
+      // compatible avec "le scroll est degueulasse, ca bug" remonte par Gilles.
+      document.documentElement.style.overflow = "";
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
     };

@@ -51,7 +51,13 @@ export default function CaseStudyRound() {
   // sorti du parcours via "Visiter librement"), jamais pendant "active" ni juste apres "Terminer"
   // ("finished", modale de fin encore affichee).
   const tourStatus = useCaseStudyTourStore((s) => s.status);
-  const bandeauVisible = tourStatus === "off";
+  // "off" (visite explicitement quittee) ET "idle" (corrige le 20/08, ecart trouve par Gilles :
+  // le store n'est pas persiste entre 2 chargements de page, volontaire, cf caseStudyTourStore.ts
+  // - un reload sur une version autre que V1 retombe donc en "idle" sans jamais redemarrer le tour
+  // automatiquement, cf useEffect d'auto-demarrage de CaseStudyTour.tsx limite a roundLower==="v1").
+  // Sans ce cas, le bandeau (seul chemin de retour vers la page tarif) restait invisible et
+  // l'utilisateur se retrouvait bloque sans aucun moyen de revenir en arriere.
+  const bandeauVisible = tourStatus === "off" || tourStatus === "idle";
   const bandeauRef = useRef<HTMLDivElement>(null);
   const [bandeauPadding, setBandeauPadding] = useState<number | null>(null);
   const usesFixedTourPadding = tourStatus === "active";
