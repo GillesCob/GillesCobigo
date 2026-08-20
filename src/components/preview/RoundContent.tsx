@@ -10,6 +10,24 @@ import type { IPreviewProposal, IPreviewRound } from "@/data/previewProjects";
 // cas client publique (CasClientBoutiques.tsx) : meme mise en page exacte des deux cotes, pas une
 // reinterpretation. Cf demande de Gilles : montrer aux prospects l'interface reelle, pas un resume.
 
+// SIRET de Mylène, floute dans les retours clients affiches publiquement (cf
+// version-guided-tour.html, span .confidential-blur) : info sensible communiquee en prive par
+// Mylene dans son retour V4, jamais retiree du texte (garde le message authentique), juste
+// masquee visuellement sur la page publique /cas-client. Recherche generique par occurrence du
+// numero plutot qu'un cas particulier par round : couvre aussi le round V5, ou le meme numero est
+// repete dans le vrai retour de Mylene (le mockup ne le mentionne plus a cette etape, texte
+// raccourci, mais la fuite reste reelle cote prod si non masquee la aussi).
+const SIRET_TO_BLUR = "93819650800015";
+
+function redactSiret(text: string) {
+  if (!text.includes(SIRET_TO_BLUR)) return text;
+  return text.split(SIRET_TO_BLUR).flatMap((part, i, arr) =>
+    i < arr.length - 1
+      ? [part, <span key={i} className="blur-[5px] select-none">{SIRET_TO_BLUR}</span>]
+      : [part]
+  );
+}
+
 /** Regroupe les propositions consécutives partageant le même `group` (ex. "Pour comparer" vs "À choisir"), pour distinguer visuellement une proposition de référence des vrais choix à trancher. Sans `group`, tout reste dans un seul groupe sans en-tête (comportement inchangé pour les rounds existants). */
 function groupProposals(proposals: IPreviewProposal[]) {
   const groups: { label: string | null; items: IPreviewProposal[] }[] = [];
@@ -48,7 +66,11 @@ function ProposalCard({ p }: { p: IPreviewProposal }) {
       >
         <img src={p.screenshot} alt={`Aperçu ${p.label}`} className="w-full h-auto" loading="lazy" />
       </a>
-      <Button asChild variant="outline" size="sm" className={isTouring ? "pointer-events-none opacity-50" : undefined}>
+      {/* Pas d'opacite en plus pendant le tour (corrige le 20/08, ecart trouve par Gilles) : cf
+          version-guided-tour.html, ":root:not(.tour-off) .proposal .btn{pointer-events:none}",
+          sans regle d'opacite associee - ces cartes sont precisement le sujet spotlighte, les
+          assombrir davantage brouillerait la demonstration. */}
+      <Button asChild variant="outline" size="sm" className={isTouring ? "pointer-events-none" : undefined}>
         <a
           href={p.htmlPath}
           target="_blank"
@@ -137,11 +159,14 @@ export function RoundContent({
   contactName,
   showGuide,
   guideTexts,
+  blurSiret,
 }: {
   entry: IPreviewRound;
   contactName: string;
   /** Affiche les bulles d'aide (cf GuideCallout.tsx). Absent/false = page normale (client réel, ou round d'une page cas client autre que celui annoté). */
   showGuide?: boolean;
+  /** Floute le SIRET de Mylène dans son retour client (cf redactSiret ci-dessus) : actif sur la page cas client publique (CaseStudyRound.tsx), jamais sur sa propre page privée (PreviewRound.tsx, elle connaît déjà son numéro). */
+  blurSiret?: boolean;
   /** Texte de chaque bulle, propre à la page qui utilise RoundContent (le libellé n'a pas le même sens sur la page privée d'un prospect que sur une page cas client). Bulle non affichée si sa clé est absente, même avec showGuide actif. */
   guideTexts?: {
     proposals?: string;
@@ -236,7 +261,9 @@ export function RoundContent({
             data-tour-key={roundLower === "v1" ? "feedback" : undefined}
           >
             <p className="text-xs font-semibold text-muted-foreground mb-1.5">Retour de {contactName}</p>
-            <p className="text-sm whitespace-pre-line">{entry.clientFeedback}</p>
+            <p className="text-sm whitespace-pre-line">
+              {blurSiret ? redactSiret(entry.clientFeedback) : entry.clientFeedback}
+            </p>
           </div>
         </>
       )}

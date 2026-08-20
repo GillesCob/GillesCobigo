@@ -28,7 +28,10 @@ interface ICaseStudyTourProps {
 // desormais fixe et visible en permanence pendant tout le tour ; sur mobile seul son texte se
 // replie/deplie selon la proximite du haut de la zone verrouillee (cf etat `expanded`), jamais de
 // bascule vers un second bloc d'UI.
-const FIXED_TOP_OFFSET = 92; // sous le bandeau fixe de CaseStudyRound.tsx (~76-92px selon le viewport)
+// 76 : aligne sur .tour-bubble{top:76px} de version-guided-tour.html (corrige le 20/08, ecart
+// trouve par Gilles : la classe CSS reelle ci-dessous utilisait 92/104px, jamais alignee sur cette
+// constante qui ne sert que de repli avant premiere mesure, cf getOffset()).
+const FIXED_TOP_OFFSET = 76;
 
 export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: ICaseStudyTourProps) {
   const navigate = useNavigate();
@@ -288,7 +291,10 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
           if (e.target === e.currentTarget) skip();
         }}
       >
-        <div className="max-w-lg rounded-2xl border border-border bg-card p-14 text-center shadow-2xl">
+        {/* Dimensions/typo alignees sur .tour-end-card du mockup (corrige le 20/08, ecart trouve
+            par Gilles : max-w-lg/p-14/px-7 py-3.5/text-base arrondis au pas Tailwind le plus
+            proche au lieu des valeurs exactes 520px/56px+48px/30px+14px/15px). */}
+        <div className="max-w-[520px] rounded-2xl border border-border bg-card py-14 px-12 text-center shadow-2xl">
           <p className="mb-9 text-base leading-relaxed text-muted-foreground">
             Ce parcours pourrait être le vôtre !
             <br />
@@ -300,16 +306,17 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
           {ctaHref && (
             <a
               href={ctaHref}
-              className="inline-flex items-center gap-2 rounded-full bg-foreground px-7 py-3.5 text-base font-semibold text-background"
+              className="inline-flex items-center gap-2 rounded-full bg-foreground px-[30px] py-[14px] text-[15px] font-semibold text-background"
             >
               Obtenir des informations <ArrowRight size={16} />
             </a>
           )}
           {/* Seul endroit ou "Visiter librement" reapparait (retiree des bulles de chaque etape,
               cf ci-dessous) : discret, sous le CTA principal, pour qui a fini et veut fouiller par
-              lui-meme. Conforme a .tour-end-skip de version-guided-tour.html. */}
+              lui-meme. Conforme a .tour-end-skip de version-guided-tour.html (fleche "→" ajoutee
+              le 20/08, ecart trouve par Gilles : texte sans fleche avant, contrairement au mockup). */}
           <button type="button" onClick={skip} className="mt-4 block w-full text-center text-sm text-muted-foreground underline">
-            Visiter librement
+            Visiter librement →
           </button>
         </div>
       </div>
@@ -321,25 +328,34 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
   return (
     <div
       ref={bubbleRef}
-      className="fixed top-[104px] sm:top-[92px] left-4 sm:left-6 z-[61] max-w-[340px] rounded-lg bg-foreground px-4 py-3 text-sm leading-relaxed text-background shadow-xl"
+      // top-[76px] : aligne sur .tour-bubble{top:76px} du mockup, meme valeur toutes tailles
+      // d'ecran (corrige le 20/08, ecart trouve par Gilles : 104/92px avant, jamais aligne).
+      // left-4 right-4 sur mobile (insets symetriques, sans max-width) : porte du mockup (18/08,
+      // correctif "bulle rognee a droite sur iPhone SE/mini"), jamais applique ici avant ce
+      // correctif (max-w-[340px] restait actif sur mobile, meme bug reproduit en prod).
+      // shadow/padding alignes sur les valeurs exactes du mockup plutot que les presets Tailwind
+      // (shadow-xl, py-3) qui divergeaient legerement.
+      className="fixed top-[76px] left-4 right-4 sm:left-6 sm:right-auto sm:max-w-[340px] z-[61] rounded-lg bg-foreground px-[18px] py-4 text-sm leading-relaxed text-background shadow-[0_12px_32px_rgba(0,0,0,0.35)]"
     >
       <div className="mb-1.5 flex items-center justify-between gap-2.5">
         <div className="text-[11px] font-bold uppercase tracking-wide opacity-55">
           Étape {stepIndex + 1} / {CASE_STUDY_TOUR_STEPS.length}
         </div>
         {/* Bouton replier/deplier, mobile uniquement (cf .tour-toggle du mockup, masque par
-            defaut sur desktop/laptop ou le texte est deja visible directement). */}
+            defaut sur desktop/laptop ou le texte est deja visible directement). Breakpoint
+            760px (max-[760px]:), pas sm: (640px, corrige le 20/08, ecart trouve par Gilles) :
+            aligne sur la media query reelle du mockup (@media(max-width:760px)). */}
         <button
           type="button"
           onClick={() => setExpanded((e) => !e)}
           aria-label="Afficher/masquer le texte"
-          className="sm:hidden flex items-center justify-center h-[26px] w-[26px] rounded-full border border-current opacity-70 text-[12px] font-bold shrink-0"
+          className="hidden max-[760px]:flex items-center justify-center h-[26px] w-[26px] rounded-full border border-current opacity-70 text-[12px] font-bold shrink-0"
         >
           ⓘ
         </button>
       </div>
       {step.text.map((line, i) => (
-        <p key={i} className={`mb-3.5 ${expanded ? "block" : "hidden sm:block"}`}>
+        <p key={i} className={`mb-3.5 ${expanded ? "block" : "block max-[760px]:hidden"}`}>
           {line}
         </p>
       ))}
