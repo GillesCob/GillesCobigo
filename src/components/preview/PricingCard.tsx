@@ -115,10 +115,10 @@ export default function PricingCard({
   return (
     <div className="rounded-2xl border border-border bg-card p-6 max-w-[420px] mx-auto text-left">
       <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-1.5">Forfait de base de création d'un site web</p>
-      <p className="text-[34px] font-extrabold text-foreground mb-4">{BASE_PRICE}€</p>
+      <p className="text-[34px] font-extrabold text-foreground mb-[18px]">{BASE_PRICE}€</p>
 
-      <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-2">Comprend :</p>
-      <ul className="text-sm text-foreground space-y-2 mb-4">
+      <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-1.5">Comprend :</p>
+      <ul className="text-sm text-foreground space-y-2 mb-5">
         <li className="flex items-start gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0 mt-1.5" />
           <span className="min-w-0">Votre site</span>
@@ -162,7 +162,7 @@ export default function PricingCard({
 
       <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-2 mt-1">Options</p>
 
-      <div className="relative mb-2">
+      <div className="relative mb-2.5">
         <label
           className={`flex items-start gap-3 rounded-xl border border-border p-3 pr-8 transition-colors cursor-pointer hover:border-foreground/30 ${
             withSubscription ? "opacity-40" : ""
@@ -233,7 +233,7 @@ export default function PricingCard({
           preview-prospect.html, `#optSerenite.classList.toggle("disabled", state.domain)`,
           ecart trouve le 20/08 par Gilles en meme temps que le champ disabled ci-dessus). */}
       <label
-        className={`flex items-start gap-3 rounded-xl border border-border p-3 mb-2 cursor-pointer hover:border-foreground/30 transition-colors ${
+        className={`flex items-start gap-3 rounded-xl border border-border p-3 mb-2.5 cursor-pointer hover:border-foreground/30 transition-colors ${
           domainActive ? "opacity-40" : ""
         }`}
       >
@@ -295,7 +295,7 @@ export default function PricingCard({
         )}
       </ul>
 
-      <p className="text-[11px] text-muted-foreground mt-4 pt-3.5 border-t border-border">
+      <p className="text-xs text-muted-foreground mt-4 pt-3.5 border-t border-border">
         Au-delà de la V6 (V7, V8...) ou pour toute modification après la mise en ligne : {ADHOC_MODIF_PRICE}€ chacune.
       </p>
 
