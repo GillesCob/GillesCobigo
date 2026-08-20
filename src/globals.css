@@ -100,3 +100,31 @@
   color: hsl(var(--foreground));
   border: 1px solid hsl(var(--border));
 }
+
+/* Mise en surbrillance temporaire "c'est ca qu'il faut lire" (CGVBoutiques.tsx, porte le 20/08
+   depuis _templates/cgv-template-v1.html) : grossit puis revient a la taille normale, fond qui
+   suit le meme aller-retour. Aucun padding/margin (question de Gilles, "ca bouge le texte en
+   dessous ?") : un padding ajouterait une vraie hauteur au h2 pendant l'animation, donc un
+   (tres leger) reflow du paragraphe suivant. display:inline-block uniquement pendant l'animation,
+   necessaire pour que le padding/scale se limite a la largeur du texte, pas toute la largeur du
+   bloc comme un h2 normal. */
+@keyframes cgvTitleHighlight {
+  0% {
+    transform: scale(1);
+    background: rgba(250, 204, 21, 0);
+  }
+  35% {
+    transform: scale(1.18);
+    background: rgba(250, 204, 21, 0.4);
+  }
+  100% {
+    transform: scale(1);
+    background: rgba(250, 204, 21, 0);
+  }
+}
+.cgv-highlight {
+  display: inline-block;
+  transform-origin: left center;
+  animation: cgvTitleHighlight 1.6s ease-out;
+  border-radius: 6px;
+}

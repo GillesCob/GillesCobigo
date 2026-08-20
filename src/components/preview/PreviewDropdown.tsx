@@ -15,6 +15,7 @@ export default function PreviewDropdown({
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(Boolean(locked));
+  const rootRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const animatingRef = useRef(false);
 
@@ -50,13 +51,24 @@ export default function PreviewDropdown({
         body.getBoundingClientRect();
         body.style.transition = "height .25s ease";
         body.style.height = openTo + "px";
-        body.addEventListener("transitionend", finish);
+        // Scroll auto une fois l'ouverture terminee, jamais a la fermeture (manquait en prod,
+        // ecart trouve par Gilles le 20/08 face au mockup preview-prospect.html/
+        // setupAnimatedDropdown : sans lui la card ouverte peut deborder sous le bas de l'ecran,
+        // illisible sans scroll manuel). block:"center" (pas "start"), meme reglage que le mockup.
+        body.addEventListener("transitionend", function onOpen() {
+          body!.removeEventListener("transitionend", onOpen);
+          finish();
+          rootRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        });
       });
     }
   }
 
   return (
-    <div className="max-w-[420px] mx-auto mt-5 rounded-2xl border border-border bg-[rgba(127,127,127,0.22)] text-left overflow-hidden">
+    <div
+      ref={rootRef}
+      className="max-w-[420px] mx-auto mt-5 rounded-2xl border border-border bg-[rgba(127,127,127,0.22)] text-left overflow-hidden"
+    >
       <button
         type="button"
         onClick={toggle}

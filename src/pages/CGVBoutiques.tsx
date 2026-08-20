@@ -37,13 +37,39 @@ export default function CGVBoutiques() {
   // (nouvel onglet), le scroll natif du navigateur tente de s'executer avant que React ait
   // peint le DOM, donc rate sa cible. Meme pattern que Home.tsx (scrollIntoView differe apres
   // un court delai plutot que de compter sur le scroll natif).
+  // Mise en surbrillance temporaire du titre de la section ciblee (portee le 20/08 depuis
+  // _templates/cgv-template-v1.html, seule reference jusqu'ici : le lien "Confidentialite" du
+  // bandeau bas des propositions pointe vers /cgv-boutiques#donnees-confidentialite, cette
+  // animation n'existait que sur le mockup). Delai de 500ms apres le scroll (pas de callback
+  // natif sur scrollIntoView smooth) pour laisser le temps a l'animation de scroll de se
+  // terminer avant de declencher le grossissement. Cible le h2 de la section, pas la section
+  // entiere (precise par Gilles). Classe retiree a la fin de l'animation (animationend), pour
+  // rester rejouable si le hash change a nouveau sans recharger la page.
   useEffect(() => {
     const hash = window.location.hash.replace(/^#/, "");
     if (!hash) return;
-    const timeout = setTimeout(() => {
-      document.getElementById(hash)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    let highlightTimeout: ReturnType<typeof setTimeout> | undefined;
+    const scrollTimeout = setTimeout(() => {
+      const el = document.getElementById(hash);
+      if (!el) return;
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      const title = el.querySelector("h2");
+      if (!title) return;
+      highlightTimeout = setTimeout(() => {
+        title.classList.add("cgv-highlight");
+        title.addEventListener(
+          "animationend",
+          function onEnd() {
+            title.classList.remove("cgv-highlight");
+          },
+          { once: true },
+        );
+      }, 500);
     }, 100);
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(scrollTimeout);
+      clearTimeout(highlightTimeout);
+    };
   }, []);
 
   const total = scenario === "domain" ? 520 : scenario === "serenite" ? 575 : 500;
