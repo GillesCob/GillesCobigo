@@ -164,15 +164,22 @@ export default function PricingCard({
 
       <div className="relative mb-2">
         <label
-          className={`flex items-start gap-3 rounded-xl border border-border p-3 pr-8 transition-colors ${
-            withSubscription ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:border-foreground/30"
+          className={`flex items-start gap-3 rounded-xl border border-border p-3 pr-8 transition-colors cursor-pointer hover:border-foreground/30 ${
+            withSubscription ? "opacity-40" : ""
           }`}
         >
+          {/* Jamais disabled (corrige le 20/08, ecart trouve par Gilles en prod) : reproduit a la
+              lettre preview-prospect.html (toggleOpt), qui ne desactive jamais reellement l'option
+              domaine meme quand la Formule Serenite est cochee (juste dimmee visuellement,
+              .disabled{opacity:.5}). Cliquer decoche symetriquement la Formule Serenite (meme
+              logique que le sens inverse ci-dessous). */}
           <input
             type="checkbox"
             checked={withDomain}
-            disabled={withSubscription}
-            onChange={(e) => setWithDomain(e.target.checked)}
+            onChange={(e) => {
+              setWithDomain(e.target.checked);
+              if (e.target.checked) setWithSubscription(false);
+            }}
             className="mt-0.5 h-4 w-4 rounded border-input accent-foreground"
           />
           <span className="block text-sm text-foreground">
@@ -210,7 +217,15 @@ export default function PricingCard({
         )}
       </div>
 
-      <label className="flex items-start gap-3 rounded-xl border border-border p-3 mb-2 cursor-pointer hover:border-foreground/30 transition-colors">
+      {/* Grisee (opacity-40) quand le nom de domaine seul est coche, symetrique au grisage de
+          l'option domaine ci-dessus (retour du 19/08 reproduit a la lettre depuis
+          preview-prospect.html, `#optSerenite.classList.toggle("disabled", state.domain)`,
+          ecart trouve le 20/08 par Gilles en meme temps que le champ disabled ci-dessus). */}
+      <label
+        className={`flex items-start gap-3 rounded-xl border border-border p-3 mb-2 cursor-pointer hover:border-foreground/30 transition-colors ${
+          domainActive ? "opacity-40" : ""
+        }`}
+      >
         <input
           type="checkbox"
           checked={withSubscription}
