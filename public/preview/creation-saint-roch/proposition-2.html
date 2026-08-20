@@ -8,6 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<!-- Carte OpenStreetMap en Leaflet.js (20/08, ajoutee suite a l'audit "tous les designs ont une
+     carte"), meme pattern que le mockup de reference Projets/V1-Echanges/mockups/proposition-1.html. -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   :root{
     --gold:#c9a869; --accent:#333366; --accent-dark:#0c0c1c; --creme:#141428; --text:#eae9f2; --line:#c9a869;
@@ -57,6 +61,12 @@
 
   .infos-bloc{max-width:520px; margin:0 auto 60px; padding:0 24px; text-align:center;}
   .infos-bloc p{font-size:14.5px;}
+  .map-wrap{position:relative; margin:18px auto 0; max-width:420px;}
+  .map-embed{width:100%; height:200px; border:1px solid var(--line); background:#eee;}
+  .map-lock{position:absolute; inset:0; background:rgba(12,12,28,.35); color:#fff; display:flex; align-items:center; justify-content:center; text-align:center; font-size:13px; font-weight:700; padding:12px; cursor:pointer; transition:opacity .2s ease; z-index:401;}
+  .map-lock.hidden{opacity:0; pointer-events:none;}
+  .map-recenter{position:absolute; bottom:10px; left:10px; z-index:401; background:#fff; color:var(--accent-dark); border:1px solid rgba(0,0,0,.15); border-radius:8px; padding:6px 10px; font-size:11.5px; font-family:inherit; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.15);}
+  .leaflet-control-attribution{font-size:10px; background:rgba(255,255,255,.75); padding:1px 6px;}
 
   .contact-bloc{max-width:460px; margin:0 auto; padding:0 24px 64px; text-align:center;}
   .contact-bloc h2{font-size:24px; margin-bottom:18px;}
@@ -148,6 +158,11 @@
 <div class="infos-bloc reveal">
   <h2 style="font-size:22px; margin-bottom:12px;">Bon à savoir</h2>
   <p>71 rue Léon Gambetta, 40000 Mont-de-Marsan<br>Mardi-samedi, 9h-12h et 14h-19h<br>05 58 75 39 99 · creationsaintroch@gmail.com</p>
+  <div class="map-wrap">
+    <div class="map-embed" id="mapEmbed"></div>
+    <div class="map-lock" id="mapLock" onclick="unlockMap()">Cliquez pour interagir avec la carte</div>
+    <button type="button" class="map-recenter" onclick="recenterMap()" aria-label="Recentrer la carte">↺ Recentrer</button>
+  </div>
 </div>
 
 <div class="contact-bloc" id="contact">
@@ -174,6 +189,26 @@
   }
   syncBandeauSpacing();
   window.addEventListener('resize', syncBandeauSpacing);
+
+  // Adresse reelle : 71 rue Leon Gambetta, 40000 Mont-de-Marsan (geocodee via Nominatim/OSM, 20/08).
+  var MAP_CENTER = [43.8891290, -0.5007929];
+  var MAP_ZOOM = 16;
+  var map = L.map('mapEmbed', {
+    center: MAP_CENTER, zoom: MAP_ZOOM,
+    scrollWheelZoom: false, dragging: false, touchZoom: false, doubleClickZoom: false, zoomControl: false
+  });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  }).addTo(map);
+  map.attributionControl.setPrefix(false);
+  L.marker(MAP_CENTER).addTo(map);
+  function unlockMap() {
+    document.getElementById('mapLock').classList.add('hidden');
+    map.scrollWheelZoom.enable(); map.dragging.enable(); map.touchZoom.enable(); map.doubleClickZoom.enable();
+    map.addControl(L.control.zoom());
+  }
+  function recenterMap() { map.setView(MAP_CENTER, MAP_ZOOM); }
 
   var revealObs = new IntersectionObserver(function(entries){
     entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('show'); });
