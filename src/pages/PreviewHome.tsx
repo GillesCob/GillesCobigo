@@ -100,13 +100,32 @@ export default function PreviewHome() {
                   <img src={project.logo} alt="" className="h-full w-full object-cover" />
                 </span>
                 <span className="text-[17px] font-semibold">{project.projectName}</span>
-                {project.rounds[0]?.proposals[0]?.htmlPath && (
-                  <a
-                    href={project.rounds[0].proposals[0].htmlPath}
-                    className="text-[12.5px] text-muted-foreground hover:text-foreground hover:underline whitespace-nowrap"
-                  >
-                    Revoir les 2 propositions →
-                  </a>
+                {/* 2 boutons "Proposition 1"/"Proposition 2" (20/08, demande de Gilles), remplacent
+                    l'ancien lien unique "Revoir les 2 propositions →" (menait seulement vers la P1,
+                    jamais explicitement les 2). flex-1 partage la largeur a parts egales, jamais de
+                    debordement hors des 420px de la card tarif juste en dessous (meme max-width).
+                    Nouvel onglet : ce sont des pages du site propose, pas la navigation du parcours
+                    de prospection lui-meme. Aligne a la lettre sur preview-prospect.html
+                    (.tarif-context-props/.tarif-context-prop-btn). */}
+                {project.rounds[0]?.proposals[0]?.htmlPath && secret && (
+                  <div className="flex gap-2 w-full">
+                    <a
+                      href={project.rounds[0].proposals[0].htmlPath}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 text-center text-[12.5px] font-semibold text-foreground no-underline border border-muted-foreground rounded-full px-2.5 py-2 whitespace-nowrap hover:border-foreground hover:bg-foreground/[0.04]"
+                    >
+                      Proposition 1
+                    </a>
+                    <a
+                      href={`/preview/${project.slug}/${secret}/V1/P2`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 text-center text-[12.5px] font-semibold text-foreground no-underline border border-muted-foreground rounded-full px-2.5 py-2 whitespace-nowrap hover:border-foreground hover:bg-foreground/[0.04]"
+                    >
+                      Proposition 2
+                    </a>
+                  </div>
                 )}
               </div>
 

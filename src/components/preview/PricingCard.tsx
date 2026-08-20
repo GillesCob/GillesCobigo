@@ -198,6 +198,18 @@ export default function PricingCard({
               Nom de domaine, {withSubscription ? "inclus dans la formule" : `+${DOMAIN_PRICE_YEAR}€`}
             </span>
             <span className="block text-xs text-muted-foreground mt-0.5">Valable 1 an.</span>
+            {/* Dans .opt-body, comme .info-popover de preview-prospect.html (ecart trouve le
+                20/08 par Gilles : rendue dans sa propre card en dehors du label, pas affichee
+                dans la card du nom de domaine comme le mockup). */}
+            {openPopover === "domain" && (
+              <span
+                onClick={(e) => e.stopPropagation()}
+                className="block mt-2 rounded-lg bg-foreground/[0.06] border border-border p-2.5 text-xs leading-relaxed text-muted-foreground font-normal"
+              >
+                Le nom de domaine correspond à l'adresse de votre site (ex. gillescobigo.com). Il ne peut pas être
+                acheté, il est réservé pour une durée valable 1 an, renouvelable.
+              </span>
+            )}
           </span>
         </label>
         {/* Bouton "i" hors du <label> (frere, pas descendant) : un clic dessus ne doit jamais
@@ -217,15 +229,6 @@ export default function PricingCard({
         >
           ⓘ
         </button>
-        {openPopover === "domain" && (
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="mt-2 rounded-lg bg-foreground/[0.06] border border-border p-2.5 text-xs leading-relaxed text-muted-foreground"
-          >
-            Le nom de domaine correspond à l'adresse de votre site (ex. gillescobigo.com). Il ne peut pas être
-            acheté, il est réservé pour une durée valable 1 an, renouvelable.
-          </div>
-        )}
       </div>
 
       {/* Grisee (opacity-40) quand le nom de domaine seul est coche, symetrique au grisage de
