@@ -64,7 +64,19 @@ function ProposalCard({ p }: { p: IPreviewProposal }) {
         onClick={blockDuringTour}
         className={`block rounded-lg border border-border overflow-hidden mb-3 bg-muted/30 ${isTouring ? "pointer-events-none" : ""}`}
       >
-        <img src={p.screenshot} alt={`Aperçu ${p.label}`} className="w-full h-auto" loading="lazy" />
+        {/* eager pendant le tour (corrige le 20/08, ecart trouve par Gilles : "mini scroll
+            parasite" a l'arrivee sur l'etape V2, 6 images dans le bloc spotlighte) : en lazy,
+            ces images ne commencent a charger qu'une fois pres du viewport, donc apres le saut
+            de scroll programmatique qui les y amene - le premier settle() mesure une page plus
+            courte que sa hauteur finale, puis une 2e correction (une fois les images chargees)
+            produit un scroll visible. Eager les charge des le montage, le premier settle() voit
+            deja la hauteur finale, plus de 2e correction. */}
+        <img
+          src={p.screenshot}
+          alt={`Aperçu ${p.label}`}
+          className="w-full h-auto"
+          loading={isTouring ? "eager" : "lazy"}
+        />
       </a>
       {/* Pas d'opacite en plus pendant le tour (corrige le 20/08, ecart trouve par Gilles) : cf
           version-guided-tour.html, ":root:not(.tour-off) .proposal .btn{pointer-events:none}",
