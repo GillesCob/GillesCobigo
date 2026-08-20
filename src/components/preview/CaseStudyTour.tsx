@@ -272,7 +272,7 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       <button
         type="button"
         onClick={restart}
-        className="fixed bottom-5 left-5 z-40 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-semibold shadow-lg"
+        className="fixed bottom-24 left-4 sm:bottom-5 sm:left-5 z-40 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-semibold shadow-lg"
       >
         ↻ Relancer le parcours
       </button>
