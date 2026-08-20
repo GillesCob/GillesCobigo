@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Check, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { trackFunnelBeacon } from "@/lib/funnelTracking";
@@ -113,11 +113,11 @@ export default function PricingCard({
   }
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 max-w-md mx-auto text-left">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">Forfait de base de création d'un site web</p>
-      <p className="text-3xl font-bold text-foreground mb-4">{BASE_PRICE}€</p>
+    <div className="rounded-2xl border border-border bg-card p-6 max-w-[420px] mx-auto text-left">
+      <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-1.5">Forfait de base de création d'un site web</p>
+      <p className="text-[34px] font-extrabold text-foreground mb-4">{BASE_PRICE}€</p>
 
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Comprend :</p>
+      <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-2">Comprend :</p>
       <ul className="text-sm text-foreground space-y-2 mb-4">
         <li className="flex items-start gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0 mt-1.5" />
@@ -141,7 +141,7 @@ export default function PricingCard({
             {openPopover === "allersRetours" && (
               <span
                 onClick={(e) => e.stopPropagation()}
-                className="block mt-1 text-xs text-muted-foreground font-normal"
+                className="block mt-2 rounded-lg bg-foreground/10 border border-border p-2.5 text-xs leading-relaxed text-muted-foreground font-normal"
               >
                 Par écrit, vous listez les modifications que vous souhaitez apporter sur la version en cours :
                 rédaction de contenu, insertion d'image, modification du design… Tout est personnalisable à la
@@ -160,7 +160,7 @@ export default function PricingCard({
         </li>
       </ul>
 
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2 mt-1">Options</p>
+      <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-2 mt-1">Options</p>
 
       <div className="relative mb-2">
         <label
@@ -168,11 +168,14 @@ export default function PricingCard({
             withSubscription ? "opacity-40" : ""
           }`}
         >
-          {/* Jamais disabled (corrige le 20/08, ecart trouve par Gilles en prod) : reproduit a la
-              lettre preview-prospect.html (toggleOpt), qui ne desactive jamais reellement l'option
-              domaine meme quand la Formule Serenite est cochee (juste dimmee visuellement,
-              .disabled{opacity:.5}). Cliquer decoche symetriquement la Formule Serenite (meme
-              logique que le sens inverse ci-dessous). */}
+          {/* Case a cocher stylee maison (reproduit .opt-checkbox de preview-prospect.html) : la
+              case native <input type="checkbox"> rend un style trop different du mockup (rendu
+              natif variable selon navigateur/OS), input reel garde en sr-only pour l'accessibilite/
+              le focus clavier, le carre visuel ci-dessous porte le rendu. Jamais disabled (corrige
+              le 20/08, ecart trouve par Gilles en prod) : reproduit a la lettre preview-prospect.html
+              (toggleOpt), qui ne desactive jamais reellement l'option domaine meme quand la Formule
+              Serenite est cochee (juste dimmee visuellement, .disabled{opacity:.5}). Cliquer decoche
+              symetriquement la Formule Serenite (meme logique que le sens inverse ci-dessous). */}
           <input
             type="checkbox"
             checked={withDomain}
@@ -180,10 +183,18 @@ export default function PricingCard({
               setWithDomain(e.target.checked);
               if (e.target.checked) setWithSubscription(false);
             }}
-            className="mt-0.5 h-4 w-4 rounded border-input accent-foreground"
+            className="sr-only"
           />
+          <span
+            aria-hidden="true"
+            className={`relative w-5 h-5 rounded-md border-2 shrink-0 mt-px transition-colors ${
+              withDomain ? "bg-foreground border-foreground" : "border-border bg-transparent"
+            }`}
+          >
+            {withDomain && <Check className="absolute inset-0 m-auto text-background" size={13} strokeWidth={3} />}
+          </span>
           <span className="block text-sm text-foreground">
-            <span className="font-medium">
+            <span className="font-semibold">
               Nom de domaine, {withSubscription ? "inclus dans la formule" : `+${DOMAIN_PRICE_YEAR}€`}
             </span>
             <span className="block text-xs text-muted-foreground mt-0.5">Valable 1 an.</span>
@@ -233,10 +244,18 @@ export default function PricingCard({
             setWithSubscription(e.target.checked);
             if (e.target.checked) setWithDomain(false);
           }}
-          className="mt-0.5 h-4 w-4 rounded border-input accent-foreground"
+          className="sr-only"
         />
+        <span
+          aria-hidden="true"
+          className={`relative w-5 h-5 rounded-md border-2 shrink-0 mt-px transition-colors ${
+            withSubscription ? "bg-foreground border-foreground" : "border-border bg-transparent"
+          }`}
+        >
+          {withSubscription && <Check className="absolute inset-0 m-auto text-background" size={13} strokeWidth={3} />}
+        </span>
         <span className="block text-sm text-foreground">
-          <span className="font-medium">Formule Sérénité, +{SUBSCRIPTION_PRICE_YEAR}€</span>
+          <span className="font-semibold">Formule Sérénité, +{SUBSCRIPTION_PRICE_YEAR}€</span>
           <span className="block text-xs text-muted-foreground mt-0.5">
             Nom de domaine, + {SUBSCRIPTION_INCLUDED_MODIFS} allers-retours, retours sous 48h ouvrées.
           </span>
@@ -276,20 +295,20 @@ export default function PricingCard({
         )}
       </ul>
 
-      <p className="text-xs text-muted-foreground mb-2 mt-4 pt-3.5 border-t border-border">
+      <p className="text-[11px] text-muted-foreground mt-4 pt-3.5 border-t border-border">
         Au-delà de la V6 (V7, V8...) ou pour toute modification après la mise en ligne : {ADHOC_MODIF_PRICE}€ chacune.
       </p>
 
-      <p className="text-xs text-muted-foreground mt-4 mb-2">
+      <p className="text-[11px] text-muted-foreground mt-[10px]">
         Évolution plus importante (plusieurs pages, boutique en ligne...) : devis à part.
       </p>
-      <p className="text-xs text-muted-foreground mb-5">
+      <p className="text-[11px] text-muted-foreground mt-[10px]">
         <Link to="/cgv-boutiques" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">
           Voir les conditions générales complètes
         </Link>
       </p>
 
-      <Button size="lg" className="w-full rounded-full" onClick={openDialog}>
+      <Button size="lg" className="w-full rounded-full font-semibold mt-[18px]" onClick={openDialog}>
         Ça m'intéresse, on en parle <ArrowRight size={16} />
       </Button>
 
@@ -300,7 +319,7 @@ export default function PricingCard({
           {confirmed ? (
             <DialogHeader className="items-center">
               <CheckCircle2 className="text-emerald-500 mb-2" size={40} />
-              <DialogTitle className="text-xl">C'est noté !</DialogTitle>
+              <DialogTitle className="text-lg">C'est noté !</DialogTitle>
               <DialogDescription className="text-base text-foreground">
                 Je reviens vers vous rapidement !
               </DialogDescription>
@@ -308,7 +327,7 @@ export default function PricingCard({
           ) : (
             <>
               <DialogHeader className="items-center">
-                <DialogTitle className="text-xl">Comment vous joindre ?</DialogTitle>
+                <DialogTitle className="text-lg">Comment vous joindre ?</DialogTitle>
                 <DialogDescription>Je vous recontacte au numéro indiqué.</DialogDescription>
               </DialogHeader>
 
@@ -317,7 +336,7 @@ export default function PricingCard({
                   type="text"
                   value={contactValue}
                   onChange={(e) => setContactValue(e.target.value)}
-                  placeholder="Votre numéro de téléphone"
+                  placeholder="Indiquez votre numéro"
                   // text-base (16px) et non text-sm (14px) : sous 16px, Safari iOS zoome automatiquement
                   // la page au focus du champ, zoom qui persiste ensuite meme la modale fermee (scroll
                   // horizontal constate le 15/08). 16px est le seuil qui desactive ce comportement.
@@ -343,7 +362,7 @@ export default function PricingCard({
                 Je préfère qu'on échange par mail →
               </button>
               <p className="text-[11px] text-muted-foreground text-center mt-2.5">
-                Aucune sollicitation commerciale, seulement pour donner suite à votre demande.
+                Aucune sollicitation commerciale n'aura lieu après ce premier échange.
               </p>
               {submitError && (
                 <p className="text-xs text-destructive text-center mt-2" role="alert">

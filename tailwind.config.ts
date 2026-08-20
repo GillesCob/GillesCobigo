@@ -10,7 +10,7 @@ const config: Config = {
         'btp-dark': '#2C1810',
         'dev-dark': '#0A0A0A',
         coral: '#D85A30',
-        'headline-bg': '#F8F5F0',
+        'headline-bg': '#faf6ee',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
