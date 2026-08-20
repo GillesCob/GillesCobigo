@@ -308,7 +308,11 @@ export default function PricingCard({
         </Link>
       </p>
 
-      <Button size="lg" className="w-full rounded-full font-semibold mt-[18px]" onClick={openDialog}>
+      <Button
+        size="lg"
+        className="w-full rounded-full font-semibold mt-[18px] bg-foreground text-background hover:bg-foreground/90"
+        onClick={openDialog}
+      >
         Ça m'intéresse, on en parle <ArrowRight size={16} />
       </Button>
 
@@ -348,7 +352,7 @@ export default function PricingCard({
                   "echanger par mail" ci-dessous, qui exprime deja a lui seul une preference de
                   contact sans avoir besoin du champ rempli. */}
               <Button
-                className="w-full rounded-full"
+                className="w-full rounded-full bg-foreground text-background hover:bg-foreground/90"
                 onClick={() => handleConfirm()}
                 disabled={submitting || contactValue.trim() === ""}
               >
