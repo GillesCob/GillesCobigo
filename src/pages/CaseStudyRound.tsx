@@ -94,18 +94,23 @@ export default function CaseStudyRound() {
           retourner). Lien personnalise si ?from=<slug>/<secret> est present (transmis depuis
           PreviewHome.tsx), sinon repli generique (acces direct a la page sans ce contexte). */}
       {bandeauVisible && (
-      <div ref={bandeauRef} className="fixed top-0 inset-x-0 z-50 bg-card border-b border-border shadow-sm">
+      // Couleur hors theme fixe #18181b (corrige le 20/08, ecart trouve par Gilles avec le
+      // mockup) : meme regle que .retour-bandeau/.proposition-nav des mockups proposition-1/2.html
+      // et .topbar de version-guided-tour.html, cf Moi/regle-portage-mockup-prod.md section 7. Ce
+      // bandeau est la com' de Gilles, pas un element du site propose, il ne doit jamais se fondre
+      // avec la palette --card/--bg du theme courant.
+      <div ref={bandeauRef} className="fixed top-0 inset-x-0 z-50 bg-[#18181b]">
         <div className="max-w-6xl mx-auto px-6 md:px-12 py-3 flex items-center justify-between gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 min-w-0">
-            <p className="text-sm text-foreground shrink-0">Vous aussi vous souhaitez créer votre site personnalisé ?</p>
+            <p className="text-sm text-white/85 shrink-0">Vous aussi vous souhaitez créer votre site personnalisé ?</p>
             {from ? (
-              <Button asChild size="sm" className="rounded-full shrink-0 w-fit">
+              <Button asChild size="sm" className="rounded-full shrink-0 w-fit bg-white text-[#18181b] hover:bg-white/90">
                 <Link to={`/preview/${from}#tarif`}>
                   Obtenir des informations <ArrowRight size={14} />
                 </Link>
               </Button>
             ) : (
-              <p className="text-sm text-muted-foreground shrink-0">
+              <p className="text-sm text-white/60 shrink-0">
                 Répondez au mail que vous avez reçu, ou appelez-moi.
               </p>
             )}
@@ -138,7 +143,7 @@ export default function CaseStudyRound() {
             </div>
 
             <div className="flex-1 min-w-0">
-              <RoundContent entry={entry} contactName={project.contactName} />
+              <RoundContent entry={entry} contactName={project.contactName} blurSiret />
 
               {/* Formulaire volontairement inactif : simple demonstration du mecanisme de retour
                   pour un prospect, jamais un vrai envoi (posterait dans le Formspree de Mylene). */}
