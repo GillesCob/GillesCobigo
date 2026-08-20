@@ -227,10 +227,18 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
         if (window.scrollY > lockMax!) window.scrollTo(0, lockMax!);
         else if (window.scrollY < lockMin!) window.scrollTo(0, lockMin!);
       }
-      // Texte replie/deplie selon la proximite du haut de la zone verrouillee (mobile uniquement,
-      // cf mockup) : ferme des qu'on s'en eloigne, se rouvre automatiquement en y revenant. Jamais
-      // sur un scroll programmatique (nos propres sauts entre etapes).
-      setExpanded(window.scrollY <= lockMin! + 24);
+      // Texte replie/deplie selon la proximite du haut de la zone verrouillee (mobile uniquement) :
+      // ferme des qu'on s'en eloigne, se rouvre automatiquement en y revenant. Jamais sur un scroll
+      // programmatique (nos propres sauts entre etapes). Reouverture exactement a lockMin, pas
+      // lockMin+24 (corrige le 20/08, demande explicite de Gilles) : le seuil +24 rouvrait le texte
+      // (bulle collapsed -> expanded, donc plus haute) AVANT d'atteindre le vrai haut de la zone.
+      // Comme la bulle collapsed est plus courte, son bas (fixe en position:fixed) reste au-dessus
+      // du haut de la cible sur une bonne partie du scroll de remontee, jusqu'a ce que la cible
+      // finisse par passer dessous : la cible apparaissait alors partiellement cachee derriere la
+      // bulle. En ne rouvrant qu'a lockMin exactement (l'etat d'arrivee initial sur l'etape, deja
+      // calibre pour la bulle expanded), plus de fenetre ou une bulle trop courte masque le haut de
+      // la cible pendant qu'on scroll encore vers lockMin.
+      setExpanded(window.scrollY <= lockMin!);
     }
 
     function onResize() {
