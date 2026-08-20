@@ -40,7 +40,10 @@ export default function PricingCard({
   // de rappel dedans, un seul envoi Formspree au clic sur "Confirmer" (retex du 14/08 : 2 envois
   // separes, un a l'interet et un a la correction du numero, faisait doublon cote Gilles).
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [contactValue, setContactValue] = useState(phone ?? "");
+  // Jamais pre-rempli avec le numero connu en base (demande explicite de Gilles, 14/08) : le
+  // champ reste vide, le prospect indique lui-meme son numero. Corrige le 20/08 (regression
+  // trouvee en prod, le numero scrape s'affichait malgre cette regle deja actee).
+  const [contactValue, setContactValue] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
