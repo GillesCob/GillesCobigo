@@ -79,7 +79,7 @@ export default function PreviewDropdown({
         style={locked ? undefined : { height: open ? undefined : 0, overflow: "hidden" }}
         className="px-5"
       >
-        <div className="pb-[18px] text-[13.5px] leading-relaxed">{children}</div>
+        <div className="pb-[18px] text-[13.5px] leading-[1.5]">{children}</div>
       </div>
     </div>
   );
