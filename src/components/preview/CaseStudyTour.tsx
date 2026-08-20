@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { CASE_STUDY_TOUR_STEPS, useCaseStudyTourStore } from "@/store/caseStudyTourStore";
+import { trackFunnelBeacon } from "@/lib/funnelTracking";
 
 interface ICaseStudyTourProps {
   /** Round affiche par la page qui monte ce composant, ex "V1". */
@@ -10,6 +11,9 @@ interface ICaseStudyTourProps {
   search: string;
   /** Destination du CTA de fin de visite, absente si la page est ouverte sans contexte prospect. */
   ctaHref?: string;
+  /** Slug du prospect (extrait de ?from=<slug>/<secret>), pour le tracking funnel uniquement.
+      Absent si la page est ouverte sans contexte prospect (jamais de tracking dans ce cas). */
+  slug?: string;
 }
 
 // Bulle fixed-top + verrou de scroll : porte integralement le 17/08 la mecanique validee sur
@@ -26,7 +30,7 @@ interface ICaseStudyTourProps {
 // bascule vers un second bloc d'UI.
 const FIXED_TOP_OFFSET = 92; // sous le bandeau fixe de CaseStudyRound.tsx (~76-92px selon le viewport)
 
-export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseStudyTourProps) {
+export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: ICaseStudyTourProps) {
   const navigate = useNavigate();
   const status = useCaseStudyTourStore((s) => s.status);
   const stepIndex = useCaseStudyTourStore((s) => s.stepIndex);
@@ -51,12 +55,15 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
 
   // Auto-demarrage uniquement en arrivant sur la V1, une seule fois par session de navigation
   // (hasAutoStarted persiste dans le store, jamais relance meme si on revient sur la V1 apres
-  // avoir arrete la visite volontairement).
+  // avoir arrete la visite volontairement). Tracking funnel (cf trackFunnelBeacon("visite-guidee")
+  // du mockup version-guided-tour.html) uniquement ici, au demarrage automatique reel, jamais sur
+  // un "Relancer le parcours" manuel (deja compte une fois, meme logique que le mockup).
   useEffect(() => {
     if (roundLower === "v1" && status === "idle" && !hasAutoStarted) {
       start();
+      if (slug) trackFunnelBeacon(slug, "visite-guidee");
     }
-  }, [roundLower, status, hasAutoStarted, start]);
+  }, [roundLower, status, hasAutoStarted, start, slug]);
 
   // L'etape courante pointe vers une autre version que celle affichee (survient juste apres
   // "Suivant" sur la derniere etape d'une version) : on y navigue en conservant ?from=.
