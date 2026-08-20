@@ -86,11 +86,11 @@ export default function CaseStudyRound() {
       <div ref={bandeauRef} className="fixed top-0 inset-x-0 z-50 bg-card border-b border-border shadow-sm">
         <div className="max-w-6xl mx-auto px-6 md:px-12 py-3 flex items-center justify-between gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 min-w-0">
-            <p className="text-sm text-foreground shrink-0">Envie de la même chose pour votre site ?</p>
+            <p className="text-sm text-foreground shrink-0">Vous aussi vous souhaitez créer votre site personnalisé ?</p>
             {from ? (
               <Button asChild size="sm" className="rounded-full shrink-0 w-fit">
                 <Link to={`/preview/${from}#tarif`}>
-                  Découvrez comment <ArrowRight size={14} />
+                  Obtenir des informations <ArrowRight size={14} />
                 </Link>
               </Button>
             ) : (
@@ -122,6 +122,7 @@ export default function CaseStudyRound() {
                 // privee de Mylene) : ici V1 -> V6, pour qu'un prospect qui arrive lise la progression
                 // dans l'ordre plutot que de tomber sur la version la plus aboutie en premier.
                 rounds={[...project.rounds].reverse().map((r) => ({ round: r.round, date: r.date }))}
+                externalLink={{ label: "Version en ligne ↗", href: "https://dressing-de-mailys.fr/" }}
               />
             </div>
 

@@ -12,18 +12,22 @@ interface ICaseStudyTourProps {
   ctaHref?: string;
 }
 
-// Bulle fixed-top + verrou de scroll + bascule bulle/barre basse pendant un scroll actif : porte
-// integralement le 17/08 la mecanique validee sur public/cerithe-v1-6-0/index.html (demandee
-// explicitement par Gilles, "toutes les regles appliquees dans ce lien doivent etre transposees").
-// Remplace l'ancien positionnement "above"/"right" par calcul de rect (rAF loop), abandonne sur
-// Cerithe apres plusieurs bugs de rognage corriges le 17/08 : bulle qui sortait de l'ecran sur une
-// section haute, texte tronque en haut de page. Fixed-top n'a plus ce probleme par construction
-// (position CSS constante, jamais calculee depuis la cible).
+// Bulle fixed-top + verrou de scroll : porte integralement le 17/08 la mecanique validee sur
+// public/cerithe-v1-6-0/index.html (demandee explicitement par Gilles, "toutes les regles
+// appliquees dans ce lien doivent etre transposees"). Remplace l'ancien positionnement
+// "above"/"right" par calcul de rect (rAF loop), abandonne sur Cerithe apres plusieurs bugs de
+// rognage corriges le 17/08 : bulle qui sortait de l'ecran sur une section haute, texte tronque en
+// haut de page. Fixed-top n'a plus ce probleme par construction (position CSS constante, jamais
+// calculee depuis la cible). Bascule bulle/barre basse retiree le 20/08 (portee depuis
+// Projets/V1-Echanges/mockups/version-guided-tour.html, decision de Gilles du 19/08 jamais portee
+// jusqu'ici : "mecanique 'double UI' jugee pas propre pour laptop/mobile"). La bulle reste
+// desormais fixe et visible en permanence pendant tout le tour ; sur mobile seul son texte se
+// replie/deplie selon la proximite du haut de la zone verrouillee (cf etat `expanded`), jamais de
+// bascule vers un second bloc d'UI.
 const FIXED_TOP_OFFSET = 92; // sous le bandeau fixe de CaseStudyRound.tsx (~76-92px selon le viewport)
 
 export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseStudyTourProps) {
   const navigate = useNavigate();
-  const [scrollBlocked, setScrollBlocked] = useState(false);
   const status = useCaseStudyTourStore((s) => s.status);
   const stepIndex = useCaseStudyTourStore((s) => s.stepIndex);
   const hasAutoStarted = useCaseStudyTourStore((s) => s.hasAutoStarted);
@@ -38,8 +42,12 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
   const isOnRightRound = status === "active" && step.round === roundLower;
 
   const bubbleRef = useRef<HTMLDivElement>(null);
-  const bottomNavRef = useRef<HTMLDivElement>(null);
   const lastRoundRef = useRef<string | null>(null);
+  // Texte de la bulle replie/deplie sur mobile uniquement (cf media query Tailwind sur le rendu
+  // plus bas, desktop/laptop toujours deplie). Ouvert par defaut a chaque arrivee sur une etape
+  // (meme comportement que le mockup, "precise par Gilles" le 19/08), se referme automatiquement
+  // au premier scroll qui eloigne de la zone verrouillee.
+  const [expanded, setExpanded] = useState(true);
 
   // Auto-demarrage uniquement en arrivant sur la V1, une seule fois par session de navigation
   // (hasAutoStarted persiste dans le store, jamais relance meme si on revient sur la V1 apres
@@ -58,37 +66,16 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
     }
   }, [status, step, roundLower, search, navigate]);
 
-  // Spotlight + verrou de scroll + bascule bulle/barre basse, uniquement quand l'etape correspond
-  // a la version reellement affichee (sinon la navigation ci-dessus est en cours).
+  // Bulle ouverte a chaque nouvelle etape (cf mockup, bubble.classList.add("expanded") dans
+  // render()), avant meme que le spotlight/verrou de scroll ci-dessous ne s'installe.
+  useEffect(() => {
+    setExpanded(true);
+  }, [stepIndex]);
+
+  // Spotlight + verrou de scroll, uniquement quand l'etape correspond a la version reellement
+  // affichee (sinon la navigation ci-dessus est en cours).
   useEffect(() => {
     if (!isOnRightRound) return;
-
-    // Etape narree (pas de "key", cf ICaseStudyTourStep) : aucun ecran reel a montrer, la bulle
-    // reste affichee seule. Retour en haut de page pour un contexte neutre plutot que de laisser
-    // la bulle flotter sur le scroll laisse par l'etape precedente, aucun spotlight/verrou a poser.
-    // "blockScroll" (V0) : en plus, scroll totalement bloque et page entierement grisee, pas juste
-    // ramenee en douceur a 0 comme les autres etapes narrees, cf version-guided-tour.html (18/08).
-    if (!step.key) {
-      lastRoundRef.current = step.round;
-      if (bubbleRef.current) bubbleRef.current.style.display = "";
-      if (bottomNavRef.current) bottomNavRef.current.style.display = "none";
-      if (step.blockScroll) {
-        window.scrollTo(0, 0);
-        document.documentElement.style.overflow = "hidden";
-        setScrollBlocked(true);
-        const forceZeroScroll = () => {
-          if (window.scrollY !== 0) window.scrollTo(0, 0);
-        };
-        window.addEventListener("scroll", forceZeroScroll, { passive: true });
-        return () => {
-          document.documentElement.style.overflow = "";
-          setScrollBlocked(false);
-          window.removeEventListener("scroll", forceZeroScroll);
-        };
-      }
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
 
     const el = document.querySelector<HTMLElement>(`[data-tour-key="${step.key}"]`);
     if (!el) return;
@@ -182,12 +169,10 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
         if (window.scrollY > lockMax!) window.scrollTo(0, lockMax!);
         else if (window.scrollY < lockMin!) window.scrollTo(0, lockMin!);
       }
-      // Pendant un scroll actif, loin du haut de la zone verrouillee : bulle cachee, barre basse
-      // Precedent/Suivant a la place (jamais les deux ensemble). Manipulation directe du DOM via
-      // ref plutot qu'un setState, pour ne pas re-render a chaque evenement de scroll.
-      const nearTop = window.scrollY <= lockMin! + 24;
-      if (bubbleRef.current) bubbleRef.current.style.display = nearTop ? "" : "none";
-      if (bottomNavRef.current) bottomNavRef.current.style.display = nearTop ? "none" : "grid";
+      // Texte replie/deplie selon la proximite du haut de la zone verrouillee (mobile uniquement,
+      // cf mockup) : ferme des qu'on s'en eloigne, se rouvre automatiquement en y revenant. Jamais
+      // sur un scroll programmatique (nos propres sauts entre etapes).
+      setExpanded(window.scrollY <= lockMin! + 24);
     }
 
     function onResize() {
@@ -223,11 +208,6 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
     window.scrollTo(0, 0);
   }, [status, roundLower, search, navigate]);
 
-  function revealBubble() {
-    if (bubbleRef.current) bubbleRef.current.style.display = "";
-    if (bottomNavRef.current) bottomNavRef.current.style.display = "none";
-  }
-
   // bottom-left, pas bottom-right : ScrollToTop.tsx (bouton "remonter en haut", deja present sur
   // toutes les pages) occupe deja ce coin avec un z-index plus eleve, il cachait ce bouton
   // (retour de Gilles le 16/08, prod).
@@ -238,7 +218,7 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
         onClick={restart}
         className="fixed bottom-5 left-5 z-40 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-semibold shadow-lg"
       >
-        ↻ Relancer la visite guidée
+        ↻ Relancer le parcours
       </button>
     ) : null;
   }
@@ -253,17 +233,20 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
         }}
       >
         <div className="max-w-lg rounded-2xl border border-border bg-card p-14 text-center shadow-2xl">
-          <h2 className="mb-5 text-2xl font-bold">Vous avez vu comment on y arrive ensemble.</h2>
           <p className="mb-9 text-base leading-relaxed text-muted-foreground">
-            Le point de départ de Mylène n'était pas parfait non plus. C'est l'échange qui a fait la différence, pas
-            la première version. Pour votre site, ce sera exactement la même méthode.
+            Ce parcours pourrait être le vôtre !
+            <br />
+            La communication est la clé pour réussir à construire un site à votre image.
+            <br />
+            Les premières propositions ne sont que des ébauches qui, via les séries d'échanges entre vous et moi,
+            prendront forme jusqu'à devenir VOTRE site.
           </p>
           {ctaHref && (
             <a
               href={ctaHref}
               className="inline-flex items-center gap-2 rounded-full bg-foreground px-7 py-3.5 text-base font-semibold text-background"
             >
-              On passe à la suite <ArrowRight size={16} />
+              Obtenir des informations <ArrowRight size={16} />
             </a>
           )}
           {/* Seul endroit ou "Visiter librement" reapparait (retiree des bulles de chaque etape,
@@ -280,93 +263,53 @@ export default function CaseStudyTour({ currentRound, search, ctaHref }: ICaseSt
   if (!isOnRightRound) return null;
 
   return (
-    <>
-      {/* Cache plein ecran (V0 uniquement, "blockScroll") : aucune cible reelle a decouper autour,
-          meme couleur que le spotlight ci-dessus (theme toggle retire, page toujours claire). */}
-      {scrollBlocked && <div className="fixed inset-0 z-[59]" style={{ background: "rgba(9,9,11,.55)" }} />}
-      <div
-        ref={bubbleRef}
-        className="fixed top-[104px] sm:top-[92px] left-4 sm:left-6 z-[61] max-w-[340px] rounded-lg bg-foreground px-4 py-3 text-sm leading-relaxed text-background shadow-xl"
-      >
-        {/* V0 (index 0) n'est pas comptee dans les "4 etapes" annoncees a Gilles (cf
-            caseStudyTourStore.ts) : pas de compteur sur l'intro, "Étape 1/4" demarre au premier
-            ecran reellement montre. */}
-        {stepIndex > 0 && (
-          <div className="mb-1.5 text-[11px] font-bold uppercase tracking-wide opacity-55">
-            Étape {stepIndex} / {CASE_STUDY_TOUR_STEPS.length - 1}
-          </div>
-        )}
-        {step.text.map((line, i) => (
-          <p key={i} className="mb-3.5">
-            {line}
-          </p>
-        ))}
-        {/* "Visiter librement" retiree de cette bulle (comme de toutes les etapes) : ne
-            reapparait qu'a la toute fin, dans la modale (cf .tour-end-skip ci-dessus),
-            conforme a version-guided-tour.html. */}
-        <div className="flex items-center justify-end gap-2">
-          {/* Bouton omis (pas juste desactive) a la 1ere etape, cf version-guided-tour.html
-              (`current === 0 ? "" : '<button...`) : ecart trouve et corrige le 19/08, item 4. */}
-          {stepIndex !== 0 && (
-            <button
-              type="button"
-              onClick={prev}
-              className="rounded-md border border-current px-3 py-1.5 text-xs font-semibold opacity-60"
-            >
-              ← Précédent
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={next}
-            className="rounded-md bg-background px-3 py-1.5 text-xs font-semibold text-foreground"
-          >
-            {stepIndex === CASE_STUDY_TOUR_STEPS.length - 1 ? "Terminer" : "Suivant →"}
-          </button>
+    <div
+      ref={bubbleRef}
+      className="fixed top-[104px] sm:top-[92px] left-4 sm:left-6 z-[61] max-w-[340px] rounded-lg bg-foreground px-4 py-3 text-sm leading-relaxed text-background shadow-xl"
+    >
+      <div className="mb-1.5 flex items-center justify-between gap-2.5">
+        <div className="text-[11px] font-bold uppercase tracking-wide opacity-55">
+          Étape {stepIndex + 1} / {CASE_STUDY_TOUR_STEPS.length}
         </div>
-      </div>
-
-      {/* Barre basse, visible uniquement pendant un scroll actif loin du haut de la zone verrouillee
-          (bascule geree en dehors de React, cf onScroll ci-dessus, pour ne pas re-render a chaque
-          frame de scroll). Grid 3 colonnes : le compteur d'etape reste au centre exact de la barre,
-          jamais decale par un groupe de gauche/droite de largeur differente. */}
-      <div
-        ref={bottomNavRef}
-        style={{ display: "none" }}
-        className="fixed inset-x-0 bottom-0 z-[62] grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-t border-border bg-card px-4 py-2.5 shadow-[0_-8px_20px_rgba(0,0,0,.25)]"
-      >
+        {/* Bouton replier/deplier, mobile uniquement (cf .tour-toggle du mockup, masque par
+            defaut sur desktop/laptop ou le texte est deja visible directement). */}
         <button
           type="button"
-          onClick={revealBubble}
-          title="Revoir le texte de l'étape"
-          className="justify-self-start rounded-md border border-border px-3 py-2 text-[15px] leading-none"
+          onClick={() => setExpanded((e) => !e)}
+          aria-label="Afficher/masquer le texte"
+          className="sm:hidden flex items-center justify-center h-[26px] w-[26px] rounded-full border border-current opacity-70 text-[12px] font-bold shrink-0"
         >
-          💬
+          ⓘ
         </button>
-        <span className="justify-self-center text-[11.5px] font-bold uppercase tracking-wide text-muted-foreground">
-          Étape {stepIndex} / {CASE_STUDY_TOUR_STEPS.length - 1}
-        </span>
-        <div className="justify-self-end flex items-center gap-2">
-          {/* Bouton omis (pas juste desactive) a la 1ere etape, meme correctif que la bulle
-              ci-dessus (19/08, item 4). */}
-          {stepIndex !== 0 && (
-            <button
-              type="button"
-              onClick={prev}
-              className="rounded-md border border-border px-4 py-2 text-xs font-semibold"
-            >
-              ← Précédent
-            </button>
-          )}
+      </div>
+      {step.text.map((line, i) => (
+        <p key={i} className={`mb-3.5 ${expanded ? "block" : "hidden sm:block"}`}>
+          {line}
+        </p>
+      ))}
+      {/* "Visiter librement" retiree de cette bulle (comme de toutes les etapes) : ne
+          reapparait qu'a la toute fin, dans la modale (cf .tour-end-skip ci-dessus),
+          conforme a version-guided-tour.html. */}
+      <div className="flex items-center justify-end gap-2">
+        {/* Bouton omis (pas juste desactive) a la 1ere etape, cf version-guided-tour.html
+            (`current === 0 ? "" : '<button...`) : ecart trouve et corrige le 19/08, item 4. */}
+        {stepIndex !== 0 && (
           <button
             type="button"
-            onClick={next}
-            className="rounded-md bg-foreground px-4 py-2 text-xs font-semibold text-background"
+            onClick={prev}
+            className="rounded-md border border-current px-3 py-1.5 text-xs font-semibold opacity-60"
           >
-            {stepIndex === CASE_STUDY_TOUR_STEPS.length - 1 ? "Terminer" : "Suivant →"}
+            ← Précédent
           </button>
-        </div>
+        )}
+        <button
+          type="button"
+          onClick={next}
+          className="rounded-md bg-background px-3 py-1.5 text-xs font-semibold text-foreground"
+        >
+          {stepIndex === CASE_STUDY_TOUR_STEPS.length - 1 ? "Terminer" : "Suivant →"}
+        </button>
       </div>
-    </>
+    </div>
   );
 }

@@ -9,9 +9,12 @@ interface ICaseStudyVersionsNavProps {
   basePath: string;
   currentRound: string;
   rounds: { round: string; date: string }[];
+  /** Lien "Version en ligne" apres le dernier round (20/08, demande de Gilles) : ce n'est pas un
+      round de plus, une sortie vers le vrai site du cas client, cf version-guided-tour.html. */
+  externalLink?: { label: string; href: string };
 }
 
-export default function CaseStudyVersionsNav({ basePath, currentRound, rounds }: ICaseStudyVersionsNavProps) {
+export default function CaseStudyVersionsNav({ basePath, currentRound, rounds, externalLink }: ICaseStudyVersionsNavProps) {
   // Conserve ?from=<slug>/<secret> (lien de retour personnalise, cf CaseStudyRound.tsx) sur chaque
   // changement de round : sans ca, cliquer V1 -> V2 perdrait le contexte du prospect en cours.
   const { search } = useLocation();
@@ -47,6 +50,23 @@ export default function CaseStudyVersionsNav({ basePath, currentRound, rounds }:
             {r.round}
           </Link>
         ))}
+        {externalLink && (
+          <a
+            href={externalLink.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-disabled={disableNav}
+            tabIndex={disableNav ? -1 : undefined}
+            onClick={(e) => {
+              if (disableNav) e.preventDefault();
+            }}
+            className={`mt-2 px-3 py-2 rounded-md text-sm font-mono whitespace-nowrap text-emerald-600 hover:underline ${
+              disableNav ? "pointer-events-none opacity-35" : ""
+            }`}
+          >
+            {externalLink.label}
+          </a>
+        )}
       </aside>
 
       {/* Rangee horizontale mobile, en haut du contenu (plus le pattern icone flottante + drawer,
@@ -74,6 +94,23 @@ export default function CaseStudyVersionsNav({ basePath, currentRound, rounds }:
             {r.round}
           </Link>
         ))}
+        {externalLink && (
+          <a
+            href={externalLink.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-disabled={disableNav}
+            tabIndex={disableNav ? -1 : undefined}
+            onClick={(e) => {
+              if (disableNav) e.preventDefault();
+            }}
+            className={`shrink-0 ml-2 px-3 py-1.5 rounded-full text-sm font-mono whitespace-nowrap text-emerald-600 ${
+              disableNav ? "pointer-events-none opacity-35" : ""
+            }`}
+          >
+            {externalLink.label}
+          </a>
+        )}
       </nav>
     </>
   );
