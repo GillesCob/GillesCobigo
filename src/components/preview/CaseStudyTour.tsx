@@ -100,12 +100,14 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       target.style.boxSizing = "border-box";
     }
 
-    // Conteneur de la bulle : meme z-index/position que la cible pour rester au-dessus du cache
-    // plein ecran (box-shadow ci-dessus), sinon la bulle se retrouverait assombrie comme le reste
-    // de la page.
+    // Conteneur de la bulle : z-index STRICTEMENT superieur a celui de la cible (corrige le 20/08,
+    // ecart trouve par Gilles : "les bulles sont grisees"). A z-index egal, deux freres positionnes
+    // se departagent par l'ordre du DOM, pas la valeur numerique - la cible arrivant apres le
+    // conteneur, son enorme box-shadow (l'assombrissement plein ecran) se peignait par-dessus la
+    // bulle. 61 > 60 : la bulle reste toujours au-dessus du cache, quel que soit l'ordre DOM.
     const container = document.createElement("div");
     container.style.position = "relative";
-    container.style.zIndex = "60";
+    container.style.zIndex = "61";
     target.parentNode?.insertBefore(container, target);
     // setBubbleContainer declenche le rendu du portail (bulle) DANS ce conteneur, mais de facon
     // asynchrone (mise a jour d'etat React) : le scroll ne doit se faire qu'une fois ce contenu
