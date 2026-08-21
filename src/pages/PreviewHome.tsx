@@ -94,10 +94,15 @@ export default function PreviewHome() {
                   sien et permet de revoir les 2 propositions sans repasser par l'historique du
                   navigateur. Logo reel du prospect (pas une initiale generique, contrairement au
                   placeholder du mockup vault) : les 5 vrais prospects ont tous un logo scrape en
-                  prospection. Aligne sur preview-prospect.html (.tarif-context). */}
+                  prospection. Aligne sur preview-prospect.html (.tarif-context).
+                  Badge rectangulaire arrondi (21/08, pas une bulle ronde) : l'ancienne bulle
+                  64px/object-cover recadrait tout logo non carre (incident Vert Anis, logo
+                  500x282 illisible une fois recadre en cercle). Largeur adaptative (max 150px),
+                  jamais de recadrage (object-contain), tranche apres comparatif A/B/C/D avec
+                  Gilles sur les 7 vrais logos de prospects, cf Boutiques/workflow-cc.md. */}
               <div className="flex flex-col items-center text-center gap-2 max-w-[420px] mx-auto mb-5">
-                <span className="h-16 w-16 rounded-full overflow-hidden shrink-0 bg-foreground/10">
-                  <img src={project.logo} alt="" className="h-full w-full object-cover" />
+                <span className="h-14 w-auto max-w-[150px] px-3.5 rounded-[14px] shrink-0 bg-foreground/10 flex items-center justify-center">
+                  <img src={project.logo} alt="" className="w-auto h-auto max-w-[122px] max-h-10 object-contain" />
                 </span>
                 <span className="text-[17px] font-semibold">{project.projectName}</span>
                 {/* 2 boutons "Proposition 1"/"Proposition 2" (20/08, demande de Gilles), remplacent
