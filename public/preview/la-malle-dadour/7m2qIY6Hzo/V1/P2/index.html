@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/webp" href="/preview/la-malle-dadour/logo.webp">
+<title>La Malle d'Adour, proposition de site (2/2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{ --accent:#b27e40; --accent-dark:#8a5f2c; --creme:#f7f1e6; --text:#2a1f22; --font-a:'Fraunces',serif; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{overflow-x:clip;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--text); background:var(--creme); line-height:1.65;}
+  img{max-width:100%; display:block;}
+  h1,h2,h3{font-family:var(--font-a); font-weight:700;}
+  .btn{display:inline-block; padding:14px 32px; background:var(--accent); color:#fff; text-decoration:none; border-radius:4px; font-weight:700; font-size:15px; border:none; cursor:pointer; font-family:inherit;}
+  .btn:hover{background:var(--accent-dark);}
+  .to-top{position:fixed; bottom:76px; right:16px; z-index:999; width:44px; height:44px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease; box-shadow:0 6px 16px rgba(0,0,0,.25);}
+  .to-top.show{opacity:1; pointer-events:auto;}
+  .hero{padding:96px 24px 56px; text-align:center; max-width:640px; margin:0 auto;}
+  .hero h1{font-size:clamp(30px,5vw,44px); margin-bottom:10px;}
+  .hero .tagline{font-size:12px; text-transform:uppercase; letter-spacing:.18em; color:var(--accent); font-weight:700; margin-bottom:20px;}
+  .hero p{font-size:16px; opacity:.8; margin-bottom:28px;}
+  .timeline{position:relative; max-width:900px; margin:0 auto; padding:40px 24px 80px;}
+  .timeline::before{content:""; position:absolute; left:50%; top:0; bottom:0; width:2px; background:linear-gradient(var(--accent), rgba(110,42,58,.15)); transform:translateX(-50%);}
+  .t-item{position:relative; width:calc(50% - 40px); margin-bottom:56px; opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
+  .t-item.show{opacity:1; transform:translateY(0);}
+  .t-item:nth-child(odd){margin-right:auto; text-align:right;}
+  .t-item:nth-child(even){margin-left:auto; text-align:left;}
+  .t-dot{position:absolute; top:4px; width:14px; height:14px; border-radius:50%; background:var(--accent); border:3px solid var(--creme); box-shadow:0 0 0 2px var(--accent);}
+  .t-item:nth-child(odd) .t-dot{right:-47px;}
+  .t-item:nth-child(even) .t-dot{left:-47px;}
+  .t-num{font-family:var(--font-a); font-size:13px; letter-spacing:.2em; color:var(--accent); margin-bottom:6px;}
+  .t-item h2{font-size:23px; margin-bottom:10px;}
+  .t-item p{font-size:15px; opacity:.85;}
+  .etapes{list-style:none; counter-reset:step; display:inline-block; text-align:left;}
+  .t-item:nth-child(odd) .etapes{text-align:right;}
+  .etapes li{counter-increment:step; margin-bottom:8px; font-size:14.5px;}
+  .etapes li::before{content:counter(step) ". ";font-weight:800; color:var(--accent);}
+  .rs-links{display:flex; gap:12px; margin-top:8px;}
+  .t-item:nth-child(odd) .rs-links{justify-content:flex-end;}
+  .rs-links a{color:var(--accent); font-weight:700; text-decoration:none; border-bottom:2px solid rgba(110,42,58,.3); font-size:14px;}
+  .map-placeholder{margin-top:14px; border-radius:12px; overflow:hidden;}
+  .map-wrap{position:relative; margin-top:22px;}
+  .map-embed{width:100%; height:220px; border-radius:14px; overflow:hidden; background:#eee;}
+  .map-lock{position:absolute; inset:0; border-radius:14px; background:rgba(0,0,0,.25); color:#fff; display:flex; align-items:center; justify-content:center; text-align:center; font-size:13px; font-weight:700; padding:12px; cursor:pointer; transition:opacity .2s ease; z-index:401;}
+  .map-lock.hidden{opacity:0; pointer-events:none;}
+  .map-recenter{position:absolute; bottom:10px; left:10px; z-index:401; background:#fff; color:var(--text); border:1px solid rgba(0,0,0,.15); border-radius:8px; padding:6px 10px; font-size:11.5px; font-family:inherit; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.15);}
+  .leaflet-control-attribution{font-size:10px; background:rgba(255,255,255,.75); padding:1px 6px;}
+  .contact-bloc{max-width:480px; margin:0 auto; padding:0 24px 64px; text-align:center;}
+  .contact-bloc form{display:flex; flex-direction:column; gap:14px; text-align:left;}
+  .contact-bloc input, .contact-bloc textarea{padding:12px 16px; border:1px solid var(--accent); background:rgba(255,255,255,.6); color:var(--text); font-family:inherit; font-size:16px; border-radius:6px;}
+  .contact-bloc textarea{min-height:100px; resize:vertical;}
+  .contact-bloc h2{font-size:26px; margin-bottom:14px;}
+  footer{text-align:center; padding:26px 24px; background:var(--accent-dark); color:rgba(255,255,255,.75); font-size:12.5px;}
+  .proposition-banner{position:fixed; top:0; left:0; right:0; z-index:1000; background:var(--accent); color:#fff; text-align:center; padding:10px 16px; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;}
+  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:#18181b; color:#fff; padding:22px 20px; text-align:center; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
+  .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
+  .retour-bandeau a.retour-bandeau-confidentialite{display:block; text-align:right; margin:6px 0 0; font-size:10.5px; font-weight:600; opacity:.55;}
+  @media(max-width:480px){ .retour-bandeau a.retour-bandeau-confidentialite{text-align:center; margin-top:16px;} }
+  .result-modal-overlay{position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .3s ease;}
+  .result-modal-overlay.show{opacity:1; pointer-events:auto;}
+  .result-modal{position:relative; max-width:380px; width:100%; background:var(--creme); border-radius:20px; padding:38px 30px 32px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.35); transform:translateY(14px); transition:transform .3s ease;}
+  .result-modal-overlay.show .result-modal{transform:translateY(0);}
+  .result-modal h2{font-family:var(--font-a); font-size:23px; margin:0 0 10px; color:var(--text);}
+  .result-modal p{font-size:14.5px; color:var(--text); opacity:.7; margin:0 0 24px; line-height:1.5;}
+  .result-modal-close{position:absolute; top:12px; right:12px; background:none; border:0; font-size:18px; line-height:1; color:var(--text); opacity:.5; cursor:pointer; padding:8px;}
+  @media(max-width:760px){ .timeline::before{left:20px;} .t-item, .t-item:nth-child(odd), .t-item:nth-child(even){width:calc(100% - 52px); margin-left:52px; margin-right:0; text-align:left;} .t-item:nth-child(odd) .etapes, .t-item:nth-child(odd) .rs-links{text-align:left; justify-content:flex-start;} .t-item:nth-child(odd) .t-dot, .t-item:nth-child(even) .t-dot{left:-40px; right:auto;} }
+</style>
+</head>
+<body>
+<div class="result-modal-overlay" id="resultModalOverlay">
+  <div class="result-modal">
+    <button type="button" class="result-modal-close" aria-label="Fermer" onclick="closeResultModal()">✕</button>
+    <h2>Séduit par le visuel ?</h2>
+    <p>Il suffit d'ajouter quelques éléments de personnalisation pour modeler le site à votre image !</p>
+    <a class="btn" href="/preview/la-malle-dadour/7m2qIY6Hzo#tarif">Obtenir plus d'informations →</a>
+  </div>
+</div>
+<div class="retour-bandeau">
+  <a href="/preview/la-malle-dadour/7m2qIY6Hzo#tarif">Obtenir plus d'informations →</a>
+  <a class="retour-bandeau-confidentialite" href="/cgv-boutiques#donnees-confidentialite" target="_blank" rel="noopener noreferrer">Confidentialité</a>
+</div>
+<button class="to-top" id="toTop" aria-label="Retour en haut">↑</button>
+<div class="proposition-banner">2ème proposition</div>
+<div class="hero">
+  <img src="/preview/la-malle-dadour/logo.webp" alt="La Malle d'Adour" style="max-height:100px; width:auto; margin:0 auto 20px; display:block;">
+  <div class="tagline">Dépôt-vente de vêtements et accessoires</div>
+  <h1>La Malle d'Adour</h1>
+  <p>Femme et homme, seconde main choisie, à Dax.</p>
+  <a href="#contact" class="btn">Nous écrire</a>
+</div>
+<div class="timeline">
+  <div class="t-item reveal">
+    <span class="t-dot"></span>
+    <div class="t-num">01 · Le concept</div>
+    <h2>Notre parti pris</h2>
+    <p>La Malle d'Adour propose des vêtements et accessoires en dépôt-vente, pour femme comme pour homme, sélectionnés pour leur bon état.</p>
+  </div>
+  <div class="t-item reveal">
+    <span class="t-dot"></span>
+    <div class="t-num">02 · Comment ça marche</div>
+    <h2>Le parcours client</h2>
+    <ol class="etapes">
+      <li>On dépose ses pièces, ou on vient chiner en boutique</li>
+      <li>Sélection soignée, prix ajustés</li>
+      <li>On repart avec une pièce de qualité, à moindre coût</li>
+    </ol>
+  </div>
+  <div class="t-item reveal">
+    <span class="t-dot"></span>
+    <div class="t-num">03 · Nos rayons</div>
+    <h2>Vêtements &amp; accessoires</h2>
+    <p>Une sélection renouvelée régulièrement, pour homme et femme, avec sacs, ceintures et petits accessoires.</p>
+  </div>
+  <div class="t-item reveal">
+    <span class="t-dot"></span>
+    <div class="t-num">04 · Nous suivre</div>
+    <h2>Sur les réseaux</h2>
+    <div class="rs-links">
+      <a href="#" onclick="return false;">👍 Facebook</a>
+    </div>
+  </div>
+  <div class="t-item reveal">
+    <span class="t-dot"></span>
+    <div class="t-num">05 · Nous trouver</div>
+    <h2>Bon à savoir</h2>
+    <p>2 rue Neuve, 40100 Dax · Lun-Sam 9h-18h · 06 00 00 00 00</p>
+    <div class="map-placeholder">
+      <div class="map-wrap">
+        <div class="map-embed" id="mapEmbed"></div>
+        <div class="map-lock" id="mapLock" onclick="unlockMap()">Cliquez pour interagir avec la carte</div>
+        <button type="button" class="map-recenter" onclick="recenterMap()" aria-label="Recentrer la carte">↺ Recentrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="contact-bloc" id="contact">
+  <h2>Nous écrire</h2>
+  <form action="#" method="POST">
+    <input type="text" name="nom" placeholder="Votre nom" required>
+    <input type="email" name="email" placeholder="Votre email" required>
+    <textarea name="message" placeholder="Votre message" required></textarea>
+    <button type="submit" class="btn">Envoyer</button>
+  </form>
+</div>
+<footer>LA MALLE D'ADOUR · Dax · contact@votremail.fr · <a href="#" onclick="return false;" style="color:inherit;">Facebook</a></footer>
+<script>
+  function syncBandeauSpacing() { var top = document.querySelector('.proposition-banner'); var bottom = document.querySelector('.retour-bandeau'); if (top) document.body.style.paddingTop = top.offsetHeight + 'px'; if (bottom) document.body.style.paddingBottom = bottom.offsetHeight + 'px'; }
+  syncBandeauSpacing();
+  window.addEventListener('resize', syncBandeauSpacing);
+  var MAP_CENTER = [43.7099751, -1.0545840];
+  var MAP_ZOOM = 17;
+  var map = L.map('mapEmbed', { center: MAP_CENTER, zoom: MAP_ZOOM, scrollWheelZoom: false, dragging: false, touchZoom: false, doubleClickZoom: false, zoomControl: false });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors', maxZoom: 19 }).addTo(map);
+  map.attributionControl.setPrefix(false);
+  L.marker(MAP_CENTER).addTo(map);
+  function unlockMap() { document.getElementById('mapLock').classList.add('hidden'); map.scrollWheelZoom.enable(); map.dragging.enable(); map.touchZoom.enable(); map.doubleClickZoom.enable(); map.addControl(L.control.zoom()); }
+  function recenterMap() { map.setView(MAP_CENTER, MAP_ZOOM); }
+  var revealObs = new IntersectionObserver(function(entries){ entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('show'); }); }, {threshold:.2});
+  document.querySelectorAll('.reveal').forEach(function(el){ revealObs.observe(el); });
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){ toTop.classList.toggle('show', window.scrollY > 500); }, {passive:true});
+  toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+  (function(){
+    var overlay = document.getElementById('resultModalOverlay');
+    if(!overlay) return;
+    var shown = false;
+    function openModal(){ if(shown) return; shown = true; overlay.classList.add('show'); }
+    function closeModal(){ overlay.classList.remove('show'); }
+    window.closeResultModal = closeModal;
+    overlay.addEventListener('click', function(e){ if(e.target === overlay) closeModal(); });
+    function checkNearBottom(){ if(shown) return; var doc = document.documentElement; var scrollBottom = window.scrollY + window.innerHeight; var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight); if(scrollBottom >= pageHeight - 80) openModal(); }
+    window.addEventListener('scroll', checkNearBottom, {passive:true});
+    window.addEventListener('resize', checkNearBottom);
+    checkNearBottom();
+  })();
+</script>
+<script>
+  (function(){
+    try {
+      var payload = JSON.stringify({slug:"la-malle-dadour", step:"p2"});
+      var url = "https://boutiques-api.gillescobigo.com/track";
+      if (navigator.sendBeacon) { navigator.sendBeacon(url, new Blob([payload], {type:"application/json"})); }
+      else { fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body: payload, keepalive: true}).catch(function(){}); }
+    } catch (e) {}
+  })();
+</script>
+</body>
+</html>
