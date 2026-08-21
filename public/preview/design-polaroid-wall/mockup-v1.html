@@ -84,6 +84,9 @@
   .result-modal p{font-size:14.5px; color:var(--text); opacity:.7; margin:0 0 24px; line-height:1.5;}
   .result-modal-close{position:absolute; top:12px; right:12px; background:none; border:0; font-size:18px; line-height:1; color:var(--text); opacity:.5; cursor:pointer; padding:8px;}
   .logo-placeholder{width:72px; height:72px; border-radius:50%; border:1px solid var(--accent); margin:0 auto 18px; display:flex; align-items:center; justify-content:center; font-family:inherit; font-size:11px; letter-spacing:.05em; color:var(--accent); text-transform:uppercase;}
+  .infos-pratiques p{margin-bottom:6px;}
+  .infos-pratiques p:last-child{margin-bottom:0;}
+  .info-tel{white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -132,7 +135,12 @@
 
 <div class="block-center reveal">
   <h2 style="font-size:22px;">Bon à savoir</h2>
-  <p>[Adresse complète] · [Horaires d'ouverture] · [Numéro] · [Email]</p>
+  <div class="infos-pratiques">
+      <p>[Adresse complète]</p>
+      <p>[Horaires d'ouverture]</p>
+      <p class="info-tel">[Numéro]</p>
+      <p>[Email]</p>
+    </div>
   <div class="map-placeholder">Emplacement de la carte Google Maps</div>
 </div>
 

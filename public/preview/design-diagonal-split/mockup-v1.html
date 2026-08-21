@@ -78,6 +78,9 @@
   .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
 
   @media(max-width:640px){ .hero{padding:100px 24px 110px;} .bloc{padding:64px 24px;} }
+  .infos-pratiques p{margin-bottom:6px;}
+  .infos-pratiques p:last-child{margin-bottom:0;}
+  .info-tel{white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -144,7 +147,12 @@
 <div class="bloc reveal">
   <div class="bloc-inner">
     <h2>Nous trouver</h2>
-    <p>[Adresse complète] · [Horaires] · [Numéro] · [Email]</p>
+    <div class="infos-pratiques">
+      <p>[Adresse complète]</p>
+      <p>[Horaires]</p>
+      <p class="info-tel">[Numéro]</p>
+      <p>[Email]</p>
+    </div>
     <div class="map-placeholder">Emplacement de la carte Google Maps</div>
   </div>
 </div>
