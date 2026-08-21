@@ -206,7 +206,11 @@
     function checkNearBottom(){ if(shown) return; var doc = document.documentElement; var scrollBottom = window.scrollY + window.innerHeight; var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight); if(scrollBottom >= pageHeight - 80) openModal(); }
     window.addEventListener('scroll', checkNearBottom, {passive:true});
     window.addEventListener('resize', checkNearBottom);
-    checkNearBottom();
+    // Pas d'appel immediat au chargement (corrige le 21/08, retour Gilles "la modale de
+    // bas de page etait affichee, pas en haut") : sur une page dont le contenu tient deja
+    // dans la hauteur de la fenetre au chargement, l'appel immediat considerait a tort
+    // qu'on etait deja "pres du bas" et ouvrait la modale avant meme un scroll reel de
+    // l'utilisateur. Ne se declenche desormais que sur un vrai evenement scroll/resize.
   })();
 </script>
 <script>

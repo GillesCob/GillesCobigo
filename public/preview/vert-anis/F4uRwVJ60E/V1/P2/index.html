@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/webp" href="/preview/vert-anis/logo.webp">
 <title>Vert Anis, proposition de site (2/2)</title>
+<link rel="icon" type="image/webp" href="/preview/vert-anis/logo.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
@@ -86,9 +86,9 @@
 <div class="proposition-banner">2ème proposition</div>
 <div class="hero">
   <img src="/preview/vert-anis/logo.webp" alt="Vert Anis" style="max-height:52px; width:auto; margin:0 auto 20px; display:block;">
-  <div class="tagline">Bijouterie fantaisie</div>
+  <div class="tagline">Bijoux, artisanat &amp; cadeaux</div>
   <h1>Vert Anis</h1>
-  <p>Bagues, colliers, boucles d'oreilles et bracelets pour toute la famille, à Dax.</p>
+  <p>Bijoux fantaisie, artisanat et idées cadeaux, à Dax.</p>
   <a href="#contact" class="btn">Nous écrire</a>
 </div>
 <div class="timeline">
@@ -96,7 +96,7 @@
     <span class="t-dot"></span>
     <div class="t-num">01 · Le concept</div>
     <h2>Notre parti pris</h2>
-    <p>Vert Anis propose des bijoux fantaisie accessibles, pour hommes, femmes et enfants : pas une joaillerie de luxe, mais une pièce pour chaque envie et chaque budget.</p>
+    <p>Vert Anis, c'est un commerce d'artisanat et de bijoux fantaisie ouvert depuis 2006 : pas une joaillerie de luxe, mais une pièce ou un cadeau pour chaque envie et chaque budget.</p>
   </div>
   <div class="t-item reveal">
     <span class="t-dot"></span>
@@ -112,13 +112,13 @@
     <span class="t-dot"></span>
     <div class="t-num">03 · Nos gammes</div>
     <h2>Un large choix</h2>
-    <p>Bagues, colliers, boucles d'oreilles et bracelets, renouvelés régulièrement pour suivre les envies de chacun.</p>
+    <p>Bagues, colliers, boucles d'oreilles et bracelets, mais aussi poteries, bougies, savons et douceurs gourmandes, renouvelés régulièrement.</p>
   </div>
   <div class="t-item reveal">
     <span class="t-dot"></span>
     <div class="t-num">04 · Pourquoi nous choisir</div>
     <h2>Accessible à tous</h2>
-    <p>Un vrai choix pour toute la famille, à des prix qui restent raisonnables.</p>
+    <p>Un vrai choix, à des prix qui restent raisonnables.</p>
   </div>
   <div class="t-item reveal">
     <span class="t-dot"></span>
@@ -172,7 +172,11 @@
     function checkNearBottom(){ if(shown) return; var doc = document.documentElement; var scrollBottom = window.scrollY + window.innerHeight; var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight); if(scrollBottom >= pageHeight - 80) openModal(); }
     window.addEventListener('scroll', checkNearBottom, {passive:true});
     window.addEventListener('resize', checkNearBottom);
-    checkNearBottom();
+    // Pas d'appel immediat au chargement (corrige le 21/08, retour Gilles "la modale de
+    // bas de page etait affichee, pas en haut") : sur une page dont le contenu tient deja
+    // dans la hauteur de la fenetre au chargement, l'appel immediat considerait a tort
+    // qu'on etait deja "pres du bas" et ouvrait la modale avant meme un scroll reel de
+    // l'utilisateur. Ne se declenche desormais que sur un vrai evenement scroll/resize.
   })();
 </script>
 <script>
