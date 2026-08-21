@@ -72,28 +72,32 @@ export default function CaseStudyVersionsNav({ basePath, currentRound, rounds, e
       {/* Rangee horizontale mobile, en haut du contenu (plus le pattern icone flottante + drawer,
           retire le 16/08 : sur mobile le bouton flottant se retrouvait couvert par les cartes de
           propositions). Element normal, dans le flux, pour que le cheminement fonctionne pareil
-          qu'au clavier/desktop. */}
-      <nav className="md:hidden flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-        {rounds.map((r) => (
-          <Link
-            key={r.round}
-            to={`${basePath}/${r.round.toLowerCase()}${search}`}
-            aria-disabled={disableNav}
-            tabIndex={disableNav ? -1 : undefined}
-            onClick={(e) => {
-              if (disableNav) e.preventDefault();
-            }}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-sm font-mono transition-colors ${
-              disableNav ? "pointer-events-none opacity-35" : ""
-            } ${
-              r.round.toLowerCase() === currentRound.toLowerCase()
-                ? "bg-secondary text-secondary-foreground font-semibold"
-                : "text-muted-foreground bg-card border border-border"
-            }`}
-          >
-            {r.round}
-          </Link>
-        ))}
+          qu'au clavier/desktop. externalLink sorti de cette rangee (21/08, demande explicite de
+          Gilles : "Version en ligne" doit passer a la ligne et etre sous les rounds, pas dans
+          leur scroll horizontal) : bloc separe juste en dessous. */}
+      <div className="md:hidden">
+        <nav className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+          {rounds.map((r) => (
+            <Link
+              key={r.round}
+              to={`${basePath}/${r.round.toLowerCase()}${search}`}
+              aria-disabled={disableNav}
+              tabIndex={disableNav ? -1 : undefined}
+              onClick={(e) => {
+                if (disableNav) e.preventDefault();
+              }}
+              className={`shrink-0 px-3 py-1.5 rounded-full text-sm font-mono transition-colors ${
+                disableNav ? "pointer-events-none opacity-35" : ""
+              } ${
+                r.round.toLowerCase() === currentRound.toLowerCase()
+                  ? "bg-secondary text-secondary-foreground font-semibold"
+                  : "text-muted-foreground bg-card border border-border"
+              }`}
+            >
+              {r.round}
+            </Link>
+          ))}
+        </nav>
         {externalLink && (
           <a
             href={externalLink.href}
@@ -104,14 +108,14 @@ export default function CaseStudyVersionsNav({ basePath, currentRound, rounds, e
             onClick={(e) => {
               if (disableNav) e.preventDefault();
             }}
-            className={`shrink-0 ml-2 px-3 py-1.5 rounded-full text-sm font-mono whitespace-nowrap text-emerald-600 ${
+            className={`mt-2 inline-block px-3 py-1.5 rounded-full text-sm font-mono whitespace-nowrap text-emerald-600 ${
               disableNav ? "pointer-events-none opacity-35" : ""
             }`}
           >
             {externalLink.label}
           </a>
         )}
-      </nav>
+      </div>
     </>
   );
 }

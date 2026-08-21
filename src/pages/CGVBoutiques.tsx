@@ -154,17 +154,16 @@ export default function CGVBoutiques() {
             <section id="remboursement">
               <h2 className="text-base font-semibold text-foreground mb-2">5. Durée et résiliation</h2>
               <p className="mb-4">
-                Le forfait est réglé à la signature. La V1 (premier jet) est réalisée gratuitement dans le
-                cadre de la prospection, avant tout engagement : le forfait couvre les versions V2 à V6 et la
-                mise en ligne. En cas d'arrêt entre la signature et la mise en ligne, seules les étapes déjà
-                livrées sont dues, le reste est remboursé au prorata (détail ci-dessous). Il n'est pas
-                nécessaire d'aller jusqu'à la V6 pour être mis en ligne : dès qu'une version vous convient,
-                elle peut être mise en ligne moyennant les 30€ de mise en ligne, les versions restantes du
-                forfait étant alors remboursées au prorata comme pour tout arrêt anticipé (détail ci-dessous).
-                Si vous demandez ensuite une évolution sur une version déjà remboursée, elle reste facturée
-                au tarif du forfait (94€) et non au tarif modification après mise en ligne (40€, cf tarifs) :
-                ce tarif réduit ne s'applique qu'au-delà des 6 versions couvertes par le forfait initial (V1
-                à V6).
+                Le forfait est réglé à la signature et se répartit en 94€ par version (V2 à V6) et 30€ pour
+                la mise en ligne (détail dans le tableau ci-dessous). La V1 (premier jet) est réalisée
+                gratuitement dans le cadre de la prospection, avant tout engagement. En cas d'arrêt avant la
+                mise en ligne, seules les étapes déjà livrées sont dues, le reste est remboursé au prorata.
+                Il n'est pas nécessaire d'aller jusqu'à la V6 pour être mis en ligne : dès qu'une version
+                vous convient, elle peut être mise en ligne moyennant les 30€ de mise en ligne, les versions
+                restantes étant alors remboursées comme pour tout arrêt anticipé. Une évolution demandée
+                ensuite sur une version déjà remboursée reste facturée au tarif du forfait (94€), pas au
+                tarif modification après mise en ligne (40€, cf tarifs) : ce tarif réduit ne s'applique
+                qu'au-delà des 6 versions couvertes par le forfait (V1 à V6).
               </p>
 
               <div className="inline-flex rounded-md border border-border overflow-hidden mb-4">
@@ -236,16 +235,13 @@ export default function CGVBoutiques() {
               <details className="text-xs text-muted-foreground">
                 <summary className="cursor-pointer list-none text-foreground hover:underline">+ d'infos sur ce calcul</summary>
                 <p className="mt-2">
-                  Montants arrondis à l'euro. Les 500€ du forfait se répartissent en 94€ par round de
-                  conception (V2 à V6) et 30€ pour la mise en ligne (déploiement technique, pas un round de
-                  conception). Le nom de domaine, une fois acheté, est immédiatement enregistré à votre nom :
-                  les 20€ (seul ou inclus dans la Formule Sérénité) sont acquis dès la signature,
-                  indépendamment de la suite. Avec la Formule Sérénité, les 2 allers-retours inclus (55€) ne
-                  sont acquis qu'au fur et à mesure de leur utilisation (27,50€ chacun) : une version
-                  supplémentaire (V7, V8...) faite avant l'arrêt ajoute une ligne au tableau, la part non
-                  utilisée reste remboursable. Un crédit utilisé pour une modification après la mise en ligne
-                  n'apparaît pas ici : une fois le site en ligne, la prestation est de toute façon rendue en
-                  totalité (aucun remboursement, cf plus haut).
+                  Montants arrondis à l'euro. Les 30€ de mise en ligne correspondent au déploiement
+                  technique, pas à une version de conception. Le nom de domaine, une fois acheté, est
+                  immédiatement enregistré à votre nom : les 20€ (seul ou inclus dans la Formule Sérénité)
+                  sont acquis dès la signature, indépendamment de la suite. Avec la Formule Sérénité, les 2
+                  allers-retours inclus (55€) ne sont acquis qu'au fur et à mesure de leur utilisation
+                  (27,50€ chacun) : une version supplémentaire (V7, V8...) faite avant l'arrêt ajoute une
+                  ligne au tableau, la part non utilisée reste remboursable.
                 </p>
               </details>
             </section>

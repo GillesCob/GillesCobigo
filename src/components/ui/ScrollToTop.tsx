@@ -1,9 +1,25 @@
 import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowUp } from 'lucide-react'
+import { useCaseStudyTourStore } from '@/store/caseStudyTourStore'
+
+// Page finale du funnel (/preview/:project/:secret, la landing tarif avec le CTA de fin de
+// visite) : jamais ce bouton, meme hors visite guidee (21/08, demande explicite de Gilles,
+// "retire egalement le retour en haut de page via le bouton sur la page finale"). Exclut
+// specifiquement PreviewHome, pas PreviewRound (/preview/:project/:secret/:round, 3 segments).
+const FINAL_PAGE_PATTERN = /^\/preview\/[^/]+\/[^/]+\/?$/
 
 export default function ScrollToTop() {
   const [visible, setVisible] = useState(false)
+  const { pathname } = useLocation()
+  // Retire ce bouton pendant une visite guidee active (21/08, demande explicite de Gilles :
+  // "partout tant qu'on est dans la visite guidee"), le verrou de scroll de CaseStudyTour.tsx
+  // contraint deja le scroll a une fenetre limitee autour de la bulle courante, "remonter tout
+  // en haut de la page" n'a plus de sens pendant le tour. Bouton monte globalement (toutes les
+  // pages), lit le store directement plutot que de conditionner son montage depuis le layout.
+  const isTouring = useCaseStudyTourStore((s) => s.status === 'active')
+  const isFinalPage = FINAL_PAGE_PATTERN.test(pathname)
 
   useEffect(() => {
     function onScroll() {
@@ -15,7 +31,7 @@ export default function ScrollToTop() {
 
   return (
     <AnimatePresence>
-      {visible && (
+      {visible && !isTouring && !isFinalPage && (
         <motion.button
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}

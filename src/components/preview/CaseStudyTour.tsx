@@ -82,6 +82,10 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
   const lockMinRef = useRef<number | null>(null);
   const lockMaxRef = useRef<number | null>(null);
   const isProgrammaticScrollRef = useRef(false);
+  // Incremente a chaque scrollIntoView initial (21/08) : permet au recalage post-chargement
+  // d'images ci-dessous de savoir si l'etape a change entre-temps et d'abandonner un scroll
+  // devenu obsolete, plutot que de ramener de force sur une bulle qui n'est plus la bonne.
+  const renderTokenRef = useRef(0);
   // Position d'arrivee (scrollY juste apres le scrollIntoView), memorisee separement du contenu
   // de la cible (21/08) : sert de base garantie pour le plafond, cf computeLockMax().
   const arrivalScrollYRef = useRef<number | null>(null);
@@ -166,18 +170,31 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       target.style.boxSizing = "border-box";
     }
 
+    // Le nouveau conteneur devient un frere de target dans SON PARENT (insertBefore/after) :
+    // si ce parent est une grille CSS (v6-proposals, sous-groupe dans la grille 2 colonnes des
+    // propositions), le conteneur en devient un item a part entiere, etire par defaut a la
+    // hauteur de la ligne (align-items:stretch, comportement par defaut de Grid) et place selon
+    // le flux automatique - PAS forcement juste avant/apres target visuellement, meme s'il l'est
+    // dans le DOM (corrige le 21/08, bug trouve par Gilles : "gros mt avant la bulle" a l'etape
+    // V6, la cible se retrouvait poussee a la ligne suivante de la grille). align-self:start +
+    // gridColumn:"1/-1" neutralisent les deux effets ; sans objet si le parent n'est pas grid.
+    const parentIsGrid = target.parentElement ? getComputedStyle(target.parentElement).display === "grid" : false;
+
     // Conteneur de la bulle du haut : z-index STRICTEMENT superieur a celui de la cible (a
     // z-index egal, deux freres positionnes se departagent par l'ordre du DOM, la cible arrivant
     // apres son enorme box-shadow se peignait par-dessus la bulle).
     const container = document.createElement("div");
     container.style.position = "relative";
     container.style.zIndex = "61";
+    if (parentIsGrid) {
+      container.style.alignSelf = "start";
+      container.style.gridColumn = "1 / -1";
+    }
     target.parentNode?.insertBefore(container, target);
 
     // Largeur/position calquees sur la cible, pas sur son parent (21/08, "sur toute la largeur
-    // de la zone expliquee") : sans ce recalage, un item de grille (v6-proposals, sous-groupe
-    // dans la grille 2 colonnes des propositions) heriterait de toute la largeur du grand parent
-    // grid, pas seulement celle du sous-groupe spotlighte.
+    // de la zone expliquee") : sans ce recalage, un item de grille heriterait de toute la
+    // largeur du grand parent grid, pas seulement celle du sous-groupe spotlighte.
     const targetRect = target.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
     container.style.width = `${targetRect.width}px`;
@@ -201,10 +218,11 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       bottomContainer.style.zIndex = "61";
       bottomContainer.style.marginTop = "10px";
       bottomContainer.style.marginBottom = "10px";
-      target.after(bottomContainer);
-      if (getComputedStyle(target).display === "grid") {
+      if (parentIsGrid) {
+        bottomContainer.style.alignSelf = "start";
         bottomContainer.style.gridColumn = "1 / -1";
       }
+      target.after(bottomContainer);
       bottomContainerRef.current = bottomContainer;
       setBubbleContainerBottom(bottomContainer);
     } else {
@@ -235,6 +253,7 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
   // autre scroll et donne un rendu bugue. Pose aussi le plancher/plafond du verrou (21/08).
   useEffect(() => {
     if (!bubbleContainer) return;
+    const token = ++renderTokenRef.current;
     isProgrammaticScrollRef.current = true;
     bubbleContainer.scrollIntoView({ behavior: "instant", block: "start" });
     arrivalScrollYRef.current = window.scrollY;
@@ -242,6 +261,39 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
     computeLockMax();
     requestAnimationFrame(() => {
       isProgrammaticScrollRef.current = false;
+    });
+
+    // Recalage apres chargement des images de la page (21/08, corrige un "gros mt avant la
+    // bulle" signale par Gilles a l'arrivee sur l'etape V6, en navigation ET en F5) : sur un
+    // round fraichement monte pour la premiere fois de la session (V6 typiquement, jamais visite
+    // avant contrairement a V1/V2 deja vus via l'auto-demarrage), les images de la page n'ont
+    // pas fini de charger au moment du scrollIntoView ci-dessus. Sans width/height reserves, la
+    // page grossit ensuite sous la cible sans que le scroll ne suive. Un seul round est monte a
+    // la fois cote prod (contrairement au mockup, ou tous les rounds coexistent caches dans le
+    // meme document) : cibler toutes les <img> de la page suffit, pas besoin de filtrer par round.
+    const imgs = Array.from(document.querySelectorAll<HTMLImageElement>("img"));
+    Promise.all(
+      imgs.map(
+        (img) =>
+          new Promise<void>((resolve) => {
+            if (img.complete) {
+              resolve();
+              return;
+            }
+            img.addEventListener("load", () => resolve(), { once: true });
+            img.addEventListener("error", () => resolve(), { once: true });
+          })
+      )
+    ).then(() => {
+      if (token !== renderTokenRef.current || !bubbleContainer) return;
+      isProgrammaticScrollRef.current = true;
+      bubbleContainer.scrollIntoView({ behavior: "instant", block: "start" });
+      arrivalScrollYRef.current = window.scrollY;
+      lockMinRef.current = arrivalScrollYRef.current - TOP_SLACK;
+      computeLockMax();
+      requestAnimationFrame(() => {
+        isProgrammaticScrollRef.current = false;
+      });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bubbleContainer]);
