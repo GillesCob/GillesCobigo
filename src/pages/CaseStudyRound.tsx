@@ -61,6 +61,20 @@ export default function CaseStudyRound() {
   const bandeauRef = useRef<HTMLDivElement>(null);
   const [bandeauPadding, setBandeauPadding] = useState<number | null>(null);
 
+  // scrollRestoration manuel, scope a cette page uniquement (21/08, corrige le "mt enorme"
+  // signale par Gilles sur un F5 en pleine visite guidee) : par defaut ("auto"), le navigateur
+  // restaure lui-meme l'ancien scrollY apres le scrollIntoView de CaseStudyTour.tsx, ecrasant
+  // silencieusement la bonne position (reprise d'etape en sessionStorage, cf
+  // caseStudyTourStore.ts). Restaure "auto" au demontage pour ne jamais affecter le reste du
+  // site (portfolio, articles...), qui compte sur la restauration native du navigateur.
+  useEffect(() => {
+    const previous = history.scrollRestoration;
+    history.scrollRestoration = "manual";
+    return () => {
+      history.scrollRestoration = previous;
+    };
+  }, []);
+
   useEffect(() => {
     if (!bandeauVisible) {
       setBandeauPadding(null);
