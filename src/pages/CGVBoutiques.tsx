@@ -157,8 +157,14 @@ export default function CGVBoutiques() {
                 Le forfait est réglé à la signature. La V1 (premier jet) est réalisée gratuitement dans le
                 cadre de la prospection, avant tout engagement : le forfait couvre les versions V2 à V6 et la
                 mise en ligne. En cas d'arrêt entre la signature et la mise en ligne, seules les étapes déjà
-                livrées sont dues, le reste est remboursé au prorata (détail ci-dessous). Une fois le site en
-                ligne, la prestation est considérée comme rendue en totalité, aucun remboursement.
+                livrées sont dues, le reste est remboursé au prorata (détail ci-dessous). Il n'est pas
+                nécessaire d'aller jusqu'à la V6 pour être mis en ligne : dès qu'une version vous convient,
+                elle peut être mise en ligne moyennant les 30€ de mise en ligne, les versions restantes du
+                forfait étant alors remboursées au prorata comme pour tout arrêt anticipé (détail ci-dessous).
+                Si vous demandez ensuite une évolution sur une version déjà remboursée, elle reste facturée
+                au tarif du forfait (94€) et non au tarif modification après mise en ligne (40€, cf tarifs) :
+                ce tarif réduit ne s'applique qu'au-delà des 6 versions couvertes par le forfait initial (V1
+                à V6).
               </p>
 
               <div className="inline-flex rounded-md border border-border overflow-hidden mb-4">

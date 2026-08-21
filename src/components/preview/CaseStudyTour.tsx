@@ -22,6 +22,17 @@ interface ICaseStudyTourProps {
 // tout lire est oblige de remonter tout en haut pour retrouver "Suivant" sans elle.
 const STEPS_WITH_BOTTOM_BUBBLE = [1, 2];
 
+// Marges de tolerance du verrou de scroll (21/08, demande explicite de Gilles : "afin d'eviter
+// les bugs de scroll qui sautent"). Un plancher/plafond colle exactement sur la position
+// d'arrivee declenche le clamp reactif au moindre pixel de scroll, percu comme un saut/rebond.
+// TOP_SLACK ne change PAS le point d'arrivee du scrollIntoView (le "mt" reste 10px, la bulle
+// "arrive bien tout en haut"), seulement le plancher, plus permissif que la position d'arrivee.
+// BOTTOM_SLACK : bulle du bas (etapes 2/3) "pas utilisable sur mobile" collee au bord ecran une
+// fois au plafond (60, precise par Gilles apres un premier essai a 24, aligne sur TOP_SLACK) ;
+// cible elle-meme (etapes 1/4) "empecher les sauts de scroll", meme logique mais en bas.
+const TOP_SLACK = 60;
+const BOTTOM_SLACK = 60;
+
 // Refonte du 20/08 (demande explicite de Gilles, apres plusieurs tours de rustines qui
 // corrigeaient chaque symptome sans regler la cause : bulle qui ne se rouvrait pas, se rouvrait
 // trop tot, se refermait hors du haut de page, s'ouvrait par-dessus le contenu). Cause racine de
@@ -71,10 +82,13 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
   const lockMinRef = useRef<number | null>(null);
   const lockMaxRef = useRef<number | null>(null);
   const isProgrammaticScrollRef = useRef(false);
+  // Position d'arrivee (scrollY juste apres le scrollIntoView), memorisee separement du contenu
+  // de la cible (21/08) : sert de base garantie pour le plafond, cf computeLockMax().
+  const arrivalScrollYRef = useRef<number | null>(null);
 
   // Reference du plafond : la bulle du bas si elle existe (etapes 2/3, "pas plus loin que la
   // bulle du dessous"), sinon la cible elle-meme (etapes 1/4, "pas plus loin que le bas de la
-  // zone presentee"). Jamais aucune des deux : pas de plafond.
+  // zone presentee"). Aucune des deux : pas de plafond du tout.
   function computeLockMax() {
     const reference = bottomContainerRef.current ?? targetElRef.current;
     if (!reference) {
@@ -82,8 +96,20 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       return;
     }
     const rect = reference.getBoundingClientRect();
-    const candidate = rect.bottom + window.scrollY - window.innerHeight;
-    lockMaxRef.current = lockMinRef.current !== null ? Math.max(candidate, lockMinRef.current) : candidate;
+    // + BOTTOM_SLACK, pas moins : on veut que la reference finisse plus HAUTE dans le viewport
+    // qu'un plafond "colle au bord" (rect.bottom == innerHeight), donc un candidate plus GRAND
+    // (correspond a un scrollY plus petit une fois qu'on y est, laissant de l'air en dessous).
+    const candidate = rect.bottom + window.scrollY - window.innerHeight + BOTTOM_SLACK;
+    // Plancher garanti sur la position d'ARRIVEE, pas sur le contenu : une cible courte, deja
+    // entierement visible des l'arrivee avec une grande marge, donne un candidate tres negatif,
+    // largement sous le plancher elargi. Sans cette garantie, Math.max(candidate, lockMin)
+    // forcerait lockMax = lockMin, bloquant TOUT scroll au pixel pres, exactement le "saut" que
+    // la demande cherche a eviter. En prenant le plus permissif entre "candidate reel du
+    // contenu" et "position d'arrivee + BOTTOM_SLACK", le plafond garde toujours au moins la
+    // marge demandee depuis l'arrivee, et s'agrandit naturellement si le contenu deborde
+    // vraiment de l'ecran.
+    const arrivalBasedCandidate = (arrivalScrollYRef.current ?? window.scrollY) + BOTTOM_SLACK;
+    lockMaxRef.current = Math.max(candidate, arrivalBasedCandidate);
   }
 
   // Auto-demarrage uniquement en arrivant sur la V1, une seule fois par session de navigation
@@ -114,6 +140,7 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       bottomContainerRef.current = null;
       lockMinRef.current = null;
       lockMaxRef.current = null;
+      arrivalScrollYRef.current = null;
       return;
     }
 
@@ -197,6 +224,7 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       bottomContainerRef.current = null;
       lockMinRef.current = null;
       lockMaxRef.current = null;
+      arrivalScrollYRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOnRightRound, step, stepIndex]);
@@ -209,7 +237,8 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
     if (!bubbleContainer) return;
     isProgrammaticScrollRef.current = true;
     bubbleContainer.scrollIntoView({ behavior: "instant", block: "start" });
-    lockMinRef.current = window.scrollY;
+    arrivalScrollYRef.current = window.scrollY;
+    lockMinRef.current = arrivalScrollYRef.current - TOP_SLACK;
     computeLockMax();
     requestAnimationFrame(() => {
       isProgrammaticScrollRef.current = false;
@@ -252,7 +281,8 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       container.style.width = `${targetRect.width}px`;
       container.style.marginLeft = `${targetRect.left - containerRect.left}px`;
       const scrollMarginTop = parseFloat(getComputedStyle(container).scrollMarginTop) || 0;
-      lockMinRef.current = container.getBoundingClientRect().top + window.scrollY - scrollMarginTop;
+      arrivalScrollYRef.current = container.getBoundingClientRect().top + window.scrollY - scrollMarginTop;
+      lockMinRef.current = arrivalScrollYRef.current - TOP_SLACK;
       computeLockMax();
     }
     window.addEventListener("scroll", handleScroll, { passive: true });
