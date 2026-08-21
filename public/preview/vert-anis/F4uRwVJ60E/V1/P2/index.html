@@ -21,7 +21,7 @@
   .btn:hover{background:var(--accent-dark);}
   .to-top{position:fixed; bottom:76px; right:16px; z-index:999; width:44px; height:44px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease; box-shadow:0 6px 16px rgba(0,0,0,.25);}
   .to-top.show{opacity:1; pointer-events:auto;}
-  .hero{padding:96px 24px 56px; text-align:center; max-width:640px; margin:0 auto;}
+  .hero{padding:48px 24px 56px; text-align:center; max-width:640px; margin:0 auto;}
   .hero h1{font-size:clamp(30px,5vw,44px); margin-bottom:10px;}
   .hero .tagline{font-size:12px; text-transform:uppercase; letter-spacing:.18em; color:var(--accent); font-weight:700; margin-bottom:20px;}
   .hero p{font-size:16px; opacity:.8; margin-bottom:28px;}
@@ -37,6 +37,11 @@
   .t-num{font-family:var(--font-a); font-size:13px; letter-spacing:.2em; color:var(--accent); margin-bottom:6px;}
   .t-item h2{font-size:23px; margin-bottom:10px;}
   .t-item p{font-size:15px; opacity:.85;}
+  /* Infos "Bon a savoir" (21/08, retour Gilles) : adresse/horaires/telephone doivent chacun avoir
+     leur propre ligne (jamais regroupes sur une seule ligne separee par des "."), et le numero ne
+     doit jamais se couper au milieu (white-space:nowrap). Regle ajoutee dans workflow-cc.md. */
+  .infos-pratiques p{margin-bottom:6px;}
+  .infos-pratiques p:last-child{margin-bottom:0; white-space:nowrap;}
   .etapes{list-style:none; counter-reset:step; display:inline-block; text-align:left;}
   .t-item:nth-child(odd) .etapes{text-align:right;}
   .etapes li{counter-increment:step; margin-bottom:8px; font-size:14.5px;}
@@ -124,7 +129,11 @@
     <span class="t-dot"></span>
     <div class="t-num">05 · Nous trouver</div>
     <h2>Bon à savoir</h2>
-    <p>22 rue Saint Vincent, 40100 Dax · Lundi-samedi, fermé jeudi après-midi · 05 58 58 96 14</p>
+    <div class="infos-pratiques">
+      <p>22 rue Saint Vincent, 40100 Dax</p>
+      <p>Lundi-samedi, fermé jeudi après-midi</p>
+      <p>05 58 58 96 14</p>
+    </div>
     <div class="map-placeholder">
       <div class="map-wrap">
         <div class="map-embed" id="mapEmbed"></div>
