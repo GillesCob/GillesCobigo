@@ -222,28 +222,6 @@ export const previewProjects: Record<string, IPreviewProject> = {
       },
     ],
   },
-  F4uRwVJ60E: {
-    slug: "vert-anis",
-    projectName: "Vert Anis",
-    logo: "/preview/vert-anis/logo.webp",
-    contactName: "L'équipe Vert Anis",
-    phone: "05 58 58 96 14",
-    currentRound: "V1",
-    nextAction: "Premier contact, en attente de retour",
-    feedbackFormId: "xgoggnej",
-    coldIntro:
-      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre commerce.",
-    rounds: [
-      {
-        round: "V1",
-        date: "21 août 2026",
-        proposals: [
-          { label: "Votre site, premier jet", screenshot: "/preview/vert-anis/logo.webp", htmlPath: "/preview/vert-anis/F4uRwVJ60E/V1/P1" },
-        ],
-        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
-      },
-    ],
-  },
   "7m2qIY6Hzo": {
     slug: "la-malle-dadour",
     projectName: "La Malle d'Adour",
