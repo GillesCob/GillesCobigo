@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/webp" href="/preview/vert-anis/logo.webp">
 <title>Vert Anis, proposition de site (1/2)</title>
+<link rel="icon" type="image/webp" href="/preview/vert-anis/logo.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
@@ -107,16 +107,16 @@
   <img class="hero-bg" src="/preview/_stock/bijouterie/bijouterie-04.webp" alt="" loading="lazy">
   <div class="hero-content">
     <img src="/preview/vert-anis/logo.webp" alt="Vert Anis" style="max-height:52px; width:auto; margin:0 auto 20px; display:block;">
-    <div class="tagline">Bijouterie fantaisie</div>
+    <div class="tagline">Bijoux, artisanat &amp; cadeaux</div>
     <h1>Vert Anis</h1>
-    <p class="sub">Bijoux fantaisie pour toute la famille, à Dax</p>
+    <p class="sub">Bijoux fantaisie, artisanat et idées cadeaux, à Dax</p>
     <a href="#univers" class="btn">Découvrir la boutique</a>
   </div>
   <svg class="wave" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0,20 C200,55 350,0 600,22 C850,44 1000,5 1200,25 L1200,60 L0,60 Z" fill="#fbf9f2"></path></svg>
 </section>
 <div class="concept reveal">
   <h2>L'esprit Vert Anis</h2>
-  <p>Vert Anis, c'est une bijouterie fantaisie à Dax : bagues, colliers, boucles d'oreilles et bracelets pour hommes, femmes et enfants, dans un esprit accessible plutôt que joaillerie de luxe.</p>
+  <p>Vert Anis, c'est une boutique d'artisanat et de bijoux fantaisie à Dax, ouverte depuis 2006 : bagues, colliers, boucles d'oreilles et bracelets, mais aussi poteries, bougies, savons et douceurs gourmandes pour compléter un cadeau.</p>
   <p>Une pièce pour chaque envie, sans se ruiner, à deux pas du centre-ville.</p>
 </div>
 <div class="bento" id="univers">
@@ -124,7 +124,7 @@
     <h2>Notre univers</h2>
     <div class="cat"><span class="ic">💍</span><div><h3>Bagues &amp; colliers</h3><p>Une large sélection de pièces fantaisie, renouvelée régulièrement.</p></div></div>
     <div class="cat"><span class="ic">👂</span><div><h3>Boucles &amp; bracelets</h3><p>Pour compléter chaque tenue, à petit prix.</p></div></div>
-    <div class="cat"><span class="ic">👨‍👩‍👧</span><div><h3>Pour toute la famille</h3><p>Hommes, femmes et enfants trouvent leur bonheur.</p></div></div>
+    <div class="cat"><span class="ic">🎁</span><div><h3>Artisanat &amp; cadeaux</h3><p>Poteries, bougies, savons et douceurs gourmandes à offrir.</p></div></div>
   </div>
   <div class="b-reseaux reveal">
     <span>Passez nous voir directement en boutique, au 22 rue Saint Vincent à Dax.</span>
@@ -206,7 +206,11 @@
     function checkNearBottom(){ if(shown) return; var doc = document.documentElement; var scrollBottom = window.scrollY + window.innerHeight; var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight); if(scrollBottom >= pageHeight - 80) openModal(); }
     window.addEventListener('scroll', checkNearBottom, {passive:true});
     window.addEventListener('resize', checkNearBottom);
-    checkNearBottom();
+    // Pas d'appel immediat au chargement (corrige le 21/08, retour Gilles "la modale de
+    // bas de page etait affichee, pas en haut") : sur une page dont le contenu tient deja
+    // dans la hauteur de la fenetre au chargement, l'appel immediat considerait a tort
+    // qu'on etait deja "pres du bas" et ouvrait la modale avant meme un scroll reel de
+    // l'utilisateur. Ne se declenche desormais que sur un vrai evenement scroll/resize.
   })();
 </script>
 <script>
