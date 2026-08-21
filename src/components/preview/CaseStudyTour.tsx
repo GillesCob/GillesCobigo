@@ -89,6 +89,9 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
   // Position d'arrivee (scrollY juste apres le scrollIntoView), memorisee separement du contenu
   // de la cible (21/08) : sert de base garantie pour le plafond, cf computeLockMax().
   const arrivalScrollYRef = useRef<number | null>(null);
+  // Blocage silencieux du verrou (21/08) : cf useEffect wheel/touch plus bas.
+  const scrollLockedByOverflowRef = useRef(false);
+  const touchStartYRef = useRef<number | null>(null);
 
   // Reference du plafond : la bulle du bas si elle existe (etapes 2/3, "pas plus loin que la
   // bulle du dessous"), sinon la cible elle-meme (etapes 1/4, "pas plus loin que le bas de la
@@ -145,6 +148,9 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       lockMinRef.current = null;
       lockMaxRef.current = null;
       arrivalScrollYRef.current = null;
+      // Ne jamais rester bloque en overflow:hidden hors du verrou actif.
+      scrollLockedByOverflowRef.current = false;
+      document.documentElement.style.overflow = "";
       return;
     }
 
@@ -243,6 +249,8 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       lockMinRef.current = null;
       lockMaxRef.current = null;
       arrivalScrollYRef.current = null;
+      scrollLockedByOverflowRef.current = false;
+      document.documentElement.style.overflow = "";
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOnRightRound, step, stepIndex]);
@@ -345,6 +353,84 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bubbleContainer]);
+
+  // Blocage silencieux (21/08, demande explicite de Gilles apres un vrai bug remonte : bloque
+  // sur mobile a l'etape V2, "avant meme de voir E et F en entier", du a l'inertie du scroll
+  // tactile qui depasse le plafond avant que le clamp reactif ci-dessus ne le rattrape, faisant
+  // disparaitre le contenu au rebond juste apres l'avoir entr'apercu). Deux volets :
+  // 1) intercepter wheel/touchmove EN AMONT (preventDefault) quand le geste va dans le sens
+  //    interdit et qu'on est deja a la limite : bloque le scroll "manuel" normal avant meme
+  //    qu'il se produise, rien a rattraper apres coup, pas de rebond visible.
+  // 2) l'inertie du trackpad/tactile (le mouvement continue apres avoir leve le doigt/lache la
+  //    molette) n'emet ni wheel ni touchmove : rien a intercepter. Seule parade : figer
+  //    physiquement le scroll (overflow:hidden) des qu'on atteint la limite, ce qui coupe
+  //    l'inertie en cours net. Retire des qu'un nouveau geste dans le sens autorise est
+  //    detecte (dans wheel/touchmove eux-memes, avant que ce nouveau scroll ne soit traite).
+  useEffect(() => {
+    function lockOverflow() {
+      if (scrollLockedByOverflowRef.current) return;
+      scrollLockedByOverflowRef.current = true;
+      document.documentElement.style.overflow = "hidden";
+    }
+    function unlockOverflow() {
+      if (!scrollLockedByOverflowRef.current) return;
+      scrollLockedByOverflowRef.current = false;
+      document.documentElement.style.overflow = "";
+    }
+    function isAtTop() {
+      return lockMinRef.current !== null && window.scrollY <= lockMinRef.current;
+    }
+    function isAtBottom() {
+      return lockMaxRef.current !== null && window.scrollY >= lockMaxRef.current;
+    }
+    function handleWheel(e: WheelEvent) {
+      if (e.deltaY < 0 && isAtTop()) {
+        e.preventDefault();
+        lockOverflow();
+      } else if (e.deltaY > 0 && isAtBottom()) {
+        e.preventDefault();
+        lockOverflow();
+      } else {
+        unlockOverflow();
+      }
+    }
+    function handleTouchStart(e: TouchEvent) {
+      touchStartYRef.current = e.touches[0].clientY;
+    }
+    function handleTouchMove(e: TouchEvent) {
+      if (touchStartYRef.current === null) return;
+      const currentY = e.touches[0].clientY;
+      // Positif = le doigt monte a l'ecran = geste "faire defiler vers le bas".
+      const deltaY = touchStartYRef.current - currentY;
+      touchStartYRef.current = currentY;
+      if (deltaY > 0 && isAtBottom()) {
+        e.preventDefault();
+        lockOverflow();
+      } else if (deltaY < 0 && isAtTop()) {
+        e.preventDefault();
+        lockOverflow();
+      } else {
+        unlockOverflow();
+      }
+    }
+    function handleTouchEnd() {
+      touchStartYRef.current = null;
+      // Pas de unlockOverflow() ici : l'inertie demarre justement au relachement du doigt, la
+      // retirer maintenant laisserait le scroll inertiel filer au-dela de la limite qu'on vient
+      // de figer. Le prochain geste (wheel/touchmove) dans le bon sens la retirera lui-meme.
+    }
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", handleTouchEnd);
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
+      unlockOverflow();
+    };
+  }, []);
 
   // Toast "Disponible après la visite" (21/08) : declenche depuis RoundContent.tsx (clic bloque
   // sur un lien pendant le tour), ferme au scroll ou au clic suivant n'importe ou sur la page, +
