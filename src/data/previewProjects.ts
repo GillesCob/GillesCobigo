@@ -249,6 +249,7 @@ export const previewProjects: Record<string, IPreviewProject> = {
     projectName: "La Malle d'Adour",
     logo: "/preview/la-malle-dadour/logo.webp",
     contactName: "L'équipe La Malle d'Adour",
+    phone: "06 70 22 42 86",
     currentRound: "V1",
     nextAction: "Premier contact, en attente de retour",
     feedbackFormId: "xgoggnej",
