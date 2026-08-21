@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 export interface ICaseStudyTourStep {
   round: string;
@@ -53,37 +54,65 @@ interface ICaseStudyTourState {
   status: ICaseStudyTourStatus;
   stepIndex: number;
   hasAutoStarted: boolean;
+  // Toast "Disponible après la visite" (21/08, mockup resynchronisé le même jour) : etat UI
+  // ephemere, jamais persiste (cf partialize plus bas), partage via le store pour etre declenche
+  // depuis RoundContent.tsx (clic bloque sur un lien pendant le tour) et affiche/ferme depuis
+  // CaseStudyTour.tsx (seul composant monte une fois par page, cf mecanique du mockup).
+  blockToastVisible: boolean;
   start: () => void;
   next: () => void;
   prev: () => void;
   skip: () => void;
   finish: () => void;
   restart: () => void;
+  showBlockToast: () => void;
+  hideBlockToast: () => void;
 }
 
 // Store global (pas de Context, cf regle projet) : la visite traverse plusieurs pages reelles
 // (/cas-client/v1 -> v2 -> v3 -> v6), chaque navigation demonte et remonte CaseStudyRound. Un
-// store Zustand survit a ces remontages (contrairement a un state local), sans avoir besoin de
-// sessionStorage puisque la visite ne doit pas survivre a un rechargement complet de page.
-export const useCaseStudyTourStore = create<ICaseStudyTourState>((set, get) => ({
-  status: "idle",
-  stepIndex: 0,
-  hasAutoStarted: false,
-  start: () => set({ status: "active", stepIndex: 0, hasAutoStarted: true }),
-  next: () => {
-    const { stepIndex } = get();
-    if (stepIndex >= CASE_STUDY_TOUR_STEPS.length - 1) {
-      set({ status: "finished" });
-      return;
+// store Zustand survit a ces remontages (contrairement a un state local).
+// Persistance sessionStorage (21/08, demande explicite de Gilles : "fais en sorte que les
+// rafraichissements des pages me fassent rester sur l'etape ou je suis", inversion assumee de la
+// decision du 20/08 qui excluait volontairement toute persistance). sessionStorage seulement,
+// jamais localStorage : la reprise doit survivre a un F5, jamais a une nouvelle visite un autre
+// jour (un onglet ferme vide sessionStorage). partialize exclut blockToastVisible (etat UI
+// ephemere, jamais pertinent apres un reload).
+export const useCaseStudyTourStore = create<ICaseStudyTourState>()(
+  persist(
+    (set, get) => ({
+      status: "idle",
+      stepIndex: 0,
+      hasAutoStarted: false,
+      blockToastVisible: false,
+      start: () => set({ status: "active", stepIndex: 0, hasAutoStarted: true }),
+      next: () => {
+        const { stepIndex } = get();
+        if (stepIndex >= CASE_STUDY_TOUR_STEPS.length - 1) {
+          set({ status: "finished" });
+          return;
+        }
+        set({ stepIndex: stepIndex + 1 });
+      },
+      prev: () => {
+        const { stepIndex } = get();
+        if (stepIndex === 0) return;
+        set({ stepIndex: stepIndex - 1 });
+      },
+      skip: () => set({ status: "off" }),
+      finish: () => set({ status: "finished" }),
+      restart: () => set({ status: "active", stepIndex: 0 }),
+      showBlockToast: () => set({ blockToastVisible: true }),
+      hideBlockToast: () => set({ blockToastVisible: false }),
+    }),
+    {
+      name: "case-study-tour-storage",
+      storage: createJSONStorage(() => sessionStorage),
+      partialize: (state) => ({
+        status: state.status,
+        stepIndex: state.stepIndex,
+        hasAutoStarted: state.hasAutoStarted,
+      }),
     }
-    set({ stepIndex: stepIndex + 1 });
-  },
-  prev: () => {
-    const { stepIndex } = get();
-    if (stepIndex === 0) return;
-    set({ stepIndex: stepIndex - 1 });
-  },
-  skip: () => set({ status: "off" }),
-  finish: () => set({ status: "finished" }),
-  restart: () => set({ status: "active", stepIndex: 0 }),
-}));
+  )
+);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
@@ -17,6 +17,11 @@ interface ICaseStudyTourProps {
   slug?: string;
 }
 
+// Etapes avec bulle du bas (21/08, demande explicite de Gilles, precisee deux fois : uniquement
+// 2 et 3, jamais 1 et 4) : sur une cible plus haute que l'ecran, le prospect qui scrolle pour
+// tout lire est oblige de remonter tout en haut pour retrouver "Suivant" sans elle.
+const STEPS_WITH_BOTTOM_BUBBLE = [1, 2];
+
 // Refonte du 20/08 (demande explicite de Gilles, apres plusieurs tours de rustines qui
 // corrigeaient chaque symptome sans regler la cause : bulle qui ne se rouvrait pas, se rouvrait
 // trop tot, se refermait hors du haut de page, s'ouvrait par-dessus le contenu). Cause racine de
@@ -28,29 +33,58 @@ interface ICaseStudyTourProps {
 //
 // Nouvelle mecanique : la bulle est un element normal du flux du document (via createPortal dans
 // un conteneur insere juste avant la cible), plus jamais positionnee par calcul JS. Le scroll natif
-// du navigateur (scrollIntoView) l'amene a l'ecran avec la cible, dans le bon ordre, sans aucun
-// calcul de position/marge/verrou a maintenir. Consequence assumee : plus de "bulle toujours
-// visible en haut de l'ecran" ni de verrou qui empeche de scroller ailleurs (l'utilisateur peut
-// scroller librement ; s'il s'eloigne de la bulle, un scroll manuel en arriere la retrouve, comme
-// n'importe quel contenu de page normal).
+// du navigateur (scrollIntoView) l'amene a l'ecran avec la cible, dans le bon ordre.
+//
+// Resynchronisee le 21/08 sur Projets/V1-Echanges/mockups/version-guided-tour.html (retouche du
+// meme jour, seule reference validee) : marge/largeur calquees sur la cible, verrou de scroll
+// (plancher sur toutes les etapes, plafond cale sur la bulle du bas aux etapes 2/3 ou sur le bas
+// de la cible sinon), 2e bulle compacte en bas de cible aux etapes 2/3, curseur "interdit" +
+// toast mobile sur les liens bloques (cf RoundContent.tsx), reprise apres rechargement (cf
+// caseStudyTourStore.ts, persist sessionStorage).
 export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: ICaseStudyTourProps) {
   const navigate = useNavigate();
   const status = useCaseStudyTourStore((s) => s.status);
   const stepIndex = useCaseStudyTourStore((s) => s.stepIndex);
   const hasAutoStarted = useCaseStudyTourStore((s) => s.hasAutoStarted);
+  const blockToastVisible = useCaseStudyTourStore((s) => s.blockToastVisible);
   const start = useCaseStudyTourStore((s) => s.start);
   const next = useCaseStudyTourStore((s) => s.next);
   const prev = useCaseStudyTourStore((s) => s.prev);
   const skip = useCaseStudyTourStore((s) => s.skip);
   const restart = useCaseStudyTourStore((s) => s.restart);
+  const hideBlockToast = useCaseStudyTourStore((s) => s.hideBlockToast);
 
   const roundLower = currentRound.toLowerCase();
   const step = CASE_STUDY_TOUR_STEPS[stepIndex];
   const isOnRightRound = status === "active" && step.round === roundLower;
+  const hasBottomBubble = STEPS_WITH_BOTTOM_BUBBLE.includes(stepIndex);
 
-  // Conteneur DOM insere juste avant la cible, dans lequel la bulle est portee (cf effet
-  // ci-dessous). null tant qu'aucune cible n'est trouvee/montee.
+  // Conteneurs DOM inseres juste avant/apres la cible, dans lesquels les bulles sont portees (cf
+  // effet ci-dessous). null tant qu'aucune cible n'est trouvee/montee.
   const [bubbleContainer, setBubbleContainer] = useState<HTMLElement | null>(null);
+  const [bubbleContainerBottom, setBubbleContainerBottom] = useState<HTMLElement | null>(null);
+
+  // Verrou de scroll (21/08) : refs, pas de state, seulement lus par les listeners scroll/resize
+  // globaux ci-dessous, aucun re-render necessaire quand leur valeur change.
+  const targetElRef = useRef<HTMLElement | null>(null);
+  const bottomContainerRef = useRef<HTMLElement | null>(null);
+  const lockMinRef = useRef<number | null>(null);
+  const lockMaxRef = useRef<number | null>(null);
+  const isProgrammaticScrollRef = useRef(false);
+
+  // Reference du plafond : la bulle du bas si elle existe (etapes 2/3, "pas plus loin que la
+  // bulle du dessous"), sinon la cible elle-meme (etapes 1/4, "pas plus loin que le bas de la
+  // zone presentee"). Jamais aucune des deux : pas de plafond.
+  function computeLockMax() {
+    const reference = bottomContainerRef.current ?? targetElRef.current;
+    if (!reference) {
+      lockMaxRef.current = null;
+      return;
+    }
+    const rect = reference.getBoundingClientRect();
+    const candidate = rect.bottom + window.scrollY - window.innerHeight;
+    lockMaxRef.current = lockMinRef.current !== null ? Math.max(candidate, lockMinRef.current) : candidate;
+  }
 
   // Auto-demarrage uniquement en arrivant sur la V1, une seule fois par session de navigation
   // (hasAutoStarted persiste dans le store, jamais relance meme si on revient sur la V1 apres
@@ -70,21 +104,26 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
     }
   }, [status, step, roundLower, search, navigate]);
 
-  // Spotlight sur la cible + insertion de la bulle juste avant elle dans le DOM, uniquement quand
-  // l'etape correspond a la version reellement affichee (sinon la navigation ci-dessus est en
-  // cours). Un seul effet, plus aucun calcul de scroll/marge/verrou : scrollIntoView natif fait
-  // tout le travail de positionnement.
+  // Spotlight sur la cible + insertion des bulles juste avant/apres elle dans le DOM, uniquement
+  // quand l'etape correspond a la version reellement affichee.
   useEffect(() => {
     if (!isOnRightRound) {
       setBubbleContainer(null);
+      setBubbleContainerBottom(null);
+      targetElRef.current = null;
+      bottomContainerRef.current = null;
+      lockMinRef.current = null;
+      lockMaxRef.current = null;
       return;
     }
 
     const target = document.querySelector<HTMLElement>(`[data-tour-key="${step.key}"]`);
     if (!target) {
       setBubbleContainer(null);
+      setBubbleContainerBottom(null);
       return;
     }
+    targetElRef.current = target;
 
     target.style.position = "relative";
     target.style.zIndex = "60";
@@ -100,21 +139,51 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       target.style.boxSizing = "border-box";
     }
 
-    // Conteneur de la bulle : z-index STRICTEMENT superieur a celui de la cible (corrige le 20/08,
-    // ecart trouve par Gilles : "les bulles sont grisees"). A z-index egal, deux freres positionnes
-    // se departagent par l'ordre du DOM, pas la valeur numerique - la cible arrivant apres le
-    // conteneur, son enorme box-shadow (l'assombrissement plein ecran) se peignait par-dessus la
-    // bulle. 61 > 60 : la bulle reste toujours au-dessus du cache, quel que soit l'ordre DOM.
+    // Conteneur de la bulle du haut : z-index STRICTEMENT superieur a celui de la cible (a
+    // z-index egal, deux freres positionnes se departagent par l'ordre du DOM, la cible arrivant
+    // apres son enorme box-shadow se peignait par-dessus la bulle).
     const container = document.createElement("div");
     container.style.position = "relative";
     container.style.zIndex = "61";
     target.parentNode?.insertBefore(container, target);
-    // setBubbleContainer declenche le rendu du portail (bulle) DANS ce conteneur, mais de facon
-    // asynchrone (mise a jour d'etat React) : le scroll ne doit se faire qu'une fois ce contenu
-    // reellement monte, cf effet dedie plus bas qui depend de bubbleContainer, jamais ici avant
-    // que le conteneur n'ait sa hauteur finale (sinon scrollIntoView vise un conteneur encore
-    // vide, hauteur 0, et le repositionnement une fois la bulle montee est visible/saccade).
+
+    // Largeur/position calquees sur la cible, pas sur son parent (21/08, "sur toute la largeur
+    // de la zone expliquee") : sans ce recalage, un item de grille (v6-proposals, sous-groupe
+    // dans la grille 2 colonnes des propositions) heriterait de toute la largeur du grand parent
+    // grid, pas seulement celle du sous-groupe spotlighte.
+    const targetRect = target.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    container.style.width = `${targetRect.width}px`;
+    container.style.marginLeft = `${targetRect.left - containerRect.left}px`;
+    // Marge + scroll-margin (21/08, "petit decalage", pas colle en haut de la page une fois
+    // amenee par scrollIntoView) : scroll-margin-top, pas juste margin-top (un margin classique
+    // ne cree de l'espace qu'avec l'element precedent dans le flux, scrollIntoView aligne la
+    // boite elle-meme sur le haut de la fenetre, la marge se retrouve scrollee hors champ).
+    container.style.marginTop = "10px";
+    container.style.marginBottom = "10px";
+    container.style.scrollMarginTop = "10px";
+
     setBubbleContainer(container);
+
+    // 2e bulle, compacte, SOUS la cible (21/08), seulement etapes 2/3. Frere APRES la cible,
+    // jamais dedans (elle doit rester hors du cadre spotlight, pas fondue dedans).
+    let bottomContainer: HTMLElement | null = null;
+    if (STEPS_WITH_BOTTOM_BUBBLE.includes(stepIndex)) {
+      bottomContainer = document.createElement("div");
+      bottomContainer.style.position = "relative";
+      bottomContainer.style.zIndex = "61";
+      bottomContainer.style.marginTop = "10px";
+      bottomContainer.style.marginBottom = "10px";
+      target.after(bottomContainer);
+      if (getComputedStyle(target).display === "grid") {
+        bottomContainer.style.gridColumn = "1 / -1";
+      }
+      bottomContainerRef.current = bottomContainer;
+      setBubbleContainerBottom(bottomContainer);
+    } else {
+      bottomContainerRef.current = null;
+      setBubbleContainerBottom(null);
+    }
 
     return () => {
       target.style.position = "";
@@ -123,18 +192,96 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       target.style.padding = "";
       target.style.boxSizing = "";
       container.remove();
+      bottomContainer?.remove();
+      targetElRef.current = null;
+      bottomContainerRef.current = null;
+      lockMinRef.current = null;
+      lockMaxRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOnRightRound, step]);
+  }, [isOnRightRound, step, stepIndex]);
 
   // Scroll dedie, separe de l'effet ci-dessus : ne se declenche qu'une fois bubbleContainer mis a
   // jour ET le rendu (portail de la bulle dedans) reellement commite par React, donc une fois le
-  // conteneur a sa hauteur finale. Saut instantane (pas "smooth", meme convention que le reste du
-  // funnel) : evite qu'une animation ne s'enchaine avec un autre scroll et donne un rendu bugue.
+  // conteneur a sa hauteur finale. Saut instantane : evite qu'une animation ne s'enchaine avec un
+  // autre scroll et donne un rendu bugue. Pose aussi le plancher/plafond du verrou (21/08).
   useEffect(() => {
     if (!bubbleContainer) return;
+    isProgrammaticScrollRef.current = true;
     bubbleContainer.scrollIntoView({ behavior: "instant", block: "start" });
+    lockMinRef.current = window.scrollY;
+    computeLockMax();
+    requestAnimationFrame(() => {
+      isProgrammaticScrollRef.current = false;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bubbleContainer]);
+
+  // Verrou de scroll global (21/08, demande explicite de Gilles : "bloquer le scroll pour ne pas
+  // aller plus haut... on ne peut que descendre vers le bas", puis "impossible de scroller plus
+  // loin que la bulle du dessous"/"le bas de la zone presentee"). isProgrammaticScrollRef evite
+  // que notre propre rattrapage (window.scrollTo) ne se re-declenche lui-meme via l'evenement
+  // scroll qu'il provoque. Le resize remesure la position reelle des bulles plutot que de garder
+  // l'ancienne valeur (une bulle dont le texte wrap differemment selon la largeur d'ecran n'est
+  // plus au meme scrollY).
+  useEffect(() => {
+    function handleScroll() {
+      if (isProgrammaticScrollRef.current) return;
+      if (lockMinRef.current !== null && window.scrollY < lockMinRef.current) {
+        isProgrammaticScrollRef.current = true;
+        window.scrollTo(0, lockMinRef.current);
+        requestAnimationFrame(() => {
+          isProgrammaticScrollRef.current = false;
+        });
+      } else if (lockMaxRef.current !== null && window.scrollY > lockMaxRef.current) {
+        isProgrammaticScrollRef.current = true;
+        window.scrollTo(0, lockMaxRef.current);
+        requestAnimationFrame(() => {
+          isProgrammaticScrollRef.current = false;
+        });
+      }
+    }
+    function handleResize() {
+      const container = bubbleContainer;
+      const target = targetElRef.current;
+      if (!container || !target) return;
+      container.style.width = "";
+      container.style.marginLeft = "";
+      const targetRect = target.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      container.style.width = `${targetRect.width}px`;
+      container.style.marginLeft = `${targetRect.left - containerRect.left}px`;
+      const scrollMarginTop = parseFloat(getComputedStyle(container).scrollMarginTop) || 0;
+      lockMinRef.current = container.getBoundingClientRect().top + window.scrollY - scrollMarginTop;
+      computeLockMax();
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bubbleContainer]);
+
+  // Toast "Disponible après la visite" (21/08) : declenche depuis RoundContent.tsx (clic bloque
+  // sur un lien pendant le tour), ferme au scroll ou au clic suivant n'importe ou sur la page, +
+  // un filet de securite 4s. Le clic qui vient de le declencher ne doit pas le refermer aussitot
+  // (meme evenement remontant en capture) : n'ecoute qu'a partir du prochain tour d'evenements.
+  useEffect(() => {
+    if (!blockToastVisible) return;
+    const timeoutId = window.setTimeout(hideBlockToast, 4000);
+    const rafId = requestAnimationFrame(() => {
+      document.addEventListener("click", hideBlockToast, { capture: true, once: true });
+    });
+    window.addEventListener("scroll", hideBlockToast, { passive: true, once: true });
+    return () => {
+      window.clearTimeout(timeoutId);
+      cancelAnimationFrame(rafId);
+      document.removeEventListener("click", hideBlockToast, true);
+      window.removeEventListener("scroll", hideBlockToast);
+    };
+  }, [blockToastVisible, hideBlockToast]);
 
   // Fin reelle de la visite ("Terminer" sur la derniere etape) : retour propre sur la V1 en
   // haut de page plutot que de laisser le prospect sur la V6 au milieu du scroll, puis affichage
@@ -176,7 +323,7 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       >
         <div className="max-w-[520px] rounded-2xl border border-border bg-card py-14 px-12 text-center shadow-2xl">
           <p className="mb-9 text-base leading-relaxed text-muted-foreground">
-            Ce parcours pourrait être le vôtre !
+            <strong>Ce parcours pourrait être le vôtre !</strong>
             <br />
             La communication est la clé pour réussir à construire un site à votre image.
             <br />
@@ -201,35 +348,72 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
 
   if (!isOnRightRound || !bubbleContainer) return null;
 
-  return createPortal(
-    <div className="mb-6 rounded-lg border border-border bg-foreground px-5 py-4 text-sm leading-relaxed text-background shadow-lg">
-      <div className="mb-2 text-[11px] font-bold uppercase tracking-wide opacity-55">
-        Étape {stepIndex + 1} / {CASE_STUDY_TOUR_STEPS.length}
-      </div>
-      {step.text.map((line, i) => (
-        <p key={i} className="mb-3.5 last:mb-4">
-          {line}
-        </p>
-      ))}
-      <div className="flex items-center justify-end gap-2">
-        {stepIndex !== 0 && (
-          <button
-            type="button"
-            onClick={prev}
-            className="rounded-md border border-current px-3 py-1.5 text-xs font-semibold opacity-60"
-          >
-            ← Précédent
-          </button>
+  return (
+    <>
+      {createPortal(
+        <div className="rounded-lg border border-border bg-foreground px-5 py-4 text-sm leading-relaxed text-background shadow-lg">
+          <div className="mb-2 text-[11px] font-bold uppercase tracking-wide opacity-55">
+            Étape {stepIndex + 1} / {CASE_STUDY_TOUR_STEPS.length}
+          </div>
+          {step.text.map((line, i) => (
+            <p key={i} className="mb-3.5 last:mb-4">
+              {line}
+            </p>
+          ))}
+          <div className="flex items-center justify-end gap-2">
+            {stepIndex !== 0 && (
+              <button
+                type="button"
+                onClick={prev}
+                className="rounded-md border border-current px-3 py-1.5 text-xs font-semibold opacity-60"
+              >
+                ← Précédent
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={next}
+              className="rounded-md bg-background px-3 py-1.5 text-xs font-semibold text-foreground"
+            >
+              {stepIndex === CASE_STUDY_TOUR_STEPS.length - 1 ? "Terminer" : "Suivant →"}
+            </button>
+          </div>
+        </div>,
+        bubbleContainer
+      )}
+      {hasBottomBubble &&
+        bubbleContainerBottom &&
+        createPortal(
+          <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-foreground px-5 py-4 text-sm text-background shadow-lg">
+            <div className="text-[11px] font-bold uppercase tracking-wide opacity-55">
+              Étape {stepIndex + 1} / {CASE_STUDY_TOUR_STEPS.length}
+            </div>
+            <div className="flex items-center gap-2">
+              {stepIndex !== 0 && (
+                <button
+                  type="button"
+                  onClick={prev}
+                  className="rounded-md border border-current px-3 py-1.5 text-xs font-semibold opacity-60"
+                >
+                  ← Précédent
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={next}
+                className="rounded-md bg-background px-3 py-1.5 text-xs font-semibold text-foreground"
+              >
+                {stepIndex === CASE_STUDY_TOUR_STEPS.length - 1 ? "Terminer" : "Suivant →"}
+              </button>
+            </div>
+          </div>,
+          bubbleContainerBottom
         )}
-        <button
-          type="button"
-          onClick={next}
-          className="rounded-md bg-background px-3 py-1.5 text-xs font-semibold text-foreground"
-        >
-          {stepIndex === CASE_STUDY_TOUR_STEPS.length - 1 ? "Terminer" : "Suivant →"}
-        </button>
-      </div>
-    </div>,
-    bubbleContainer
+      {blockToastVisible && (
+        <div className="fixed bottom-8 left-1/2 z-[10005] -translate-x-1/2 whitespace-nowrap rounded-full bg-foreground px-4 py-2.5 text-sm font-semibold text-background shadow-lg">
+          Disponible après la visite
+        </div>
+      )}
+    </>
   );
 }

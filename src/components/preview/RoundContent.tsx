@@ -49,8 +49,18 @@ function ProposalCard({ p }: { p: IPreviewProposal }) {
   // de /cas-client, cf CaseStudyTour.tsx — sans effet sur la page privée réelle PreviewRound.tsx,
   // qui ne monte jamais de tour).
   const isTouring = useCaseStudyTourStore((s) => s.status === "active");
+  const showBlockToast = useCaseStudyTourStore((s) => s.showBlockToast);
+  // Plus de pointer-events-none (21/08, demande explicite de Gilles) : un element pointer-events
+  // none ne recoit jamais de survol, impossible d'y afficher un curseur "interdit". Le blocage du
+  // clic est desormais fait ici, cursor-not-allowed (cf className) donne le retour visuel laptop,
+  // le toast "Disponible après la visite" (uniquement au tap mobile, matchMedia pointer:coarse)
+  // le retour mobile.
   function blockDuringTour(e: MouseEvent) {
-    if (isTouring) e.preventDefault();
+    if (!isTouring) return;
+    e.preventDefault();
+    if (window.matchMedia("(pointer: coarse)").matches) {
+      showBlockToast();
+    }
   }
   return (
     <div className="rounded-xl border border-border p-4 bg-card">
@@ -62,7 +72,7 @@ function ProposalCard({ p }: { p: IPreviewProposal }) {
         aria-disabled={isTouring}
         tabIndex={isTouring ? -1 : undefined}
         onClick={blockDuringTour}
-        className={`block rounded-lg border border-border overflow-hidden mb-3 bg-muted/30 ${isTouring ? "pointer-events-none" : ""}`}
+        className={`block rounded-lg border border-border overflow-hidden mb-3 bg-muted/30 ${isTouring ? "cursor-not-allowed" : ""}`}
       >
         {/* eager pendant le tour (corrige le 20/08, ecart trouve par Gilles : "mini scroll
             parasite" a l'arrivee sur l'etape V2, 6 images dans le bloc spotlighte) : en lazy,
@@ -78,11 +88,10 @@ function ProposalCard({ p }: { p: IPreviewProposal }) {
           loading={isTouring ? "eager" : "lazy"}
         />
       </a>
-      {/* Pas d'opacite en plus pendant le tour (corrige le 20/08, ecart trouve par Gilles) : cf
-          version-guided-tour.html, ":root:not(.tour-off) .proposal .btn{pointer-events:none}",
-          sans regle d'opacite associee - ces cartes sont precisement le sujet spotlighte, les
-          assombrir davantage brouillerait la demonstration. */}
-      <Button asChild variant="outline" size="sm" className={isTouring ? "pointer-events-none" : undefined}>
+      {/* Pas d'opacite en plus pendant le tour (corrige le 20/08, ecart trouve par Gilles) : ces
+          cartes sont precisement le sujet spotlighte, les assombrir davantage brouillerait la
+          demonstration. Plus de pointer-events-none (21/08, cf blockDuringTour ci-dessus). */}
+      <Button asChild variant="outline" size="sm" className={isTouring ? "cursor-not-allowed" : undefined}>
         <a
           href={p.htmlPath}
           target="_blank"
