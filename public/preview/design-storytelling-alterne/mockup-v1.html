@@ -77,6 +77,9 @@
 
   .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:var(--accent-dark); color:#fff; padding:14px 20px; text-align:center; font-family:'Nunito',-apple-system,sans-serif; font-size:14px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
   .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
+  .infos-pratiques p{margin-bottom:6px;}
+  .infos-pratiques p:last-child{margin-bottom:0;}
+  .info-tel{white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -154,7 +157,12 @@
   <div class="row-text reveal">
     <div class="row-num">05</div>
     <h2>Nous trouver</h2>
-    <p>[Adresse complète]<br>[Horaires]<br>[Numéro] · [Email]</p>
+    <div class="infos-pratiques">
+      <p>[Adresse complète]</p>
+      <p>[Horaires]</p>
+      <p class="info-tel">[Numéro]</p>
+      <p>[Email]</p>
+    </div>
   </div>
 </div>
 

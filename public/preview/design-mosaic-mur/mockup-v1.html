@@ -71,6 +71,9 @@
 
   @media(max-width:760px){ .mur{columns:2 160px;} }
   @media(max-width:480px){ .mur{columns:1;} }
+  .infos-pratiques p{margin-bottom:6px;}
+  .infos-pratiques p:last-child{margin-bottom:0;}
+  .info-tel{white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -123,7 +126,12 @@
   <div class="tuile photo h2 reveal"></div>
   <div class="tuile card reveal">
     <h2 style="font-size:17px; margin-bottom:8px;">Bon à savoir</h2>
-    <p style="font-size:13.5px;">[Adresse complète]<br>[Horaires]<br>[Téléphone] · [Email]</p>
+    <div class="infos-pratiques">
+      <p>[Adresse complète]</p>
+      <p>[Horaires]</p>
+      <p class="info-tel">[Téléphone]</p>
+      <p>[Email]</p>
+    </div>
   </div>
   <div class="tuile map h3 reveal">Carte Google Maps</div>
   <div class="tuile photo h3 reveal"></div>
