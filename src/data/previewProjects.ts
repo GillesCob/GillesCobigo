@@ -337,6 +337,27 @@ export const previewProjects: Record<string, IPreviewProject> = {
       },
     ],
   },
+  QIV4Yvs1ah: {
+    slug: "maison-creme",
+    projectName: "Maison Crème",
+    logo: "/preview/maison-creme/logo.jpg",
+    contactName: "Mélissa Noto",
+    currentRound: "V1",
+    nextAction: "Premier contact, en attente de retour",
+    feedbackFormId: "xgoggnej",
+    coldIntro:
+      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre commerce.",
+    rounds: [
+      {
+        round: "V1",
+        date: "23 août 2026",
+        proposals: [
+          { label: "Votre site, premier jet", screenshot: "/preview/maison-creme/logo.jpg", htmlPath: "/preview/maison-creme/QIV4Yvs1ah/V1/P1" },
+        ],
+        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
+      },
+    ],
+  },
   // Entree de demo, donnees factices (nom generique + logo de Gilles), sert a visualiser
   // le template "V1-Echanges" sans exposer de vraie donnee client. Cf Projets/V1-Echanges/suivi.html.
   "demo-template": {
