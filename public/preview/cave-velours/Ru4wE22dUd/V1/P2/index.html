@@ -172,7 +172,7 @@
   <div class="kicker">Cave à vins, spiritueux &amp; bières 100% sans alcool</div>
   <h1>Cave Velours</h1>
   <p>Du bon, du beau, du fun.</p>
-  <a href="#contact" class="btn">Nous écrire</a>
+  <a href="#contact" class="btn" onclick="scrollToContact('contact');return false;">Nous écrire</a>
 </div>
 
 <div class="cadre">
@@ -290,6 +290,17 @@
     window.addEventListener('resize', checkNearBottom);
     checkNearBottom();
   })();
+  function scrollToContact(targetId, buffer){
+    var el = document.getElementById(targetId || 'contact');
+    if(!el) return;
+    var doc = document.documentElement;
+    var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight);
+    var maxScroll = pageHeight - window.innerHeight;
+    var elTop = el.getBoundingClientRect().top + window.scrollY;
+    var safeLimit = maxScroll - (buffer || 220);
+    var target = Math.min(elTop - 24, safeLimit);
+    window.scrollTo({top: Math.max(target, 0), behavior: 'smooth'});
+  }
 </script>
 <script>
   // Tracking funnel Boutiques Tier 1 (cf Projets/Boutiques/workflow-cc.md). Beacon fire-and-forget,
