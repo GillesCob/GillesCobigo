@@ -182,7 +182,7 @@
   <div class="tagline">Atelier de couture</div>
   <h1>Trois Petits Muscaris</h1>
   <p>Retouches &amp; cours de couture à Mont-de-Marsan, dans une ambiance conviviale et bienveillante.</p>
-  <a href="#contact" class="btn">Nous écrire</a>
+  <a href="#contact" class="btn" onclick="scrollToContact('contact');return false;">Nous écrire</a>
 </div>
 
 <div class="timeline">
@@ -314,6 +314,17 @@
     window.addEventListener('resize', checkNearBottom);
     checkNearBottom();
   })();
+  function scrollToContact(targetId, buffer){
+    var el = document.getElementById(targetId || 'contact');
+    if(!el) return;
+    var doc = document.documentElement;
+    var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight);
+    var maxScroll = pageHeight - window.innerHeight;
+    var elTop = el.getBoundingClientRect().top + window.scrollY;
+    var safeLimit = maxScroll - (buffer || 220);
+    var target = Math.min(elTop - 24, safeLimit);
+    window.scrollTo({top: Math.max(target, 0), behavior: 'smooth'});
+  }
 </script>
 <script>
   // Tracking funnel Boutiques Tier 1 (cf Projets/Boutiques/workflow-cc.md). Beacon fire-and-forget,

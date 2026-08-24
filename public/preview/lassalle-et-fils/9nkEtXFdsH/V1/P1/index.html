@@ -149,7 +149,7 @@
     <div class="tagline">Plomberie · Sanitaire · Chauffage · Climatisation</div>
     <h1>Lassalle et Fils</h1>
     <p class="sub">Entreprise familiale depuis 1932 · Certifiée RGE</p>
-    <a href="#univers" class="btn">Demander un devis gratuit</a>
+    <a href="#contact" class="btn" onclick="scrollToContact('contact');return false;">Demander un devis gratuit</a>
   </div>
   <svg class="wave" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0,20 C200,55 350,0 600,22 C850,44 1000,5 1200,25 L1200,60 L0,60 Z" fill="#fdf6ee"></path></svg>
 </section>
@@ -209,7 +209,7 @@
       <button type="button" class="map-recenter" onclick="recenterMap()" aria-label="Recentrer la carte">↺ Recentrer</button>
     </div>
   </div>
-  <div class="contact-card reveal">
+  <div class="contact-card reveal" id="contact">
     <h2>Demander un devis</h2>
     <form action="#" method="POST">
       <input type="text" name="nom" placeholder="Votre nom" required>
@@ -283,6 +283,17 @@
     window.addEventListener('resize', checkNearBottom);
     checkNearBottom();
   })();
+  function scrollToContact(targetId, buffer){
+    var el = document.getElementById(targetId || 'contact');
+    if(!el) return;
+    var doc = document.documentElement;
+    var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight);
+    var maxScroll = pageHeight - window.innerHeight;
+    var elTop = el.getBoundingClientRect().top + window.scrollY;
+    var safeLimit = maxScroll - (buffer || 220);
+    var target = Math.min(elTop - 24, safeLimit);
+    window.scrollTo({top: Math.max(target, 0), behavior: 'smooth'});
+  }
 </script>
 <script>
   (function(){

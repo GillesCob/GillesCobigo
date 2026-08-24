@@ -121,7 +121,7 @@
   <div class="kicker">Chauffage · Pompes à chaleur · Climatisation · Ventilation</div>
   <h1>EGC Services</h1>
   <p>Votre confort thermique, toute l'année.</p>
-  <a href="#contact" class="btn">Nous écrire</a>
+  <a href="#contact" class="btn" onclick="scrollToContact('contact');return false;">Nous écrire</a>
 </div>
 
 <div class="cadre">
@@ -233,6 +233,17 @@
     window.addEventListener('resize', checkNearBottom);
     checkNearBottom();
   })();
+  function scrollToContact(targetId, buffer){
+    var el = document.getElementById(targetId || 'contact');
+    if(!el) return;
+    var doc = document.documentElement;
+    var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight);
+    var maxScroll = pageHeight - window.innerHeight;
+    var elTop = el.getBoundingClientRect().top + window.scrollY;
+    var safeLimit = maxScroll - (buffer || 220);
+    var target = Math.min(elTop - 24, safeLimit);
+    window.scrollTo({top: Math.max(target, 0), behavior: 'smooth'});
+  }
 </script>
 <script>
   (function(){

@@ -121,7 +121,7 @@
   <div class="tagline">Brunch &amp; pâtisserie</div>
   <h1>Maison Crème</h1>
   <p>Petit déjeuner, brunch et goûter, à partir de produits locaux et de saison, à Mont-de-Marsan.</p>
-  <a href="#contact" class="btn">Nous écrire</a>
+  <a href="#contact" class="btn" onclick="scrollToContact('contact');return false;">Nous écrire</a>
 </div>
 
 <div class="row" data-section>
@@ -276,6 +276,17 @@
     window.addEventListener('scroll', checkNearBottom, {passive:true});
     window.addEventListener('resize', checkNearBottom);
   })();
+  function scrollToContact(targetId, buffer){
+    var el = document.getElementById(targetId || 'contact');
+    if(!el) return;
+    var doc = document.documentElement;
+    var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight);
+    var maxScroll = pageHeight - window.innerHeight;
+    var elTop = el.getBoundingClientRect().top + window.scrollY;
+    var safeLimit = maxScroll - (buffer || 220);
+    var target = Math.min(elTop - 24, safeLimit);
+    window.scrollTo({top: Math.max(target, 0), behavior: 'smooth'});
+  }
 </script>
 <script>
   (function(){
@@ -290,6 +301,5 @@
     } catch (e) {}
   })();
 </script>
-  <script src="../../../../../_templates/comment-bubble.js"></script>
 </body>
 </html>
