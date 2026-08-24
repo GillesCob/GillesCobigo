@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/jpeg" href="/preview/eve-boutique/logo.jpg">
+<title>Eve Boutique, proposition de site (2/2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Fraunces:wght@600;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --accent:#221f1c; --text:#1c1a17; --creme:#f4f1ea;
+    --font-a:'Fraunces',serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{overflow-x:clip;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--text); background:var(--creme); line-height:1.7;}
+  img{max-width:100%; display:block;}
+  .btn{display:inline-block; padding:12px 30px; background:none; color:var(--text); text-decoration:none; font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.1em; border:2px solid var(--text); cursor:pointer; font-family:inherit;}
+  .btn:hover{background:var(--text); color:var(--creme);}
+  .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease;}
+  .reveal.show{opacity:1; transform:translateY(0);}
+
+  .to-top{position:fixed; bottom:78px; right:16px; z-index:999; width:42px; height:42px; border:2px solid var(--text); background:var(--creme); color:var(--text); font-size:16px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease;}
+  .to-top.show{opacity:1; pointer-events:auto;}
+
+  .masthead{position:relative; overflow:hidden; text-align:center; padding:70px 5vw 40px; border-bottom:3px solid var(--text);}
+  .masthead-photo{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:grayscale(1) contrast(1.05); opacity:.4; z-index:0;}
+  .masthead-photo-overlay{position:absolute; inset:0; background:var(--creme); opacity:.45; z-index:1;}
+  .masthead-inner{position:relative; z-index:2;}
+  .masthead .kicker{font-size:11px; text-transform:uppercase; letter-spacing:.25em; margin-bottom:18px;}
+  .masthead .logo-round{width:72px; height:72px; border-radius:50%; margin:0 auto 18px; object-fit:contain; background:#fff; border:1px solid var(--text); padding:6px;}
+  .masthead h1{font-family:var(--font-a); font-weight:900; font-size:clamp(34px,7vw,60px); letter-spacing:-.01em;}
+  .masthead .rule{width:60px; height:2px; background:var(--text); margin:20px auto;}
+  .masthead p{font-size:14.5px; max-width:440px; margin:0 auto 24px; opacity:.85;}
+
+  .cols{max-width:900px; margin:0 auto; padding:56px 5vw; display:grid; grid-template-columns:1fr 1fr; gap:0;}
+  .cols > div{padding:0 30px; border-left:1px solid rgba(28,26,23,.2);}
+  .cols > div:first-child{border-left:none; padding-left:0;}
+  .cols h2{font-family:var(--font-a); font-size:13px; text-transform:uppercase; letter-spacing:.14em; margin-bottom:16px;}
+  .cols p{font-size:14px;}
+  .cols ol{padding-left:18px; font-size:13.5px;}
+  .cols li{margin-bottom:6px;}
+
+  .quote-block{max-width:640px; margin:10px auto 56px; padding:0 5vw; text-align:center;}
+  .quote-block .rule{width:60px; height:2px; background:var(--text); margin:0 auto 24px;}
+  .quote-block p{font-family:var(--font-a); font-style:italic; font-size:24px; line-height:1.5;}
+
+  .facts{max-width:900px; margin:0 auto; padding:0 5vw 56px; display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid rgba(28,26,23,.2); border-bottom:1px solid rgba(28,26,23,.2);}
+  .facts > div{padding:22px 16px; text-align:center; border-left:1px solid rgba(28,26,23,.2);}
+  .facts > div:first-child{border-left:none;}
+  .facts .label{font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; opacity:.65; margin-bottom:6px;}
+  .facts .val{font-family:var(--font-a); font-weight:700; font-size:13.5px;}
+
+  .closing{max-width:900px; margin:56px auto 0; padding:0 5vw 70px; display:grid; grid-template-columns:1fr 1fr; gap:0;}
+  .closing > div{padding:0 30px;}
+  .closing > div:first-child{padding-left:0; border-right:1px solid rgba(28,26,23,.2);}
+  .map-wrap{position:relative;}
+  .map-embed{width:100%; height:200px; background:#e8e3da;}
+  .map-lock{position:absolute; inset:0; background:rgba(28,26,23,.35); color:#fff; display:flex; align-items:center; justify-content:center; text-align:center; font-size:12.5px; font-weight:700; padding:10px; cursor:pointer; transition:opacity .2s ease; z-index:401;}
+  .map-lock.hidden{opacity:0; pointer-events:none;}
+  .map-recenter{position:absolute; bottom:8px; left:8px; z-index:401; background:#fff; color:var(--text); border:1px solid rgba(28,26,23,.2); padding:4px 8px; font-size:10.5px; font-family:inherit; cursor:pointer;}
+  .leaflet-control-attribution{font-size:9px; background:rgba(255,255,255,.75); padding:1px 4px;}
+  .contact-card h3{font-family:var(--font-a); font-size:15px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:14px;}
+  .contact-card form{display:flex; flex-direction:column; gap:11px;}
+  .contact-card input, .contact-card textarea{padding:10px 12px; border:1px solid var(--text); font-family:inherit; font-size:14px; background:var(--creme);}
+  .contact-card textarea{min-height:76px; resize:vertical;}
+
+  footer{text-align:center; padding:24px; background:var(--text); color:var(--creme); font-size:12px; letter-spacing:.05em;}
+
+  .proposition-banner{position:fixed; top:0; left:0; right:0; z-index:1000; background:#18181b; color:#fff; text-align:center; padding:10px 16px; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;}
+  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:#18181b; color:#fff; padding:22px 20px; text-align:center; font-family:'Nunito',sans-serif; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
+  .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
+  .retour-bandeau a.retour-bandeau-confidentialite{display:block; text-align:right; margin:6px 0 0; font-size:10.5px; font-weight:600; opacity:.55;}
+  @media(max-width:480px){
+    .retour-bandeau a.retour-bandeau-confidentialite{text-align:center; margin-top:16px;}
+  }
+
+  .result-modal-overlay{position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .3s ease;}
+  .result-modal-overlay.show{opacity:1; pointer-events:auto;}
+  .result-modal{position:relative; max-width:380px; width:100%; background:var(--creme); border-radius:20px; padding:38px 30px 32px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.35); transform:translateY(14px); transition:transform .3s ease;}
+  .result-modal-overlay.show .result-modal{transform:translateY(0);}
+  .result-modal h2{font-family:var(--font-a); font-size:23px; margin:0 0 10px; color:var(--text);}
+  .result-modal p{font-size:14.5px; color:var(--text); opacity:.7; margin:0 0 24px; line-height:1.5;}
+  .result-modal-close{position:absolute; top:12px; right:12px; background:none; border:0; font-size:18px; line-height:1; color:var(--text); opacity:.5; cursor:pointer; padding:8px;}
+
+  @media(max-width:760px){
+    .cols{grid-template-columns:1fr; padding:44px 22px;}
+    .cols > div{border-left:none; padding:0 0 30px;}
+    .facts{grid-template-columns:1fr 1fr;}
+    .facts > div:nth-child(3){border-left:none;}
+    .closing{grid-template-columns:1fr; padding:0 22px 60px;}
+    .closing > div:first-child{border-right:none; padding-bottom:30px;}
+  }
+</style>
+</head>
+<body>
+<div class="proposition-banner">2ème proposition</div>
+
+<div class="result-modal-overlay" id="resultModalOverlay">
+  <div class="result-modal">
+    <button type="button" class="result-modal-close" aria-label="Fermer" onclick="closeResultModal()">✕</button>
+    <h2>Séduit par le visuel ?</h2>
+    <p>Il suffit d'ajouter quelques éléments de personnalisation pour modeler le site à votre image !</p>
+    <a class="btn" href="/preview/eve-boutique/05oAVszekn#tarif">Obtenir plus d'informations →</a>
+  </div>
+</div>
+
+<button class="to-top" id="toTop" aria-label="Retour en haut de page" title="Retour en haut">↑</button>
+
+<div class="retour-bandeau">
+  <a href="/preview/eve-boutique/05oAVszekn#tarif">Obtenir plus d'informations →</a>
+  <a class="retour-bandeau-confidentialite" href="/cgv-boutiques#donnees-confidentialite" target="_blank" rel="noopener noreferrer">Confidentialité</a>
+</div>
+
+<div class="masthead">
+  <img class="masthead-photo" src="/preview/_stock/lingerie-corseterie/lingerie-corseterie-03.jpg" alt="" loading="lazy">
+  <div class="masthead-photo-overlay"></div>
+  <div class="masthead-inner">
+    <div class="kicker">Lingerie &amp; corseterie</div>
+    <img class="logo-round" src="/preview/eve-boutique/logo.jpg" alt="Eve Boutique">
+    <h1>Eve Boutique</h1>
+    <div class="rule"></div>
+    <p>Centre de conseil en lingerie et corseterie, tailles A à L, à Mont-de-Marsan.</p>
+    <a href="#contact" class="btn">Nous écrire</a>
+  </div>
+</div>
+
+<div class="cols">
+  <div class="reveal">
+    <h2>Notre parti pris</h2>
+    <p>Un accompagnement personnalisé pour trouver la bonne taille et le bon maintien, dans une boutique certifiée centre de conseil en lingerie.</p>
+  </div>
+  <div class="reveal">
+    <h2>Comment ça marche</h2>
+    <ol>
+      <li>Prise de mesures en boutique</li>
+      <li>Essayage accompagné</li>
+      <li>Conseils adaptés à votre morphologie</li>
+    </ol>
+  </div>
+</div>
+
+<div class="quote-block reveal">
+  <div class="rule"></div>
+  <p>« Trouver la bonne taille, quelle que soit la vôtre »</p>
+</div>
+
+<div class="facts reveal">
+  <div><div class="label">Spécialité</div><div class="val">Lingerie &amp; corseterie</div></div>
+  <div><div class="label">Tailles</div><div class="val">A à L</div></div>
+  <div><div class="label">Horaires</div><div class="val">Mar-Sam 10h-19h</div></div>
+  <div><div class="label">Téléphone</div><div class="val">05 58 75 16 26</div></div>
+</div>
+
+<div class="closing">
+  <div class="map-wrap reveal">
+    <div class="map-embed" id="mapEmbed"></div>
+    <div class="map-lock" id="mapLock" onclick="unlockMap()">Cliquez pour interagir avec la carte</div>
+    <button type="button" class="map-recenter" onclick="recenterMap()" aria-label="Recentrer la carte">↺ Recentrer</button>
+  </div>
+  <div class="reveal">
+    <div class="contact-card" id="contact">
+      <h3>Nous écrire</h3>
+      <form action="#" method="POST">
+        <input type="text" name="nom" placeholder="Votre nom" required>
+        <input type="email" name="email" placeholder="Votre email" required>
+        <textarea name="message" placeholder="Votre message" required></textarea>
+        <button type="submit" class="btn">Envoyer</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>EVE BOUTIQUE · 52 rue Léon Gambetta, 40000 Mont-de-Marsan · eve-boutique@orange.fr</footer>
+
+<script>
+  function syncBandeauSpacing() {
+    var top = document.querySelector('.proposition-banner');
+    var bottom = document.querySelector('.retour-bandeau');
+    if (top) document.body.style.paddingTop = top.offsetHeight + 'px';
+    if (bottom) document.body.style.paddingBottom = bottom.offsetHeight + 'px';
+  }
+  syncBandeauSpacing();
+  window.addEventListener('resize', syncBandeauSpacing);
+
+  var MAP_CENTER = [43.8895, -0.5000];
+  var MAP_ZOOM = 16;
+  var map = L.map('mapEmbed', {
+    center: MAP_CENTER, zoom: MAP_ZOOM,
+    scrollWheelZoom: false, dragging: false, touchZoom: false, doubleClickZoom: false, zoomControl: false
+  });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  }).addTo(map);
+  map.attributionControl.setPrefix(false);
+  L.marker(MAP_CENTER).addTo(map);
+  function unlockMap() {
+    document.getElementById('mapLock').classList.add('hidden');
+    map.scrollWheelZoom.enable(); map.dragging.enable(); map.touchZoom.enable(); map.doubleClickZoom.enable();
+    map.addControl(L.control.zoom());
+  }
+  function recenterMap() { map.setView(MAP_CENTER, MAP_ZOOM); }
+
+  var revealObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('show'); });
+  }, {threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el){ revealObs.observe(el); });
+
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    if(window.scrollY > window.innerHeight * 0.6){ toTop.classList.add('show'); } else { toTop.classList.remove('show'); }
+  }, {passive:true});
+  toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+  (function(){
+    var overlay = document.getElementById('resultModalOverlay');
+    if(!overlay) return;
+    var shown = false;
+    function openModal(){ if(shown) return; shown = true; overlay.classList.add('show'); }
+    function closeModal(){ overlay.classList.remove('show'); }
+    window.closeResultModal = closeModal;
+    overlay.addEventListener('click', function(e){ if(e.target === overlay) closeModal(); });
+    function checkNearBottom(){
+      if(shown) return;
+      var doc = document.documentElement;
+      var scrollBottom = window.scrollY + window.innerHeight;
+      var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight);
+      if(scrollBottom >= pageHeight - 80) openModal();
+    }
+    window.addEventListener('scroll', checkNearBottom, {passive:true});
+    window.addEventListener('resize', checkNearBottom);
+  })();
+</script>
+<script>
+  (function(){
+    try {
+      var payload = JSON.stringify({slug:"eve-boutique", step:"p2"});
+      var url = "https://boutiques-api.gillescobigo.com/track";
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(url, new Blob([payload], {type:"application/json"}));
+      } else {
+        fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body: payload, keepalive: true}).catch(function(){});
+      }
+    } catch (e) {}
+  })();
+</script>
+</body>
+</html>

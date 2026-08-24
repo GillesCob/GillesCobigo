@@ -358,6 +358,50 @@ export const previewProjects: Record<string, IPreviewProject> = {
       },
     ],
   },
+  "05oAVszekn": {
+    slug: "eve-boutique",
+    projectName: "Eve Boutique",
+    logo: "/preview/eve-boutique/logo.jpg",
+    contactName: "L'équipe Eve Boutique",
+    phone: "05 58 75 16 26",
+    currentRound: "V1",
+    nextAction: "Premier contact, en attente de retour",
+    feedbackFormId: "xgoggnej",
+    coldIntro:
+      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre commerce.",
+    rounds: [
+      {
+        round: "V1",
+        date: "24 août 2026",
+        proposals: [
+          { label: "Votre site, premier jet", screenshot: "/preview/eve-boutique/logo.jpg", htmlPath: "/preview/eve-boutique/05oAVszekn/V1/P1" },
+        ],
+        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
+      },
+    ],
+  },
+  "2NgflU4AAy": {
+    slug: "peppone",
+    projectName: "Miss Peppone / Peppone Homme",
+    logo: "/preview/peppone/logo.png",
+    contactName: "L'équipe Miss Peppone / Peppone Homme",
+    phone: "06 63 14 37 17",
+    currentRound: "V1",
+    nextAction: "Premier contact, en attente de retour",
+    feedbackFormId: "xgoggnej",
+    coldIntro:
+      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre activité.",
+    rounds: [
+      {
+        round: "V1",
+        date: "24 août 2026",
+        proposals: [
+          { label: "Votre site, premier jet", screenshot: "/preview/peppone/logo.png", htmlPath: "/preview/peppone/2NgflU4AAy/V1/P1" },
+        ],
+        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
+      },
+    ],
+  },
   "9nkEtXFdsH": {
     slug: "lassalle-et-fils",
     projectName: "Lassalle et Fils",
