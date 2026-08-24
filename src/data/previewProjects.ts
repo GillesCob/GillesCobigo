@@ -358,6 +358,72 @@ export const previewProjects: Record<string, IPreviewProject> = {
       },
     ],
   },
+  "9nkEtXFdsH": {
+    slug: "lassalle-et-fils",
+    projectName: "Lassalle et Fils",
+    logo: "/preview/lassalle-et-fils/logo.png",
+    contactName: "L'équipe Lassalle et Fils",
+    phone: "05 58 46 68 68",
+    currentRound: "V1",
+    nextAction: "Premier contact, en attente de retour",
+    feedbackFormId: "xgoggnej",
+    coldIntro:
+      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre activité.",
+    rounds: [
+      {
+        round: "V1",
+        date: "24 août 2026",
+        proposals: [
+          { label: "Votre site, premier jet", screenshot: "/preview/lassalle-et-fils/logo.png", htmlPath: "/preview/lassalle-et-fils/9nkEtXFdsH/V1/P1" },
+        ],
+        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
+      },
+    ],
+  },
+  eDMLOhBID9: {
+    slug: "maisonnave",
+    projectName: "Maisonnave (Les 3 Pinceaux)",
+    logo: "/preview/maisonnave/logo.jpg",
+    contactName: "L'équipe Les 3 Pinceaux",
+    phone: "05 58 46 57 58",
+    currentRound: "V1",
+    nextAction: "Premier contact, en attente de retour",
+    feedbackFormId: "xgoggnej",
+    coldIntro:
+      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre activité.",
+    rounds: [
+      {
+        round: "V1",
+        date: "24 août 2026",
+        proposals: [
+          { label: "Votre site, premier jet", screenshot: "/preview/maisonnave/logo.jpg", htmlPath: "/preview/maisonnave/eDMLOhBID9/V1/P1" },
+        ],
+        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
+      },
+    ],
+  },
+  UxNjRu0VN8: {
+    slug: "egc-services",
+    projectName: "EGC Services",
+    logo: "/preview/egc-services/logo.png",
+    contactName: "L'équipe EGC Services",
+    phone: "06 36 37 64 05",
+    currentRound: "V1",
+    nextAction: "Premier contact, en attente de retour",
+    feedbackFormId: "xgoggnej",
+    coldIntro:
+      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre activité.",
+    rounds: [
+      {
+        round: "V1",
+        date: "24 août 2026",
+        proposals: [
+          { label: "Votre site, premier jet", screenshot: "/preview/egc-services/logo.png", htmlPath: "/preview/egc-services/UxNjRu0VN8/V1/P1" },
+        ],
+        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
+      },
+    ],
+  },
   // Entree de demo, donnees factices (nom generique + logo de Gilles), sert a visualiser
   // le template "V1-Echanges" sans exposer de vraie donnee client. Cf Projets/V1-Echanges/suivi.html.
   "demo-template": {
