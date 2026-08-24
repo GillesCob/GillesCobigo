@@ -100,7 +100,7 @@ export default function CGVBoutiques() {
       <div className="flex-1 px-6 md:px-12 py-14 md:py-20">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Conditions générales de vente</h1>
-          <p className="text-sm text-muted-foreground mb-10">Création de site vitrine pour commerces locaux</p>
+          <p className="text-sm text-muted-foreground mb-10">Création de site vitrine pour professionnels locaux</p>
 
           <div className="space-y-8 text-sm text-foreground/90 leading-relaxed">
             <section>
@@ -124,7 +124,7 @@ export default function CGVBoutiques() {
                   allers-retours inclus (utilisables pour une version en plus avant mise en ligne ou une
                   modification après), retours sous 48h ouvrées. Non reconduite automatiquement.
                 </li>
-                <li>Toute évolution ou projet plus ambitieux (nouvelle fonctionnalité, boutique en ligne, site multi-pages...) : devis séparé, jamais ce tarif.</li>
+                <li>Toute évolution ou projet plus ambitieux (nouvelle fonctionnalité, vente en ligne, site multi-pages...) : devis séparé, jamais ce tarif.</li>
               </ul>
               <p className="text-xs text-muted-foreground mt-2">TVA non applicable, art. 293 B du CGI.</p>
             </section>

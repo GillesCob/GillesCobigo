@@ -303,7 +303,7 @@ export default function PricingCard({
       </p>
 
       <p className="text-[11px] text-muted-foreground mt-[10px]">
-        Évolution plus importante (plusieurs pages, boutique en ligne...) : devis à part.
+        Évolution plus importante (plusieurs pages, vente en ligne...) : devis à part.
       </p>
       <p className="text-[11px] text-muted-foreground mt-[10px]">
         <Link to="/cgv-boutiques" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">
