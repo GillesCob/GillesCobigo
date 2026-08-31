@@ -193,6 +193,8 @@
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors', maxZoom: 19 }).addTo(map);
   map.attributionControl.setPrefix(false);
   L.marker(MAP_CENTER).addTo(map);
+  setTimeout(function(){ map.invalidateSize(); }, 300);
+  window.addEventListener('load', function(){ map.invalidateSize(); });
   function unlockMap() { document.getElementById('mapLock').classList.add('hidden'); map.scrollWheelZoom.enable(); map.dragging.enable(); map.touchZoom.enable(); map.doubleClickZoom.enable(); map.addControl(L.control.zoom()); }
   function recenterMap() { map.setView(MAP_CENTER, MAP_ZOOM); }
   var obs = new IntersectionObserver(function(entries){ entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('show'); }); }, {threshold:.15});

@@ -202,6 +202,8 @@
   }).addTo(map);
   map.attributionControl.setPrefix(false);
   L.marker(MAP_CENTER).addTo(map);
+  setTimeout(function(){ map.invalidateSize(); }, 300);
+  window.addEventListener('load', function(){ map.invalidateSize(); });
   function unlockMap() {
     document.getElementById('mapLock').classList.add('hidden');
     map.scrollWheelZoom.enable(); map.dragging.enable(); map.touchZoom.enable(); map.doubleClickZoom.enable();
