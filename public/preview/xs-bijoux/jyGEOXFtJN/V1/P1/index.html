@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/jpeg" href="/preview/xs-bijoux/logo.jpg">
+<title>XS Bijoux, proposition de site (1/2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{ --gold:#b08d57; --ink:#1c1712; --ink-2:#262019; --creme:#f6f0e4; --text:#eae2d1; --font-a:'Fraunces',serif; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{overflow-x:clip;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--text); background:var(--ink); line-height:1.6; padding-top:42px;}
+  img{max-width:100%; display:block;}
+  h1,h2,h3{font-family:var(--font-a); font-weight:700;}
+  .btn{display:inline-block; padding:14px 32px; background:var(--gold); color:var(--ink); text-decoration:none; border-radius:0; font-weight:800; font-size:13.5px; letter-spacing:.08em; text-transform:uppercase; border:none; cursor:pointer; font-family:inherit;}
+  .btn:hover{background:#e0b872;}
+  .btn-line{display:inline-block; padding:12px 0; border-bottom:1px solid var(--gold); color:var(--gold); text-decoration:none; font-weight:700; font-size:13px; letter-spacing:.08em; text-transform:uppercase;}
+
+  .to-top{position:fixed; bottom:78px; right:16px; z-index:999; width:44px; height:44px; border-radius:50%; border:1px solid var(--gold); background:var(--ink); color:var(--gold); font-size:18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease;}
+  .to-top.show{opacity:1; pointer-events:auto;}
+
+  .slide{min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:80px 24px; clip-path:inset(0% 0% 100% 0%); transition:clip-path 1.1s cubic-bezier(.65,0,.35,1); position:relative; overflow:hidden;}
+  .slide.show{clip-path:inset(0% 0% 0% 0%);}
+  .slide-inner{max-width:560px; opacity:0; transform:translateY(18px); transition:opacity .7s ease .35s, transform .7s ease .35s; position:relative; z-index:1;}
+  .slide.show .slide-inner{opacity:1; transform:translateY(0);}
+
+  .slide-hero{background:radial-gradient(circle at 50% 20%, var(--ink-2), var(--ink) 70%);}
+  .slide-hero .logo{width:96px; height:96px; border-radius:50%; overflow:hidden; border:1px solid var(--gold); margin:0 auto 22px; background:#fff; padding:4px;}
+  .slide-hero .logo img{width:100%; height:100%; object-fit:cover; border-radius:50%;}
+  .slide-hero .tagline{font-size:12px; text-transform:uppercase; letter-spacing:.22em; color:var(--gold); margin-bottom:14px;}
+  .slide-hero h1{font-size:clamp(36px,6vw,58px); margin-bottom:14px; color:#fff;}
+  .slide-hero p{opacity:.8; margin-bottom:28px;}
+
+  .slide-num{font-size:12px; letter-spacing:.3em; color:var(--gold); margin-bottom:18px; text-transform:uppercase;}
+  .slide h2{font-size:clamp(26px,3.4vw,36px); color:#fff; margin-bottom:18px;}
+  .slide p{opacity:.85; font-size:15.5px; margin-bottom:12px;}
+  .slide .quote{font-family:var(--font-a); font-style:italic; font-size:22px; color:var(--gold); margin-top:16px;}
+
+  .slide-avis .stars{color:var(--gold); font-size:18px; margin-bottom:6px;}
+
+  .slide-alt{background:var(--ink-2);}
+  .slide-bg{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.32; z-index:0;}
+  .rs-links{display:flex; gap:16px; justify-content:center; margin-top:10px;}
+  .rs-links a{color:var(--gold); font-weight:700; text-decoration:none; border-bottom:1px solid rgba(176,141,87,.4); font-size:14.5px;}
+
+  dl{display:grid; grid-template-columns:auto 1fr; gap:10px 18px; font-size:14.5px; max-width:380px; margin:20px auto 0; text-align:left;}
+  dt{font-weight:700; color:var(--gold);}
+  dd{opacity:.85;}
+  .map-wrap{position:relative; margin-top:22px; max-width:380px; margin-left:auto; margin-right:auto;}
+  .map-embed{width:100%; height:150px; border-radius:4px; overflow:hidden; background:#2a2419;}
+  .map-lock{position:absolute; inset:0; border-radius:4px; background:rgba(0,0,0,.45); color:#fff; display:flex; align-items:center; justify-content:center; text-align:center; font-size:12.5px; font-weight:700; padding:12px; cursor:pointer; transition:opacity .2s ease; z-index:401;}
+  .map-lock.hidden{opacity:0; pointer-events:none;}
+  .map-recenter{position:absolute; bottom:8px; left:8px; z-index:401; background:#fff; color:var(--ink); border:1px solid rgba(0,0,0,.15); border-radius:8px; padding:5px 9px; font-size:10.5px; font-family:inherit; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.15);}
+
+  .slide-contact form{display:flex; flex-direction:column; gap:14px; max-width:380px; margin:22px auto 0;}
+  .slide-contact input, .slide-contact textarea{padding:12px 16px; border-radius:0; border:1px solid rgba(176,141,87,.35); font-family:inherit; font-size:15px; background:transparent; color:#fff;}
+  .slide-contact input::placeholder, .slide-contact textarea::placeholder{color:rgba(255,255,255,.5);}
+  .slide-contact textarea{min-height:100px; resize:vertical;}
+
+  footer{text-align:center; padding:26px 24px 88px; background:var(--ink); color:rgba(255,255,255,.5); font-size:12.5px; border-top:1px solid rgba(176,141,87,.2);}
+
+  .proposition-banner{position:fixed; top:0; left:0; right:0; z-index:1000; background:#18181b; color:#fff; text-align:center; padding:10px 16px; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;}
+  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:#18181b; color:#fff; padding:22px 20px; text-align:center; font-family:'Nunito',-apple-system,sans-serif; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
+  .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
+  .retour-bandeau a.retour-bandeau-confidentialite{display:block; text-align:right; margin:6px 0 0; font-size:10.5px; font-weight:600; opacity:.55;}
+  @media(max-width:480px){
+    .retour-bandeau{font-size:13.5px; padding:20px 16px;}
+    .retour-bandeau a.retour-bandeau-confidentialite{text-align:center; margin-top:16px;}
+  }
+
+  .result-modal-overlay{position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .3s ease;}
+  .result-modal-overlay.show{opacity:1; pointer-events:auto;}
+  .result-modal{position:relative; max-width:380px; width:100%; background:var(--creme); border-radius:20px; padding:38px 30px 32px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.35); transform:translateY(14px); transition:transform .3s ease;}
+  .result-modal-overlay.show .result-modal{transform:translateY(0);}
+  .result-modal h2{font-family:var(--font-a); font-size:23px; margin:0 0 10px; color:var(--ink);}
+  .result-modal p{font-size:14.5px; color:var(--ink); opacity:.7; margin:0 0 24px; line-height:1.5;}
+  .result-modal-close{position:absolute; top:12px; right:12px; background:none; border:0; font-size:18px; line-height:1; color:var(--ink); opacity:.5; cursor:pointer; padding:8px;}
+  .result-modal .btn{border-radius:999px;}
+</style>
+</head>
+<body>
+<div class="proposition-banner">1ère proposition</div>
+
+<div class="result-modal-overlay" id="resultModalOverlay">
+  <div class="result-modal">
+    <button type="button" class="result-modal-close" aria-label="Fermer" onclick="closeResultModal()">✕</button>
+    <h2>Vous souhaitez visualiser une alternative ?</h2>
+    <a class="btn" href="/preview/xs-bijoux/jyGEOXFtJN/V1/P2">Découvrir la 2ème proposition →</a>
+  </div>
+</div>
+
+<div class="retour-bandeau">
+  <a href="/preview/xs-bijoux/jyGEOXFtJN/V1/P2">Découvrir la 2ème proposition →</a>
+  <a class="retour-bandeau-confidentialite" href="/cgv-boutiques#donnees-confidentialite" target="_blank" rel="noopener noreferrer">Confidentialité</a>
+</div>
+
+<button class="to-top" id="toTop" aria-label="Retour en haut">↑</button>
+
+<section class="slide slide-hero show">
+  <div class="slide-inner">
+    <div class="logo"><img src="/preview/xs-bijoux/logo.jpg" alt="XS Bijoux"></div>
+    <div class="tagline">Bijouterie fantaisie · Biarritz</div>
+    <h1>XS Bijoux</h1>
+    <p>Des bijoux fantaisie tendance et originaux, au cœur de Biarritz.</p>
+    <a href="#slide-concept" class="btn">Découvrir</a>
+  </div>
+</section>
+
+<section class="slide" id="slide-concept">
+  <img class="slide-bg" src="/preview/_stock/bijouterie/bijouterie-01.webp" alt="Atelier de bijouterie">
+  <div class="slide-inner">
+    <div class="slide-num">01</div>
+    <h2>Notre parti pris</h2>
+    <p>XS Bijoux propose une sélection de bijoux fantaisie tendance et originaux, rue Mazagran, à deux pas du centre de Biarritz.</p>
+    <p class="quote">« Des bijoux qui changent au rythme de vos envies. »</p>
+  </div>
+</section>
+
+<section class="slide slide-alt slide-avis">
+  <div class="slide-inner">
+    <div class="slide-num">02</div>
+    <h2>Ce qu'on en dit</h2>
+    <div class="stars">★★★★★ Avis Google, widget réel connecté à la mise en ligne</div>
+  </div>
+</section>
+
+<section class="slide">
+  <img class="slide-bg" src="/preview/_stock/bijouterie/bijouterie-07.jpg" alt="Vitrine de bijoux">
+  <div class="slide-inner">
+    <div class="slide-num">03</div>
+    <h2>Nous suivre</h2>
+    <div class="rs-links">
+      <a href="https://www.instagram.com/xs.bijoux/" target="_blank" rel="noopener noreferrer">Instagram</a>
+    </div>
+  </div>
+</section>
+
+<section class="slide slide-alt">
+  <img class="slide-bg" src="/preview/_stock/bijouterie/bijouterie-05.jpg" alt="Présentoir de bijoux">
+  <div class="slide-inner">
+    <div class="slide-num">04</div>
+    <h2>Bon à savoir</h2>
+    <dl>
+      <dt>Adresse</dt><dd>7 rue Mazagran, 64200 Biarritz</dd>
+      <dt>Contact</dt><dd>Par message Instagram</dd>
+    </dl>
+    <div class="map-wrap">
+      <div class="map-embed" id="mapEmbed"></div>
+      <div class="map-lock" id="mapLock" onclick="unlockMap()">Cliquez pour interagir avec la carte</div>
+      <button type="button" class="map-recenter" onclick="recenterMap()" aria-label="Recentrer la carte">↺</button>
+    </div>
+  </div>
+</section>
+
+<section class="slide slide-contact">
+  <div class="slide-inner">
+    <div class="slide-num">05</div>
+    <h2>Nous écrire</h2>
+    <form action="#" method="POST">
+      <input type="text" name="nom" placeholder="Votre nom" required>
+      <input type="email" name="email" placeholder="Votre email" required>
+      <textarea name="message" placeholder="Votre message" required></textarea>
+      <button type="submit" class="btn">Envoyer</button>
+    </form>
+  </div>
+</section>
+
+<footer>XS BIJOUX · 7 rue Mazagran, 64200 Biarritz · @xs.bijoux</footer>
+
+<script>
+  function syncBandeauSpacing() {
+    var top = document.querySelector('.proposition-banner');
+    var bottom = document.querySelector('.retour-bandeau');
+    if (top) document.body.style.paddingTop = top.offsetHeight + 'px';
+    if (bottom) document.body.style.paddingBottom = bottom.offsetHeight + 'px';
+  }
+  syncBandeauSpacing();
+  window.addEventListener('resize', syncBandeauSpacing);
+
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var ticking = false;
+  function revealSlides(){
+    var limit = window.innerHeight * 0.75;
+    slides.forEach(function(s){
+      if (!s.classList.contains('show') && s.getBoundingClientRect().top < limit) s.classList.add('show');
+    });
+  }
+  function onScroll(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){ revealSlides(); ticking = false; });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll, {passive:true});
+  revealSlides();
+
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    if(window.scrollY > window.innerHeight * 0.6){ toTop.classList.add('show'); } else { toTop.classList.remove('show'); }
+  }, {passive:true});
+  toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+  (function(){
+    var overlay = document.getElementById('resultModalOverlay');
+    if(!overlay) return;
+    var shown = false;
+    function openModal(){ if(shown) return; shown = true; overlay.classList.add('show'); }
+    function closeModal(){ overlay.classList.remove('show'); }
+    window.closeResultModal = closeModal;
+    overlay.addEventListener('click', function(e){ if(e.target === overlay) closeModal(); });
+    function checkNearBottom(){
+      if(shown) return;
+      var doc = document.documentElement;
+      var scrollBottom = window.scrollY + window.innerHeight;
+      var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight);
+      if(scrollBottom >= pageHeight - 80) openModal();
+    }
+    window.addEventListener('scroll', checkNearBottom, {passive:true});
+    window.addEventListener('resize', checkNearBottom);
+  })();
+
+  // Adresse reelle : 7 rue Mazagran, 64200 Biarritz (geocodee via api-adresse.data.gouv.fr, 31/08).
+  var MAP_CENTER = [43.482438, -1.562448];
+  var MAP_ZOOM = 16;
+  var map = L.map('mapEmbed', {
+    center: MAP_CENTER, zoom: MAP_ZOOM,
+    scrollWheelZoom: false, dragging: false, touchZoom: false, doubleClickZoom: false, zoomControl: false
+  });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  }).addTo(map);
+  map.attributionControl.setPrefix(false);
+  L.marker(MAP_CENTER).addTo(map);
+  function unlockMap() {
+    document.getElementById('mapLock').classList.add('hidden');
+    map.scrollWheelZoom.enable(); map.dragging.enable(); map.touchZoom.enable(); map.doubleClickZoom.enable();
+    map.addControl(L.control.zoom());
+  }
+  function recenterMap() { map.setView(MAP_CENTER, MAP_ZOOM); }
+</script>
+<script>
+  (function(){
+    try {
+      var payload = JSON.stringify({slug:"xs-bijoux", step:"p1"});
+      var url = "https://boutiques-api.gillescobigo.com/track";
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(url, new Blob([payload], {type:"application/json"}));
+      } else {
+        fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body: payload, keepalive: true}).catch(function(){});
+      }
+    } catch (e) {}
+  })();
+</script>
+</body>
+</html>
