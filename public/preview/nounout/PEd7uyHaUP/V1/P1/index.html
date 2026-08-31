@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/jpeg" href="/preview/nounout/logo.jpg">
+<title>Nounout, proposition de site (1/2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --accent:#8a7250; --accent-dark:#4f4028; --creme:#f4ede0; --text:#2c2416;
+    --font-a:'Fraunces',serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{overflow-x:clip;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--text); background:var(--creme); line-height:1.6; padding-top:42px; padding-bottom:76px;}
+  img{max-width:100%; display:block;}
+  h1,h2,h3{font-family:var(--font-a); font-weight:700;}
+  .btn{display:inline-block; padding:14px 32px; background:var(--accent); color:#fff; text-decoration:none; border-radius:999px; font-weight:700; font-size:15px; border:none; cursor:pointer; font-family:inherit;}
+  .btn:hover{background:var(--accent-dark);}
+
+  .to-top{position:fixed; bottom:78px; right:16px; z-index:999; width:44px; height:44px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease; box-shadow:0 6px 16px rgba(0,0,0,.25);}
+  .to-top.show{opacity:1; pointer-events:auto;}
+
+  .hero{padding:88px 24px 40px; text-align:center;}
+  .hero .logo{width:180px; margin:0 auto 16px;}
+  .hero h1{font-size:clamp(28px,5vw,42px); margin-bottom:8px;}
+  .hero .tagline{font-size:12px; text-transform:uppercase; letter-spacing:.18em; color:var(--accent-dark); font-weight:700;}
+
+  .mur{columns:3 220px; column-gap:14px; max-width:1100px; margin:0 auto; padding:24px;}
+  .tuile{break-inside:avoid; margin-bottom:14px; border-radius:14px; overflow:hidden; opacity:0; transform:translateY(18px) scale(.98); transition:opacity .6s ease, transform .6s ease;}
+  .tuile.show{opacity:1; transform:translateY(0) scale(1);}
+  .tuile.photo{position:relative;}
+  .tuile.photo img{width:100%; height:126%; object-fit:cover; display:block; position:absolute; top:-13%; left:0; will-change:transform;}
+  .tuile.h1{height:160px;} .tuile.h2{height:230px;} .tuile.h3{height:190px;} .tuile.h4{height:280px;} .tuile.h5{height:140px;}
+  .tuile.card{background:#fff; padding:22px; box-shadow:0 8px 24px rgba(44,36,22,.08);}
+  .tuile.card h2{font-size:20px; margin-bottom:8px;}
+  .tuile.card p{font-size:14px; opacity:.85;}
+  .tuile.card .quote{font-family:var(--font-a); font-style:italic; color:var(--accent-dark); margin-top:8px; font-size:15px;}
+  .tuile.dark{background:var(--accent-dark); color:#fff; padding:22px; display:flex; flex-direction:column; justify-content:center;}
+  .tuile.dark b{font-family:var(--font-a); font-size:26px;}
+  .tuile.dark span{font-size:12px; opacity:.85;}
+  .tuile.etapes ol{list-style:none; counter-reset:step; padding:0;}
+  .tuile.etapes li{counter-increment:step; margin-bottom:8px; font-size:13.5px; padding-left:24px; position:relative;}
+  .tuile.etapes li::before{content:counter(step); position:absolute; left:0; top:0; width:18px; height:18px; border-radius:50%; background:var(--accent); color:#fff; font-size:11px; display:flex; align-items:center; justify-content:center;}
+  .tuile.rs{display:flex; flex-direction:column; gap:10px; justify-content:center;}
+  .tuile.rs a{color:var(--accent-dark); font-weight:700; text-decoration:none; font-size:14px;}
+  .tuile.map-real{position:relative;}
+  .tuile.map-real .map-embed{position:absolute; inset:0; background:#eee;}
+  .tuile.map-real .map-lock{position:absolute; inset:0; border-radius:14px; background:rgba(44,36,22,.4); color:#fff; display:flex; align-items:center; justify-content:center; text-align:center; font-size:12px; font-weight:700; padding:12px; cursor:pointer; transition:opacity .2s ease; z-index:401;}
+  .tuile.map-real .map-lock.hidden{opacity:0; pointer-events:none;}
+  .tuile.map-real .map-recenter{position:absolute; bottom:8px; left:8px; z-index:401; background:#fff; color:var(--text); border:1px solid rgba(0,0,0,.15); border-radius:8px; padding:5px 9px; font-size:10.5px; font-family:inherit; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.15);}
+
+  .contact-bloc{max-width:460px; margin:0 auto; padding:20px 24px 64px; text-align:center;}
+  .contact-bloc h2{font-size:24px; margin-bottom:16px;}
+  .contact-bloc form{display:flex; flex-direction:column; gap:12px; text-align:left;}
+  .contact-bloc input, .contact-bloc textarea{padding:12px 16px; border-radius:10px; border:1px solid rgba(138,114,80,.3); font-family:inherit; font-size:16px; background:#fff;}
+  .contact-bloc textarea{min-height:90px; resize:vertical;}
+
+  footer{text-align:center; padding:26px 24px 88px; background:var(--accent-dark); color:rgba(255,255,255,.75); font-size:12.5px;}
+
+  @media(max-width:760px){ .mur{columns:2 160px;} }
+  @media(max-width:480px){ .mur{columns:1;} }
+  .infos-pratiques p{margin-bottom:6px;}
+  .infos-pratiques p:last-child{margin-bottom:0;}
+
+  .proposition-banner{position:fixed; top:0; left:0; right:0; z-index:1000; background:#18181b; color:#fff; text-align:center; padding:10px 16px; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;}
+  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:#18181b; color:#fff; padding:22px 20px; text-align:center; font-family:'Nunito',-apple-system,sans-serif; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
+  .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
+  .retour-bandeau a.retour-bandeau-confidentialite{display:block; text-align:right; margin:6px 0 0; font-size:10.5px; font-weight:600; opacity:.55;}
+  @media(max-width:480px){
+    .retour-bandeau{font-size:13.5px; padding:20px 16px;}
+    .retour-bandeau a.retour-bandeau-confidentialite{text-align:center; margin-top:16px;}
+  }
+
+  .result-modal-overlay{position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .3s ease;}
+  .result-modal-overlay.show{opacity:1; pointer-events:auto;}
+  .result-modal{position:relative; max-width:380px; width:100%; background:var(--creme); border-radius:20px; padding:38px 30px 32px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.35); transform:translateY(14px); transition:transform .3s ease;}
+  .result-modal-overlay.show .result-modal{transform:translateY(0);}
+  .result-modal h2{font-family:var(--font-a); font-size:23px; margin:0 0 10px; color:var(--text);}
+  .result-modal p{font-size:14.5px; color:var(--text); opacity:.7; margin:0 0 24px; line-height:1.5;}
+  .result-modal-close{position:absolute; top:12px; right:12px; background:none; border:0; font-size:18px; line-height:1; color:var(--text); opacity:.5; cursor:pointer; padding:8px;}
+</style>
+</head>
+<body>
+<div class="proposition-banner">1ère proposition</div>
+
+<div class="result-modal-overlay" id="resultModalOverlay">
+  <div class="result-modal">
+    <button type="button" class="result-modal-close" aria-label="Fermer" onclick="closeResultModal()">✕</button>
+    <h2>Vous souhaitez visualiser une alternative ?</h2>
+    <a class="btn" href="/preview/nounout/PEd7uyHaUP/V1/P2">Découvrir la 2ème proposition →</a>
+  </div>
+</div>
+
+<button class="to-top" id="toTop" aria-label="Retour en haut">↑</button>
+
+<div class="retour-bandeau">
+  <a href="/preview/nounout/PEd7uyHaUP/V1/P2">Découvrir la 2ème proposition →</a>
+  <a class="retour-bandeau-confidentialite" href="/cgv-boutiques#donnees-confidentialite" target="_blank" rel="noopener noreferrer">Confidentialité</a>
+</div>
+
+<div class="hero">
+  <img class="logo" src="/preview/nounout/logo.jpg" alt="Nounout">
+  <div class="tagline">Décoration d'intérieur · Biarritz</div>
+</div>
+
+<div class="mur">
+  <div class="tuile photo h4 reveal"><img src="/preview/_stock/devanture/devanture-06.jpg" alt="Vitrine de décoration avec plantes"></div>
+  <div class="tuile card reveal">
+    <h2>Notre parti pris</h2>
+    <p>À deux pas de la place Clemenceau, Nounout réunit coussins sur mesure, dessus de lits et de canapés, plaids, céramique et senteurs, en mettant en avant des créatrices locales plutôt qu'une production standardisée.</p>
+    <p class="quote">« Des objets qui ont une histoire, pas juste une étiquette. »</p>
+  </div>
+  <div class="tuile photo h2 reveal"><img src="/preview/_stock/devanture/devanture-03.jpg" alt="Devanture ancienne en bois sculpté"></div>
+  <div class="tuile dark reveal">
+    <b>626</b>
+    <span>abonnés Instagram</span>
+  </div>
+  <div class="tuile photo h3 reveal"><img src="/preview/_stock/devanture/devanture-02.jpg" alt="Ancienne porte en bois, façade patinée"></div>
+  <div class="tuile card etapes reveal">
+    <h2 style="font-size:17px; margin-bottom:10px;">Comment ça marche</h2>
+    <ol>
+      <li>Un passage en boutique pour découvrir la sélection du moment</li>
+      <li>Un conseil personnalisé selon vos envies (coussins, céramique, senteurs)</li>
+      <li>Des pièces sur mesure pour certains articles textiles</li>
+    </ol>
+  </div>
+  <div class="tuile photo h5 reveal"><img src="/preview/_stock/devanture/devanture-05.jpg" alt="Vitrine intérieure, sacs en cuir sur étagères"></div>
+  <div class="tuile card rs reveal">
+    <h2 style="font-size:17px;">Nous suivre</h2>
+    <a href="https://www.instagram.com/nounout_boutique/" target="_blank" rel="noopener noreferrer">📷 Instagram</a>
+  </div>
+  <div class="tuile card reveal">
+    <h2 style="font-size:17px; margin-bottom:8px;">Bon à savoir</h2>
+    <div class="infos-pratiques">
+      <p>22 avenue de Verdun, 64200 Biarritz</p>
+      <p>Contact : par message Instagram</p>
+    </div>
+  </div>
+  <div class="tuile map-real h3 reveal">
+    <div class="map-embed" id="mapEmbed"></div>
+    <div class="map-lock" id="mapLock" onclick="unlockMap()">Cliquez pour interagir avec la carte</div>
+    <button type="button" class="map-recenter" onclick="recenterMap()" aria-label="Recentrer la carte">↺</button>
+  </div>
+</div>
+
+<div class="contact-bloc" id="contact">
+  <h2>Nous écrire</h2>
+  <form action="#" method="POST">
+    <input type="text" name="nom" placeholder="Votre nom" required>
+    <input type="email" name="email" placeholder="Votre email" required>
+    <textarea name="message" placeholder="Votre message" required></textarea>
+    <button type="submit" class="btn">Envoyer</button>
+  </form>
+</div>
+
+<footer>NOUNOUT · 22 avenue de Verdun, 64200 Biarritz · @nounout_boutique</footer>
+
+<script>
+  function syncBandeauSpacing() {
+    var top = document.querySelector('.proposition-banner');
+    var bottom = document.querySelector('.retour-bandeau');
+    if (top) document.body.style.paddingTop = top.offsetHeight + 'px';
+    if (bottom) document.body.style.paddingBottom = bottom.offsetHeight + 'px';
+  }
+  syncBandeauSpacing();
+  window.addEventListener('resize', syncBandeauSpacing);
+
+  // Adresse reelle : 22 avenue de Verdun, 64200 Biarritz (geocodee via Nominatim/OSM, 31/08).
+  var MAP_CENTER = [43.4817061, -1.5563763];
+  var MAP_ZOOM = 16;
+  var map = L.map('mapEmbed', {
+    center: MAP_CENTER, zoom: MAP_ZOOM,
+    scrollWheelZoom: false, dragging: false, touchZoom: false, doubleClickZoom: false, zoomControl: false
+  });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  }).addTo(map);
+  map.attributionControl.setPrefix(false);
+  L.marker(MAP_CENTER).addTo(map);
+  function unlockMap() {
+    document.getElementById('mapLock').classList.add('hidden');
+    map.scrollWheelZoom.enable(); map.dragging.enable(); map.touchZoom.enable(); map.doubleClickZoom.enable();
+    map.addControl(L.control.zoom());
+  }
+  function recenterMap() { map.setView(MAP_CENTER, MAP_ZOOM); }
+
+  var revealObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('show'); });
+  }, {threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el){ revealObs.observe(el); });
+
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    toTop.classList.toggle('show', window.scrollY > 500);
+  }, {passive:true});
+  toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+  (function(){
+    var overlay = document.getElementById('resultModalOverlay');
+    if(!overlay) return;
+    var shown = false;
+    function openModal(){ if(shown) return; shown = true; overlay.classList.add('show'); }
+    function closeModal(){ overlay.classList.remove('show'); }
+    window.closeResultModal = closeModal;
+    overlay.addEventListener('click', function(e){ if(e.target === overlay) closeModal(); });
+    function checkNearBottom(){
+      if(shown) return;
+      var doc = document.documentElement;
+      var scrollBottom = window.scrollY + window.innerHeight;
+      var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight);
+      if(scrollBottom >= pageHeight - 80) openModal();
+    }
+    window.addEventListener('scroll', checkNearBottom, {passive:true});
+    window.addEventListener('resize', checkNearBottom);
+  })();
+  function scrollToContact(targetId, buffer){
+    var el = document.getElementById(targetId || "contact");
+    if(!el) return;
+    var doc = document.documentElement;
+    var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight);
+    var maxScroll = pageHeight - window.innerHeight;
+    var elTop = el.getBoundingClientRect().top + window.scrollY;
+    var safeLimit = maxScroll - (buffer || 220);
+    var target = Math.min(elTop - 24, safeLimit);
+    window.scrollTo({top: Math.max(target, 0), behavior: "smooth"});
+  }
+</script>
+<script>
+  (function(){
+    try {
+      var payload = JSON.stringify({slug:"nounout", step:"p1"});
+      var url = "https://boutiques-api.gillescobigo.com/track";
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(url, new Blob([payload], {type:"application/json"}));
+      } else {
+        fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body: payload, keepalive: true}).catch(function(){});
+      }
+    } catch (e) {}
+  })();
+</script>
+</body>
+</html>
