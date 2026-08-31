@@ -36,6 +36,16 @@ Pas des photos de la banque à proprement parler : badges/logos de certification
 
 - `qualibat-rge.png` : logo officiel Qualibat RGE, fourni par Gilles. Utilisé sur tout prospect réellement qualifié RGE (Lassalle et Fils, Maisonnave, EGC Services).
 
+## cave-a-vin/ (5, nouvelle catégorie créée le 31/08)
+
+Registre cave à vin/dégustation, distincte de `cave-epicerie` (épicerie fine généraliste) : ici uniquement du vin, aucun produit d'épicerie. Pour L'Art dit Vin (Biarritz). 2 photos écartées du même lot (noms de domaines/châteaux réels trop lisibles en gros plan net : Roda, Marqués de X, Villa Barón, Château Talbot, Lafon-Rochet, Smith Haut Lafitte, sujet principal de la photo, risque de marque trop élevé).
+
+- `cave-a-vin-01.jpg` : couloir de cave voûtée en pierre avec rangées de barriques en bois de chaque côté, ambiance tunnel de dégustation, pas de personne, pas de marque.
+- `cave-a-vin-02.jpg` : gros plan sur des goulots de bouteilles anciennes empoussiérées en cave, étiquettes illisibles (poussière), pas de personne, pas de marque.
+- `cave-a-vin-03.jpg` : intérieur de cave à vin/bar à vin, fauteuil en cuir avec coussin au premier plan, mur de casiers à bouteilles en arrière-plan, tonneau en guise de table, étiquettes trop petites pour être lisibles, pas de personne.
+- `cave-a-vin-04.jpg` : mur de casiers rétroéclairés avec plusieurs dizaines de bouteilles alignées, quelques étiquettes de producteurs partiellement lisibles en grille dense (risque modéré, comparable aux marques d'équipement déjà acceptées ailleurs dans ce catalogue), pas de personne.
+- `cave-a-vin-05.jpg` : gros plan sur un tas de bouchons de liège de vin d'origines variées, quelques inscriptions visibles mais génériques/décoratives (pas une enseigne identifiable), pas de personne.
+
 ## mode-vintage/ (5)
 
 - `mode-vintage-01.jpg` — portant de vêtements vintage en extérieur, marché aux puces avec voitures anciennes en arrière-plan. Ambiance chinée/brocante.
@@ -120,8 +130,8 @@ Boutique de vêtements/accessoires générique et actuelle, à distinguer de mod
 
 Écartées pour visage identifiable en premier plan, plusieurs personnes reconnaissables, enseigne de marque réelle visible, ou hors-thème (café, fête foraine). Ajout du 16/08 : une photo de vitrine avec enseigne partiellement lisible correspondant à une marque française réelle de décoration (lampions/pompons), même logique que Penhaligon's. Ajout du 22/08 matin (11 photos) : marques réelles visibles ("DEFFA WEAR", "DIEDS", "SOMETHING BREWING", vitrine Prada, affiches/enseignes "Oakchurch"/"Carnival 2026", sticker de club de football et enseigne partielle sur une devanture de pâtisserie), visages identifiables (plusieurs personnes en premier plan, file d'attente), flou/qualité insuffisante, ou hors-thème saisonnier (décoration de Noël). Ajout du 22/08 après-midi (6 photos) : enseignes réelles clairement lisibles ("FRANCIS BAKERY", "SANTA NATA", étiquette "La Ritz"), visage de pâtissier identifiable, marque visible sur serviette/objet de table ("GENTLEMEN BARISTAS", magazine "STANDART"), décor de Noël hors-saison, texte partiellement lisible sur un carton en arrière-plan d'origine incertaine. Ajout du 24/08 (11 photos, apport RGE) : visages identifiables en gros plan (électricien casque jaune, homme dans des combles, routeur bois, meuleuse), marques réelles/produits visibles en sujet principal ("Midea" sur climatiseur en gros plan, "Tornado" sur climatiseur), hors-thème (pêche en barque, sculpture sur bois artisanale, menuiserie Würth, métallerie avec logo "Costa"/texte "Container Days Austin"). Détail non repris ici, cf noms de fichiers d'origine conservés.
 
-## Couverture par secteur, à vérifier avant chaque nouveau prospect (mise à jour le 24/08)
+## Couverture par secteur, à vérifier avant chaque nouveau prospect (mise à jour le 31/08)
 
-10 catégories, chacune déjà rattachée à un usage identifié : mode-vintage (Frip'ouilles, L'Intemporel), cave-epicerie (Cave Velours), bijouterie (Création Saint Roch), couture-textile (Trois Petits Muscaris), devanture (transversale, réutilisable pour tout secteur en dernier recours), brunch-cafe (Maison Crème, désormais bien fournie : comptoirs, viennoiseries, plats, table dressée), artisanat (pas encore rattachée à un prospect), boutique-mode (pas encore rattachée à un prospect), plomberie-chauffage (Lassalle et Fils, nouveau 24/08), peinture-isolation (Maisonnave, nouveau 24/08).
+11 catégories, chacune déjà rattachée à un usage identifié : mode-vintage (Frip'ouilles, L'Intemporel), cave-epicerie (Cave Velours), bijouterie (Création Saint Roch), couture-textile (Trois Petits Muscaris), devanture (transversale, réutilisable pour tout secteur en dernier recours), brunch-cafe (Maison Crème, désormais bien fournie : comptoirs, viennoiseries, plats, table dressée), artisanat (pas encore rattachée à un prospect), boutique-mode (pas encore rattachée à un prospect), plomberie-chauffage (Lassalle et Fils, nouveau 24/08), peinture-isolation (Maisonnave, nouveau 24/08), cave-a-vin (L'Art dit Vin, nouveau 31/08).
 
 **Règle avant de démarrer un nouveau prospect** : si son secteur ne correspond à aucune des catégories ci-dessus (boulangerie, coiffeur, fleuriste, restaurant, etc.), le signaler explicitement à Gilles avant de construire la V1, pas après. Ne jamais réutiliser une catégorie hors-sujet par défaut (ex. des photos de bijouterie pour une boulangerie) : mieux vaut attendre un apport de photos réellement adaptées que de livrer un mockup avec des visuels qui ne correspondent pas au commerce.

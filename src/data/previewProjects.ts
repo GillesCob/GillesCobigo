@@ -468,6 +468,27 @@ export const previewProjects: Record<string, IPreviewProject> = {
       },
     ],
   },
+  sjV64nFPnv: {
+    slug: "art-dit-vin",
+    projectName: "L'Art dit Vin",
+    logo: "/preview/art-dit-vin/logo.jpg",
+    contactName: "L'équipe L'Art dit Vin",
+    currentRound: "V1",
+    nextAction: "Premier contact, en attente de retour",
+    feedbackFormId: "xgoggnej",
+    coldIntro:
+      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre commerce.",
+    rounds: [
+      {
+        round: "V1",
+        date: "31 août 2026",
+        proposals: [
+          { label: "Votre site, premier jet", screenshot: "/preview/art-dit-vin/logo.jpg", htmlPath: "/preview/art-dit-vin/sjV64nFPnv/V1/P1" },
+        ],
+        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
+      },
+    ],
+  },
   // Entree de demo, donnees factices (nom generique + logo de Gilles), sert a visualiser
   // le template "V1-Echanges" sans exposer de vraie donnee client. Cf Projets/V1-Echanges/suivi.html.
   "demo-template": {
