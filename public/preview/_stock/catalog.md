@@ -1,6 +1,6 @@
 # Catalogue banque d'images libres de droit
 
-Banque partagée pour les mockups V1 Boutiques, pas liée à un prospect précis. Alimentée le 16/08 (33 photos analysées, 23 retenues, 10 écartées), le 22/08 matin (22 photos analysées, 11 retenues, 11 écartées), le 22/08 après-midi (22 photos analysées, 16 retenues, 6 écartées, 2e apport ciblé brunch/pâtisserie pour Maison Crème), le 24/08 (29 photos analysées, 18 retenues, 11 écartées, apport ciblé artisans RGE pour Lassalle et Fils/Maisonnave) puis le 31/08 (apport ciblé coaching sportif/boxe thaï pour Moussa, Mont-de-Marsan). Toutes vérifiées : pas de marque/enseigne réelle visible, pas de visage identifiable en gros plan (sauf mention contraire), usage commercial libre de droit (sources Unsplash/Pexels).
+Banque partagée pour les mockups V1 Boutiques, pas liée à un prospect précis. Alimentée le 16/08 (33 photos analysées, 23 retenues, 10 écartées), le 22/08 matin (22 photos analysées, 11 retenues, 11 écartées), le 22/08 après-midi (22 photos analysées, 16 retenues, 6 écartées, 2e apport ciblé brunch/pâtisserie pour Maison Crème), le 24/08 (29 photos analysées, 18 retenues, 11 écartées, apport ciblé artisans RGE pour Lassalle et Fils/Maisonnave) puis le 31/08 (apport ciblé coaching sportif/boxe thaï pour Moussa et cabinet kiné/ostéo pour Maud-Roxane Delatte, Mont-de-Marsan). Toutes vérifiées : pas de marque/enseigne réelle visible, pas de visage identifiable en gros plan (sauf mention contraire), usage commercial libre de droit (sources Unsplash/Pexels).
 
 ## plomberie-chauffage/ (11, nouvelle catégorie créée le 24/08)
 
@@ -56,6 +56,17 @@ Registre coaching sportif/boxe thaïlandaise, pour Moussa (Coach Boxe Thaïlanda
 - `coaching-boxe-05.jpg` : deux pratiquants en sparring dans une salle de boxe thaï, marque "Venum" visible sur un gant (marque d'équipement générique), visages partiellement masqués par les gants/le mouvement (aucun des deux de face), pas d'enseigne de salle lisible.
 - `coaching-boxe-06.jpg` : gros plan noir et blanc d'un pratiquant face à un sac de frappe, marque "Buka" visible sur le gant (marque d'équipement générique), visage identifiable de 3/4 (risque modéré, comparable à `coaching-boxe-04.jpg`).
 - `coaching-boxe-07.jpg` : pratiquant en action près d'un sac de frappe, marque "Buka" visible sur le gant, visage tourné/baissé (non identifiable de face), pas d'enseigne de salle lisible.
+
+## kine-osteo/ (6, nouvelle catégorie créée le 31/08)
+
+Registre cabinet de kinésithérapie/ostéopathie, pour Maud-Roxane Delatte (masseur-kinésithérapeute, Mont-de-Marsan). Aucune photo de face identifiable retenue : uniquement des mains en action (massage, palpation) ou des salles vides.
+
+- `kine-osteo-01.jpg` : salle de soins vide, table de massage, déco épurée (bois clair, vannerie murale), fenêtre à volet, pas de personne, pas de marque.
+- `kine-osteo-02.jpg` : gros plan mains du praticien posées sur le dos d'un patient, pas de visage, pas de marque.
+- `kine-osteo-03.jpg` : patient allongé sur le ventre, mains du praticien en pression sur le haut du dos/nuque, visage du patient tourné et enfoui dans la têtière (non identifiable), pas de marque.
+- `kine-osteo-04.jpg` : gros plan mains croisées en manipulation (pied/main), pas de visage, pas de marque.
+- `kine-osteo-05.jpg` : gros plan mains du praticien sur le dos d'un patient, pas de visage, pas de marque.
+- `kine-osteo-06.jpg` : gros plan mains du praticien sur la nuque/l'épaule d'un patient, cheveux gris visibles mais pas de visage, pas de marque.
 
 ## mode-vintage/ (5)
 
@@ -143,6 +154,6 @@ Boutique de vêtements/accessoires générique et actuelle, à distinguer de mod
 
 ## Couverture par secteur, à vérifier avant chaque nouveau prospect (mise à jour le 31/08)
 
-12 catégories, chacune déjà rattachée à un usage identifié : mode-vintage (Frip'ouilles, L'Intemporel), cave-epicerie (Cave Velours), bijouterie (Création Saint Roch), couture-textile (Trois Petits Muscaris), devanture (transversale, réutilisable pour tout secteur en dernier recours), brunch-cafe (Maison Crème, désormais bien fournie : comptoirs, viennoiseries, plats, table dressée), artisanat (pas encore rattachée à un prospect), boutique-mode (pas encore rattachée à un prospect), plomberie-chauffage (Lassalle et Fils, nouveau 24/08), peinture-isolation (Maisonnave, nouveau 24/08), cave-a-vin (L'Art dit Vin, nouveau 31/08), coaching-boxe (Moussa, nouveau 31/08).
+13 catégories, chacune déjà rattachée à un usage identifié : mode-vintage (Frip'ouilles, L'Intemporel), cave-epicerie (Cave Velours), bijouterie (Création Saint Roch), couture-textile (Trois Petits Muscaris), devanture (transversale, réutilisable pour tout secteur en dernier recours), brunch-cafe (Maison Crème, désormais bien fournie : comptoirs, viennoiseries, plats, table dressée), artisanat (pas encore rattachée à un prospect), boutique-mode (pas encore rattachée à un prospect), plomberie-chauffage (Lassalle et Fils, nouveau 24/08), peinture-isolation (Maisonnave, nouveau 24/08), cave-a-vin (L'Art dit Vin, nouveau 31/08), coaching-boxe (Moussa, nouveau 31/08), kine-osteo (Maud-Roxane Delatte, nouveau 31/08).
 
 **Règle avant de démarrer un nouveau prospect** : si son secteur ne correspond à aucune des catégories ci-dessus (boulangerie, coiffeur, fleuriste, restaurant, etc.), le signaler explicitement à Gilles avant de construire la V1, pas après. Ne jamais réutiliser une catégorie hors-sujet par défaut (ex. des photos de bijouterie pour une boulangerie) : mieux vaut attendre un apport de photos réellement adaptées que de livrer un mockup avec des visuels qui ne correspondent pas au commerce.

@@ -552,6 +552,32 @@ export const previewProjects: Record<string, IPreviewProject> = {
       },
     ],
   },
+  yGecZJC6Ap: {
+    slug: "maud-roxane-delatte",
+    projectName: "Maud-Roxane Delatte",
+    // Pas de logo reel (pratique individuelle sans identite de marque, cf fiche prospect,
+    // exception kine/osteo actee le 31/08). Monogramme "MRD" genere le 31/08 (sauge #3d6b5c,
+    // meme palette que les mockups P1/P2), uniquement pour le badge/favicon de cette page
+    // PreviewHome (project.logo requis par IPreviewProject) : a faire valider par Gilles avant
+    // envoi, jamais vu dans le mockup vault lui-meme (qui reste 100% typographique en interne).
+    logo: "/preview/maud-roxane-delatte/logo.png",
+    contactName: "Maud-Roxane Delatte",
+    currentRound: "V1",
+    nextAction: "Premier contact, en attente de retour",
+    feedbackFormId: "xgoggnej",
+    coldIntro:
+      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre activité.",
+    rounds: [
+      {
+        round: "V1",
+        date: "31 août 2026",
+        proposals: [
+          { label: "Votre site, premier jet", screenshot: "/preview/maud-roxane-delatte/logo.png", htmlPath: "/preview/maud-roxane-delatte/yGecZJC6Ap/V1/P1" },
+        ],
+        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
+      },
+    ],
+  },
   // Entree de demo, donnees factices (nom generique + logo de Gilles), sert a visualiser
   // le template "V1-Echanges" sans exposer de vraie donnee client. Cf Projets/V1-Echanges/suivi.html.
   "demo-template": {
