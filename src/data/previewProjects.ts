@@ -510,6 +510,27 @@ export const previewProjects: Record<string, IPreviewProject> = {
       },
     ],
   },
+  jyGEOXFtJN: {
+    slug: "xs-bijoux",
+    projectName: "XS Bijoux",
+    logo: "/preview/xs-bijoux/logo.jpg",
+    contactName: "L'équipe XS Bijoux",
+    currentRound: "V1",
+    nextAction: "Premier contact, en attente de retour",
+    feedbackFormId: "xgoggnej",
+    coldIntro:
+      "Merci d'être venu jusqu'ici ! Découvrez sans plus attendre ma proposition de site pour votre commerce.",
+    rounds: [
+      {
+        round: "V1",
+        date: "31 août 2026",
+        proposals: [
+          { label: "Votre site, premier jet", screenshot: "/preview/xs-bijoux/logo.jpg", htmlPath: "/preview/xs-bijoux/jyGEOXFtJN/V1/P1" },
+        ],
+        missingInfo: ["Votre avis sur cette première version, ou tout élément à corriger"],
+      },
+    ],
+  },
   // Entree de demo, donnees factices (nom generique + logo de Gilles), sert a visualiser
   // le template "V1-Echanges" sans exposer de vraie donnee client. Cf Projets/V1-Echanges/suivi.html.
   "demo-template": {
