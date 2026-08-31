@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maud-Roxane Delatte, proposition de site (2/2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --accent:#355f52; --accent-dark:#1f3a30; --creme:#f6f8f5; --text:#20261f;
+    --font-a:'Cormorant Garamond',serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{overflow-x:clip;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:var(--text); background:var(--creme); line-height:1.65;}
+  img{max-width:100%; display:block;}
+  h1,h2,h3{font-family:var(--font-a); font-weight:700;}
+  .btn{display:inline-block; padding:14px 30px; background:var(--accent); color:#fff; text-decoration:none; border-radius:30px; font-weight:700; font-size:15px; border:none; cursor:pointer; font-family:inherit;}
+  .btn:hover{background:var(--accent-dark);}
+
+  .to-top{position:fixed; bottom:76px; right:16px; z-index:999; width:44px; height:44px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:18px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s ease; box-shadow:0 6px 16px rgba(0,0,0,.25);}
+  .to-top.show{opacity:1; pointer-events:auto;}
+
+  .reveal{opacity:0; filter:blur(7px); transform:translateY(28px) scale(.98); transition:opacity .9s cubic-bezier(.16,1,.3,1), filter .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1);}
+  .reveal.show{opacity:1; filter:blur(0); transform:translateY(0) scale(1);}
+
+  .split{display:grid; grid-template-columns:42% 1fr;}
+  @media(max-width:860px){ .split{display:block;} }
+
+  .visuel{position:sticky; top:0; min-width:340px; height:100vh; background:linear-gradient(165deg, rgba(53,95,82,.87), rgba(31,58,48,.93) 70%), url('/preview/_stock/kine-osteo/kine-osteo-02.webp') center/cover; color:#fff; text-align:center;}
+  .visuel-inner{display:flex; flex-direction:column; height:100%; padding:36px 40px;}
+  .visuel-top{display:flex; flex-direction:column; align-items:center; flex-shrink:0;}
+  .visuel-name{font-size:19px; font-weight:800; letter-spacing:.01em;}
+  .visuel-top .tagline{font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; opacity:.75; margin-top:6px;}
+
+  .visuel-chapter{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px 0;}
+  .chapter-num{font-family:var(--font-a); font-size:14px; letter-spacing:.3em; opacity:.65; margin-bottom:14px;}
+  .chapter-title{font-size:clamp(24px,3vw,36px); line-height:1.15; max-width:300px;}
+  @keyframes chapterIn{ from{opacity:0; transform:translateY(14px); filter:blur(4px);} to{opacity:1; transform:translateY(0); filter:blur(0);} }
+  .chapter-anim{ animation:chapterIn .5s cubic-bezier(.16,1,.3,1); }
+  .visuel-dots{display:flex; justify-content:center; gap:10px; flex-shrink:0; padding-top:8px;}
+  .v-dot{width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.35); border:none; padding:0; cursor:pointer; transition:background .25s ease, transform .25s ease;}
+  .v-dot:hover{background:rgba(255,255,255,.6);}
+  .v-dot.active{background:#fff; transform:scale(1.3);}
+  @media(max-width:860px){ .visuel-dots{display:none;} }
+
+  .contenu{min-width:340px; padding:80px 6vw 100px;}
+  .bloc{padding:44px 0; border-bottom:1px solid rgba(53,95,82,.16);}
+  .bloc:first-child{padding-top:0;}
+  .bloc:last-child{border-bottom:none;}
+  .bloc h2{font-size:26px; color:var(--accent); margin-bottom:16px;}
+  .bloc p{font-size:15.5px; margin-bottom:12px;}
+  .bloc p.lead{font-size:18px; font-weight:700; color:var(--accent);}
+  .quote{font-family:var(--font-a); font-style:italic; font-size:20px; color:var(--accent); margin-top:16px;}
+
+  .etapes{list-style:none; counter-reset:step; margin-top:6px;}
+  .etapes li{counter-increment:step; padding-left:40px; position:relative; margin-bottom:16px; font-size:15px;}
+  .etapes li::before{content:counter(step); position:absolute; left:0; top:-1px; width:27px; height:27px; border-radius:50%; background:var(--accent); color:#fff; font-family:var(--font-a); font-size:13px; display:flex; align-items:center; justify-content:center;}
+
+  .bloc-img{margin-top:18px; border-radius:16px; overflow:hidden; box-shadow:0 10px 26px rgba(31,58,48,.14); position:relative;}
+  .bloc-img img{width:100%; height:220px; object-fit:cover;}
+  .bloc-img .bloc-img-cap{position:absolute; bottom:12px; left:16px; color:#fff; font-size:11.5px; text-transform:uppercase; letter-spacing:.08em; background:rgba(31,58,48,.6); padding:5px 12px; border-radius:999px;}
+
+  .stars{color:var(--accent); font-size:16px; margin-bottom:6px;}
+  .avis-note{font-size:13px; opacity:.7;}
+
+  dl{display:grid; grid-template-columns:auto 1fr; gap:9px 18px; font-size:14.5px; max-width:420px;}
+  dt{font-weight:700; color:var(--accent);}
+  dd{opacity:.85;}
+
+  .map-wrap{position:relative; margin-top:20px;}
+  .map-embed{width:100%; height:200px; border-radius:16px; overflow:hidden; background:#eee;}
+  .map-lock{position:absolute; inset:0; border-radius:16px; background:rgba(0,0,0,.25); color:#fff; display:flex; align-items:center; justify-content:center; text-align:center; font-size:13px; font-weight:700; padding:12px; cursor:pointer; transition:opacity .2s ease; z-index:401;}
+  .map-lock.hidden{opacity:0; pointer-events:none;}
+  .map-recenter{position:absolute; bottom:10px; left:10px; z-index:401; background:#fff; color:var(--text); border:1px solid rgba(0,0,0,.15); border-radius:8px; padding:6px 10px; font-size:11.5px; font-family:inherit; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.15);}
+
+  .contact-bloc form{display:flex; flex-direction:column; gap:14px; max-width:420px; margin-top:8px;}
+  .contact-bloc input, .contact-bloc textarea{padding:12px 16px; border-radius:10px; border:1px solid rgba(53,95,82,.25); font-family:inherit; font-size:15px; background:#fff;}
+  .contact-bloc textarea{min-height:100px; resize:vertical;}
+
+  footer{text-align:center; padding:26px 24px; background:var(--accent-dark); color:rgba(255,255,255,.7); font-size:12.5px;}
+
+  @media(max-width:860px){
+    .visuel{position:relative; width:100%; height:auto; min-height:320px;}
+    .visuel-inner{height:auto; padding:60px 30px;}
+    .contenu{width:100%; padding:48px 22px 70px;}
+  }
+
+  .proposition-banner{position:fixed; top:0; left:0; right:0; z-index:1000; background:#18181b; color:#fff; text-align:center; padding:10px 16px; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;}
+  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:#18181b; color:#fff; padding:22px 20px; text-align:center; font-family:'Nunito',-apple-system,sans-serif; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
+  .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
+  .retour-bandeau a.retour-bandeau-confidentialite{display:block; text-align:right; margin:6px 0 0; font-size:10.5px; font-weight:600; opacity:.55;}
+  @media(max-width:480px){
+    .retour-bandeau{font-size:13.5px; padding:20px 16px;}
+    .retour-bandeau a.retour-bandeau-confidentialite{text-align:center; margin-top:16px;}
+  }
+
+  .result-modal-overlay{position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .3s ease;}
+  .result-modal-overlay.show{opacity:1; pointer-events:auto;}
+  .result-modal{position:relative; max-width:380px; width:100%; background:var(--creme); border-radius:20px; padding:38px 30px 32px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.35); transform:translateY(14px); transition:transform .3s ease;}
+  .result-modal-overlay.show .result-modal{transform:translateY(0);}
+  .result-modal h2{font-family:var(--font-a); font-size:23px; margin:0 0 10px; color:var(--text);}
+  .result-modal p{font-size:14.5px; color:var(--text); opacity:.7; margin:0 0 24px; line-height:1.5;}
+  .result-modal-close{position:absolute; top:12px; right:12px; background:none; border:0; font-size:18px; line-height:1; color:var(--text); opacity:.5; cursor:pointer; padding:8px;}
+</style>
+</head>
+<body>
+<div class="proposition-banner">2ème proposition</div>
+
+<div class="result-modal-overlay" id="resultModalOverlay">
+  <div class="result-modal">
+    <button type="button" class="result-modal-close" aria-label="Fermer" onclick="closeResultModal()">✕</button>
+    <h2>Séduit par le visuel ?</h2>
+    <p>Il suffit d'ajouter quelques éléments de personnalisation pour modeler le site à votre image !</p>
+    <a class="btn" href="/preview/maud-roxane-delatte/yGecZJC6Ap#tarif">Obtenir plus d'informations →</a>
+  </div>
+</div>
+
+<div class="retour-bandeau">
+  <a href="/preview/maud-roxane-delatte/yGecZJC6Ap#tarif">Obtenir plus d'informations →</a>
+  <a class="retour-bandeau-confidentialite" href="/cgv-boutiques#donnees-confidentialite" target="_blank" rel="noopener noreferrer">Confidentialité</a>
+</div>
+
+<button class="to-top" id="toTop" aria-label="Retour en haut">↑</button>
+
+<div class="split">
+  <div class="visuel">
+    <div class="visuel-inner">
+      <div class="visuel-top">
+        <div class="visuel-name">Maud-Roxane Delatte</div>
+        <div class="tagline">Masseur-kinésithérapeute · Hypnothérapeute</div>
+      </div>
+      <div class="visuel-chapter">
+        <div class="chapter-num" id="chapterNum">01</div>
+        <div class="chapter-title" id="chapterTitle">Notre approche</div>
+      </div>
+      <div class="visuel-dots" id="visuelDots"></div>
+    </div>
+  </div>
+
+  <div class="contenu">
+    <div class="bloc reveal" id="bloc-concept" data-label="Notre approche" data-num="01">
+      <h2>Notre approche</h2>
+      <p class="lead">Rééducation de la main et hypnothérapie, à Mont-de-Marsan depuis 2013.</p>
+      <p>Diplômée en 2007 (ISEK, Haute École Paul-Henri Spaak, Bruxelles), Maud-Roxane Delatte a exercé au sein de centres de la main reconnus, l'Institut aquitain de la main à Pessac et le centre de la main de Toulon, avant de créer son propre cabinet à Mont-de-Marsan en 2013. Elle obtient en 2019 un DIU en rééducation et appareillage en chirurgie de la main à Grenoble.</p>
+      <p class="quote">« Retrouver du mouvement, un geste à la fois. »</p>
+      <div class="bloc-img">
+        <img src="/preview/_stock/kine-osteo/kine-osteo-04.webp" alt="Manipulation en séance de rééducation">
+        <span class="bloc-img-cap">En séance</span>
+      </div>
+    </div>
+
+    <div class="bloc reveal" id="bloc-etapes" data-label="Comment ça marche" data-num="02">
+      <h2>Comment ça marche</h2>
+      <ol class="etapes">
+        <li>Premier bilan pour cerner votre besoin et vos objectifs de rééducation</li>
+        <li>Un programme personnalisé, en rééducation de la main ou en hypnothérapie selon votre situation</li>
+        <li>Un suivi régulier jusqu'à la récupération complète</li>
+      </ol>
+      <div class="bloc-img">
+        <img src="/preview/_stock/kine-osteo/kine-osteo-06.webp" alt="Suivi de rééducation, mains du praticien sur la nuque">
+        <span class="bloc-img-cap">Suivi personnalisé</span>
+      </div>
+    </div>
+
+    <div class="bloc reveal" id="bloc-avis" data-label="Leurs retours" data-num="03">
+      <h2>Leurs retours</h2>
+      <div class="stars">★★★★★</div>
+      <p class="avis-note">Avis Google, widget à connecter.</p>
+    </div>
+
+    <div class="bloc reveal" id="bloc-infos" data-label="Bon à savoir" data-num="04">
+      <h2>Bon à savoir</h2>
+      <dl>
+        <dt>Adresse</dt><dd>780 Avenue du Maréchal Foch, 40000 Mont-de-Marsan</dd>
+        <dt>Horaires</dt><dd>Lun 8h30-12h/14h-17h, Mar 8h30-12h/14h-17h30, Mer 8h30-12h, Jeu 8h30-12h/14h-17h30, Ven 8h30-12h/14h-17h</dd>
+        <dt>Téléphone</dt><dd>05 58 51 43 15</dd>
+        <dt>Email</dt><dd>kine.delatte@hotmail.com</dd>
+      </dl>
+      <div class="map-wrap">
+        <div class="map-embed" id="mapEmbed"></div>
+        <div class="map-lock" id="mapLock" onclick="unlockMap()">Cliquez pour interagir avec la carte</div>
+        <button type="button" class="map-recenter" onclick="recenterMap()" aria-label="Recentrer la carte">↺ Recentrer</button>
+      </div>
+    </div>
+
+    <div class="bloc contact-bloc reveal" id="bloc-contact" data-label="Nous écrire" data-num="05">
+      <h2>Nous écrire</h2>
+      <form action="#" method="POST">
+        <input type="text" name="nom" placeholder="Votre nom" required>
+        <input type="email" name="email" placeholder="Votre email" required>
+        <textarea name="message" placeholder="Votre message" required></textarea>
+        <button type="submit" class="btn">Envoyer</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>MAUD-ROXANE DELATTE · MONT-DE-MARSAN · kine.delatte@hotmail.com</footer>
+
+<script>
+  function syncBandeauSpacing() {
+    var top = document.querySelector('.proposition-banner');
+    var bottom = document.querySelector('.retour-bandeau');
+    if (top) document.body.style.paddingTop = top.offsetHeight + 'px';
+    if (bottom) document.body.style.paddingBottom = bottom.offsetHeight + 'px';
+  }
+  syncBandeauSpacing();
+  window.addEventListener('resize', syncBandeauSpacing);
+
+  var revealObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('show'); });
+  }, {threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el){ revealObs.observe(el); });
+
+  var blocs = Array.prototype.slice.call(document.querySelectorAll('.bloc[data-label]'));
+  var dotsWrap = document.getElementById('visuelDots');
+  var numEl = document.getElementById('chapterNum');
+  var titleEl = document.getElementById('chapterTitle');
+  var dots = blocs.map(function(bloc, i){
+    var dot = document.createElement('button');
+    dot.className = 'v-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', bloc.dataset.label);
+    dot.addEventListener('click', function(){ bloc.scrollIntoView({behavior:'smooth', block:'center'}); });
+    dotsWrap.appendChild(dot);
+    return dot;
+  });
+
+  var activeIndex = 0;
+  function playAnim(el){ el.classList.remove('chapter-anim'); void el.offsetWidth; el.classList.add('chapter-anim'); }
+  function setActive(i){
+    if (i === activeIndex) return;
+    activeIndex = i;
+    dots.forEach(function(d, j){ d.classList.toggle('active', j === i); });
+    numEl.textContent = blocs[i].dataset.num;
+    titleEl.textContent = blocs[i].dataset.label;
+    playAnim(numEl); playAnim(titleEl);
+  }
+  function closestBlocIndex(){
+    var centerY = window.innerHeight / 2, best = 0, bestDist = Infinity;
+    blocs.forEach(function(b, i){
+      var r = b.getBoundingClientRect();
+      var dist = Math.abs((r.top + r.height / 2) - centerY);
+      if (dist < bestDist){ bestDist = dist; best = i; }
+    });
+    return best;
+  }
+  var ticking = false;
+  function onScroll(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){ setActive(closestBlocIndex()); ticking = false; });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    if(window.scrollY > window.innerHeight * 0.6){ toTop.classList.add('show'); } else { toTop.classList.remove('show'); }
+  }, {passive:true});
+  toTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+  (function(){
+    var overlay = document.getElementById('resultModalOverlay');
+    if(!overlay) return;
+    var shown = false;
+    function openModal(){ if(shown) return; shown = true; overlay.classList.add('show'); }
+    function closeModal(){ overlay.classList.remove('show'); }
+    window.closeResultModal = closeModal;
+    overlay.addEventListener('click', function(e){ if(e.target === overlay) closeModal(); });
+    function checkNearBottom(){
+      if(shown) return;
+      var doc = document.documentElement;
+      var scrollBottom = window.scrollY + window.innerHeight;
+      var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight);
+      if(scrollBottom >= pageHeight - 80) openModal();
+    }
+    window.addEventListener('scroll', checkNearBottom, {passive:true});
+    window.addEventListener('resize', checkNearBottom);
+  })();
+
+  // Adresse reelle : 780 Avenue du Marechal Foch, 40000 Mont-de-Marsan (geocodee via
+  // api-adresse.data.gouv.fr, 31/08).
+  var MAP_CENTER = [43.897299, -0.489192];
+  var MAP_ZOOM = 16;
+  var map = L.map('mapEmbed', {
+    center: MAP_CENTER, zoom: MAP_ZOOM,
+    scrollWheelZoom: false, dragging: false, touchZoom: false, doubleClickZoom: false, zoomControl: false
+  });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  }).addTo(map);
+  map.attributionControl.setPrefix(false);
+  L.marker(MAP_CENTER).addTo(map);
+  function unlockMap() {
+    document.getElementById('mapLock').classList.add('hidden');
+    map.scrollWheelZoom.enable(); map.dragging.enable(); map.touchZoom.enable(); map.doubleClickZoom.enable();
+    map.addControl(L.control.zoom());
+  }
+  function recenterMap() { map.setView(MAP_CENTER, MAP_ZOOM); }
+</script>
+<script>
+  (function(){
+    try {
+      var payload = JSON.stringify({slug:"maud-roxane-delatte", step:"p2"});
+      var url = "https://boutiques-api.gillescobigo.com/track";
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(url, new Blob([payload], {type:"application/json"}));
+      } else {
+        fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body: payload, keepalive: true}).catch(function(){});
+      }
+    } catch (e) {}
+  })();
+</script>
+</body>
+</html>
