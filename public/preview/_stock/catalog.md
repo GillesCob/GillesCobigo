@@ -1,6 +1,6 @@
 # Catalogue banque d'images libres de droit
 
-Banque partagée pour les mockups V1 Boutiques, pas liée à un prospect précis. Alimentée le 16/08 (33 photos analysées, 23 retenues, 10 écartées), le 22/08 matin (22 photos analysées, 11 retenues, 11 écartées), le 22/08 après-midi (22 photos analysées, 16 retenues, 6 écartées, 2e apport ciblé brunch/pâtisserie pour Maison Crème) puis le 24/08 (29 photos analysées, 18 retenues, 11 écartées, apport ciblé artisans RGE pour Lassalle et Fils/Maisonnave). Toutes vérifiées : pas de marque/enseigne réelle visible, pas de visage identifiable en gros plan (sauf mention contraire), usage commercial libre de droit (sources Unsplash/Pexels).
+Banque partagée pour les mockups V1 Boutiques, pas liée à un prospect précis. Alimentée le 16/08 (33 photos analysées, 23 retenues, 10 écartées), le 22/08 matin (22 photos analysées, 11 retenues, 11 écartées), le 22/08 après-midi (22 photos analysées, 16 retenues, 6 écartées, 2e apport ciblé brunch/pâtisserie pour Maison Crème), le 24/08 (29 photos analysées, 18 retenues, 11 écartées, apport ciblé artisans RGE pour Lassalle et Fils/Maisonnave) puis le 31/08 (apport ciblé coaching sportif/boxe thaï pour Moussa, Mont-de-Marsan). Toutes vérifiées : pas de marque/enseigne réelle visible, pas de visage identifiable en gros plan (sauf mention contraire), usage commercial libre de droit (sources Unsplash/Pexels).
 
 ## plomberie-chauffage/ (11, nouvelle catégorie créée le 24/08)
 
@@ -45,6 +45,17 @@ Registre cave à vin/dégustation, distincte de `cave-epicerie` (épicerie fine 
 - `cave-a-vin-03.jpg` : intérieur de cave à vin/bar à vin, fauteuil en cuir avec coussin au premier plan, mur de casiers à bouteilles en arrière-plan, tonneau en guise de table, étiquettes trop petites pour être lisibles, pas de personne.
 - `cave-a-vin-04.jpg` : mur de casiers rétroéclairés avec plusieurs dizaines de bouteilles alignées, quelques étiquettes de producteurs partiellement lisibles en grille dense (risque modéré, comparable aux marques d'équipement déjà acceptées ailleurs dans ce catalogue), pas de personne.
 - `cave-a-vin-05.jpg` : gros plan sur un tas de bouchons de liège de vin d'origines variées, quelques inscriptions visibles mais génériques/décoratives (pas une enseigne identifiable), pas de personne.
+
+## coaching-boxe/ (7, nouvelle catégorie créée le 31/08)
+
+Registre coaching sportif/boxe thaïlandaise, pour Moussa (Coach Boxe Thaïlandaise, Mont-de-Marsan).
+
+- `coaching-boxe-02.jpg` : paire de gants de boxe vintage en cuir suspendus, marque "Everlast" visible (marque d'équipement générique, même logique que les marques d'outillage déjà acceptées ailleurs dans ce catalogue), pas de personne.
+- `coaching-boxe-03.jpg` : gant de boxe posé sur les cordes d'un ring, avant-bras flou au premier plan, pas de visage, pas de marque lisible.
+- `coaching-boxe-04.jpg` : boxeur torse nu frappant un sac de frappe, visage de profil en plein effort (non frontal, risque modéré comparable à d'autres photos déjà retenues du catalogue, ex. `bijouterie-06.jpg`/`plomberie-chauffage-05.jpg`), pas de marque lisible.
+- `coaching-boxe-05.jpg` : deux pratiquants en sparring dans une salle de boxe thaï, marque "Venum" visible sur un gant (marque d'équipement générique), visages partiellement masqués par les gants/le mouvement (aucun des deux de face), pas d'enseigne de salle lisible.
+- `coaching-boxe-06.jpg` : gros plan noir et blanc d'un pratiquant face à un sac de frappe, marque "Buka" visible sur le gant (marque d'équipement générique), visage identifiable de 3/4 (risque modéré, comparable à `coaching-boxe-04.jpg`).
+- `coaching-boxe-07.jpg` : pratiquant en action près d'un sac de frappe, marque "Buka" visible sur le gant, visage tourné/baissé (non identifiable de face), pas d'enseigne de salle lisible.
 
 ## mode-vintage/ (5)
 
@@ -132,6 +143,6 @@ Boutique de vêtements/accessoires générique et actuelle, à distinguer de mod
 
 ## Couverture par secteur, à vérifier avant chaque nouveau prospect (mise à jour le 31/08)
 
-11 catégories, chacune déjà rattachée à un usage identifié : mode-vintage (Frip'ouilles, L'Intemporel), cave-epicerie (Cave Velours), bijouterie (Création Saint Roch), couture-textile (Trois Petits Muscaris), devanture (transversale, réutilisable pour tout secteur en dernier recours), brunch-cafe (Maison Crème, désormais bien fournie : comptoirs, viennoiseries, plats, table dressée), artisanat (pas encore rattachée à un prospect), boutique-mode (pas encore rattachée à un prospect), plomberie-chauffage (Lassalle et Fils, nouveau 24/08), peinture-isolation (Maisonnave, nouveau 24/08), cave-a-vin (L'Art dit Vin, nouveau 31/08).
+12 catégories, chacune déjà rattachée à un usage identifié : mode-vintage (Frip'ouilles, L'Intemporel), cave-epicerie (Cave Velours), bijouterie (Création Saint Roch), couture-textile (Trois Petits Muscaris), devanture (transversale, réutilisable pour tout secteur en dernier recours), brunch-cafe (Maison Crème, désormais bien fournie : comptoirs, viennoiseries, plats, table dressée), artisanat (pas encore rattachée à un prospect), boutique-mode (pas encore rattachée à un prospect), plomberie-chauffage (Lassalle et Fils, nouveau 24/08), peinture-isolation (Maisonnave, nouveau 24/08), cave-a-vin (L'Art dit Vin, nouveau 31/08), coaching-boxe (Moussa, nouveau 31/08).
 
 **Règle avant de démarrer un nouveau prospect** : si son secteur ne correspond à aucune des catégories ci-dessus (boulangerie, coiffeur, fleuriste, restaurant, etc.), le signaler explicitement à Gilles avant de construire la V1, pas après. Ne jamais réutiliser une catégorie hors-sujet par défaut (ex. des photos de bijouterie pour une boulangerie) : mieux vaut attendre un apport de photos réellement adaptées que de livrer un mockup avec des visuels qui ne correspondent pas au commerce.

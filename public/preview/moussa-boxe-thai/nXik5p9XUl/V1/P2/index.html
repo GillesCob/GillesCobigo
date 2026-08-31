@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="/preview/moussa-boxe-thai/logo.png">
+<title>My Coach Moussa, proposition de site (2/2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#f0b400; --accent-dark:#141210; --creme:#f6f1e4; --text:#1a1610;
+    --font-a:'Oswald',sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{overflow-x:clip; scroll-snap-type:y proximity; scroll-behavior:smooth;}
+  body{font-family:'Nunito',-apple-system,sans-serif; color:#fff; line-height:1.6; padding-top:42px;}
+  img{max-width:100%; display:block;}
+  h1,h2{font-family:var(--font-a); font-weight:600; text-transform:uppercase; letter-spacing:.02em;}
+  .btn{display:inline-block; padding:14px 32px; background:#fff; color:var(--accent-dark); text-decoration:none; border-radius:999px; font-weight:800; font-size:15px; border:none; cursor:pointer; font-family:inherit;}
+
+  .story-bars{position:fixed; top:52px; left:16px; right:16px; z-index:1000; display:flex; gap:6px;}
+  .story-bar{flex:1; height:3px; border-radius:3px; background:rgba(255,255,255,.3); overflow:hidden;}
+  .story-bar span{display:block; height:100%; width:0; background:var(--accent); transition:width .3s ease;}
+  .story-bar.done span{width:100%;}
+
+  .slide{min-height:100dvh; scroll-snap-align:start; display:flex; align-items:center; justify-content:center; padding:100px 8vw 64px; position:relative; text-align:center; overflow:hidden;}
+  .slide-inner{max-width:560px; opacity:0; transform:translateY(20px); transition:opacity .6s ease, transform .6s ease; position:relative; z-index:1;}
+  .slide.show .slide-inner{opacity:1; transform:translateY(0);}
+  .slide-num{font-family:var(--font-a); font-size:13px; letter-spacing:.25em; opacity:.75; margin-bottom:12px; color:var(--accent);}
+  .slide h2{font-size:clamp(24px,4vw,36px); margin-bottom:16px;}
+  .slide p{opacity:.92; font-size:16px; text-transform:none;}
+  .click-zone{position:absolute; top:0; bottom:0; width:33%; z-index:5; cursor:pointer;}
+  .click-zone.left{left:0;} .click-zone.right{right:0;}
+
+  .slide.hero{background:#000;}
+  .hero-overlay{position:absolute; inset:0; background:linear-gradient(160deg, rgba(32,27,18,.85), rgba(20,18,16,.92)); z-index:0;}
+  .slide.concept{background:var(--accent-dark);}
+  .slide.photo{background:#000;}
+  .slide.photo img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.55;}
+  .slide-photo-bg{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.4; z-index:0;}
+  .slide.etapes{background:linear-gradient(200deg, #2a2313, var(--accent-dark));}
+  .slide.avis{background:#100e0a;}
+  .slide.infos{background:#0a0906;}
+
+  .logo{width:72px; height:72px; border-radius:50%; margin:0 auto 18px; overflow:hidden; border:2px solid var(--accent); position:relative;}
+  .logo img{width:100%; height:100%; object-fit:cover;}
+  .tagline{font-size:12px; text-transform:uppercase; letter-spacing:.2em; opacity:.8; margin-bottom:14px; color:var(--accent);}
+
+  .etapes-list{list-style:none; counter-reset:step; text-align:left; margin-top:10px; display:inline-block;}
+  .etapes-list li{counter-increment:step; padding-left:38px; position:relative; margin-bottom:14px; text-transform:none;}
+  .etapes-list li::before{content:counter(step); position:absolute; left:0; top:-2px; width:26px; height:26px; border-radius:50%; background:var(--accent); color:var(--accent-dark); font-weight:800; display:flex; align-items:center; justify-content:center; font-size:13px; font-family:var(--font-a);}
+
+  .stat-row{display:flex; gap:26px; justify-content:center; margin-top:8px;}
+  .stat b{display:block; font-family:var(--font-a); font-size:28px;}
+  .stat span{font-size:12px; opacity:.75; text-transform:none;}
+
+  .rs-links{display:flex; gap:14px; justify-content:center; margin-top:12px;}
+  .rs-links a{color:#fff; font-weight:800; text-decoration:none; border:2px solid var(--accent); border-radius:999px; padding:9px 20px; font-size:14px;}
+
+  .infos-pratiques p{margin-bottom:8px; text-transform:none;}
+  .infos-pratiques p:last-child{margin-bottom:0;}
+
+  .contact-form{display:flex; flex-direction:column; gap:12px; text-align:left; margin-top:16px;}
+  .contact-form input, .contact-form textarea{padding:12px 16px; border-radius:8px; border:0; font-family:inherit; font-size:16px;}
+  .contact-form textarea{min-height:90px; resize:vertical;}
+
+  footer{text-align:center; padding:24px 24px 92px; background:#0a0906; color:rgba(255,255,255,.6); font-size:12px; scroll-snap-align:end;}
+
+  .proposition-banner{position:fixed; top:0; left:0; right:0; z-index:1000; background:#18181b; color:#fff; text-align:center; padding:10px 16px; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;}
+  .retour-bandeau{position:fixed; bottom:0; left:0; right:0; z-index:900; background:#18181b; color:#fff; padding:22px 20px; text-align:center; font-family:'Nunito',-apple-system,sans-serif; font-size:16px; box-shadow:0 -4px 16px rgba(0,0,0,.2);}
+  .retour-bandeau a{color:#fff; font-weight:800; text-decoration:underline; margin-left:6px;}
+  .retour-bandeau a.retour-bandeau-confidentialite{display:block; text-align:right; margin:6px 0 0; font-size:10.5px; font-weight:600; opacity:.55;}
+  @media(max-width:480px){
+    .retour-bandeau{font-size:13.5px; padding:20px 16px;}
+    .retour-bandeau a.retour-bandeau-confidentialite{text-align:center; margin-top:16px;}
+  }
+
+  .result-modal-overlay{position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity .3s ease;}
+  .result-modal-overlay.show{opacity:1; pointer-events:auto;}
+  .result-modal{position:relative; max-width:380px; width:100%; background:var(--creme); border-radius:20px; padding:38px 30px 32px; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.35); transform:translateY(14px); transition:transform .3s ease;}
+  .result-modal-overlay.show .result-modal{transform:translateY(0);}
+  .result-modal h2{font-family:var(--font-a); font-size:23px; margin:0 0 10px; color:var(--text); text-transform:none;}
+  .result-modal p{font-size:14.5px; color:var(--text); opacity:.7; margin:0 0 24px; line-height:1.5;}
+  .result-modal-close{position:absolute; top:12px; right:12px; background:none; border:0; font-size:18px; line-height:1; color:var(--text); opacity:.5; cursor:pointer; padding:8px;}
+  .result-modal .btn{background:var(--accent-dark); color:var(--creme);}
+  .result-modal .btn:hover{background:#000;}
+</style>
+</head>
+<body>
+<div class="proposition-banner">2ème proposition</div>
+
+<div class="result-modal-overlay" id="resultModalOverlay">
+  <div class="result-modal">
+    <button type="button" class="result-modal-close" aria-label="Fermer" onclick="closeResultModal()">✕</button>
+    <h2>Séduit par le visuel ?</h2>
+    <p>Il suffit d'ajouter quelques éléments de personnalisation pour modeler le site à votre image !</p>
+    <a class="btn" href="/preview/moussa-boxe-thai/nXik5p9XUl#tarif">Obtenir plus d'informations →</a>
+  </div>
+</div>
+
+<div class="retour-bandeau">
+  <a href="/preview/moussa-boxe-thai/nXik5p9XUl#tarif">Obtenir plus d'informations →</a>
+  <a class="retour-bandeau-confidentialite" href="/cgv-boutiques#donnees-confidentialite" target="_blank" rel="noopener noreferrer">Confidentialité</a>
+</div>
+
+<div class="story-bars" id="storyBars"></div>
+
+<div class="slide hero" data-slide>
+  <img class="slide-photo-bg" src="/preview/_stock/coaching-boxe/coaching-boxe-07.webp" alt="Boxeur à l'entraînement">
+  <div class="hero-overlay"></div>
+  <div class="click-zone right" data-next></div>
+  <div class="slide-inner">
+    <div class="logo"><img src="/preview/moussa-boxe-thai/logo.png" alt="My Coach Moussa"></div>
+    <div class="tagline">Coach sportif · Boxe thaïlandaise</div>
+    <h2 style="font-size:clamp(30px,5vw,44px);">My Coach Moussa</h2>
+    <p>Des séances taillées pour progresser, que vous débutiez ou visiez la compétition.</p>
+  </div>
+</div>
+
+<div class="slide concept" data-slide>
+  <img class="slide-photo-bg" src="/preview/_stock/coaching-boxe/coaching-boxe-03.webp" alt="Gant de boxe sur les cordes du ring">
+  <div class="click-zone left" data-prev></div>
+  <div class="click-zone right" data-next></div>
+  <div class="slide-inner">
+    <div class="slide-num">01 / 05</div>
+    <h2>Notre parti pris</h2>
+    <p>Passé par la compétition semi-professionnelle, Moussa transmet aujourd'hui la boxe thaïlandaise à travers des cours particuliers pensés pour chaque profil, de l'initiation à la préparation physique la plus poussée.</p>
+  </div>
+</div>
+
+<div class="slide photo" data-slide>
+  <div class="click-zone left" data-prev></div>
+  <div class="click-zone right" data-next></div>
+  <img src="/preview/_stock/coaching-boxe/coaching-boxe-04.webp" alt="Frappe sur sac de frappe en séance de boxe thaïlandaise">
+  <div class="slide-inner">
+    <div class="slide-num">02 / 05</div>
+    <h2>Sur le terrain</h2>
+  </div>
+</div>
+
+<div class="slide etapes" data-slide>
+  <div class="click-zone left" data-prev></div>
+  <div class="click-zone right" data-next></div>
+  <div class="slide-inner">
+    <div class="slide-num">03 / 05</div>
+    <h2>Le déroulé</h2>
+    <ol class="etapes-list">
+      <li>Bilan initial pour cerner votre objectif et votre niveau</li>
+      <li>Un programme sur mesure : technique, cardio, psycho-boxe</li>
+      <li>Des rendez-vous réguliers pour ancrer les progrès dans la durée</li>
+    </ol>
+  </div>
+</div>
+
+<div class="slide avis" data-slide>
+  <div class="click-zone left" data-prev></div>
+  <div class="click-zone right" data-next></div>
+  <div class="slide-inner">
+    <div class="slide-num">04 / 05</div>
+    <h2>Ce qu'on en dit</h2>
+    <div class="stat-row">
+      <div class="stat"><b>4</b><span>avis positifs sur Superprof</span></div>
+      <div class="stat"><b>30€/h</b><span>tarif de référence</span></div>
+    </div>
+    <div class="rs-links" style="margin-top:18px;">
+      <a href="https://www.instagram.com/mycoach_moussa/" target="_blank" rel="noopener noreferrer">Instagram</a>
+    </div>
+  </div>
+</div>
+
+<div class="slide infos" data-slide>
+  <div class="click-zone left" data-prev></div>
+  <div class="slide-inner">
+    <div class="slide-num">05 / 05</div>
+    <h2>Nous écrire</h2>
+    <div class="infos-pratiques">
+      <p>Mont-de-Marsan et alentours</p>
+      <p>Cours à domicile ou en extérieur, sur rendez-vous</p>
+    </div>
+    <form class="contact-form" action="#" method="POST">
+      <input type="text" name="nom" placeholder="Votre nom" required>
+      <input type="email" name="email" placeholder="Votre email" required>
+      <textarea name="message" placeholder="Votre message" required></textarea>
+      <button type="submit" class="btn">Envoyer</button>
+    </form>
+  </div>
+</div>
+
+<footer>MY COACH MOUSSA · Mont-de-Marsan et alentours · @mycoach_moussa</footer>
+
+<script>
+  function syncBandeauSpacing() {
+    var top = document.querySelector('.proposition-banner');
+    var bottom = document.querySelector('.retour-bandeau');
+    if (top) document.body.style.paddingTop = top.offsetHeight + 'px';
+    if (bottom) document.body.style.paddingBottom = bottom.offsetHeight + 'px';
+  }
+  syncBandeauSpacing();
+  window.addEventListener('resize', syncBandeauSpacing);
+
+  var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+  var barsWrap = document.getElementById('storyBars');
+  slides.forEach(function(){
+    var bar = document.createElement('div');
+    bar.className = 'story-bar';
+    bar.innerHTML = '<span></span>';
+    barsWrap.appendChild(bar);
+  });
+  var bars = Array.prototype.slice.call(barsWrap.children);
+
+  var current = 0;
+  function setActive(i){
+    current = Math.max(0, Math.min(i, slides.length - 1));
+    bars.forEach(function(b, idx){ b.classList.toggle('done', idx <= current); });
+  }
+
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('show');
+        setActive(slides.indexOf(entry.target));
+      }
+    });
+  }, {threshold:.55});
+  slides.forEach(function(s){ obs.observe(s); });
+
+  document.querySelectorAll('[data-next]').forEach(function(zone){
+    zone.addEventListener('click', function(){
+      var next = slides[current + 1];
+      if(next) next.scrollIntoView({behavior:'smooth'});
+    });
+  });
+  document.querySelectorAll('[data-prev]').forEach(function(zone){
+    zone.addEventListener('click', function(){
+      var prev = slides[current - 1];
+      if(prev) prev.scrollIntoView({behavior:'smooth'});
+    });
+  });
+
+  (function(){
+    var overlay = document.getElementById('resultModalOverlay');
+    if(!overlay) return;
+    var shown = false;
+    function openModal(){ if(shown) return; shown = true; overlay.classList.add('show'); }
+    function closeModal(){ overlay.classList.remove('show'); }
+    window.closeResultModal = closeModal;
+    overlay.addEventListener('click', function(e){ if(e.target === overlay) closeModal(); });
+    function checkNearBottom(){
+      if(shown) return;
+      var doc = document.documentElement;
+      var scrollBottom = window.scrollY + window.innerHeight;
+      var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight);
+      if(scrollBottom >= pageHeight - 80) openModal();
+    }
+    window.addEventListener('scroll', checkNearBottom, {passive:true});
+    window.addEventListener('resize', checkNearBottom);
+  })();
+</script>
+<script>
+  (function(){
+    try {
+      var payload = JSON.stringify({slug:"moussa-boxe-thai", step:"p2"});
+      var url = "https://boutiques-api.gillescobigo.com/track";
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(url, new Blob([payload], {type:"application/json"}));
+      } else {
+        fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body: payload, keepalive: true}).catch(function(){});
+      }
+    } catch (e) {}
+  })();
+</script>
+</body>
+</html>
