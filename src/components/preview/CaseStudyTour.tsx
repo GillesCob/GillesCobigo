@@ -377,6 +377,27 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       scrollLockedByOverflowRef.current = false;
       document.documentElement.style.overflow = "";
     }
+    // Rebond/vibration en fin de scroll trackpad (02/09, portage depuis le mockup vault
+    // Projets/V1-Echanges/mockups/version-guided-tour.html) : un unlockOverflow() immediat sur
+    // le moindre evenement wheel non bloquant faisait flapper hidden/auto plusieurs fois par
+    // seconde pendant une rafale de momentum trackpad (deltaY bruite en fin de decelaration),
+    // chaque bascule laissant l'inertie reprendre un instant avant d'etre re-figee : ce flap
+    // donnait l'impression de rebondir. Correctif : debounce 180ms sur le deverrouillage,
+    // reinitialise a chaque nouvel evenement wheel tant que la rafale continue.
+    let unlockTimer: ReturnType<typeof setTimeout> | null = null;
+    function scheduleUnlock() {
+      if (unlockTimer) clearTimeout(unlockTimer);
+      unlockTimer = setTimeout(() => {
+        unlockTimer = null;
+        unlockOverflow();
+      }, 180);
+    }
+    function cancelScheduledUnlock() {
+      if (unlockTimer) {
+        clearTimeout(unlockTimer);
+        unlockTimer = null;
+      }
+    }
     function isAtTop() {
       return lockMinRef.current !== null && window.scrollY <= lockMinRef.current;
     }
@@ -386,12 +407,14 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
     function handleWheel(e: WheelEvent) {
       if (e.deltaY < 0 && isAtTop()) {
         e.preventDefault();
+        cancelScheduledUnlock();
         lockOverflow();
       } else if (e.deltaY > 0 && isAtBottom()) {
         e.preventDefault();
+        cancelScheduledUnlock();
         lockOverflow();
       } else {
-        unlockOverflow();
+        scheduleUnlock();
       }
     }
     function handleTouchStart(e: TouchEvent) {
@@ -428,6 +451,7 @@ export default function CaseStudyTour({ currentRound, search, ctaHref, slug }: I
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
+      cancelScheduledUnlock();
       unlockOverflow();
     };
   }, []);
