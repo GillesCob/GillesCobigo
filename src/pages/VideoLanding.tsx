@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, Navigate } from "react-router-dom";
 import { ArrowRight, Download, Play, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import BIMTerm from "@/components/shared/BIMTerm";
-import { videoLinks } from "@/data/videoLinks";
+import { videoLinks, videoRedirects } from "@/data/videoLinks";
 import { useThemeStore } from "@/store/themeStore";
 import NotFound from "@/pages/NotFound";
 
@@ -12,6 +12,11 @@ export default function VideoLanding() {
   const { token } = useParams<{ token: string }>();
   const [playing, setPlaying] = useState(false);
   const { theme, toggleTheme } = useThemeStore();
+
+  if (token && videoRedirects[token]) {
+    return <Navigate to={`/v/${videoRedirects[token]}`} replace />;
+  }
+
   const video = token ? videoLinks[token] : undefined;
 
   if (!video) return <NotFound />;
