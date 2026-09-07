@@ -25,7 +25,7 @@ const HeroSide = forwardRef<HTMLDivElement, IHeroSideProps>(
     <div
       ref={ref}
       className={cn(
-        "relative flex flex-col shrink-0 w-screen snap-start md:w-1/2 md:shrink h-screen pt-24 md:pt-96 pb-16 px-8 md:px-16 md:overflow-hidden",
+        "relative flex flex-col shrink-0 w-screen snap-start md:w-1/2 md:shrink h-screen pt-24 md:pt-96 pb-16 px-8 md:px-16 overflow-y-auto",
         className
       )}
       style={{ backgroundColor: bgColor }}
