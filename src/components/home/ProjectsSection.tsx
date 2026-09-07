@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import ProjectCard from '@/components/projects/ProjectCard'
 import { devProjects } from '@/data/devProjects'
 
-const PREVIEW_IDS = ['cerithe', 'nexio', 'chouxfleurs', 'cocotte-eclair']
+const PREVIEW_IDS = ['cerithe', 'nexio', 'chouxfleurs', 'ouvra']
 
 export default function ProjectsSection() {
   const previewProjects = devProjects.filter((p) => PREVIEW_IDS.includes(p.id))

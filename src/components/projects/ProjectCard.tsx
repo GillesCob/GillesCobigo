@@ -57,7 +57,7 @@ export default function ProjectCard({ project }: IProjectCardProps) {
         </div>
       )}
       {hasLinks && (
-        <div className="flex gap-2 mt-auto pt-2">
+        <div className="flex flex-wrap gap-2 mt-auto pt-2">
           {project.links?.github && (
             <Button asChild variant="outline" size="sm">
               <a href={project.links.github} target="_blank" rel="noopener noreferrer">
