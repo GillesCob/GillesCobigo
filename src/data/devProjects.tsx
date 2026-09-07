@@ -65,6 +65,16 @@ export const devProjects: IProjectCard[] = [
     links: { github: "https://github.com/GillesCob/cocotte-eclair-java", live: "https://cocotteeclair.gillescobigo.com" },
   },
   {
+    id: "ouvra",
+    name: "Ouvra",
+    description:
+      "POC de coordination BIM : viewer IFC dans le navigateur, détection de conflits entre maquettes, échanges collaboratifs rattachés à la maquette. Pensé pour ouvrir l'accès au BIM à tous les acteurs d'un projet, pas seulement aux experts.",
+    stack: ["JavaScript", "Vite", "xeokit", "web-ifc"],
+    status: "En développement",
+    image: "/images/ouvra-placeholder.png",
+    links: { github: "https://github.com/GillesCob/Ouvra", live: "https://ouvra.gillescobigo.com/" },
+  },
+  {
     id: "vps-hetzner",
     name: "VPS Hetzner",
     description:
