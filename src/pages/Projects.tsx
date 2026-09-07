@@ -8,7 +8,7 @@ export default function Projects() {
     <div className="max-w-6xl mx-auto px-4 py-16 mt-11 space-y-20">
       <div>
         <h1 className="text-3xl font-bold mb-3">Projets</h1>
-        <p className="text-muted-foreground">10 ans dans le BTP, puis le dev depuis 2022. Les deux comptent.</p>
+        <p className="text-muted-foreground">10 ans dans le BTP, puis le dev depuis 2022.</p>
       </div>
 
       <section>
