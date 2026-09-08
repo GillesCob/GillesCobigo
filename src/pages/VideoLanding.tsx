@@ -47,7 +47,7 @@ export default function VideoLanding() {
 
         <div className="relative aspect-video rounded-xl border border-border bg-zinc-950 overflow-hidden mb-10">
           {playing && video.videoUrl ? (
-            <video src={video.videoUrl} controls autoPlay className="w-full h-full object-cover" />
+            <video src={video.videoUrl} controls autoPlay className="w-full h-full object-contain" />
           ) : (
             <button
               type="button"
