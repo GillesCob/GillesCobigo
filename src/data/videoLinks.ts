@@ -24,6 +24,10 @@ export const videoLinks: Record<string, IVideoLink> = {
     label: "Flux 4 - Business Manager",
     videoUrl: `${VIDEOS_BASE_URL}/a548f4c8-8a39-40bf-b6a7-2c3ef5d4d55f.mp4`,
   },
+  IYIzyTPC: {
+    label: "Flux 5 - BIM (Ouvra)",
+    videoUrl: `${VIDEOS_BASE_URL}/ddc917cf-2748-4a60-897f-01490b9ba16f.mp4`,
+  },
 };
 
 // Anciens tokens flux 2 et flux 3 fusionnés en une seule vidéo commune (03/09/2026) : redirection
