@@ -7,7 +7,7 @@ export default function NotFound() {
       <img
         src="/images/logo-gc-white.png"
         alt=""
-        className="absolute inset-0 m-auto h-[70vh] w-auto max-w-none opacity-[0.06] select-none pointer-events-none"
+        className="absolute inset-0 m-auto h-[110vh] w-auto max-w-none opacity-[0.06] select-none pointer-events-none"
       />
       <p className="relative text-[8rem] font-bold leading-none text-muted-foreground/20 select-none mb-6">
         404
