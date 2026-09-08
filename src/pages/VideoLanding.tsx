@@ -80,7 +80,16 @@ export default function VideoLanding() {
             </a>
           </Button>
           <Button asChild size="lg" variant="outline" className="whitespace-nowrap">
-            <Link to="/projects">Voir mes projets</Link>
+            {video.secondaryCta ? (
+              <a
+                href={video.secondaryCta.href}
+                {...(video.secondaryCta.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              >
+                {video.secondaryCta.label}
+              </a>
+            ) : (
+              <Link to="/projects">Voir mes projets</Link>
+            )}
           </Button>
           <Button asChild size="lg" variant="outline" className="whitespace-nowrap">
             <Link to="/articles">Lire mes articles</Link>

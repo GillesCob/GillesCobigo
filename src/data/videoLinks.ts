@@ -1,6 +1,7 @@
 export interface IVideoLink {
   label: string;
   videoUrl: string;
+  secondaryCta?: { label: string; href: string; external?: boolean };
 }
 
 const VIDEOS_BASE_URL = "https://videos-api.gillescobigo.com";
@@ -27,6 +28,7 @@ export const videoLinks: Record<string, IVideoLink> = {
   IYIzyTPC: {
     label: "Flux 5 - BIM (Ouvra)",
     videoUrl: `${VIDEOS_BASE_URL}/ddc917cf-2748-4a60-897f-01490b9ba16f.mp4`,
+    secondaryCta: { label: "Découvrez Ouvra", href: "https://ouvra.gillescobigo.com", external: true },
   },
 };
 
