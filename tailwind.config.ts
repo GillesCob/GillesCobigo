@@ -11,6 +11,11 @@ const config: Config = {
         'dev-dark': '#0A0A0A',
         coral: '#D85A30',
         'headline-bg': '#faf6ee',
+        // Accent de la page /new (toggle Dev/Bâtiment) : une seule variable CSS que chaque mode
+        // redéfinit localement (cf src/pages/NewHome.tsx), plutôt qu'une couleur figée en dur.
+        // Teinte dev = bleu pétrole du mockup de référence (pas de token existant équivalent) ;
+        // teinte bâtiment alignée sur `coral` déjà tokenisé ci-dessus.
+        'mode-accent': 'hsl(var(--mode-accent))',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
