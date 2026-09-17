@@ -115,41 +115,6 @@ export default function NewHome() {
   // Liseré d'accent qui se déploie en cascade sous chaque ligne de compétence (mockup .skills-row
   // ::after), déclenché une fois quand toute la section entre dans le viewport (pas par ligne).
   const [skillsRevealed, setSkillsRevealed] = useState(false);
-  // Nom/prénom du logo, dans la navbar : visible en haut de page, disparaît proprement (largeur +
-  // opacité, pas juste un `hidden` sec) dès qu'on quitte le tout haut de la page, ne laissant que le
-  // logo seul. Seuil de 24px (pas 0) pour ne pas déclencher sur un micro-scroll accidentel/rebond.
-  const [isScrolled, setIsScrolled] = useState(false);
-  useEffect(() => {
-    function onScroll() {
-      setIsScrolled(window.scrollY > 24);
-    }
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-  // Largeur naturelle du bloc logo+nom (mesurée une fois, avant toute disparition) : gelée dans
-  // `brandWidth`, appliquée au bouton une fois scrollé pour qu'il garde sa largeur d'origine au lieu
-  // de se resserrer sur le logo seul. Le logo peut alors se recentrer (position absolue) dans cette
-  // même zone au lieu de rester collé à gauche avec un vide à droite. Mesurée depuis le logo
-  // (largeur réelle) et le nom (`scrollWidth`, insensible au `max-width` qui le fait disparaître) +
-  // le gap fixe, jamais depuis la largeur rendue du bouton lui-même : si la page arrive déjà
-  // scrollée (ancre en milieu de page), le bouton serait déjà dans son état réduit au tout premier
-  // montage, faussant une mesure prise sur lui.
-  const BRAND_GAP_PX = 10;
-  const brandLogoRef = useRef<HTMLImageElement>(null);
-  // Mesure sur un clone caché, forcé sur une seule ligne (`whitespace-nowrap`), jamais sur le
-  // <span> visible : celui-ci doit pouvoir revenir à son wrap naturel sur mobile ("Gilles"/"Cobigo"
-  // sur 2 lignes, comme avant), donc son `scrollWidth` dépend de l'état d'affichage courant et ne
-  // reflète plus une largeur "naturelle" stable une fois le wrap réintroduit.
-  const brandNameMeasureRef = useRef<HTMLSpanElement>(null);
-  const [brandWidth, setBrandWidth] = useState<number>();
-  useEffect(() => {
-    if (brandWidth !== undefined) return;
-    const logoEl = brandLogoRef.current;
-    const measureEl = brandNameMeasureRef.current;
-    if (!logoEl || !measureEl) return;
-    setBrandWidth(logoEl.getBoundingClientRect().width + BRAND_GAP_PX + measureEl.scrollWidth);
-  }, [brandWidth]);
   const heroRef = useRef<HTMLElement>(null);
   const heroBgWrapRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
@@ -299,44 +264,11 @@ export default function NewHome() {
         ref={headerRef}
         className="fixed left-0 top-1 z-40 flex w-full items-center justify-between border-b border-border bg-background px-4 py-[18px] sm:px-10"
       >
-        <button
-          onClick={() => scrollToSection("hero")}
-          className="relative flex items-center text-xl font-bold"
-          style={{ width: isScrolled ? brandWidth : undefined, transition: "width 600ms ease-in-out" }}
-        >
-          {/* Mesure cachée, toujours sur une seule ligne : sert uniquement à calculer `brandWidth`
-              (cf plus haut), jamais affichée. */}
-          <span
-            ref={brandNameMeasureRef}
-            aria-hidden="true"
-            className="pointer-events-none invisible absolute left-0 top-0 whitespace-nowrap pl-[48px]"
-          >
-            Gilles Cobigo
-          </span>
+        <button onClick={() => scrollToSection("hero")} className="flex items-center gap-2.5 text-xl font-bold">
           {/* Toujours le logo "clair" : /new n'a pas de dark mode (cf FIXED_LIGHT_TOKENS ci-dessus),
-              la variante blanche (pensée pour un fond sombre) ne s'applique jamais ici. Position
-              absolue, centrée verticalement (`top-1/2 -translate-y-1/2`) : reste calée sur le nom
-              que celui-ci tienne sur 1 ligne (desktop) ou 2 (mobile, wrap naturel repris tel quel).
-              Horizontalement, glisse de la gauche (état normal) au centre de la zone gelée
-              `brandWidth` (une fois le nom disparu), transform étant la seule propriété qui s'anime
-              proprement ici (contrairement à `justify-content`, jamais interpolable). */}
-          <img
-            ref={brandLogoRef}
-            src="/images/logo-gc-black.png"
-            alt=""
-            className={cn(
-              "absolute left-0 top-1/2 h-[38px] w-auto -translate-y-1/2 transition-transform duration-[600ms] ease-in-out",
-              isScrolled && "left-1/2 -translate-x-1/2"
-            )}
-          />
-          <span
-            className={cn(
-              "block overflow-hidden pl-[48px] transition-[opacity,max-height] duration-[600ms] ease-in-out",
-              isScrolled ? "max-h-0 opacity-0" : "max-h-[64px] opacity-100"
-            )}
-          >
-            Gilles Cobigo
-          </span>
+              la variante blanche (pensée pour un fond sombre) ne s'applique jamais ici. */}
+          <img src="/images/logo-gc-black.png" alt="" className="h-[38px] w-auto flex-shrink-0" />
+          Gilles Cobigo
         </button>
         <ModeToggle mode={displayMode} onChange={handleModeChange} />
       </header>
