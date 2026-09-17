@@ -256,18 +256,13 @@ export default function NewHome() {
             style={{ top: -70, height: "calc(100% + 70px)" }}
             aria-hidden="true"
           >
-            {/* object-contain (pas cover) : en `cover`, le SVG applique déjà son propre
-                `preserveAspectRatio="xMidYMid slice"` en interne avant que le object-fit CSS de
-                l'`<img>` s'applique par-dessus, un double recadrage qui, combiné au sur-dimensionnement
-                (190%/-45%) prévu pour la marge de parallax, atterrissait sur une zone quasiment vide
-                du visuel (verifie pixel par pixel : luminance ~0 sur toute la zone visible) — le fond
-                semblait donc ne jamais apparaitre. En `contain`, le visuel entier reste toujours visible,
-                sans dependre de ce calcul de recadrage. */}
+            {/* Position/taille identiques au mockup (top:-45%, left:-12.5%, width:125%, height:190%,
+                object-fit:cover). */}
             <img
               src="/images/bim-illustration.png"
               alt=""
               className={cn(
-                "absolute inset-[-35%] h-[170%] w-[170%] object-contain opacity-[0.16]",
+                "absolute -left-[12.5%] -top-[45%] h-[190%] w-[125%] object-cover opacity-[0.16]",
                 mode !== "btp" && "hidden"
               )}
             />
@@ -275,7 +270,7 @@ export default function NewHome() {
               src="/images/obsidian-graph.svg"
               alt=""
               className={cn(
-                "absolute inset-[-35%] h-[170%] w-[170%] object-contain opacity-[0.16]",
+                "absolute -left-[12.5%] -top-[45%] h-[190%] w-[125%] object-cover opacity-[0.16]",
                 mode !== "dev" && "hidden"
               )}
             />
