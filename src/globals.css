@@ -167,11 +167,30 @@
     --logo-sweep: 0deg;
   }
   to {
-    --logo-sweep: -270deg;
+    --logo-sweep: 270deg;
   }
 }
+/* conic-gradient ne sweep que dans un seul sens (croissant/horaire depuis `from`), les stops en
+   angle négatif ne sont pas interprétés comme "sens inverse" (testé : logo entièrement masqué,
+   valeur invalide en pratique). Le rendu anti-horaire est donc obtenu en révélant la zone qui
+   reste transparente le plus longtemps : au lieu de faire croître un secteur noir depuis `from`,
+   on fait RÉTRÉCIR un secteur transparent qui se termine à 360deg (donc juste avant `from`, dans
+   le sens horaire) : à angle croissant égal, la frontière visible recule vers `from` en tournant
+   dans l'autre sens perçu. */
 .logo-sweep-reveal {
-  -webkit-mask-image: conic-gradient(from 124deg, black var(--logo-sweep), transparent var(--logo-sweep));
-  mask-image: conic-gradient(from 124deg, black var(--logo-sweep), transparent var(--logo-sweep));
+  -webkit-mask-image: conic-gradient(
+    from 124deg,
+    transparent 0deg,
+    transparent calc(360deg - var(--logo-sweep)),
+    black calc(360deg - var(--logo-sweep)),
+    black 360deg
+  );
+  mask-image: conic-gradient(
+    from 124deg,
+    transparent 0deg,
+    transparent calc(360deg - var(--logo-sweep)),
+    black calc(360deg - var(--logo-sweep)),
+    black 360deg
+  );
   animation: logoSweepReveal 1.1s ease-out forwards;
 }

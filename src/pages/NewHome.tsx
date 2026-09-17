@@ -178,26 +178,45 @@ export default function NewHome() {
   // identique au mockup de référence (updateHeroParallax).
   useEffect(() => {
     let ticking = false;
+    // Hauteur + position absolue de hero mises en cache, recalculées seulement au montage et au
+    // resize (jamais à chaque scroll) : `getBoundingClientRect()` force un reflow synchrone, et
+    // l'appeler à chaque frame de scroll (même throttlé par rAF) est la cause la plus probable du
+    // parallax saccadé signalé sur mobile. `window.scrollY` (lu à chaque frame) est en comparaison
+    // gratuit, ne force aucun reflow.
+    let heroTop = 0;
+    let heroHeight = 0;
+    let visuals: NodeListOf<HTMLElement> | null = null;
+    function measure() {
+      const heroEl = heroRef.current;
+      if (!heroEl) return;
+      const rect = heroEl.getBoundingClientRect();
+      heroTop = rect.top + window.scrollY;
+      heroHeight = rect.height;
+      visuals = heroBgWrapRef.current?.querySelectorAll<HTMLElement>("img") ?? null;
+    }
     function update() {
       ticking = false;
-      const heroEl = heroRef.current;
-      const visuals = heroBgWrapRef.current?.querySelectorAll<HTMLElement>("img");
-      if (!heroEl || !visuals || visuals.length === 0) return;
-      const rect = heroEl.getBoundingClientRect();
-      const max = rect.height * 0.32;
-      const offset = Math.max(-max, Math.min(max, rect.top * 0.35));
+      if (!visuals || visuals.length === 0) return;
+      const rectTop = heroTop - window.scrollY;
+      const max = heroHeight * 0.32;
+      const offset = Math.max(-max, Math.min(max, rectTop * 0.35));
       visuals.forEach((el) => {
         el.style.transform = `translateY(${offset}px)`;
       });
     }
-    function onScrollOrResize() {
+    function onScroll() {
       if (!ticking) {
         ticking = true;
         requestAnimationFrame(update);
       }
     }
-    window.addEventListener("scroll", onScrollOrResize);
-    window.addEventListener("resize", onScrollOrResize);
+    function onResize() {
+      measure();
+      onScroll();
+    }
+    measure();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
     // Appel immédiat obligatoire : sans lui, `transform` reste "none" (valeur par défaut, jamais
     // posée) jusqu'au premier scroll, où il saute directement à sa valeur calculée à cet instant
     // (pas de transition douce depuis "none") — cause du saut au premier scroll. La cause du flash
@@ -205,8 +224,8 @@ export default function NewHome() {
     // padding sur le mauvais élément, overflow-hidden en trop), tous corrigés depuis.
     update();
     return () => {
-      window.removeEventListener("scroll", onScrollOrResize);
-      window.removeEventListener("resize", onScrollOrResize);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 
