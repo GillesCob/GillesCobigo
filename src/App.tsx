@@ -59,7 +59,9 @@ export default function App() {
         </Routes>
       </main>
       {!hideFooter && <Footer />}
-      <ScrollToTop />
+      {/* Absent du mockup /new (contrairement aux autres pages "bare layout" type /preview/*, qui
+          le gardent) : exclusion scopée à /new seul, pas à isBareLayout dans son ensemble. */}
+      {location.pathname !== "/new" && <ScrollToTop />}
     </div>
   );
 }

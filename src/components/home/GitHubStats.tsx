@@ -1,5 +1,6 @@
 import { GitBranch, Clock, Folder } from "lucide-react";
 import { useGitHubStats } from "@/hooks/useGitHubStats";
+import { cn } from "@/lib/utils";
 
 function formatRelativeDate(dateStr: string | null): string {
   if (!dateStr) return "N/A";
@@ -11,14 +12,21 @@ function formatRelativeDate(dateStr: string | null): string {
   return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 }
 
-export default function GitHubStats() {
+interface IGitHubStatsProps {
+  // Home (/) et /new partagent ce composant mais pas la même largeur de mise en page : 4xl (896px)
+  // reste la valeur historique de Home (cohérente avec la section voisine qui l'utilise aussi),
+  // 640px est la valeur exacte du mockup /new (.github-stats-inner).
+  maxWidthClassName?: string;
+}
+
+export default function GitHubStats({ maxWidthClassName = "max-w-4xl" }: IGitHubStatsProps) {
   const { data, isLoading, isError } = useGitHubStats();
 
   if (isError) return null;
 
   return (
     <section className="py-10 px-4 border-b border-border">
-      <div className="max-w-4xl mx-auto">
+      <div className={cn(maxWidthClassName, "mx-auto")}>
         <p className="text-muted-foreground text-xs uppercase tracking-widest mb-6 text-center font-mono">
           GitHub en direct
         </p>
