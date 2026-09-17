@@ -67,7 +67,7 @@ function WorkRow({
             {tag}
           </span>
         )}
-        <h3 className="mb-2 text-[clamp(22px,3.2vw,32px)] font-extrabold tracking-[-0.01em]">{title}</h3>
+        <h3 className="mb-3 text-[clamp(22px,3.2vw,32px)] font-extrabold tracking-[-0.01em]">{title}</h3>
         <p className="max-w-lg text-sm text-muted-foreground">{description}</p>
       </div>
       <ArrowRight
