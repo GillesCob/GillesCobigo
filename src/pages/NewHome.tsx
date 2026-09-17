@@ -297,9 +297,6 @@ export default function NewHome() {
               <>
                 <p className="mp-eyebrow">Développeur · 2022 à aujourd'hui</p>
                 <h1>La précision du code, héritée du terrain.</h1>
-                {/* min-h-[112px] : pas une valeur du mockup, ajoutée en session pour aligner les
-                    titres dev/BTP au même niveau (le paragraphe BTP est plus long, 4 lignes contre
-                    3) — reste en Tailwind, jamais dans le CSS porté du mockup. */}
                 <p className="mp-lead">
                   TypeScript, Node.js, React, Prisma. 10 ans dans le bâtiment avant ça, dont BIM Manager sur
                   l'extension en mer de la ville de Monaco. Une reconversion qui n'en est pas une.
@@ -315,28 +312,18 @@ export default function NewHome() {
               </>
             ) : (
               <>
-                <p className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-mode-accent">
-                  BIM Manager · 2008 à 2022
-                </p>
-                <h1 className="mb-5 text-[clamp(30px,4.5vw,44px)] font-extrabold leading-[1.2]">
-                  BIM Manager, coordination de projets à grande échelle.
-                </h1>
-                <p className="mb-[30px] min-h-[112px] max-w-xl text-lg text-muted-foreground">
+                <p className="mp-eyebrow">BIM Manager · 2008 à 2022</p>
+                <h1>BIM Manager, coordination de projets à grande échelle.</h1>
+                <p className="mp-lead">
                   10 ans dans le bâtiment chez Bouygues Construction, dont BIM Manager sur l'extension en mer de la
                   ville de Monaco, un projet à 2 milliards d'euros piloté à travers plus de 100 maquettes numériques
                   interconnectées.
                 </p>
-                <div className="mt-[34px] flex flex-wrap gap-3.5">
-                  <button
-                    onClick={() => scrollToSection("chantiers")}
-                    className="rounded-[10px] bg-mode-accent px-[22px] py-3 text-[13px] font-bold text-white transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(20,18,16,0.12)]"
-                  >
+                <div className="mp-ctas">
+                  <button onClick={() => scrollToSection("chantiers")} className="mp-btn mp-btn-primary">
                     Voir mes chantiers
                   </button>
-                  <button
-                    onClick={() => scrollToSection("contact")}
-                    className="rounded-[10px] border border-foreground px-[22px] py-3 text-[13px] font-bold transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(20,18,16,0.12)]"
-                  >
+                  <button onClick={() => scrollToSection("contact")} className="mp-btn mp-btn-ghost">
                     Me contacter
                   </button>
                 </div>
