@@ -344,7 +344,7 @@ export default function NewHome() {
 
         <ProjectsSectionV2 mode={mode} />
 
-        {mode === "dev" && <GitHubStats maxWidthClassName="max-w-[640px]" />}
+        {mode === "dev" && <GitHubStats maxWidthClassName="max-w-[640px]" sectionClassName="mt-16" />}
 
         <section id="competences" className="scroll-mt-[90px]">
           <motion.div

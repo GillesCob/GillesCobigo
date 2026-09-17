@@ -17,15 +17,18 @@ interface IGitHubStatsProps {
   // reste la valeur historique de Home (cohérente avec la section voisine qui l'utilise aussi),
   // 640px est la valeur exacte du mockup /new (.github-stats-inner).
   maxWidthClassName?: string;
+  // Idem pour l'espacement au-dessus de la section : par défaut celui de Home, /new en passe un
+  // plus grand pour se détacher davantage de la section Projets juste au-dessus.
+  sectionClassName?: string;
 }
 
-export default function GitHubStats({ maxWidthClassName = "max-w-4xl" }: IGitHubStatsProps) {
+export default function GitHubStats({ maxWidthClassName = "max-w-4xl", sectionClassName }: IGitHubStatsProps) {
   const { data, isLoading, isError } = useGitHubStats();
 
   if (isError) return null;
 
   return (
-    <section className="py-10 px-4 border-b border-border">
+    <section className={cn("py-10 px-4 border-b border-border", sectionClassName)}>
       <div className={cn(maxWidthClassName, "mx-auto")}>
         <p className="text-muted-foreground text-xs uppercase tracking-widest mb-6 text-center font-mono">
           GitHub en direct
