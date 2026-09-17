@@ -257,12 +257,15 @@ export default function NewHome() {
             aria-hidden="true"
           >
             {/* Position/taille identiques au mockup (top:-45%, left:-12.5%, width:125%, height:190%,
-                object-fit:cover). */}
+                object-fit:cover). `max-w-none` obligatoire : le reset Tailwind (`img { max-width:100% }`)
+                bridait sinon la largeur à 100% du conteneur (1440px) au lieu des 125% demandés
+                (1800px) — vérifié via getComputedStyle, la hauteur n'a pas cet équivalent donc
+                passait déjà, seule la largeur restait clampée. */}
             <img
               src="/images/bim-illustration.png"
               alt=""
               className={cn(
-                "absolute -left-[12.5%] -top-[45%] h-[190%] w-[125%] object-cover opacity-[0.16]",
+                "absolute -left-[12.5%] -top-[45%] h-[190%] w-[125%] max-w-none object-cover opacity-[0.16]",
                 mode !== "btp" && "hidden"
               )}
             />
@@ -270,7 +273,7 @@ export default function NewHome() {
               src="/images/obsidian-graph.svg"
               alt=""
               className={cn(
-                "absolute -left-[12.5%] -top-[45%] h-[190%] w-[125%] object-cover opacity-[0.16]",
+                "absolute -left-[12.5%] -top-[45%] h-[190%] w-[125%] max-w-none object-cover opacity-[0.16]",
                 mode !== "dev" && "hidden"
               )}
             />
