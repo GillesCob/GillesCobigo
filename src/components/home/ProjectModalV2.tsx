@@ -209,7 +209,7 @@ export default function ProjectModalV2({ isOpen, onClose, project }: IProjectMod
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="pointer-events-auto relative w-full max-w-lg overflow-hidden rounded-2xl bg-[#14120F] shadow-2xl outline-none"
+              className="pointer-events-auto relative w-full max-w-[720px] overflow-hidden rounded-[18px] bg-[#14120F] shadow-2xl outline-none"
               onClick={(e) => e.stopPropagation()}
             >
               <div

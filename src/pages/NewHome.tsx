@@ -107,6 +107,11 @@ export default function NewHome() {
   // `key` force React à remonter l'élément, ce qui relance l'animation CSS même si le mode cliqué
   // est déjà actif (équivalent du "void strip.offsetWidth" du mockup de référence).
   const [pulseKey, setPulseKey] = useState(0);
+  // État du bouton/pastille du switch, mis à jour immédiatement au clic (mockup : le
+  // `classList.toggle("active", ...)` et `updateSwitchThumb()` sont synchrones, seul le contenu
+  // de la section attend les 300ms via setTimeout). Découplé de `mode` (qui pilote le contenu,
+  // délibérément retardé) pour ne plus avoir ce délai perçu sur le bouton lui-même.
+  const [displayMode, setDisplayMode] = useState<Mode>(mode);
   // Liseré d'accent qui se déploie en cascade sous chaque ligne de compétence (mockup .skills-row
   // ::after), déclenché une fois quand toute la section entre dans le viewport (pas par ligne).
   const [skillsRevealed, setSkillsRevealed] = useState(false);
@@ -167,6 +172,7 @@ export default function NewHome() {
   const handleModeChange = useCallback(
     (nextMode: Mode) => {
       if (nextMode === mode) return;
+      setDisplayMode(nextMode);
       runModeSwap(nextMode, mapSectionToMode(activeSection, nextMode));
     },
     [mode, activeSection, runModeSwap]
@@ -180,6 +186,7 @@ export default function NewHome() {
         scrollToSection("parcours");
         return;
       }
+      setDisplayMode(nextMode);
       runModeSwap(nextMode, "parcours");
     },
     [mode, runModeSwap]
@@ -196,22 +203,32 @@ export default function NewHome() {
       {/* Liseré d'accent toujours visible en haut de page (mockup .mode-strip) : marqueur discret
           du mode courant, pas seulement l'état actif des boutons du switch. Pulse bref à chaque
           bascule (cf .mode-strip-pulse, globals.css) pour que le changement se voie. */}
+      {/* `fixed` et non `sticky` : `html, body { overflow-x: hidden }` (globals.css, partagé par
+          tout le site) force `overflow-y` à `auto` sur les deux (règle CSS de résolution de
+          `overflow`), ce qui casse `position: sticky` ici (le scroll réel se fait sur `html`,
+          pas sur `body`, qui devient alors le conteneur de référence de la sticky sans jamais
+          scroller lui-même : la barre reste "collée" à sa position de départ dans le flux et
+          défile avec la page au lieu de rester visible). Même contournement déjà utilisé par la
+          Navbar globale du site (src/components/layout/Navbar.tsx, `fixed`). */}
       <div
         key={pulseKey}
         className={cn(
-          "sticky top-0 z-50 h-1 bg-mode-accent transition-colors duration-[350ms] ease-in-out",
+          "fixed left-0 top-0 z-50 h-1 w-full bg-mode-accent transition-colors duration-[350ms] ease-in-out",
           pulseKey > 0 && "mode-strip-pulse"
         )}
       />
-      <header className="sticky top-1 z-40 flex items-center justify-between border-b border-border bg-background px-10 py-[18px]">
+      <header className="fixed left-0 top-1 z-40 flex w-full items-center justify-between border-b border-border bg-background px-10 py-[18px]">
         <button onClick={() => scrollToSection("hero")} className="flex items-center gap-2.5 text-xl font-bold">
           {/* Toujours le logo "clair" : /new n'a pas de dark mode (cf FIXED_LIGHT_TOKENS ci-dessus),
               la variante blanche (pensée pour un fond sombre) ne s'applique jamais ici. */}
           <img src="/images/logo-gc-black.png" alt="" className="h-[38px] w-auto" />
           Gilles Cobigo
         </button>
-        <ModeToggle mode={mode} onChange={handleModeChange} />
+        <ModeToggle mode={displayMode} onChange={handleModeChange} />
       </header>
+      {/* Compense la sortie du flux des deux éléments fixed ci-dessus (liseré + topbar), même
+          valeur que HEADER_OFFSET (déjà le repère "hauteur topbar" du reste du fichier). */}
+      <div style={{ height: HEADER_OFFSET }} />
 
       <SectionDots mode={mode} activeSection={activeSection} onActiveChange={setActiveSection} />
 
@@ -229,7 +246,12 @@ export default function NewHome() {
           {/* Les deux visuels restent montés en permanence (seul `hidden` bascule selon le mode,
               comme .btp-only/.dev-only dans le mockup) : la parallax interroge le DOM une seule
               fois au montage (heroBgWrapRef), pas à chaque changement de mode. */}
-          <div ref={heroBgWrapRef} className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+          <div
+            ref={heroBgWrapRef}
+            className="pointer-events-none absolute left-1/2 w-screen -translate-x-1/2 overflow-hidden -z-10"
+            style={{ top: -70, height: "calc(100% + 70px)" }}
+            aria-hidden="true"
+          >
             <img
               src="/images/bim-illustration.png"
               alt=""
@@ -311,7 +333,7 @@ export default function NewHome() {
 
         <ProjectsSectionV2 mode={mode} />
 
-        {mode === "dev" && <GitHubStats />}
+        {mode === "dev" && <GitHubStats maxWidthClassName="max-w-[640px]" />}
 
         <section id="competences" className="scroll-mt-[90px]">
           <motion.div
