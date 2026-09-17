@@ -8,6 +8,7 @@ import TimelineV2 from "@/components/home/TimelineV2";
 import ProjectsSectionV2 from "@/components/home/ProjectsSectionV2";
 import GitHubStats from "@/components/home/GitHubStats";
 import ContactSectionInline from "@/components/home/ContactSectionInline";
+import "./NewHome.hero.css";
 
 // Décalage du header sticky pour tout scroll calculé à la main (nav à points, CTA hero, bascule
 // de mode), identique au HEADER_OFFSET du mockup de référence.
@@ -289,66 +290,39 @@ export default function NewHome() {
           isTransitioning && "translate-y-2 opacity-0"
         )}
       >
-        <section
-          id="hero"
-          ref={heroRef}
-          className="relative z-0 flex min-h-[calc(100svh-90px)] flex-col justify-center sm:min-h-[78vh]"
-        >
+        <section id="hero" ref={heroRef} className="mp-hero">
           {/* Les deux visuels restent montés en permanence (seul `hidden` bascule selon le mode,
               comme .btp-only/.dev-only dans le mockup) : la parallax interroge le DOM une seule
               fois au montage (heroBgWrapRef), pas à chaque changement de mode. */}
-          <div
-            ref={heroBgWrapRef}
-            className="pointer-events-none absolute left-1/2 w-screen -translate-x-1/2 overflow-hidden -z-10"
-            style={{ top: -70, height: "calc(100% + 70px)" }}
-            aria-hidden="true"
-          >
-            {/* Position/taille identiques au mockup (top:-45%, left:-12.5%, width:125%, height:190%,
-                object-fit:cover). `max-w-none` obligatoire : le reset Tailwind (`img { max-width:100% }`)
-                bridait sinon la largeur à 100% du conteneur (1440px) au lieu des 125% demandés
-                (1800px) — vérifié via getComputedStyle, la hauteur n'a pas cet équivalent donc
-                passait déjà, seule la largeur restait clampée. */}
+          <div ref={heroBgWrapRef} className="mp-hero-bg" aria-hidden="true">
             <img
               src="/images/bim-illustration.png"
               alt=""
-              className={cn(
-                "absolute -left-[12.5%] -top-[45%] h-[190%] w-[125%] max-w-none object-cover opacity-[0.16]",
-                mode !== "btp" && "hidden"
-              )}
+              className={cn(mode !== "btp" && "hidden")}
             />
             <img
               src="/images/obsidian-graph.svg"
               alt=""
-              className={cn(
-                "absolute -left-[12.5%] -top-[45%] h-[190%] w-[125%] max-w-none object-cover opacity-[0.16]",
-                mode !== "dev" && "hidden"
-              )}
+              className={cn(mode !== "dev" && "hidden")}
             />
           </div>
           <div className="mx-auto w-full max-w-[880px] px-5 sm:px-10">
             {mode === "dev" ? (
               <>
-                <p className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-mode-accent">
-                  Développeur · 2022 à aujourd'hui
-                </p>
-                <h1 className="mb-5 text-[clamp(30px,4.5vw,44px)] font-extrabold leading-[1.2]">
-                  La précision du code, héritée du terrain.
-                </h1>
-                <p className="mb-[30px] min-h-[112px] max-w-xl text-lg text-muted-foreground">
+                <p className="mp-eyebrow">Développeur · 2022 à aujourd'hui</p>
+                <h1>La précision du code, héritée du terrain.</h1>
+                {/* min-h-[112px] : pas une valeur du mockup, ajoutée en session pour aligner les
+                    titres dev/BTP au même niveau (le paragraphe BTP est plus long, 4 lignes contre
+                    3) — reste en Tailwind, jamais dans le CSS porté du mockup. */}
+                <p className="mp-lead min-h-[112px]">
                   TypeScript, Node.js, React, Prisma. 10 ans dans le bâtiment avant ça, dont BIM Manager sur
                   l'extension en mer de la ville de Monaco. Une reconversion qui n'en est pas une.
                 </p>
-                <div className="mt-[34px] flex flex-wrap gap-3.5">
-                  <button
-                    onClick={() => scrollToSection("projets")}
-                    className="rounded-[10px] bg-mode-accent px-[22px] py-3 text-[13px] font-bold text-white transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(20,18,16,0.12)]"
-                  >
+                <div className="mp-ctas">
+                  <button onClick={() => scrollToSection("projets")} className="mp-btn mp-btn-primary">
                     Voir mes projets
                   </button>
-                  <button
-                    onClick={() => scrollToSection("contact")}
-                    className="rounded-[10px] border border-foreground px-[22px] py-3 text-[13px] font-bold transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(20,18,16,0.12)]"
-                  >
+                  <button onClick={() => scrollToSection("contact")} className="mp-btn mp-btn-ghost">
                     Me contacter
                   </button>
                 </div>

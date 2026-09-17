@@ -1,0 +1,111 @@
+/* Port du hero (mode Dev) depuis Projets/Portfolio/mockups/refonte-v5-bascule.html.
+   Déclarations copiées telles quelles depuis le CSS du mockup (.hero, .hero-bg, .eyebrow,
+   h1, p.lead, .ctas, .btn), jamais retranscrites en classes Tailwind arbitraires : preuve de
+   concept demandée par Gilles après plusieurs bugs de transcription cette session (largeur
+   bridée par le reset Tailwind, offsets faux, padding mal placé). Seules les couleurs sont
+   adaptées, vers les tokens déjà définis par NewHome.tsx (--mode-accent/--foreground/
+   --muted-foreground, HSL sans wrapper, d'où le hsl(var(--x)) partout).
+
+   Mobile : le mockup a `@media (max-width:720px) { .hero { min-height:auto } }` (hauteur basée
+   sur le contenu). Décision explicite de Gilles en session (hors mockup) de passer le hero en
+   pleine hauteur d'écran sur mobile aussi : ce n'est PAS une valeur du mockup, donc ça reste ici
+   plutôt que d'introduire un écart entre ce fichier et le mockup qu'il est censé refléter au mot
+   près. */
+.mp-hero {
+  position: relative;
+  /* z-index:0 : pas une valeur du mockup (qui n'en a pas besoin, contexte HTML différent), mais
+     une correction réelle trouvée en session — sans elle, le fond en z-index négatif ci-dessous
+     passe derrière le fond de la page entière faute de contexte d'empilement local. */
+  z-index: 0;
+  min-height: calc(100svh - 90px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+@media (min-width: 640px) {
+  .mp-hero {
+    min-height: 78vh;
+  }
+}
+
+.mp-hero-bg {
+  position: absolute;
+  top: -70px;
+  left: 50%;
+  width: 100vw;
+  height: calc(100% + 70px);
+  margin-left: -50vw;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.mp-hero-bg img {
+  position: absolute;
+  top: -45%;
+  left: -12.5%;
+  width: 125%;
+  height: 190%;
+  object-fit: cover;
+  opacity: 0.16;
+  display: block;
+  will-change: transform;
+  max-width: none; /* neutralise le reset global `img { max-width:100% }` (Tailwind preflight) */
+}
+
+.mp-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: hsl(var(--mode-accent));
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.mp-hero h1 {
+  font-size: clamp(30px, 4.5vw, 44px);
+  line-height: 1.2;
+  margin: 0 0 20px;
+  font-weight: 800;
+}
+
+.mp-lead {
+  font-size: 18px;
+  color: hsl(var(--muted-foreground));
+  max-width: 560px;
+  margin: 0 0 30px;
+}
+
+.mp-ctas {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 34px;
+}
+
+.mp-btn {
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 12px 22px;
+  border-radius: 10px;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.mp-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(20, 18, 16, 0.12);
+}
+.mp-btn-primary {
+  background: hsl(var(--mode-accent));
+  color: #fff;
+}
+.mp-btn-ghost {
+  background: none;
+  border: 1px solid hsl(var(--foreground));
+  color: hsl(var(--foreground));
+}
