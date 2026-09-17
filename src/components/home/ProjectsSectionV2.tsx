@@ -104,7 +104,7 @@ function WorkRow({
           alt=""
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute top-1/2 z-0 h-[130px] w-auto max-w-[220px] -translate-y-1/2 object-contain opacity-[0.16] grayscale transition-opacity duration-[250ms] group-hover:opacity-[0.32] sm:h-[84px] sm:max-w-[160px] sm:opacity-[0.32] sm:group-hover:opacity-[0.55]",
+            "pointer-events-none absolute top-1/2 z-0 h-[130px] w-auto max-w-[220px] -translate-y-1/2 object-contain opacity-[0.16] grayscale transition-opacity duration-[250ms] sm:h-[84px] sm:max-w-[160px] sm:opacity-[0.32]",
             logoRightClassName ?? "right-6",
             invertImage && "invert"
           )}
