@@ -68,10 +68,16 @@ export default function ProjectModalV2({ isOpen, onClose, project }: IProjectMod
   // déclencheur (croix, fond, Échap), via le cleanup de cet effet.
   useEffect(() => {
     if (!isOpen) return;
-    const previousOverflow = document.body.style.overflow;
+    // `html` (pas seulement `body`) : même cause que la navbar (cf NewHome.tsx) — overflow-x:hidden
+    // sur les deux (globals.css) force overflow-y:auto sur les deux, et le scroll réel de la page
+    // se fait sur `html`. Verrouiller `body` seul ne bloquait donc rien.
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
     };
   }, [isOpen]);
 
