@@ -119,6 +119,9 @@ export default function NewHome() {
   const [skillsRevealed, setSkillsRevealed] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const heroBgWrapRef = useRef<HTMLDivElement>(null);
+  // Permet de redeclencher la mesure+application de la parallax depuis un autre effet (cf plus
+  // bas, quand `fixedHeaderHeight` se corrige), sans dupliquer measure()/update().
+  const measureRef = useRef<(() => void) | null>(null);
   const headerRef = useRef<HTMLElement>(null);
   // Hauteur réelle du bandeau fixed (liseré + topbar), mesurée plutôt que la constante HEADER_OFFSET
   // (90, approximative) : un écart de quelques px entre les deux laissait un mince espace blanc
@@ -190,11 +193,25 @@ export default function NewHome() {
     // du fond signalée plus tôt était ailleurs (z-index, largeur bridée par le reset Tailwind,
     // padding sur le mauvais élément, overflow-hidden en trop), tous corrigés depuis.
     update();
+    measureRef.current = () => {
+      measure();
+      update();
+    };
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
     };
   }, []);
+
+  // Re-mesure la parallax quand `fixedHeaderHeight` se corrige (cf effet dedie plus haut : demarre
+  // a la valeur approximative HEADER_OFFSET avant d'etre mesuree reellement) : `heroTop` n'etait
+  // capture qu'une fois au montage, avec le spacer encore a son ancienne hauteur -> hero se
+  // decale legerement une fois le spacer corrige, sans que la parallax (deja lancee) ne le
+  // sache jamais. Verifie en pratique : offset fige a 24px au lieu de 22.8px attendu tant que ce
+  // correctif n'existait pas.
+  useEffect(() => {
+    measureRef.current?.();
+  }, [fixedHeaderHeight]);
 
   const runModeSwap = useCallback(
     (nextMode: Mode, targetSection: string) => {

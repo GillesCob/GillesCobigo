@@ -105,6 +105,14 @@
     background-color 0.3s ease;
 }
 .mp-switch button {
+  /* `revert` : le mockup ne fixe jamais de font-family sur .switch button, un <button> HTML brut
+     n'herite PAS du font-family de la page par defaut (comportement natif du navigateur, distinct
+     du texte normal). Le reset Tailwind (`font-family:inherit` sur tous les boutons du site)
+     donnait un rendu different de celui du mockup : ecart mesure a 1px sur la hauteur du bouton
+     (metrique de ligne differente), qui se propage a la hauteur de toute la topbar et au calcul de
+     parallaxe du fond. `revert` annule ce reset pour retrouver le meme comportement natif que le
+     mockup, uniquement sur ce bouton precis. */
+  font-family: revert;
   position: relative;
   z-index: 1;
   border: none;
