@@ -152,7 +152,11 @@
    dévoile le PNG réel en tournant, plutôt qu'un tracé de contour (stroke-dasharray) qui donnerait
    un effet à double trait sur cette marque pleine (anneau épais, pas une icône fine). --logo-sweep
    déclarée via @property pour que le navigateur interpole l'angle correctement pendant l'animation
-   (une valeur d'angle brute dans un gradient ne s'anime pas nativement dans une keyframe). */
+   (une valeur d'angle brute dans un gradient ne s'anime pas nativement dans une keyframe).
+   Point de départ (124deg) et sens (valeurs négatives = sens anti-horaire) calés sur la pointe
+   diagonale du logo (le trait qui distingue le G du C), angle mesuré sur le fichier source
+   (centroïde des pixels de la pointe, converti du repère mathématique au repère CSS). 3/4 de
+   tour (-270deg), demande explicite de Gilles. */
 @property --logo-sweep {
   syntax: "<angle>";
   inherits: false;
@@ -163,11 +167,11 @@
     --logo-sweep: 0deg;
   }
   to {
-    --logo-sweep: 360deg;
+    --logo-sweep: -270deg;
   }
 }
 .logo-sweep-reveal {
-  -webkit-mask-image: conic-gradient(from -90deg, black var(--logo-sweep), transparent var(--logo-sweep));
-  mask-image: conic-gradient(from -90deg, black var(--logo-sweep), transparent var(--logo-sweep));
+  -webkit-mask-image: conic-gradient(from 124deg, black var(--logo-sweep), transparent var(--logo-sweep));
+  mask-image: conic-gradient(from 124deg, black var(--logo-sweep), transparent var(--logo-sweep));
   animation: logoSweepReveal 1.1s ease-out forwards;
 }
