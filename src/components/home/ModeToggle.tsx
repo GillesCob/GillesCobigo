@@ -49,9 +49,9 @@ export default function ModeToggle({ mode, onChange }: IModeToggleProps) {
   }, []);
 
   return (
-    <div className="relative inline-flex items-center gap-2.5 rounded-full border border-border bg-card p-1">
+    <div className="mp-switch">
       <motion.span
-        className="absolute inset-y-1 left-0 rounded-full bg-mode-accent"
+        className="mp-switch-thumb"
         animate={{ width: thumb.width, x: thumb.left }}
         transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
       />
@@ -60,10 +60,7 @@ export default function ModeToggle({ mode, onChange }: IModeToggleProps) {
         type="button"
         onClick={() => onChange("dev")}
         aria-pressed={mode === "dev"}
-        className={cn(
-          "relative z-10 rounded-full px-2.5 py-1.5 text-[11px] font-semibold transition-colors duration-200 sm:px-4 sm:py-2 sm:text-[13px]",
-          mode === "dev" ? "text-white" : "text-muted-foreground hover:text-foreground"
-        )}
+        className={cn(mode === "dev" && "active")}
       >
         Mode Dev
       </button>
@@ -72,10 +69,7 @@ export default function ModeToggle({ mode, onChange }: IModeToggleProps) {
         type="button"
         onClick={() => onChange("btp")}
         aria-pressed={mode === "btp"}
-        className={cn(
-          "relative z-10 rounded-full px-2.5 py-1.5 text-[11px] font-semibold transition-colors duration-200 sm:px-4 sm:py-2 sm:text-[13px]",
-          mode === "btp" ? "text-white" : "text-muted-foreground hover:text-foreground"
-        )}
+        className={cn(mode === "btp" && "active")}
       >
         Mode Bâtiment
       </button>

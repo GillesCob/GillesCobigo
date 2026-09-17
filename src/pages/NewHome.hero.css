@@ -12,6 +12,8 @@
    plutôt que d'introduire un écart entre ce fichier et le mockup qu'il est censé refléter au mot
    près. */
 .mp-hero {
+  /* Meme pile de police exacte que le mockup, cf commentaire equivalent dans NewHome.navbar.css. */
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   position: relative;
   /* z-index:0 : pas une valeur du mockup (qui n'en a pas besoin, contexte HTML différent), mais
      une correction réelle trouvée en session — sans elle, le fond en z-index négatif ci-dessous
@@ -62,6 +64,7 @@
 
 .mp-eyebrow {
   font-size: 12px;
+  line-height: normal; /* sans ça, herite du line-height Tailwind (1.75rem) au lieu du defaut navigateur */
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: hsl(var(--mode-accent));
@@ -78,6 +81,7 @@
 
 .mp-lead {
   font-size: 18px;
+  line-height: normal; /* idem : sans ça, herite du line-height Tailwind au lieu du defaut navigateur */
   color: hsl(var(--muted-foreground));
   max-width: 560px;
   margin: 0 0 30px;
@@ -92,6 +96,7 @@
 
 .mp-btn {
   font-size: 13px;
+  line-height: normal; /* idem eyebrow/lead : sans ca, herite du line-height Tailwind */
   font-weight: 700;
   text-decoration: none;
   padding: 12px 22px;

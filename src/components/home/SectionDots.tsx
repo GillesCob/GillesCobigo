@@ -44,10 +44,7 @@ export default function SectionDots({ mode, activeSection, onActiveChange }: ISe
   }, [mode]);
 
   return (
-    <nav
-      aria-label="Navigation entre sections"
-      className="hidden min-[900px]:flex fixed left-[22px] top-1/2 z-30 -translate-y-1/2 flex-col gap-4"
-    >
+    <nav aria-label="Navigation entre sections" className="mp-section-nav">
       {links.map((link) => {
         const isActive = activeSection === link.id;
         return (
@@ -66,23 +63,10 @@ export default function SectionDots({ mode, activeSection, onActiveChange }: ISe
               const y = el.getBoundingClientRect().top + window.scrollY - 90;
               window.scrollTo({ top: y, behavior: "smooth" });
             }}
-            className="group flex items-center gap-2.5"
+            className={cn(isActive && "active")}
           >
-            <span
-              className={cn(
-                "h-[7px] w-[7px] flex-shrink-0 rounded-full bg-muted-foreground transition-[background-color,transform] duration-[250ms]",
-                isActive && "scale-[1.7] bg-mode-accent"
-              )}
-            />
-            <span
-              className={cn(
-                "-translate-x-1.5 whitespace-nowrap text-xs font-semibold text-foreground opacity-0 transition-all duration-200",
-                isActive && "translate-x-0 opacity-100",
-                "group-hover:translate-x-0 group-hover:opacity-100"
-              )}
-            >
-              {link.label}
-            </span>
+            <span className="mp-section-nav-dot" />
+            <span className="mp-section-nav-label">{link.label}</span>
           </a>
         );
       })}
