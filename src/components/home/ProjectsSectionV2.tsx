@@ -47,7 +47,13 @@ const sectionBlockMotionProps = {
 // état final, sans toucher au reveal desktop (pas signalé, largement moins perceptible avec un
 // scroll à la souris/trackpad).
 function useSectionBlockMotionProps() {
-  const [isMobile, setIsMobile] = useState(false);
+  // Initialisé de façon synchrone (pas useState(false) + correction après coup) : sur mobile, le
+  // tout premier rendu appliquait sinon quand même `initial:{opacity:0}` avant que l'effet ne le
+  // corrige, et retirer ensuite `whileInView`/`animate` ne remet pas Framer Motion à l'état visible
+  // de lui-même (il garde la dernière valeur interpolée, ici opacité 0) : section invisible en
+  // permanence sur mobile, jamais révélée. Sur mobile, `animate` est donc fourni explicitement
+  // (jamais juste absent) pour forcer le retour à opacité 1.
+  const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches);
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 639px)");
     setIsMobile(mq.matches);
@@ -55,7 +61,9 @@ function useSectionBlockMotionProps() {
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, []);
-  return isMobile ? ({ style: { marginTop: 130 } } as const) : sectionBlockMotionProps;
+  return isMobile
+    ? ({ style: { marginTop: 130 }, initial: false, animate: { opacity: 1, y: 0 } } as const)
+    : sectionBlockMotionProps;
 }
 
 // Ligne de la liste projets/chantiers : logo/visuel du projet en filigrane très discret derrière
