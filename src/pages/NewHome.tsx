@@ -1,0 +1,412 @@
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { useModeStore, type Mode } from "@/store/modeStore";
+import ModeToggle from "@/components/home/ModeToggle";
+import SectionDots from "@/components/home/SectionDots";
+import TimelineV2 from "@/components/home/TimelineV2";
+import ProjectsSectionV2 from "@/components/home/ProjectsSectionV2";
+import GitHubStats from "@/components/home/GitHubStats";
+import ContactSectionInline from "@/components/home/ContactSectionInline";
+
+// Décalage du header sticky pour tout scroll calculé à la main (nav à points, CTA hero, bascule
+// de mode), identique au HEADER_OFFSET du mockup de référence.
+const HEADER_OFFSET = 90;
+
+// Teintes d'accent par mode (cf tailwind.config.ts, couleur `mode-accent`), converties en HSL exact
+// à partir des hex du mockup de référence (:root --accent / body[data-mode="btp"] --accent).
+// Dev = #2B4A4A (pas de token existant équivalent). Bâtiment = #B5562B : volontairement DIFFÉRENT
+// du token `coral` (#D85A30) déjà utilisé ailleurs sur le site, cf audit du 17/09 (le mockup utilise
+// une teinte plus terreuse/sombre que `coral`, un token Tailwind préexistant mais pas la bonne
+// couleur pour ce mode précis).
+const DEV_ACCENT_HSL = "180 27% 23%";
+const BTP_ACCENT_HSL = "19 62% 44%";
+
+// /new reste toujours en fond clair, quel que soit le thème dark/light choisi ailleurs sur le
+// site (src/store/themeStore.ts) : le mockup de référence n'a pas de dark mode du tout. Plutôt que
+// de toucher au mécanisme de thème global (qui doit continuer à s'appliquer normalement sur /,
+// /articles, etc.), on fige ici, localement, les tokens shadcn consommés par cette page et ses
+// sous-composants (y compris GitHubStats, partagé avec l'ancienne Home) : posés en style inline sur
+// le conteneur racine, ils gagnent sur les valeurs `.dark` héritées de <html> sans jamais en
+// dépendre. Les 4 tokens cités dans le mockup (bg/ink/muted/line) sont convertis en HSL exact à
+// partir de ses hex (Projets/Portfolio/mockups/refonte-v5-bascule.html, variables :root) ; les
+// autres tokens (primary, destructive, ring...) reprennent tels quels les valeurs déjà utilisées
+// par le thème clair du site (src/globals.css), absentes du mockup mais déjà correctes en clair.
+const FIXED_LIGHT_TOKENS: CSSProperties = {
+  "--background": "60 16.7% 97.6%", // #FAFAF8
+  "--foreground": "210 8.3% 9.4%", // #16181A
+  "--card": "0 0% 100%", // #fff (pastille ModeToggle, cf mockup .mode-toggle)
+  "--card-foreground": "210 8.3% 9.4%",
+  "--popover": "0 0% 100%",
+  "--popover-foreground": "210 8.3% 9.4%",
+  "--primary": "220.9 39.3% 11%",
+  "--primary-foreground": "210 20% 98%",
+  "--secondary": "220 14.3% 95.9%",
+  "--secondary-foreground": "220.9 39.3% 11%",
+  "--muted": "210 4.3% 45.1%", // #6E7378 (ex. points de la timeline)
+  "--muted-foreground": "210 4.3% 45.1%", // #6E7378
+  "--accent": "220 14.3% 95.9%",
+  "--accent-foreground": "220.9 39.3% 11%",
+  "--destructive": "0 84.2% 60.2%",
+  "--destructive-foreground": "210 20% 98%",
+  "--border": "42.9 12.3% 88.8%", // #E6E4DF
+  "--input": "42.9 12.3% 88.8%", // #E6E4DF
+  "--ring": "224 71.4% 4.1%",
+} as CSSProperties;
+
+const devSkills = [
+  { cat: "Backend", items: "Node.js, Express, Prisma" },
+  { cat: "Frontend", items: "React, TypeScript" },
+  { cat: "Agentique", items: "Claude API, Claude Code" },
+  { cat: "DevOps", items: "Docker, Nginx" },
+];
+
+const btpSkills = [
+  { cat: "Maquette numérique", items: "Revit, Navisworks, Solibri, Dalux, BIM 360, coordination multi-lots" },
+  { cat: "Pilotage", items: "100+ maquettes interconnectées (Mareterra, 2 milliards d'euros)" },
+  { cat: "Métier", items: "BIM, coordination chantier" },
+];
+
+function scrollToSection(id: string): void {
+  if (id === "hero") {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
+  const el = document.getElementById(id);
+  if (!el) return;
+  const y = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+  window.scrollTo({ top: y, behavior: "smooth" });
+}
+
+// Bascule instantanée (pas de smooth scroll : ça se passe pendant que le contenu est encore
+// invisible, cf handleModeChange ci-dessous).
+function jumpToSection(id: string): void {
+  if (id === "hero") {
+    window.scrollTo({ top: 0 });
+    return;
+  }
+  const el = document.getElementById(id);
+  if (!el) return;
+  const y = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+  window.scrollTo({ top: y });
+}
+
+// Projets ↔ Chantiers occupent la même place dans le menu mais pas le même id (cf mockup).
+function mapSectionToMode(section: string, nextMode: Mode): string {
+  if (section === "projets" && nextMode === "btp") return "chantiers";
+  if (section === "chantiers" && nextMode === "dev") return "projets";
+  return section;
+}
+
+export default function NewHome() {
+  const mode = useModeStore((s) => s.mode);
+  const setMode = useModeStore((s) => s.setMode);
+  const [activeSection, setActiveSection] = useState("hero");
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  // Rejoue l'animation "pulse" du liseré d'accent (mode-strip) à chaque bascule de mode : changer
+  // `key` force React à remonter l'élément, ce qui relance l'animation CSS même si le mode cliqué
+  // est déjà actif (équivalent du "void strip.offsetWidth" du mockup de référence).
+  const [pulseKey, setPulseKey] = useState(0);
+  // Liseré d'accent qui se déploie en cascade sous chaque ligne de compétence (mockup .skills-row
+  // ::after), déclenché une fois quand toute la section entre dans le viewport (pas par ligne).
+  const [skillsRevealed, setSkillsRevealed] = useState(false);
+  const heroRef = useRef<HTMLElement>(null);
+  const heroBgWrapRef = useRef<HTMLDivElement>(null);
+
+  // Parallax du visuel de fond du hero (image BIM côté Bâtiment, graphe Obsidian côté Dev) :
+  // bouge à une fraction de la vitesse du scroll, borné pour ne jamais dépasser la marge ménagée
+  // par le sur-dimensionnement de l'image en CSS (190% de hauteur, cf className plus bas). Calcul
+  // identique au mockup de référence (updateHeroParallax).
+  useEffect(() => {
+    let ticking = false;
+    function update() {
+      ticking = false;
+      const heroEl = heroRef.current;
+      const visuals = heroBgWrapRef.current?.querySelectorAll<HTMLElement>("img");
+      if (!heroEl || !visuals || visuals.length === 0) return;
+      const rect = heroEl.getBoundingClientRect();
+      const max = rect.height * 0.2;
+      const offset = Math.max(-max, Math.min(max, rect.top * 0.15));
+      visuals.forEach((el) => {
+        el.style.transform = `translateY(${offset}px)`;
+      });
+    }
+    function onScrollOrResize() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }
+    window.addEventListener("scroll", onScrollOrResize);
+    window.addEventListener("resize", onScrollOrResize);
+    update();
+    return () => {
+      window.removeEventListener("scroll", onScrollOrResize);
+      window.removeEventListener("resize", onScrollOrResize);
+    };
+  }, []);
+
+  const runModeSwap = useCallback(
+    (nextMode: Mode, targetSection: string) => {
+      setIsTransitioning(true);
+      setPulseKey((k) => k + 1);
+      window.setTimeout(() => {
+        setMode(nextMode);
+        setActiveSection(targetSection);
+        requestAnimationFrame(() => {
+          jumpToSection(targetSection);
+          setIsTransitioning(false);
+        });
+      }, 300);
+    },
+    [setMode]
+  );
+
+  // Bascule via le toggle de la topbar : atterrit sur l'équivalent de la section actuellement
+  // affichée (retenue via activeSection, tenu à jour par SectionDots au scroll).
+  const handleModeChange = useCallback(
+    (nextMode: Mode) => {
+      if (nextMode === mode) return;
+      runModeSwap(nextMode, mapSectionToMode(activeSection, nextMode));
+    },
+    [mode, activeSection, runModeSwap]
+  );
+
+  // Bascule via un item "portail" du Parcours : atterrit toujours sur Parcours (comportement du
+  // mockup, data-goto-mode + scrollIntoView vers #parcours).
+  const handlePortalGoTo = useCallback(
+    (nextMode: Mode) => {
+      if (nextMode === mode) {
+        scrollToSection("parcours");
+        return;
+      }
+      runModeSwap(nextMode, "parcours");
+    },
+    [mode, runModeSwap]
+  );
+
+  const rootStyle = {
+    ...FIXED_LIGHT_TOKENS,
+    "--mode-accent": mode === "btp" ? BTP_ACCENT_HSL : DEV_ACCENT_HSL,
+  } as CSSProperties;
+  const skills = mode === "dev" ? devSkills : btpSkills;
+
+  return (
+    <div data-mode={mode} style={rootStyle} className="min-h-dvh bg-background text-foreground">
+      {/* Liseré d'accent toujours visible en haut de page (mockup .mode-strip) : marqueur discret
+          du mode courant, pas seulement l'état actif des boutons du switch. Pulse bref à chaque
+          bascule (cf .mode-strip-pulse, globals.css) pour que le changement se voie. */}
+      <div
+        key={pulseKey}
+        className={cn(
+          "sticky top-0 z-50 h-1 bg-mode-accent transition-colors duration-[350ms] ease-in-out",
+          pulseKey > 0 && "mode-strip-pulse"
+        )}
+      />
+      <header className="sticky top-1 z-40 flex items-center justify-between border-b border-border bg-background px-10 py-[18px]">
+        <button onClick={() => scrollToSection("hero")} className="flex items-center gap-2.5 text-xl font-bold">
+          {/* Toujours le logo "clair" : /new n'a pas de dark mode (cf FIXED_LIGHT_TOKENS ci-dessus),
+              la variante blanche (pensée pour un fond sombre) ne s'applique jamais ici. */}
+          <img src="/images/logo-gc-black.png" alt="" className="h-[38px] w-auto" />
+          Gilles Cobigo
+        </button>
+        <ModeToggle mode={mode} onChange={handleModeChange} />
+      </header>
+
+      <SectionDots mode={mode} activeSection={activeSection} onActiveChange={setActiveSection} />
+
+      <div
+        className={cn(
+          "transition-[opacity,transform] duration-300 ease-in-out",
+          isTransitioning && "translate-y-2 opacity-0"
+        )}
+      >
+        <section
+          id="hero"
+          ref={heroRef}
+          className="relative flex min-h-0 flex-col justify-center overflow-hidden pt-10 sm:min-h-[78vh] sm:pt-[70px]"
+        >
+          {/* Les deux visuels restent montés en permanence (seul `hidden` bascule selon le mode,
+              comme .btp-only/.dev-only dans le mockup) : la parallax interroge le DOM une seule
+              fois au montage (heroBgWrapRef), pas à chaque changement de mode. */}
+          <div ref={heroBgWrapRef} className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+            <img
+              src="/images/bim-illustration.png"
+              alt=""
+              className={cn(
+                "absolute -left-[12.5%] -top-[45%] h-[190%] w-[125%] object-cover opacity-[0.16] will-change-transform",
+                mode !== "btp" && "hidden"
+              )}
+            />
+            <img
+              src="/images/obsidian-graph.svg"
+              alt=""
+              className={cn(
+                "absolute -left-[12.5%] -top-[45%] h-[190%] w-[125%] object-cover opacity-[0.16] will-change-transform",
+                mode !== "dev" && "hidden"
+              )}
+            />
+          </div>
+          <div className="mx-auto w-full max-w-[880px] px-5 sm:px-10">
+            {mode === "dev" ? (
+              <>
+                <p className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-mode-accent">
+                  Développeur · 2022 à aujourd'hui
+                </p>
+                <h1 className="mb-5 text-[clamp(30px,4.5vw,44px)] font-extrabold leading-[1.2]">
+                  La précision du code, héritée du terrain.
+                </h1>
+                <p className="mb-[30px] max-w-xl text-lg text-muted-foreground">
+                  TypeScript, Node.js, React, Prisma. 10 ans dans le bâtiment avant ça, dont BIM Manager sur
+                  l'extension en mer de la ville de Monaco. Une reconversion qui n'en est pas une.
+                </p>
+                <div className="mt-[34px] flex flex-wrap gap-3.5">
+                  <button
+                    onClick={() => scrollToSection("projets")}
+                    className="rounded-[10px] bg-mode-accent px-[22px] py-3 text-[13px] font-bold text-white transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(20,18,16,0.12)]"
+                  >
+                    Voir mes projets
+                  </button>
+                  <button
+                    onClick={() => scrollToSection("contact")}
+                    className="rounded-[10px] border border-foreground px-[22px] py-3 text-[13px] font-bold transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(20,18,16,0.12)]"
+                  >
+                    Me contacter
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-mode-accent">
+                  BIM Manager · 2008 à 2022
+                </p>
+                <h1 className="mb-5 text-[clamp(30px,4.5vw,44px)] font-extrabold leading-[1.2]">
+                  BIM Manager, coordination de projets à grande échelle.
+                </h1>
+                <p className="mb-[30px] max-w-xl text-lg text-muted-foreground">
+                  10 ans dans le bâtiment chez Bouygues Construction, dont BIM Manager sur l'extension en mer de la
+                  ville de Monaco, un projet à 2 milliards d'euros piloté à travers plus de 100 maquettes numériques
+                  interconnectées.
+                </p>
+                <div className="mt-[34px] flex flex-wrap gap-3.5">
+                  <button
+                    onClick={() => scrollToSection("chantiers")}
+                    className="rounded-[10px] bg-mode-accent px-[22px] py-3 text-[13px] font-bold text-white transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(20,18,16,0.12)]"
+                  >
+                    Voir mes chantiers
+                  </button>
+                  <button
+                    onClick={() => scrollToSection("contact")}
+                    className="rounded-[10px] border border-foreground px-[22px] py-3 text-[13px] font-bold transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(20,18,16,0.12)]"
+                  >
+                    Me contacter
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </section>
+
+        <TimelineV2 mode={mode} onGoToMode={handlePortalGoTo} />
+
+        <ProjectsSectionV2 mode={mode} />
+
+        {mode === "dev" && <GitHubStats />}
+
+        <section id="competences" className="scroll-mt-[90px]">
+          <motion.div
+            className="mx-auto flex min-h-0 w-full max-w-[880px] flex-col justify-center border-t border-border px-5 pt-12 sm:min-h-[82vh] sm:px-10"
+            style={{ marginTop: 130 }}
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3, margin: "0px 0px -10% 0px" }}
+            onViewportEnter={() => setSkillsRevealed(true)}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
+            <p className="mb-[18px] text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">
+              Compétences
+            </p>
+            <div className="flex flex-col">
+              {skills.map((skill, i) => (
+                <SkillRow key={skill.cat} cat={skill.cat} items={skill.items} index={i} revealed={skillsRevealed} />
+              ))}
+            </div>
+          </motion.div>
+        </section>
+
+        <ContactSectionInline />
+      </div>
+
+      {/* Footer statique, hors de la transition de mode-fade (mockup : <footer> est un frère de
+          <main>, jamais affecté par la classe mode-fade portée par main uniquement). */}
+      <footer className="mt-[70px] border-t border-border px-10 pb-[30px] pt-10">
+        <div className="mx-auto flex max-w-[880px] flex-wrap gap-[60px]">
+          <div className="flex flex-col">
+            <p className="mb-2.5 text-sm font-bold">Gilles Cobigo</p>
+            <p className="mb-1.5 text-[13px] text-muted-foreground">Développeur fullstack, ex-BIM Manager</p>
+          </div>
+          <div className="flex flex-col">
+            <p className="mb-2.5 text-sm font-bold">Liens</p>
+            <a
+              href="https://github.com/GillesCob"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mb-1.5 text-[13px] text-muted-foreground hover:text-foreground"
+            >
+              github.com/GillesCob
+            </a>
+            <a
+              href="https://www.linkedin.com/in/gillescobigo"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mb-1.5 text-[13px] text-muted-foreground hover:text-foreground"
+            >
+              linkedin.com/in/gillescobigo
+            </a>
+            <a href="mailto:contact@gillescobigo.com" className="mb-1.5 text-[13px] text-muted-foreground hover:text-foreground">
+              contact@gillescobigo.com
+            </a>
+          </div>
+          <div className="flex flex-col">
+            <p className="mb-2.5 text-sm font-bold">Ce site</p>
+            <p className="mb-1.5 text-[13px] text-muted-foreground">Construit en React + Vite. Hébergé sur Vercel.</p>
+            <a
+              href="https://github.com/GillesCob/GillesCobigo"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mb-1.5 text-[13px] text-muted-foreground hover:text-foreground"
+            >
+              Code sur GitHub
+            </a>
+          </div>
+        </div>
+        <p className="mt-[30px] text-center text-xs text-muted-foreground">© 2026 Gilles Cobigo</p>
+      </footer>
+    </div>
+  );
+}
+
+// Cascade de délais du liseré d'accent sous chaque ligne (mockup : nth-of-type 2/3/4 = 0.12/0.24/0.36s,
+// 1re ligne sans délai).
+const SKILL_ROW_DELAYS_MS = [0, 120, 240, 360];
+
+interface ISkillRowProps {
+  cat: string;
+  items: string;
+  index: number;
+  revealed: boolean;
+}
+
+function SkillRow({ cat, items, index, revealed }: ISkillRowProps) {
+  return (
+    <div className="relative overflow-hidden border-b border-border py-10">
+      <p className="mb-3 text-[clamp(28px,4.8vw,48px)] font-extrabold leading-[1.05] tracking-[-0.01em]">{cat}</p>
+      <p className="max-w-full text-left text-[15px] text-muted-foreground">{items}</p>
+      <span
+        aria-hidden="true"
+        className="absolute bottom-0 left-0 h-0.5 bg-mode-accent transition-[width] duration-700 ease-out"
+        style={{ width: revealed ? 64 : 0, transitionDelay: `${SKILL_ROW_DELAYS_MS[index] ?? 0}ms` }}
+      />
+    </div>
+  );
+}

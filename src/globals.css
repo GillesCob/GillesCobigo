@@ -128,3 +128,22 @@
   animation: cgvTitleHighlight 1.6s ease-out;
   border-radius: 6px;
 }
+
+/* Pulse du liseré d'accent en haut de /new (NewHome.tsx) au changement de mode : reprend le
+   mockup de référence (Projets/Portfolio/mockups/refonte-v5-bascule.html, .mode-strip.pulse /
+   @keyframes strip-pulse). Grossit brièvement puis revient à sa hauteur de repos, pour que la
+   bascule de mode se voie, pas juste se lise dans le texte des boutons du switch. */
+@keyframes stripPulse {
+  0% {
+    height: 4px;
+  }
+  35% {
+    height: 8px;
+  }
+  100% {
+    height: 4px;
+  }
+}
+.mode-strip-pulse {
+  animation: stripPulse 0.6s ease-out;
+}
