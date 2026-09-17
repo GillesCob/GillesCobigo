@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { Mode } from "@/store/modeStore";
@@ -31,6 +31,22 @@ export default function ModeToggle({ mode, onChange }: IModeToggleProps) {
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
   }, [mode]);
+
+  // Re-mesure quand la police web finit de charger : au premier chargement dans un mode donné
+  // (ex. rechargement de page en mode Bâtiment, mode persisté en localStorage), la mesure ci-dessus
+  // s'effectue avant que la police réelle soit appliquée, avec la police de secours (largeur
+  // différente) -> pastille mal dimensionnée tant que le mode n'est pas rebasculé une fois (seul
+  // déclencheur de la dépendance `[mode]` ci-dessus). document.fonts.ready ne dépend pas du mode,
+  // se déclenche une seule fois, quel que soit le mode affiché au chargement.
+  useEffect(() => {
+    if (!document.fonts) return;
+    document.fonts.ready.then(() => {
+      const activeEl = mode === "dev" ? devRef.current : btpRef.current;
+      if (!activeEl) return;
+      setThumb({ width: activeEl.offsetWidth, left: activeEl.offsetLeft });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="relative inline-flex items-center gap-2.5 rounded-full border border-border bg-card p-1">
