@@ -137,14 +137,18 @@ export default function NewHome() {
   // montage, faussant une mesure prise sur lui.
   const BRAND_GAP_PX = 10;
   const brandLogoRef = useRef<HTMLImageElement>(null);
-  const brandNameRef = useRef<HTMLSpanElement>(null);
+  // Mesure sur un clone caché, forcé sur une seule ligne (`whitespace-nowrap`), jamais sur le
+  // <span> visible : celui-ci doit pouvoir revenir à son wrap naturel sur mobile ("Gilles"/"Cobigo"
+  // sur 2 lignes, comme avant), donc son `scrollWidth` dépend de l'état d'affichage courant et ne
+  // reflète plus une largeur "naturelle" stable une fois le wrap réintroduit.
+  const brandNameMeasureRef = useRef<HTMLSpanElement>(null);
   const [brandWidth, setBrandWidth] = useState<number>();
   useEffect(() => {
     if (brandWidth !== undefined) return;
     const logoEl = brandLogoRef.current;
-    const nameEl = brandNameRef.current;
-    if (!logoEl || !nameEl) return;
-    setBrandWidth(logoEl.getBoundingClientRect().width + BRAND_GAP_PX + nameEl.scrollWidth);
+    const measureEl = brandNameMeasureRef.current;
+    if (!logoEl || !measureEl) return;
+    setBrandWidth(logoEl.getBoundingClientRect().width + BRAND_GAP_PX + measureEl.scrollWidth);
   }, [brandWidth]);
   const heroRef = useRef<HTMLElement>(null);
   const heroBgWrapRef = useRef<HTMLDivElement>(null);
@@ -278,28 +282,38 @@ export default function NewHome() {
       >
         <button
           onClick={() => scrollToSection("hero")}
-          className="relative flex h-[38px] items-center text-xl font-bold"
-          style={{ width: isScrolled ? brandWidth : undefined, transition: "width 300ms ease-in-out" }}
+          className="relative flex items-center text-xl font-bold"
+          style={{ width: isScrolled ? brandWidth : undefined, transition: "width 600ms ease-in-out" }}
         >
+          {/* Mesure cachée, toujours sur une seule ligne : sert uniquement à calculer `brandWidth`
+              (cf plus haut), jamais affichée. */}
+          <span
+            ref={brandNameMeasureRef}
+            aria-hidden="true"
+            className="pointer-events-none invisible absolute left-0 top-0 whitespace-nowrap pl-[48px]"
+          >
+            Gilles Cobigo
+          </span>
           {/* Toujours le logo "clair" : /new n'a pas de dark mode (cf FIXED_LIGHT_TOKENS ci-dessus),
               la variante blanche (pensée pour un fond sombre) ne s'applique jamais ici. Position
-              absolue : glisse de la gauche (état normal) au centre de la zone gelée `brandWidth`
-              (une fois le nom disparu), transform étant la seule propriété qui s'anime proprement
-              ici (contrairement à `justify-content`, jamais interpolable). */}
+              absolue, centrée verticalement (`top-1/2 -translate-y-1/2`) : reste calée sur le nom
+              que celui-ci tienne sur 1 ligne (desktop) ou 2 (mobile, wrap naturel repris tel quel).
+              Horizontalement, glisse de la gauche (état normal) au centre de la zone gelée
+              `brandWidth` (une fois le nom disparu), transform étant la seule propriété qui s'anime
+              proprement ici (contrairement à `justify-content`, jamais interpolable). */}
           <img
             ref={brandLogoRef}
             src="/images/logo-gc-black.png"
             alt=""
             className={cn(
-              "logo-sweep-reveal absolute left-0 top-0 h-[38px] w-auto transition-transform duration-300 ease-in-out",
+              "logo-sweep-reveal absolute left-0 top-1/2 h-[38px] w-auto -translate-y-1/2 transition-transform duration-[600ms] ease-in-out",
               isScrolled && "left-1/2 -translate-x-1/2"
             )}
           />
           <span
-            ref={brandNameRef}
             className={cn(
-              "overflow-hidden whitespace-nowrap pl-[48px] transition-opacity duration-200 ease-in-out",
-              isScrolled ? "opacity-0" : "opacity-100"
+              "block overflow-hidden pl-[48px] transition-[opacity,max-height] duration-[600ms] ease-in-out",
+              isScrolled ? "max-h-0 opacity-0" : "max-h-[64px] opacity-100"
             )}
           >
             Gilles Cobigo
