@@ -100,7 +100,7 @@ export default function ProjectModalV2({ isOpen, onClose, project }: IProjectMod
   if (!project) return null;
 
   const bodyBlocks: ReactNode[] = [
-    <h3 key="title" className="text-[26px] font-bold leading-tight text-white">
+    <h3 key="title" className="mb-3 text-[26px] font-bold leading-tight text-white">
       {project.name}
     </h3>,
     <p key="desc" className="mb-5 max-w-[520px] text-[15px] leading-[1.6] text-white/75">

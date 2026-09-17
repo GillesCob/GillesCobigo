@@ -245,7 +245,7 @@ export default function NewHome() {
         <section
           id="hero"
           ref={heroRef}
-          className="relative flex min-h-0 flex-col justify-center overflow-hidden pt-10 sm:min-h-[78vh] sm:pt-[70px]"
+          className="relative z-0 flex min-h-0 flex-col justify-center overflow-hidden pt-10 sm:min-h-[78vh] sm:pt-[70px]"
         >
           {/* Les deux visuels restent montés en permanence (seul `hidden` bascule selon le mode,
               comme .btp-only/.dev-only dans le mockup) : la parallax interroge le DOM une seule
