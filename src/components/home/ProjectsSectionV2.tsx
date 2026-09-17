@@ -10,6 +10,19 @@ import type { Mode } from "@/store/modeStore";
 // Mêmes 4 projets dev mis en avant que sur la Home actuelle (src/components/home/ProjectsSection.tsx).
 const PREVIEW_IDS = ["cerithe", "nexio", "chouxfleurs", "ouvra"];
 
+// Décalage droit du logo en filigrane, par projet : chaque asset a sa propre marge transparente
+// interne (mesurée sur le fichier source, bbox de contenu réel vs canvas), donc une valeur unique
+// de `right` ne donne pas le même espace visuel pour tous les logos. Ouvra en particulier a un
+// icône étroit centré dans un canvas large (~58px de marge transparente à droite une fois affiché
+// à sa largeur max de 160px) : une valeur négative rapproche sa vraie silhouette du bord, comme
+// les autres logos, sans toucher au fichier source (partagé avec la modale/Home).
+const WORK_LOGO_RIGHT_OFFSET: Record<string, string> = {
+  cerithe: "right-6", // marge interne ~0
+  nexio: "right-5", // marge interne ~4px à 160px affiché
+  chouxfleurs: "right-4", // marge interne ~8px
+  ouvra: "-right-[34px]", // marge interne ~58px à 160px affiché
+};
+
 type ActiveModal = { side: "dev"; project: IDevProject } | { side: "btp"; project: IBTPProject } | null;
 
 interface IProjectsSectionV2Props {
@@ -38,6 +51,7 @@ function WorkRow({
   description,
   image,
   invertImage,
+  logoRightClassName,
   onClick,
 }: {
   index: number;
@@ -50,6 +64,8 @@ function WorkRow({
   // que soit le réglage d'opacité (blanc sur quasi-blanc). `invert` le rend visible sans toucher
   // à l'asset lui-même ni aux autres logos, qui sont déjà assez sombres pour ce traitement.
   invertImage?: boolean;
+  // cf WORK_LOGO_RIGHT_OFFSET : compense la marge transparente propre à chaque asset.
+  logoRightClassName?: string;
   onClick: () => void;
 }) {
   return (
@@ -63,7 +79,8 @@ function WorkRow({
           alt=""
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute right-6 top-1/2 z-0 h-[84px] w-auto max-w-[160px] -translate-y-1/2 object-contain opacity-[0.32] grayscale transition-opacity duration-[250ms] group-hover:opacity-[0.55]",
+            "pointer-events-none absolute top-1/2 z-0 h-[84px] w-auto max-w-[160px] -translate-y-1/2 object-contain opacity-[0.32] grayscale transition-opacity duration-[250ms] group-hover:opacity-[0.55]",
+            logoRightClassName ?? "right-6",
             invertImage && "invert"
           )}
         />
@@ -108,6 +125,7 @@ export default function ProjectsSectionV2({ mode }: IProjectsSectionV2Props) {
                   description={project.description}
                   image={project.image}
                   invertImage={project.id === "chouxfleurs"}
+                  logoRightClassName={WORK_LOGO_RIGHT_OFFSET[project.id]}
                   onClick={() => setModal({ side: "dev", project })}
                 />
               ))}
