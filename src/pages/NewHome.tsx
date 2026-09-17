@@ -9,6 +9,7 @@ import ProjectsSectionV2 from "@/components/home/ProjectsSectionV2";
 import GitHubStats from "@/components/home/GitHubStats";
 import ContactSectionInline from "@/components/home/ContactSectionInline";
 import "./NewHome.hero.css";
+import "./NewHome.navbar.css";
 
 // Décalage du header sticky pour tout scroll calculé à la main (nav à points, CTA hero, bascule
 // de mode), identique au HEADER_OFFSET du mockup de référence.
@@ -164,8 +165,8 @@ export default function NewHome() {
       ticking = false;
       if (!visuals || visuals.length === 0) return;
       const rectTop = heroTop - window.scrollY;
-      const max = heroHeight * 0.32;
-      const offset = Math.max(-max, Math.min(max, rectTop * 0.35));
+      const max = heroHeight * 0.2;
+      const offset = Math.max(-max, Math.min(max, rectTop * 0.15));
       visuals.forEach((el) => {
         el.style.transform = `translateY(${offset}px)`;
       });
@@ -246,26 +247,11 @@ export default function NewHome() {
     <div data-mode={mode} style={rootStyle} className="min-h-dvh bg-background text-foreground">
       {/* Liseré d'accent toujours visible en haut de page (mockup .mode-strip) : marqueur discret
           du mode courant, pas seulement l'état actif des boutons du switch. Pulse bref à chaque
-          bascule (cf .mode-strip-pulse, globals.css) pour que le changement se voie. */}
-      {/* `fixed` et non `sticky` : `html, body { overflow-x: hidden }` (globals.css, partagé par
-          tout le site) force `overflow-y` à `auto` sur les deux (règle CSS de résolution de
-          `overflow`), ce qui casse `position: sticky` ici (le scroll réel se fait sur `html`,
-          pas sur `body`, qui devient alors le conteneur de référence de la sticky sans jamais
-          scroller lui-même : la barre reste "collée" à sa position de départ dans le flux et
-          défile avec la page au lieu de rester visible). Même contournement déjà utilisé par la
-          Navbar globale du site (src/components/layout/Navbar.tsx, `fixed`). */}
-      <div
-        key={pulseKey}
-        className={cn(
-          "fixed left-0 top-0 z-50 h-1 w-full bg-mode-accent transition-colors duration-[350ms] ease-in-out",
-          pulseKey > 0 && "mode-strip-pulse"
-        )}
-      />
-      <header
-        ref={headerRef}
-        className="fixed left-0 top-1 z-40 flex w-full items-center justify-between border-b border-border bg-background px-4 py-[18px] sm:px-10"
-      >
-        <button onClick={() => scrollToSection("hero")} className="flex items-center gap-2.5 text-xl font-bold">
+          bascule pour que le changement se voie. `position:fixed` (pas `sticky`) : cf commentaire
+          détaillé dans NewHome.navbar.css (overflow-x:hidden global casse sticky). */}
+      <div key={pulseKey} className={cn("mp-mode-strip", pulseKey > 0 && "pulse")} />
+      <header ref={headerRef} className="mp-topbar">
+        <button onClick={() => scrollToSection("hero")} className="mp-brand">
           {/* Toujours le logo "clair" : /new n'a pas de dark mode (cf FIXED_LIGHT_TOKENS ci-dessus),
               la variante blanche (pensée pour un fond sombre) ne s'applique jamais ici. */}
           <img src="/images/logo-gc-black.png" alt="" className="h-[38px] w-auto flex-shrink-0" />
@@ -314,7 +300,7 @@ export default function NewHome() {
                 {/* min-h-[112px] : pas une valeur du mockup, ajoutée en session pour aligner les
                     titres dev/BTP au même niveau (le paragraphe BTP est plus long, 4 lignes contre
                     3) — reste en Tailwind, jamais dans le CSS porté du mockup. */}
-                <p className="mp-lead min-h-[112px]">
+                <p className="mp-lead">
                   TypeScript, Node.js, React, Prisma. 10 ans dans le bâtiment avant ça, dont BIM Manager sur
                   l'extension en mer de la ville de Monaco. Une reconversion qui n'en est pas une.
                 </p>
