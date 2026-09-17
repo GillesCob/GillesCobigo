@@ -236,16 +236,21 @@ export default function NewHome() {
 
       <SectionDots mode={mode} activeSection={activeSection} onActiveChange={setActiveSection} />
 
+      {/* pt-10/sm:pt-[70px] ici (pas sur la section hero) : reproduit exactement le mockup, où ce
+          padding vit sur `main` (au-dessus de hero), jamais sur `.hero` elle-même (`min-height:78vh`
+          sans padding). Sur hero, ce padding se retranchait de l'espace de centrage vertical du
+          flex (`justify-content:center`), décalant tout le contenu (texte + fond) ~60-85px trop
+          haut par rapport au mockup, vérifié par mesure directe des deux (getBoundingClientRect). */}
       <div
         className={cn(
-          "transition-[opacity,transform] duration-300 ease-in-out",
+          "pt-10 transition-[opacity,transform] duration-300 ease-in-out sm:pt-[70px]",
           isTransitioning && "translate-y-2 opacity-0"
         )}
       >
         <section
           id="hero"
           ref={heroRef}
-          className="relative z-0 flex min-h-0 flex-col justify-center overflow-hidden pt-10 sm:min-h-[78vh] sm:pt-[70px]"
+          className="relative z-0 flex min-h-0 flex-col justify-center overflow-hidden sm:min-h-[78vh]"
         >
           {/* Les deux visuels restent montés en permanence (seul `hidden` bascule selon le mode,
               comme .btp-only/.dev-only dans le mockup) : la parallax interroge le DOM une seule
