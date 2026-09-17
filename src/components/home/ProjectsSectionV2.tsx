@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -41,6 +41,23 @@ const sectionBlockMotionProps = {
   transition: { duration: 0.7, ease: "easeOut" },
 } as const;
 
+// Sur mobile, ce fondu + translation se joue pendant le scroll lui-même (la section entre dans le
+// viewport en scrollant), donnant une impression de saut/instabilité du contenu (signalé par
+// Gilles). Retiré uniquement sous 640px (breakpoint sm), la section apparaît directement dans son
+// état final, sans toucher au reveal desktop (pas signalé, largement moins perceptible avec un
+// scroll à la souris/trackpad).
+function useSectionBlockMotionProps() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    setIsMobile(mq.matches);
+    const onChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  return isMobile ? ({ style: { marginTop: 130 } } as const) : sectionBlockMotionProps;
+}
+
 // Ligne de la liste projets/chantiers : logo/visuel du projet en filigrane très discret derrière
 // le texte (mockup .work-logo), jamais un logo dédié séparé de l'illustration déjà utilisée pour
 // la modale, faute d'asset de logo distinct pour la plupart des projets (cf rapport d'audit).
@@ -79,7 +96,7 @@ function WorkRow({
           alt=""
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute top-1/2 z-0 h-[84px] w-auto max-w-[160px] -translate-y-1/2 object-contain opacity-[0.32] grayscale transition-opacity duration-[250ms] group-hover:opacity-[0.55]",
+            "pointer-events-none absolute top-1/2 z-0 h-[130px] w-auto max-w-[220px] -translate-y-1/2 object-contain opacity-[0.16] grayscale transition-opacity duration-[250ms] group-hover:opacity-[0.32] sm:h-[84px] sm:max-w-[160px] sm:opacity-[0.32] sm:group-hover:opacity-[0.55]",
             logoRightClassName ?? "right-6",
             invertImage && "invert"
           )}
@@ -107,13 +124,14 @@ function WorkRow({
 
 export default function ProjectsSectionV2({ mode }: IProjectsSectionV2Props) {
   const [modal, setModal] = useState<ActiveModal>(null);
+  const motionProps = useSectionBlockMotionProps();
 
   if (mode === "dev") {
     const previewProjects = devProjects.filter((p) => PREVIEW_IDS.includes(p.id));
     return (
       <>
         <section id="projets" className="scroll-mt-[90px]">
-          <motion.div className={sectionBlockClassName} {...sectionBlockMotionProps}>
+          <motion.div className={sectionBlockClassName} {...motionProps}>
             <p className="mb-[18px] text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">Projets</p>
             <div className="flex flex-col">
               {previewProjects.map((project, i) => (
@@ -140,7 +158,7 @@ export default function ProjectsSectionV2({ mode }: IProjectsSectionV2Props) {
   return (
     <>
       <section id="chantiers" className="scroll-mt-[90px]">
-        <motion.div className={sectionBlockClassName} {...sectionBlockMotionProps}>
+        <motion.div className={sectionBlockClassName} {...motionProps}>
           <p className="mb-[18px] text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">Chantiers</p>
           <div className="flex flex-col">
             {btpProjects.map((project, i) => {
