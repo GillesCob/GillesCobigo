@@ -243,7 +243,7 @@ export default function NewHome() {
       />
       <header
         ref={headerRef}
-        className="fixed left-0 top-1 z-40 flex w-full items-center justify-between border-b border-border bg-background px-10 py-[18px]"
+        className="fixed left-0 top-1 z-40 flex w-full items-center justify-between border-b border-border bg-background px-4 py-[18px] sm:px-10"
       >
         <button onClick={() => scrollToSection("hero")} className="flex items-center gap-2.5 text-xl font-bold">
           {/* Toujours le logo "clair" : /new n'a pas de dark mode (cf FIXED_LIGHT_TOKENS ci-dessus),
@@ -273,7 +273,7 @@ export default function NewHome() {
         <section
           id="hero"
           ref={heroRef}
-          className="relative z-0 flex min-h-[calc(100dvh-90px)] flex-col justify-center sm:min-h-[78vh]"
+          className="relative z-0 flex min-h-[calc(100svh-90px)] flex-col justify-center sm:min-h-[78vh]"
         >
           {/* Les deux visuels restent montés en permanence (seul `hidden` bascule selon le mode,
               comme .btp-only/.dev-only dans le mockup) : la parallax interroge le DOM une seule
@@ -315,7 +315,7 @@ export default function NewHome() {
                 <h1 className="mb-5 text-[clamp(30px,4.5vw,44px)] font-extrabold leading-[1.2]">
                   La précision du code, héritée du terrain.
                 </h1>
-                <p className="mb-[30px] max-w-xl text-lg text-muted-foreground">
+                <p className="mb-[30px] min-h-[112px] max-w-xl text-lg text-muted-foreground">
                   TypeScript, Node.js, React, Prisma. 10 ans dans le bâtiment avant ça, dont BIM Manager sur
                   l'extension en mer de la ville de Monaco. Une reconversion qui n'en est pas une.
                 </p>
@@ -342,7 +342,7 @@ export default function NewHome() {
                 <h1 className="mb-5 text-[clamp(30px,4.5vw,44px)] font-extrabold leading-[1.2]">
                   BIM Manager, coordination de projets à grande échelle.
                 </h1>
-                <p className="mb-[30px] max-w-xl text-lg text-muted-foreground">
+                <p className="mb-[30px] min-h-[112px] max-w-xl text-lg text-muted-foreground">
                   10 ans dans le bâtiment chez Bouygues Construction, dont BIM Manager sur l'extension en mer de la
                   ville de Monaco, un projet à 2 milliards d'euros piloté à travers plus de 100 maquettes numériques
                   interconnectées.
@@ -374,8 +374,7 @@ export default function NewHome() {
 
         <section id="competences" className="scroll-mt-[90px]">
           <motion.div
-            className="mx-auto flex min-h-0 w-full max-w-[880px] flex-col justify-center border-t border-border px-5 pt-12 sm:min-h-[82vh] sm:px-10"
-            style={{ marginTop: 130 }}
+            className="mx-auto mt-16 flex min-h-0 w-full max-w-[880px] flex-col justify-center border-t border-border px-5 pt-12 sm:mt-[130px] sm:min-h-[82vh] sm:px-10"
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3, margin: "0px 0px -10% 0px" }}

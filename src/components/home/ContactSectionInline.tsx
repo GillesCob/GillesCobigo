@@ -44,8 +44,7 @@ export default function ContactSectionInline() {
   return (
     <section id="contact" className="scroll-mt-[90px]">
       <motion.div
-        className="mx-auto w-full max-w-[880px] border-t border-border px-5 pb-[60px] pt-12 sm:px-10"
-        style={{ marginTop: 130 }}
+        className="mx-auto mt-16 w-full max-w-[880px] border-t border-border px-5 pb-[60px] pt-12 sm:mt-[130px] sm:px-10"
         initial={{ opacity: 0, y: 28 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3, margin: "0px 0px -10% 0px" }}

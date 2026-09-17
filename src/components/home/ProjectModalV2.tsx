@@ -199,7 +199,7 @@ export default function ProjectModalV2({ isOpen, onClose, project }: IProjectMod
               onClick={(e) => e.stopPropagation()}
             >
               <div
-                className="relative flex h-[260px] items-center justify-center bg-cover bg-center"
+                className="relative flex h-[140px] items-center justify-center bg-cover bg-center sm:h-[260px]"
                 style={{
                   background: `linear-gradient(to bottom, rgba(${MODAL_OVERLAY_RGB},0.15), rgba(${MODAL_OVERLAY_RGB},0.93)), hsl(var(--mode-accent))`,
                 }}
@@ -210,7 +210,7 @@ export default function ProjectModalV2({ isOpen, onClose, project }: IProjectMod
                 <button
                   onClick={onClose}
                   aria-label="Fermer"
-                  className="absolute right-4 top-4 z-10 text-white/60 hover:text-white"
+                  className="absolute right-2 top-2 z-10 p-2 text-white/60 hover:text-white"
                 >
                   <X size={22} />
                 </button>
