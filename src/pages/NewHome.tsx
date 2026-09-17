@@ -325,7 +325,7 @@ export default function NewHome() {
             src="/images/logo-gc-black.png"
             alt=""
             className={cn(
-              "logo-sweep-reveal absolute left-0 top-1/2 h-[38px] w-auto -translate-y-1/2 transition-transform duration-[600ms] ease-in-out",
+              "absolute left-0 top-1/2 h-[38px] w-auto -translate-y-1/2 transition-transform duration-[600ms] ease-in-out",
               isScrolled && "left-1/2 -translate-x-1/2"
             )}
           />
