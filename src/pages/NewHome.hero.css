@@ -52,6 +52,13 @@
   will-change: transform;
   max-width: none; /* neutralise le reset global `img { max-width:100% }` (Tailwind preflight) */
 }
+/* Bascule dev/BTP (classe `hidden` posée par React selon le mode) : sans cette règle, le
+   `display:block` ci-dessus (élément + classe, spécificité 0,1,1) l'emporte sur la classe
+   utilitaire Tailwind seule `.hidden` (display:none, spécificité 0,1,0) quelle que soit l'ordre
+   des fichiers dans le bundle -> l'image du mode masqué restait visible en permanence. */
+.mp-hero-bg img.hidden {
+  display: none;
+}
 
 .mp-eyebrow {
   font-size: 12px;
