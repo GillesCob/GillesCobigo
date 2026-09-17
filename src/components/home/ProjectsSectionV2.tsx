@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { devProjects, type IDevProject } from "@/data/devProjects";
 import { btpProjects, type IBTPProject } from "@/data/btpProjects";
 import ProjectModalV2 from "@/components/home/ProjectModalV2";
@@ -36,6 +37,7 @@ function WorkRow({
   title,
   description,
   image,
+  invertImage,
   onClick,
 }: {
   index: number;
@@ -43,6 +45,11 @@ function WorkRow({
   title: string;
   description: ReactNode;
   image?: string;
+  // Logo ChouxFleurs blanc sur fond transparent (pensé pour la carte sombre de la modale) :
+  // en filigrane opacity/grayscale sur le fond clair de /new, un blanc pur reste invisible quel
+  // que soit le réglage d'opacité (blanc sur quasi-blanc). `invert` le rend visible sans toucher
+  // à l'asset lui-même ni aux autres logos, qui sont déjà assez sombres pour ce traitement.
+  invertImage?: boolean;
   onClick: () => void;
 }) {
   return (
@@ -55,7 +62,10 @@ function WorkRow({
           src={image}
           alt=""
           aria-hidden="true"
-          className="pointer-events-none absolute right-1 top-1/2 z-0 h-[84px] w-auto max-w-[160px] -translate-y-1/2 object-contain opacity-[0.32] grayscale transition-opacity duration-[250ms] group-hover:opacity-[0.55]"
+          className={cn(
+            "pointer-events-none absolute right-1 top-1/2 z-0 h-[84px] w-auto max-w-[160px] -translate-y-1/2 object-contain opacity-[0.32] grayscale transition-opacity duration-[250ms] group-hover:opacity-[0.55]",
+            invertImage && "invert"
+          )}
         />
       )}
       <span className="relative z-[1] w-[30px] flex-shrink-0 font-mono text-sm text-muted-foreground">
@@ -97,6 +107,7 @@ export default function ProjectsSectionV2({ mode }: IProjectsSectionV2Props) {
                   title={project.name}
                   description={project.description}
                   image={project.image}
+                  invertImage={project.id === "chouxfleurs"}
                   onClick={() => setModal({ side: "dev", project })}
                 />
               ))}
