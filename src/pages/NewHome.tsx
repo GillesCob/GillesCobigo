@@ -248,7 +248,7 @@ export default function NewHome() {
         <button onClick={() => scrollToSection("hero")} className="flex items-center gap-2.5 text-xl font-bold">
           {/* Toujours le logo "clair" : /new n'a pas de dark mode (cf FIXED_LIGHT_TOKENS ci-dessus),
               la variante blanche (pensée pour un fond sombre) ne s'applique jamais ici. */}
-          <img src="/images/logo-gc-black.png" alt="" className="h-[38px] w-auto" />
+          <img src="/images/logo-gc-black.png" alt="" className="logo-sweep-reveal h-[38px] w-auto" />
           Gilles Cobigo
         </button>
         <ModeToggle mode={displayMode} onChange={handleModeChange} />
