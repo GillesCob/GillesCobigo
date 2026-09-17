@@ -144,11 +144,12 @@ export default function NewHome() {
     }
     window.addEventListener("scroll", onScrollOrResize);
     window.addEventListener("resize", onScrollOrResize);
-    // Pas d'appel `update()` immédiat au montage : au chargement de la page, le scroll est déjà à
-    // 0 (offset ≈ 0), donc rien à corriger avant le premier scroll réel. Un appel synchrone ici
-    // fait muter `style.transform` sur les <img> juste après leur premier paint, dans la fenêtre
-    // où l'image vient de charger/décoder : cause plausible du flash "apparaît puis disparaît"
-    // signalé sur le hero (peu probable que ce timing soit visible autrement).
+    // Appel immédiat obligatoire : sans lui, `transform` reste "none" (valeur par défaut, jamais
+    // posée) jusqu'au premier scroll, où il saute directement à sa valeur calculée à cet instant
+    // (pas de transition douce depuis "none") — cause du saut au premier scroll. La cause du flash
+    // du fond signalée plus tôt était ailleurs (z-index, largeur bridée par le reset Tailwind,
+    // padding sur le mauvais élément, overflow-hidden en trop), tous corrigés depuis.
+    update();
     return () => {
       window.removeEventListener("scroll", onScrollOrResize);
       window.removeEventListener("resize", onScrollOrResize);
