@@ -63,7 +63,7 @@ function WorkRow({
           alt=""
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute right-1 top-1/2 z-0 h-[84px] w-auto max-w-[160px] -translate-y-1/2 object-contain opacity-[0.32] grayscale transition-opacity duration-[250ms] group-hover:opacity-[0.55]",
+            "pointer-events-none absolute right-6 top-1/2 z-0 h-[84px] w-auto max-w-[160px] -translate-y-1/2 object-contain opacity-[0.32] grayscale transition-opacity duration-[250ms] group-hover:opacity-[0.55]",
             invertImage && "invert"
           )}
         />
