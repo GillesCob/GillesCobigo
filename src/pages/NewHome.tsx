@@ -117,6 +117,25 @@ export default function NewHome() {
   const [skillsRevealed, setSkillsRevealed] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const heroBgWrapRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  // Hauteur réelle du bandeau fixed (liseré + topbar), mesurée plutôt que la constante HEADER_OFFSET
+  // (90, approximative) : un écart de quelques px entre les deux laissait un mince espace blanc
+  // entre la topbar et le fond du hero, visible à l'œil. Le spacer qui compense la sortie de flux
+  // du bandeau fixed utilise cette valeur mesurée, jamais HEADER_OFFSET (qui reste la référence des
+  // calculs de scroll ailleurs dans ce fichier, un besoin différent qui tolère l'approximation).
+  const [fixedHeaderHeight, setFixedHeaderHeight] = useState(HEADER_OFFSET);
+
+  useEffect(() => {
+    const headerEl = headerRef.current;
+    if (!headerEl) return;
+    function measure() {
+      if (headerEl) setFixedHeaderHeight(headerEl.getBoundingClientRect().height + 4);
+    }
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(headerEl);
+    return () => observer.disconnect();
+  }, []);
 
   // Parallax du visuel de fond du hero (image BIM côté Bâtiment, graphe Obsidian côté Dev) :
   // bouge à une fraction de la vitesse du scroll, borné pour ne jamais dépasser la marge ménagée
@@ -222,7 +241,10 @@ export default function NewHome() {
           pulseKey > 0 && "mode-strip-pulse"
         )}
       />
-      <header className="fixed left-0 top-1 z-40 flex w-full items-center justify-between border-b border-border bg-background px-10 py-[18px]">
+      <header
+        ref={headerRef}
+        className="fixed left-0 top-1 z-40 flex w-full items-center justify-between border-b border-border bg-background px-10 py-[18px]"
+      >
         <button onClick={() => scrollToSection("hero")} className="flex items-center gap-2.5 text-xl font-bold">
           {/* Toujours le logo "clair" : /new n'a pas de dark mode (cf FIXED_LIGHT_TOKENS ci-dessus),
               la variante blanche (pensée pour un fond sombre) ne s'applique jamais ici. */}
@@ -231,9 +253,9 @@ export default function NewHome() {
         </button>
         <ModeToggle mode={displayMode} onChange={handleModeChange} />
       </header>
-      {/* Compense la sortie du flux des deux éléments fixed ci-dessus (liseré + topbar), même
-          valeur que HEADER_OFFSET (déjà le repère "hauteur topbar" du reste du fichier). */}
-      <div style={{ height: HEADER_OFFSET }} />
+      {/* Compense la sortie du flux des deux éléments fixed ci-dessus (liseré + topbar), hauteur
+          mesurée réellement (cf fixedHeaderHeight) pour ne laisser aucun espace résiduel. */}
+      <div style={{ height: fixedHeaderHeight }} />
 
       <SectionDots mode={mode} activeSection={activeSection} onActiveChange={setActiveSection} />
 
