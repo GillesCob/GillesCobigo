@@ -403,40 +403,6 @@ export default function NewHome() {
             <p className="mb-2.5 text-sm font-bold">Gilles Cobigo</p>
             <p className="mb-1.5 text-[13px] text-muted-foreground">Développeur fullstack, ex-BIM Manager</p>
           </div>
-          <div className="flex flex-col">
-            <p className="mb-2.5 text-sm font-bold">Liens</p>
-            <a
-              href="https://github.com/GillesCob"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mb-1.5 text-[13px] text-muted-foreground hover:text-foreground"
-            >
-              github.com/GillesCob
-            </a>
-            <a
-              href="https://www.linkedin.com/in/gillescobigo"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mb-1.5 text-[13px] text-muted-foreground hover:text-foreground"
-            >
-              linkedin.com/in/gillescobigo
-            </a>
-            <a href="mailto:contact@gillescobigo.com" className="mb-1.5 text-[13px] text-muted-foreground hover:text-foreground">
-              contact@gillescobigo.com
-            </a>
-          </div>
-          <div className="flex flex-col">
-            <p className="mb-2.5 text-sm font-bold">Ce site</p>
-            <p className="mb-1.5 text-[13px] text-muted-foreground">Construit en React + Vite. Hébergé sur Vercel.</p>
-            <a
-              href="https://github.com/GillesCob/GillesCobigo"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mb-1.5 text-[13px] text-muted-foreground hover:text-foreground"
-            >
-              Code sur GitHub
-            </a>
-          </div>
         </div>
         <p className="mt-[30px] text-center text-xs text-muted-foreground">© 2026 Gilles Cobigo</p>
       </footer>
