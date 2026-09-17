@@ -115,6 +115,37 @@ export default function NewHome() {
   // Liseré d'accent qui se déploie en cascade sous chaque ligne de compétence (mockup .skills-row
   // ::after), déclenché une fois quand toute la section entre dans le viewport (pas par ligne).
   const [skillsRevealed, setSkillsRevealed] = useState(false);
+  // Nom/prénom du logo, dans la navbar : visible en haut de page, disparaît proprement (largeur +
+  // opacité, pas juste un `hidden` sec) dès qu'on quitte le tout haut de la page, ne laissant que le
+  // logo seul. Seuil de 24px (pas 0) pour ne pas déclencher sur un micro-scroll accidentel/rebond.
+  const [isScrolled, setIsScrolled] = useState(false);
+  useEffect(() => {
+    function onScroll() {
+      setIsScrolled(window.scrollY > 24);
+    }
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  // Largeur naturelle du bloc logo+nom (mesurée une fois, avant toute disparition) : gelée dans
+  // `brandWidth`, appliquée au bouton une fois scrollé pour qu'il garde sa largeur d'origine au lieu
+  // de se resserrer sur le logo seul. Le logo peut alors se recentrer (position absolue) dans cette
+  // même zone au lieu de rester collé à gauche avec un vide à droite. Mesurée depuis le logo
+  // (largeur réelle) et le nom (`scrollWidth`, insensible au `max-width` qui le fait disparaître) +
+  // le gap fixe, jamais depuis la largeur rendue du bouton lui-même : si la page arrive déjà
+  // scrollée (ancre en milieu de page), le bouton serait déjà dans son état réduit au tout premier
+  // montage, faussant une mesure prise sur lui.
+  const BRAND_GAP_PX = 10;
+  const brandLogoRef = useRef<HTMLImageElement>(null);
+  const brandNameRef = useRef<HTMLSpanElement>(null);
+  const [brandWidth, setBrandWidth] = useState<number>();
+  useEffect(() => {
+    if (brandWidth !== undefined) return;
+    const logoEl = brandLogoRef.current;
+    const nameEl = brandNameRef.current;
+    if (!logoEl || !nameEl) return;
+    setBrandWidth(logoEl.getBoundingClientRect().width + BRAND_GAP_PX + nameEl.scrollWidth);
+  }, [brandWidth]);
   const heroRef = useRef<HTMLElement>(null);
   const heroBgWrapRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
@@ -149,8 +180,8 @@ export default function NewHome() {
       const visuals = heroBgWrapRef.current?.querySelectorAll<HTMLElement>("img");
       if (!heroEl || !visuals || visuals.length === 0) return;
       const rect = heroEl.getBoundingClientRect();
-      const max = rect.height * 0.2;
-      const offset = Math.max(-max, Math.min(max, rect.top * 0.15));
+      const max = rect.height * 0.32;
+      const offset = Math.max(-max, Math.min(max, rect.top * 0.35));
       visuals.forEach((el) => {
         el.style.transform = `translateY(${offset}px)`;
       });
@@ -245,11 +276,34 @@ export default function NewHome() {
         ref={headerRef}
         className="fixed left-0 top-1 z-40 flex w-full items-center justify-between border-b border-border bg-background px-4 py-[18px] sm:px-10"
       >
-        <button onClick={() => scrollToSection("hero")} className="flex items-center gap-2.5 text-xl font-bold">
+        <button
+          onClick={() => scrollToSection("hero")}
+          className="relative flex h-[38px] items-center text-xl font-bold"
+          style={{ width: isScrolled ? brandWidth : undefined, transition: "width 300ms ease-in-out" }}
+        >
           {/* Toujours le logo "clair" : /new n'a pas de dark mode (cf FIXED_LIGHT_TOKENS ci-dessus),
-              la variante blanche (pensée pour un fond sombre) ne s'applique jamais ici. */}
-          <img src="/images/logo-gc-black.png" alt="" className="logo-sweep-reveal h-[38px] w-auto" />
-          Gilles Cobigo
+              la variante blanche (pensée pour un fond sombre) ne s'applique jamais ici. Position
+              absolue : glisse de la gauche (état normal) au centre de la zone gelée `brandWidth`
+              (une fois le nom disparu), transform étant la seule propriété qui s'anime proprement
+              ici (contrairement à `justify-content`, jamais interpolable). */}
+          <img
+            ref={brandLogoRef}
+            src="/images/logo-gc-black.png"
+            alt=""
+            className={cn(
+              "logo-sweep-reveal absolute left-0 top-0 h-[38px] w-auto transition-transform duration-300 ease-in-out",
+              isScrolled && "left-1/2 -translate-x-1/2"
+            )}
+          />
+          <span
+            ref={brandNameRef}
+            className={cn(
+              "overflow-hidden whitespace-nowrap pl-[48px] transition-opacity duration-200 ease-in-out",
+              isScrolled ? "opacity-0" : "opacity-100"
+            )}
+          >
+            Gilles Cobigo
+          </span>
         </button>
         <ModeToggle mode={displayMode} onChange={handleModeChange} />
       </header>
