@@ -267,7 +267,7 @@ export default function NewHome() {
               src="/images/bim-illustration.png"
               alt=""
               className={cn(
-                "absolute inset-[-5%] h-[110%] w-[110%] object-contain opacity-[0.16]",
+                "absolute inset-[-35%] h-[170%] w-[170%] object-contain opacity-[0.16]",
                 mode !== "btp" && "hidden"
               )}
             />
@@ -275,7 +275,7 @@ export default function NewHome() {
               src="/images/obsidian-graph.svg"
               alt=""
               className={cn(
-                "absolute inset-[-5%] h-[110%] w-[110%] object-contain opacity-[0.16]",
+                "absolute inset-[-35%] h-[170%] w-[170%] object-contain opacity-[0.16]",
                 mode !== "dev" && "hidden"
               )}
             />
