@@ -1,13 +1,12 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
-import { X, ExternalLink, FileText, Github, History } from "lucide-react";
+import { X, ExternalLink, Github, History } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { IBTPProject } from "@/data/btpProjects";
 import type { IDevProject } from "@/data/devProjects";
-import { useArticleCountByTag } from "@/hooks/useArticleCountByTag";
 
 interface IProjectModalV2Props {
   isOpen: boolean;
@@ -60,7 +59,6 @@ const bodyItemVariants: Variants = {
 // `side` ne pilote plus la couleur du modal (cf commentaire sur MODAL_OVERLAY_RGB plus bas) : gardé
 // dans les props pour la compat d'appel (ProjectsSectionV2 le passe toujours).
 export default function ProjectModalV2({ isOpen, onClose, project }: IProjectModalV2Props) {
-  const articleCount = useArticleCountByTag(project?.id ?? "");
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Bloque le scroll de la page tant que la modale est ouverte : ce composant ne passe pas par le
@@ -127,8 +125,7 @@ export default function ProjectModalV2({ isOpen, onClose, project }: IProjectMod
       project.links?.live ||
       project.links?.demo ||
       project.comingSoon ||
-      project.id === "cocotte-eclair" ||
-      articleCount > 0;
+      project.id === "cocotte-eclair";
 
     if (hasLinks) {
       bodyBlocks.push(
@@ -157,13 +154,6 @@ export default function ProjectModalV2({ isOpen, onClose, project }: IProjectMod
           {!project.links?.live && !project.links?.demo && project.comingSoon && (
             <span className="inline-flex items-center px-2 py-1.5 text-xs italic text-white/40">Lien à venir</span>
           )}
-          {articleCount > 0 && (
-            <Button asChild variant="outline" size="sm" className={cn(MODAL_LINK_GH_CLASS)}>
-              <Link to={`/articles?tag=${project.id}`} onClick={onClose}>
-                <FileText size={14} className="mr-1" /> Articles
-              </Link>
-            </Button>
-          )}
           {project.id === "cocotte-eclair" && (
             <Button asChild variant="outline" size="sm" className={cn(MODAL_LINK_GH_CLASS)}>
               <Link to="/projects/cocotte-eclair/versions" onClick={onClose}>
@@ -174,16 +164,6 @@ export default function ProjectModalV2({ isOpen, onClose, project }: IProjectMod
         </div>
       );
     }
-  } else if (articleCount > 0) {
-    bodyBlocks.push(
-      <div key="articles">
-        <Button asChild variant="outline" size="sm" className={cn(MODAL_LINK_GH_CLASS)}>
-          <Link to={`/articles?tag=${(project as IBTPProject).id}`} onClick={onClose}>
-            <FileText size={14} className="mr-1" /> Articles
-          </Link>
-        </Button>
-      </div>
-    );
   }
 
   return (

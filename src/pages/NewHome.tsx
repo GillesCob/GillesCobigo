@@ -144,7 +144,11 @@ export default function NewHome() {
     }
     window.addEventListener("scroll", onScrollOrResize);
     window.addEventListener("resize", onScrollOrResize);
-    update();
+    // Pas d'appel `update()` immédiat au montage : au chargement de la page, le scroll est déjà à
+    // 0 (offset ≈ 0), donc rien à corriger avant le premier scroll réel. Un appel synchrone ici
+    // fait muter `style.transform` sur les <img> juste après leur premier paint, dans la fenêtre
+    // où l'image vient de charger/décoder : cause plausible du flash "apparaît puis disparaît"
+    // signalé sur le hero (peu probable que ce timing soit visible autrement).
     return () => {
       window.removeEventListener("scroll", onScrollOrResize);
       window.removeEventListener("resize", onScrollOrResize);
@@ -256,7 +260,7 @@ export default function NewHome() {
               src="/images/bim-illustration.png"
               alt=""
               className={cn(
-                "absolute -left-[12.5%] -top-[45%] h-[190%] w-[125%] object-cover opacity-[0.16] will-change-transform",
+                "absolute -left-[12.5%] -top-[45%] h-[190%] w-[125%] object-cover opacity-[0.16]",
                 mode !== "btp" && "hidden"
               )}
             />
@@ -264,7 +268,7 @@ export default function NewHome() {
               src="/images/obsidian-graph.svg"
               alt=""
               className={cn(
-                "absolute -left-[12.5%] -top-[45%] h-[190%] w-[125%] object-cover opacity-[0.16] will-change-transform",
+                "absolute -left-[12.5%] -top-[45%] h-[190%] w-[125%] object-cover opacity-[0.16]",
                 mode !== "dev" && "hidden"
               )}
             />
