@@ -88,19 +88,23 @@ export default function VideoLanding() {
                 {video.secondaryCta.label}
               </a>
             ) : (
-              <Link to="/projects">Voir mes projets</Link>
+              // Ancre sur la nouvelle home (bascule /new -> / du 18/09, cf PR #206) : /projects
+              // n'existe plus, la liste de projets vit maintenant dans la section #projets de /.
+              // Toujours #projets (jamais #chantiers) : choix simple, demandé par Gilles plutôt
+              // qu'une logique conditionnelle sur le mode par défaut du visiteur.
+              <Link to="/#projets">Voir mes projets</Link>
             )}
-          </Button>
-          <Button asChild size="lg" variant="outline" className="whitespace-nowrap">
-            <Link to="/articles">Lire mes articles</Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="whitespace-nowrap">
             <a href="/cv-gilles-cobigo.pdf" download>
               Télécharger le CV <Download size={16} className="ml-1" />
             </a>
           </Button>
+          {/* Ancien bouton "Lire mes articles" (Link to="/articles") retiré : /articles n'a pas
+              d'équivalent sur la nouvelle home (décision de Gilles, PR #206), plutôt que de
+              pointer vers une section inexistante. */}
           <Button asChild size="lg" variant="outline" className="whitespace-nowrap">
-            <Link to="/contact">Me contacter</Link>
+            <Link to="/#contact">Me contacter</Link>
           </Button>
         </div>
       </div>

@@ -148,6 +148,21 @@ export default function NewHome() {
     return () => observer.disconnect();
   }, []);
 
+  // Ancre dans l'URL au premier montage (ex. "/#projets" ou "/#contact" depuis un lien externe,
+  // cf VideoLanding.tsx) : le hash seul (navigation React Router, pas un rechargement complet) ne
+  // déclenche aucun scroll automatique du navigateur, il faut le lire nous-mêmes. `scrollToSection`
+  // gère déjà l'offset du header fixed ; ScrollReset.tsx ignore ce montage précis (hash présent)
+  // pour ne pas ramener le scroll à 0 juste après. Une frame de délai : au tout premier rendu, les
+  // sections (notamment le hero, qui dépend de `fixedHeaderHeight` mesuré ci-dessus) n'ont pas
+  // forcément leur position finale.
+  useEffect(() => {
+    const id = window.location.hash.slice(1);
+    if (!id) return;
+    const raf = requestAnimationFrame(() => scrollToSection(id));
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Parallax du visuel de fond du hero (image BIM côté Bâtiment, graphe Obsidian côté Dev) :
   // bouge à une fraction de la vitesse du scroll, borné pour ne jamais dépasser la marge ménagée
   // par le sur-dimensionnement de l'image en CSS (190% de hauteur, cf className plus bas). Calcul
