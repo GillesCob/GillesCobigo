@@ -411,29 +411,15 @@ export default function NewHome() {
       </div>
 
       {/* Footer statique, hors de la transition de mode-fade (mockup : <footer> est un frère de
-          <main>, jamais affecté par la classe mode-fade portée par main uniquement). */}
+          <main>, jamais affecté par la classe mode-fade portée par main uniquement). Une seule
+          colonne (mockup mis à jour le 18/09, colonnes "Liens"/"Ce site" retirées, retour à
+          "Gilles Cobigo" + sous-titre seuls) : la précédente version 3 colonnes correspondait à
+          un état antérieur du mockup. */}
       <footer className="mp-footer">
         <div className="mp-footer-grid">
           <div className="mp-footer-col">
             <p className="h">Gilles Cobigo</p>
             <p>Développeur fullstack, ex-BIM Manager</p>
-          </div>
-          <div className="mp-footer-col">
-            <p className="h">Liens</p>
-            <a href="https://github.com/GillesCob" target="_blank" rel="noopener noreferrer">
-              github.com/GillesCob
-            </a>
-            <a href="https://www.linkedin.com/in/gillescobigo" target="_blank" rel="noopener noreferrer">
-              linkedin.com/in/gillescobigo
-            </a>
-            <a href="mailto:contact@gillescobigo.com">contact@gillescobigo.com</a>
-          </div>
-          <div className="mp-footer-col">
-            <p className="h">Ce site</p>
-            <p>Construit en React + Vite. Hébergé sur Vercel.</p>
-            <a href="https://github.com/GillesCob/GillesCobigo" target="_blank" rel="noopener noreferrer">
-              Code sur GitHub
-            </a>
           </div>
         </div>
         <p className="mp-footer-copy">© 2026 Gilles Cobigo</p>

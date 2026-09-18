@@ -1,41 +1,53 @@
-/* Port de "Contact" (#contact) depuis Projets/Portfolio/mockups/refonte-v5-bascule.html
-   (.contact, .contact-grid, .contact form/input/textarea/label, .contact-links). Même méthode que
-   les autres fichiers NewHome.*.css. Le bouton "Envoyer" réutilise .mp-btn/.mp-btn-primary
-   (NewHome.hero.css), déjà identiques à .btn/.btn.primary du mockup.
-
-   Écart trouvé au diff : le wrapper React n'avait ni le traitement "section-block" du mockup
-   (border-top/margin-top:130px/padding-top:48px/min-height:82vh centré, partagé avec Parcours/
-   Projets/Chantiers/Compétences) ni `margin-bottom:-70px` (compense le `margin-top:70px` du
-   `<footer>` qui suit immédiatement, pour ne pas doubler l'écart) : ajoutés ici. */
+/* Port de "Contact" depuis Projets/Portfolio/mockups/refonte-v5-bascule.html (.contact,
+   .contact-grid, .contact-links). CSS copié tel quel, couleurs adaptées. Le formulaire garde sa
+   vraie logique (react-hook-form + Formspree, cf ContactSectionInline.tsx) : le mockup n'a qu'un
+   <form onsubmit="return false"> statique, sans validation ni état d'erreur/succès. */
 
 .mp-contact {
+  /* Pile de police exacte du mockup, même cause que .mp-topbar/.mp-skills-list/.mp-modal-card :
+     sans ça, `font: inherit` sur input/textarea (ci-dessous) hérite de la pile Tailwind
+     (ui-sans-serif...) au lieu de system-ui, métriques légèrement différentes. */
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   padding-bottom: 60px;
   margin-bottom: -70px;
 }
-
 .mp-contact h2 {
   font-size: 26px;
   line-height: normal;
+  /* Preflight Tailwind reset `font-weight: inherit` sur les headings (h1-h6), contrairement au
+     défaut navigateur (bold) que le mockup ne redéfinit jamais lui-même pour .contact h2. */
+  font-weight: 700;
   margin: 0 0 8px;
 }
-
 .mp-contact p.sub {
+  line-height: normal;
   color: hsl(var(--muted-foreground));
   margin: 0 0 26px;
 }
-
 .mp-contact-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40px;
 }
-
+@media (max-width: 720px) {
+  .mp-contact-grid {
+    grid-template-columns: 1fr;
+  }
+}
 .mp-contact form {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-
+/* Preflight Tailwind fixe ::placeholder en gray-400 (rgb(156,163,175)) globalement : le mockup ne
+   redéfinit jamais cette couleur, il garde le gris par défaut du navigateur (rgba(0,0,0,.54),
+   mesuré rgb(117,117,117) sur fond blanc). Sans cette redéfinition, "Votre nom"/"votre@email.com"/
+   "Votre message" ressortent visiblement plus clairs que dans le mockup. */
+.mp-contact input::placeholder,
+.mp-contact textarea::placeholder {
+  color: rgba(0, 0, 0, 0.54);
+  opacity: 1;
+}
 .mp-contact input,
 .mp-contact textarea {
   width: 100%;
@@ -44,10 +56,23 @@
   border-radius: 10px;
   padding: 10px 14px;
   font: inherit;
+  /* `font: inherit` (mockup) hérite aussi du line-height : 1.5 (preset Tailwind, posé
+     globalement) au lieu de `normal` (défaut navigateur, jamais redéfini par le mockup) —
+     même piège déjà documenté ailleurs dans ce portage. Écart mesuré : input 46px de haut
+     au lieu de 40px, textarea (rows=4) 118px au lieu de 94px, sans ce correctif. */
   line-height: normal;
   background: #fff;
+  color: hsl(var(--foreground));
 }
-
+/* `<textarea>` (comme `<input>`) est inline-block par défaut côté navigateur : sans line-height
+   explicite sur son conteneur bloc, l'espace "sous la ligne" (strut de la ligne, style
+   image-dans-un-div) se dimensionne sur le line-height hérité (1.5 Tailwind) au lieu de `normal`
+   (mockup) — écart mesuré : 6px de blanc sous le textarea au lieu de 3px, jamais visible tant que
+   ça reste un pixel ou deux, mais assez pour décaler tout le bloc Contact (centré verticalement
+   par .mp-section-block) de 1 à 3px selon la ligne. */
+.mp-contact .field {
+  line-height: normal;
+}
 .mp-contact .field label {
   font-size: 13px;
   line-height: normal;
@@ -55,18 +80,17 @@
   display: block;
   margin-bottom: 5px;
 }
-
 .mp-contact-links {
   display: flex;
   flex-direction: column;
   gap: 12px;
   font-size: 14px;
-  line-height: normal;
 }
 .mp-contact-links a {
   display: flex;
   align-items: center;
   gap: 8px;
+  line-height: normal;
   color: hsl(var(--foreground));
   text-decoration: none;
 }
@@ -75,10 +99,4 @@
 }
 .mp-contact-links svg {
   flex-shrink: 0;
-}
-
-@media (max-width: 720px) {
-  .mp-contact-grid {
-    grid-template-columns: 1fr;
-  }
 }

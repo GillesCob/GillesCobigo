@@ -1,9 +1,5 @@
 /* Port du footer depuis Projets/Portfolio/mockups/refonte-v5-bascule.html (footer, .footer-grid,
-   .footer-col, .footer-copy). Même méthode que les autres fichiers NewHome.*.css.
-
-   Écart trouvé au diff : l'implémentation précédente n'avait que la 1re colonne ("Gilles Cobigo" +
-   sous-titre), les colonnes "Liens" (GitHub/LinkedIn/email) et "Ce site" (stack + lien code source)
-   du mockup étaient absentes. Complétées dans NewHome.tsx. */
+   .footer-col, .footer-copy). CSS copié tel quel, couleurs adaptées. */
 
 .mp-footer {
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -11,15 +7,20 @@
   margin-top: 70px;
   padding: 40px 40px 30px;
 }
-
 .mp-footer-grid {
   display: flex;
+  justify-content: center;
+  text-align: center;
   gap: 60px;
   max-width: 880px;
   margin: 0 auto;
   flex-wrap: wrap;
 }
-
+@media (max-width: 720px) {
+  .mp-footer-grid {
+    gap: 30px;
+  }
+}
 .mp-footer-col p.h {
   font-weight: 700;
   font-size: 14px;
@@ -35,20 +36,26 @@
   text-decoration: none;
   margin-bottom: 6px;
 }
+/* Le mockup ne reset jamais margin-top globalement sur <p> (pas de `p { margin: 0 }`) : ce <p>
+   (pas de classe .h) garde donc le margin-top UA par défaut (1em, ici 13px), jamais annulé,
+   contrairement au Preflight Tailwind qui le met à 0. Sans ce rétablissement explicite, le
+   texte "Développeur fullstack..." remonte de 13px par rapport au mockup (l'espacement réel de
+   13px vient du collapse entre ce margin-top et le margin-bottom:10px de .h juste au-dessus, qui
+   l'emporte car plus grand). Cf même piège déjà documenté sur d'autres sections (padding/margin
+   UA natifs). */
+.mp-footer-col p {
+  margin-top: 1em;
+}
 .mp-footer-col a:hover {
   color: hsl(var(--foreground));
 }
-
 .mp-footer-copy {
   text-align: center;
   font-size: 12px;
   line-height: normal;
   color: hsl(var(--muted-foreground));
   margin-top: 30px;
-}
-
-@media (max-width: 720px) {
-  .mp-footer-grid {
-    gap: 30px;
-  }
+  /* Même piège que .mp-footer-col p ci-dessus : margin-bottom UA (1em, 12px) jamais annulé par
+     le mockup, ajoute 12px sous le copyright, à l'intérieur du padding-bottom du footer. */
+  margin-bottom: 1em;
 }
