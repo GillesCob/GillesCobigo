@@ -1,13 +1,7 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import Home from "@/pages/Home";
 import NewHome from "@/pages/NewHome";
-import Projects from "@/pages/Projects";
-import CocotteVersions from "@/pages/CocotteVersions";
-import Articles from "@/pages/Articles";
-import ArticlePage from "@/pages/ArticlePage";
-import Contact from "@/pages/Contact";
 import VideoLanding from "@/pages/VideoLanding";
 import PreviewHome from "@/pages/PreviewHome";
 import PreviewRound from "@/pages/PreviewRound";
@@ -17,39 +11,37 @@ import NotFound from "@/pages/NotFound";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import ScrollReset from "@/components/layout/ScrollReset";
 
+// Bascule du 18/09 : /new devient la page d'accueil (décision de Gilles, la refonte v5 est
+// pixel-perfect sur toutes ses sections, cf PR #204/#205). L'ancien site public (Home, Projects,
+// CocotteVersions, Articles, ArticlePage, Contact) est retiré du routeur mais PAS supprimé du code
+// (fichiers intacts dans src/pages, imports simplement retirés ici) : toute URL qui pointait dessus
+// retombe sur le catch-all `*` (NotFound), comme n'importe quelle route inexistante. Les
+// mécanismes clients en cours (vidéo de prospection, preview, cas client, CGV Boutiques) restent
+// inchangés et actifs, cf commentaires isBareLayout ci-dessous.
 export default function App() {
   const location = useLocation();
   // Pages partagées telles quelles par lien direct (prospection vidéo, preview client) : sans navbar ni footer du site.
-  // /new (brouillon refonte v5, toggle Dev/Bâtiment) a sa propre topbar (ModeToggle) et sa propre
-  // section Contact inline : le Navbar/Footer globaux (toujours fond sombre #0A0A0A quel que soit
-  // le thème) feraient doublon avec son header et casseraient le rendu clair/sombre suivant le
-  // thème du visiteur.
+  // / et /new (refonte v5, toggle Dev/Bâtiment, devenue la home le 18/09) ont leur propre topbar
+  // (ModeToggle) et leur propre section Contact inline : le Navbar/Footer globaux (toujours fond
+  // sombre #0A0A0A quel que soit le thème) feraient doublon avec ce header et casseraient le rendu
+  // clair/sombre suivant le thème du visiteur.
   const isBareLayout =
     location.pathname.startsWith("/v/") ||
     location.pathname.startsWith("/preview/") ||
     location.pathname.startsWith("/cas-client/") ||
     location.pathname.startsWith("/cgv-boutiques") ||
+    location.pathname === "/" ||
     location.pathname === "/new";
-  // Les pages articles ont une sidebar + un sommaire en position fixed sur toute la hauteur
-  // de l'écran : un footer en dessous se ferait toujours recouvrir par ces deux panneaux.
-  const hideFooter = location.pathname.startsWith("/articles") || isBareLayout;
-  // Contenu court : sans ça le footer remonte juste sous le formulaire au lieu de rester en bas d'écran.
-  const isContactPage = location.pathname === "/contact";
+  const hideFooter = isBareLayout;
 
   return (
-    <div className={isContactPage ? "min-h-dvh flex flex-col" : undefined}>
+    <div>
       <ScrollReset />
       {!isBareLayout && <Navbar />}
-      <main className={isContactPage ? "flex-1" : undefined}>
+      <main>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<NewHome />} />
           <Route path="/new" element={<NewHome />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/projects/cocotte-eclair/versions" element={<CocotteVersions />} />
-          <Route path="/articles" element={<Articles />} />
-          <Route path="/articles/scheduled" element={<Articles scheduledOnly />} />
-          <Route path="/articles/:slug/*" element={<ArticlePage />} />
-          <Route path="/contact" element={<Contact />} />
           <Route path="/v/:token" element={<VideoLanding />} />
           <Route path="/preview/:project/:secret" element={<PreviewHome />} />
           <Route path="/preview/:project/:secret/:round" element={<PreviewRound />} />
@@ -60,8 +52,8 @@ export default function App() {
       </main>
       {!hideFooter && <Footer />}
       {/* Absent du mockup /new (contrairement aux autres pages "bare layout" type /preview/*, qui
-          le gardent) : exclusion scopée à /new seul, pas à isBareLayout dans son ensemble. */}
-      {location.pathname !== "/new" && <ScrollToTop />}
+          le gardent) : exclusion scopée à / et /new, pas à isBareLayout dans son ensemble. */}
+      {location.pathname !== "/new" && location.pathname !== "/" && <ScrollToTop />}
     </div>
   );
 }
