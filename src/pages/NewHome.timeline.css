@@ -85,6 +85,13 @@
 .mp-tl-item .mp-tl-side.mp-tl-year:last-child {
   padding-left: 26px;
 }
+
+/* Badge annee duplique dans la carte, cache par defaut : la colonne .mp-tl-year dediee suffit
+   sur desktop, ce badge ne sert que sur mobile (cf media query), ou la colonne dediee est
+   masquee faute de place. */
+.mp-tl-year-badge {
+  display: none;
+}
 .mp-tl-item .mp-tl-side.mp-tl-card:first-child {
   text-align: right;
   padding-right: 26px;
@@ -198,6 +205,9 @@
 }
 
 @media (max-width: 720px) {
+  .mp-parcours .mp-row-label {
+    padding-left: 36px;
+  }
   .mp-tl-line {
     left: 5px;
   }
@@ -219,5 +229,23 @@
   }
   .mp-tl-dot {
     order: 1;
+  }
+  .mp-tl-year-badge {
+    display: block;
+    font-family: ui-monospace, monospace;
+    font-size: 13px;
+    color: hsl(var(--muted-foreground));
+    margin-bottom: 3px;
+  }
+  /* Fleche "10 ans dans le batiment" (retour vers BTP) : sortie du flux flex pour passer avant
+     le texte sans deplacer sa position (le texte reste le seul enfant flex de .mp-tl-head,
+     toujours cale au meme endroit). */
+  .mp-tl-head-left {
+    position: relative;
+  }
+  .mp-tl-head-left .mp-tl-chevron {
+    position: absolute;
+    left: -22px;
+    top: 3px;
   }
 }

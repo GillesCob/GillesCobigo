@@ -128,6 +128,10 @@ function TimelineCard({ item, onToggle, onGoToMode }: ITimelineCardProps) {
 
   return (
     <div className="mp-tl-side mp-tl-card">
+      {/* Doublon de .mp-tl-side.mp-tl-year, cache par defaut (CSS), affiche uniquement sous
+          720px ou la colonne annee dediee disparait (cf media query NewHome.timeline.css) :
+          sans lui, l'annee de chaque etape disparaissait completement sur mobile. */}
+      <span className="mp-tl-year-badge">{item.year}</span>
       <button
         type="button"
         onClick={() => (isPortal ? onGoToMode(item.portalTo as Mode) : onToggle())}
@@ -161,8 +165,8 @@ export default function TimelineV2({ mode, onGoToMode }: ITimelineV2Props) {
   return (
     <section id="parcours" className="mp-parcours scroll-mt-[90px]">
       <motion.div
-        className="mx-auto flex min-h-0 w-full max-w-[880px] flex-col justify-center border-t border-border px-5 pt-12 sm:min-h-[82vh] sm:px-10"
-        style={{ marginTop: 130 }}
+        className="mx-auto flex min-h-0 w-full max-w-[880px] flex-col justify-center px-5 pt-12 sm:min-h-[82vh] sm:px-10"
+        style={{ marginTop: 20 }}
         initial={{ opacity: 0, y: 28 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3, margin: "0px 0px -10% 0px" }}

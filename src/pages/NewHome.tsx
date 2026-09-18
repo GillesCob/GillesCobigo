@@ -432,7 +432,9 @@ export default function NewHome() {
             <p className="mp-row-label" style={{ margin: "26px 0 0" }}>
               Compétences
             </p>
-            <div className="flex flex-col">
+            {/* Mockup : `.skills-list { margin-bottom: 40px }`, jamais reporte cote React
+                (manquait sur ce wrapper) : espace avant Contact plus court qu'attendu. */}
+            <div className="flex flex-col mb-10">
               {skills.map((skill, i) => (
                 <SkillRow key={skill.cat} cat={skill.cat} items={skill.items} index={i} revealed={skillsRevealed} />
               ))}
