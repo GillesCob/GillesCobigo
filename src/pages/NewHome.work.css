@@ -1,0 +1,158 @@
+/* Port des listes "Projets" (#projets) et "Chantiers" (#chantiers) depuis
+   Projets/Portfolio/mockups/refonte-v5-bascule.html (.work-list/.work-row/.work-index/.work-main/
+   .work-tag/.work-row h3/.work-row p/.work-arrow/.work-logo). Même méthode que hero/navbar/
+   timeline : déclarations copiées telles quelles, couleurs vers les tokens déjà en place.
+   `font-family` n'est plus redéclaré ici : posé une seule fois sur le wrapper racine de NewHome.tsx
+   (rootStyle), cf commentaire à cet endroit.
+
+   Écarts trouvés au diff pixel par rapport à l'implémentation précédente (Tailwind), corrigés ici :
+   - Padding de `.work-row` : le mockup ne réduit JAMAIS le padding en mobile (38px 6px constant,
+     aucune media query dessus). L'implémentation précédente le réduisait sous le breakpoint `sm`
+     sans commentaire justifiant ce choix : retiré, on colle au mockup.
+   - `.work-row` est un `<button>` (pas un `<div>` comme le mockup, pour l'accessibilité clavier) :
+     comme `.tl-head`, ça implique de neutraliser explicitement le padding/font UA par défaut du
+     bouton, ce que ce fichier fait (`padding`/`font`/`line-height`/`text-align`/`width` déclarés
+     explicitement au lieu de laisser le navigateur ou le Preflight Tailwind décider).
+   - Glyphe unicode "→" pour `.work-arrow` à la place de l'icône lucide `ArrowRight` (même
+     raisonnement que les chevrons de la timeline : rendu différent d'un texte, trouvé au diff).
+   - `.work-logo` : le mockup ne varie ni la hauteur ni l'opacité en mobile (84px / 0.32 partout) ;
+     l'implémentation précédente l'agrandissait et l'éclaircissait sous `sm` sans commentaire
+     justifiant ce choix : retiré.
+   - `.work-arrow` : repéré trop vite comme "jamais masqué en mobile" avant de trouver le DEUXIÈME
+     bloc `@media (max-width:720px)` du mockup (ligne 331, distinct de celui déjà porté sur contact/
+     footer) : il masque bien `.work-arrow` et réduit `.work-row` (padding 26px 4px, gap 14px) sous
+     720px. Repris ci-dessous. */
+
+.mp-work-list {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 40px;
+}
+
+.mp-work-row {
+  display: flex;
+  align-items: baseline;
+  gap: 22px;
+  padding: 38px 6px;
+  border-bottom: 1px solid hsl(var(--border));
+  cursor: pointer;
+  transition:
+    padding-left 0.25s ease,
+    background-color 0.25s ease;
+  position: relative;
+  overflow: hidden;
+  /* Resets UA bouton : le mockup applique ces styles à un <div>, qui n'a par nature ni bordure ni
+     fond ni contrainte de police propres. */
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font: inherit;
+  line-height: normal;
+  text-align: left;
+  width: 100%;
+  color: hsl(var(--foreground));
+}
+.mp-work-row:first-child {
+  border-top: 1px solid hsl(var(--border));
+}
+.mp-work-row:hover {
+  padding-left: 16px;
+  background: hsl(var(--foreground) / 0.02);
+}
+
+.mp-work-index {
+  font-family: ui-monospace, monospace;
+  font-size: 14px;
+  line-height: normal;
+  color: hsl(var(--muted-foreground));
+  width: 30px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.mp-work-main {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.mp-work-tag {
+  display: block;
+  font-size: 11px;
+  line-height: normal;
+  font-weight: 700;
+  color: hsl(var(--mode-accent));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+.mp-work-row h3 {
+  margin: 0 0 8px;
+  font-size: clamp(22px, 3.2vw, 32px);
+  line-height: normal;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.mp-work-row p {
+  margin: 0;
+  color: hsl(var(--muted-foreground));
+  font-size: 14px;
+  line-height: normal;
+  max-width: 500px;
+}
+
+.mp-work-arrow {
+  font-size: 20px;
+  line-height: normal;
+  color: hsl(var(--muted-foreground));
+  flex-shrink: 0;
+  transition:
+    transform 0.25s ease,
+    color 0.25s ease;
+  position: relative;
+  z-index: 1;
+}
+.mp-work-row:hover .mp-work-arrow {
+  transform: translateX(4px);
+  color: hsl(var(--foreground));
+}
+
+.mp-work-logo {
+  /* `right` n'est PAS fixé ici (le mockup le fixe à 4px) : chaque logo réel a sa propre marge
+     transparente interne, différente de l'image placeholder générique du mockup, donc une valeur
+     unique ne donne pas le même espace visuel partout (cf WORK_LOGO_RIGHT_OFFSET dans
+     ProjectsSectionV2.tsx, déjà en place avant ce port, qui fournit un utilitaire Tailwind `right-*`
+     par projet, toujours présent grâce au fallback `?? "right-6"`). Mettre une valeur ici créerait
+     un conflit de spécificité égale avec cet utilitaire, arbitré par l'ordre d'import plutôt que
+     l'intention. */
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 84px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+  opacity: 0.32;
+  filter: grayscale(1);
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 0;
+}
+.mp-work-row:hover .mp-work-logo {
+  opacity: 0.55;
+}
+
+@media (max-width: 720px) {
+  .mp-work-row {
+    padding: 26px 4px;
+    gap: 14px;
+  }
+  .mp-work-arrow {
+    display: none;
+  }
+}

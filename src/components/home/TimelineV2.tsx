@@ -168,7 +168,7 @@ export default function TimelineV2({ mode, onGoToMode }: ITimelineV2Props) {
         viewport={{ once: true, amount: 0.3, margin: "0px 0px -10% 0px" }}
         transition={{ duration: 0.7, ease: "easeOut" }}
       >
-        <p className="mp-tl-row-label">Mon parcours</p>
+        <p className="mp-row-label">Mon parcours</p>
 
         <div className="mp-tl">
           <div className="mp-tl-line" />

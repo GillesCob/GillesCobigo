@@ -44,59 +44,47 @@ export default function ContactSectionInline() {
   return (
     <section id="contact" className="scroll-mt-[90px]">
       <motion.div
-        className="mx-auto mt-16 w-full max-w-[880px] border-t border-border px-5 pb-[60px] pt-12 sm:mt-[130px] sm:px-10"
+        className="mp-contact mx-auto flex min-h-0 w-full max-w-[880px] flex-col justify-center border-t border-border px-5 pt-12 sm:min-h-[82vh] sm:px-10"
+        style={{ marginTop: 130 }}
         initial={{ opacity: 0, y: 28 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3, margin: "0px 0px -10% 0px" }}
         transition={{ duration: 0.7, ease: "easeOut" }}
       >
-        <h2 className="text-[26px] font-bold mb-2">Contact</h2>
-        <p className="text-muted-foreground mb-[26px]">Pour une mission, un projet, ou juste échanger sur la stack.</p>
+        <h2>Contact</h2>
+        <p className="sub">Pour une mission, un projet, ou juste échanger sur la stack.</p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="mp-contact-grid">
           {submitted ? (
             <div className="rounded-xl border border-border p-8 text-center">
               <p className="text-lg font-medium mb-2">Message envoyé.</p>
               <p className="text-muted-foreground text-sm">Je reviens vers toi sous 48h.</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-              <div>
-                <label className="text-sm font-medium mb-1.5 block" htmlFor="new-contact-name">
-                  Nom
-                </label>
-                <input
-                  id="new-contact-name"
-                  {...register("name", { required: "Champ obligatoire" })}
-                  className="w-full rounded-[10px] border border-input bg-background px-3.5 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="Votre nom"
-                />
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="field">
+                <label htmlFor="new-contact-name">Nom</label>
+                <input id="new-contact-name" {...register("name", { required: "Champ obligatoire" })} placeholder="Votre nom" />
                 {errors.name && <p className="text-destructive text-xs mt-1">{errors.name.message}</p>}
               </div>
 
-              <div>
-                <label className="text-sm font-medium mb-1.5 block" htmlFor="new-contact-email">
-                  Email
-                </label>
+              <div className="field">
+                <label htmlFor="new-contact-email">Email</label>
                 <input
                   id="new-contact-email"
                   type="email"
                   {...register("email", { required: "Champ obligatoire" })}
-                  className="w-full rounded-[10px] border border-input bg-background px-3.5 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
                   placeholder="votre@email.com"
                 />
                 {errors.email && <p className="text-destructive text-xs mt-1">{errors.email.message}</p>}
               </div>
 
-              <div>
-                <label className="text-sm font-medium mb-1.5 block" htmlFor="new-contact-message">
-                  Message
-                </label>
+              <div className="field">
+                <label htmlFor="new-contact-message">Message</label>
                 <textarea
                   id="new-contact-message"
                   {...register("message", { required: "Champ obligatoire" })}
                   rows={4}
-                  className="w-full rounded-[10px] border border-input bg-background px-3.5 py-2.5 text-sm transition-colors resize-none focus:outline-none focus:ring-2 focus:ring-ring"
                   placeholder="Votre message"
                 />
                 {errors.message && <p className="text-destructive text-xs mt-1">{errors.message.message}</p>}
@@ -104,34 +92,28 @@ export default function ContactSectionInline() {
 
               {submitError && <p className="text-destructive text-sm">{submitError}</p>}
 
+              {/* Mockup : <a class="btn primary" style="align-self:flex-start;margin-top:6px;">, styles
+                  inline sur cet élément précis, pas une classe. Ici un vrai <button> (formulaire
+                  fonctionnel, contrairement au mockup statique). */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="mt-1.5 self-start rounded-[10px] bg-mode-accent px-[22px] py-3 text-[13px] font-bold text-white transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(20,18,16,0.12)] disabled:pointer-events-none disabled:opacity-60"
+                className="mp-btn mp-btn-primary disabled:pointer-events-none disabled:opacity-60"
+                style={{ alignSelf: "flex-start", marginTop: 6 }}
               >
                 {isSubmitting ? "Envoi..." : "Envoyer"}
               </button>
             </form>
           )}
 
-          <div className="flex flex-col gap-3 text-sm">
-            <a
-              href="https://github.com/GillesCob"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-foreground hover:underline"
-            >
+          <div className="mp-contact-links">
+            <a href="https://github.com/GillesCob" target="_blank" rel="noopener noreferrer">
               <Github size={16} /> github.com/GillesCob
             </a>
-            <a
-              href="https://www.linkedin.com/in/gillescobigo"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-foreground hover:underline"
-            >
+            <a href="https://www.linkedin.com/in/gillescobigo" target="_blank" rel="noopener noreferrer">
               <Linkedin size={16} /> linkedin.com/in/gillescobigo
             </a>
-            <a href="mailto:contact@gillescobigo.com" className="flex items-center gap-2 text-foreground hover:underline">
+            <a href="mailto:contact@gillescobigo.com">
               <Mail size={16} /> contact@gillescobigo.com
             </a>
           </div>

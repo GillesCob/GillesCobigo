@@ -1,6 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { devProjects, type IDevProject } from "@/data/devProjects";
 import { btpProjects, type IBTPProject } from "@/data/btpProjects";
@@ -94,38 +93,22 @@ function WorkRow({
   onClick: () => void;
 }) {
   return (
-    <button
-      onClick={onClick}
-      className="group relative flex items-baseline gap-[22px] overflow-hidden border-b border-border py-[26px] pl-1.5 pr-1 text-left transition-[padding-left,background-color] duration-[250ms] ease-in-out hover:bg-foreground/[0.02] hover:pl-4 first:border-t sm:py-[38px]"
-    >
+    <button type="button" onClick={onClick} className="mp-work-row">
       {image && (
         <img
           src={image}
           alt=""
           aria-hidden="true"
-          className={cn(
-            "pointer-events-none absolute top-1/2 z-0 h-[130px] w-auto max-w-[220px] -translate-y-1/2 object-contain opacity-[0.16] grayscale transition-opacity duration-[250ms] sm:h-[84px] sm:max-w-[160px] sm:opacity-[0.32]",
-            logoRightClassName ?? "right-6",
-            invertImage && "invert"
-          )}
+          className={cn("mp-work-logo", logoRightClassName ?? "right-6", invertImage && "invert")}
         />
       )}
-      <span className="relative z-[1] w-[30px] flex-shrink-0 font-mono text-sm text-muted-foreground">
-        {String(index + 1).padStart(2, "0")}
-      </span>
-      <div className="relative z-[1] min-w-0 flex-1">
-        {tag && (
-          <span className="mb-2.5 block text-[11px] font-bold uppercase tracking-[0.05em] text-mode-accent">
-            {tag}
-          </span>
-        )}
-        <h3 className="mb-3 text-[clamp(22px,3.2vw,32px)] font-extrabold tracking-[-0.01em]">{title}</h3>
-        <p className="max-w-lg text-sm text-muted-foreground">{description}</p>
+      <span className="mp-work-index">{String(index + 1).padStart(2, "0")}</span>
+      <div className="mp-work-main">
+        {tag && <span className="mp-work-tag">{tag}</span>}
+        <h3>{title}</h3>
+        <p>{description}</p>
       </div>
-      <ArrowRight
-        size={20}
-        className="relative z-[1] hidden flex-shrink-0 text-muted-foreground transition-transform duration-[250ms] group-hover:translate-x-1 group-hover:text-foreground sm:block"
-      />
+      <span className="mp-work-arrow">→</span>
     </button>
   );
 }
@@ -140,15 +123,15 @@ export default function ProjectsSectionV2({ mode }: IProjectsSectionV2Props) {
       <>
         <section id="projets" className="scroll-mt-[90px]">
           <motion.div className={sectionBlockClassName} {...motionProps}>
-            <p className="mb-[18px] text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">Projets</p>
-            <div className="flex flex-col">
+            <p className="mp-row-label">Projets</p>
+            <div className="mp-work-list">
               {previewProjects.map((project, i) => (
                 <WorkRow
                   key={project.id}
                   index={i}
                   tag={project.status}
                   title={project.name}
-                  description={project.description}
+                  description={project.summary ?? project.description}
                   image={project.image}
                   invertImage={project.id === "chouxfleurs"}
                   logoRightClassName={WORK_LOGO_RIGHT_OFFSET[project.id]}
@@ -167,8 +150,8 @@ export default function ProjectsSectionV2({ mode }: IProjectsSectionV2Props) {
     <>
       <section id="chantiers" className="scroll-mt-[90px]">
         <motion.div className={sectionBlockClassName} {...motionProps}>
-          <p className="mb-[18px] text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">Chantiers</p>
-          <div className="flex flex-col">
+          <p className="mp-row-label">Chantiers</p>
+          <div className="mp-work-list">
             {btpProjects.map((project, i) => {
               // Le nom porte la ville en suffixe ("Mareterra - Monaco") : on la détache pour
               // reproduire le work-tag du mockup (ville en tag accent, nom seul en titre), plutôt
@@ -180,8 +163,11 @@ export default function ProjectsSectionV2({ mode }: IProjectsSectionV2Props) {
                   index={i}
                   tag={city}
                   title={title}
-                  description={project.description}
-                  image={project.image}
+                  description={project.summary ?? project.description}
+                  // Pas de `image` ici : le mockup ne pose le logo en filigrane (.work-logo) que sur
+                  // les lignes #projets (dev), jamais sur #chantiers. `project.image` existe bien sur
+                  // IBTPProject (sert à la modale), mais le passer ici affichait le filigrane sur les
+                  // chantiers aussi, contrairement au mockup (trouvé au diff pixel).
                   onClick={() => setModal({ side: "btp", project })}
                 />
               );

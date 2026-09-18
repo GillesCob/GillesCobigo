@@ -1,0 +1,84 @@
+/* Port de "Contact" (#contact) depuis Projets/Portfolio/mockups/refonte-v5-bascule.html
+   (.contact, .contact-grid, .contact form/input/textarea/label, .contact-links). Même méthode que
+   les autres fichiers NewHome.*.css. Le bouton "Envoyer" réutilise .mp-btn/.mp-btn-primary
+   (NewHome.hero.css), déjà identiques à .btn/.btn.primary du mockup.
+
+   Écart trouvé au diff : le wrapper React n'avait ni le traitement "section-block" du mockup
+   (border-top/margin-top:130px/padding-top:48px/min-height:82vh centré, partagé avec Parcours/
+   Projets/Chantiers/Compétences) ni `margin-bottom:-70px` (compense le `margin-top:70px` du
+   `<footer>` qui suit immédiatement, pour ne pas doubler l'écart) : ajoutés ici. */
+
+.mp-contact {
+  padding-bottom: 60px;
+  margin-bottom: -70px;
+}
+
+.mp-contact h2 {
+  font-size: 26px;
+  line-height: normal;
+  margin: 0 0 8px;
+}
+
+.mp-contact p.sub {
+  color: hsl(var(--muted-foreground));
+  margin: 0 0 26px;
+}
+
+.mp-contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.mp-contact form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mp-contact input,
+.mp-contact textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid hsl(var(--border));
+  border-radius: 10px;
+  padding: 10px 14px;
+  font: inherit;
+  line-height: normal;
+  background: #fff;
+}
+
+.mp-contact .field label {
+  font-size: 13px;
+  line-height: normal;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.mp-contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 14px;
+  line-height: normal;
+}
+.mp-contact-links a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: hsl(var(--foreground));
+  text-decoration: none;
+}
+.mp-contact-links a:hover {
+  text-decoration: underline;
+}
+.mp-contact-links svg {
+  flex-shrink: 0;
+}
+
+@media (max-width: 720px) {
+  .mp-contact-grid {
+    grid-template-columns: 1fr;
+  }
+}

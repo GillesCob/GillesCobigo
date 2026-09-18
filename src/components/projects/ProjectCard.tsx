@@ -9,6 +9,10 @@ export interface IProjectCard {
   id: string;
   name: string;
   description: ReactNode;
+  // Blurb court dédié à la ligne de liste /new (mockup .work-row p), distinct de `description`
+  // (réservée à la modale, plus longue). Optionnel : si absent, la ligne retombe sur `description`
+  // (cas des autres pages qui utilisent IProjectCard sans passer par /new).
+  summary?: ReactNode;
   image?: string;
   status?: string;
   stack?: string[];

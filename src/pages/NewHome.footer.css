@@ -1,0 +1,54 @@
+/* Port du footer depuis Projets/Portfolio/mockups/refonte-v5-bascule.html (footer, .footer-grid,
+   .footer-col, .footer-copy). Même méthode que les autres fichiers NewHome.*.css.
+
+   Écart trouvé au diff : l'implémentation précédente n'avait que la 1re colonne ("Gilles Cobigo" +
+   sous-titre), les colonnes "Liens" (GitHub/LinkedIn/email) et "Ce site" (stack + lien code source)
+   du mockup étaient absentes. Complétées dans NewHome.tsx. */
+
+.mp-footer {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-top: 1px solid hsl(var(--border));
+  margin-top: 70px;
+  padding: 40px 40px 30px;
+}
+
+.mp-footer-grid {
+  display: flex;
+  gap: 60px;
+  max-width: 880px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.mp-footer-col p.h {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: normal;
+  margin: 0 0 10px;
+}
+.mp-footer-col a,
+.mp-footer-col p {
+  display: block;
+  font-size: 13px;
+  line-height: normal;
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
+  margin-bottom: 6px;
+}
+.mp-footer-col a:hover {
+  color: hsl(var(--foreground));
+}
+
+.mp-footer-copy {
+  text-align: center;
+  font-size: 12px;
+  line-height: normal;
+  color: hsl(var(--muted-foreground));
+  margin-top: 30px;
+}
+
+@media (max-width: 720px) {
+  .mp-footer-grid {
+    gap: 30px;
+  }
+}
