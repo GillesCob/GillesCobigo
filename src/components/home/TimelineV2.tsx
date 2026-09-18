@@ -184,6 +184,7 @@ export default function TimelineV2({ mode, onGoToMode }: ITimelineV2Props) {
             return (
               <motion.div
                 key={item.id}
+                data-portal-to={item.portalTo}
                 className={cn("mp-tl-item", item.portalTo && "mp-tl-portal", isExpanded && "open")}
                 initial={{ opacity: 0, x: cardFirst ? -28 : 28 }}
                 whileInView={{ opacity: 1, x: 0 }}
