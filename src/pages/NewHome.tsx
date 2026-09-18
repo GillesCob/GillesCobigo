@@ -163,7 +163,7 @@ export default function NewHome() {
         if (el) el.style.backgroundColor = "";
         return;
       }
-      const progress = Math.max(0, Math.min(1, window.scrollY / 250));
+      const progress = Math.max(0, Math.min(1, window.scrollY / 100));
       el.style.backgroundColor = `rgba(250, 250, 248, ${progress})`;
     }
     function onScroll() {
