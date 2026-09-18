@@ -1,0 +1,28 @@
+/* Fond obsidian-graph.svg de la page /v/:token, meme technique que .mp-hero-bg
+   (NewHome.hero.css) : plein bleed horizontal (largeur 100vw, recentre via margin-left:-50vw)
+   plutot qu'un fond centre/contenu par sa hauteur. Classe dediee (vl-bg) plutot que reutiliser
+   .mp-hero-bg : page distincte de /new, pas de couplage entre les deux. */
+.vl-bg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100vw;
+  height: 100%;
+  margin-left: -50vw;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.vl-bg img {
+  position: absolute;
+  top: -20%;
+  left: -12.5%;
+  width: 125%;
+  height: 140%;
+  object-fit: cover;
+  opacity: 0.1;
+  display: block;
+  will-change: transform;
+  max-width: none; /* neutralise le reset global `img { max-width:100% }` (Tailwind preflight) */
+}
