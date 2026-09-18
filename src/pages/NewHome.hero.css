@@ -24,17 +24,6 @@
   flex-direction: column;
   justify-content: center;
 }
-@media (max-width: 639px) {
-  /* .mp-hero-bg (top:-160px, height:calc(100vh - 70px + 160px)) deborde de 20px sous le bas du
-     hero mobile (min-height:calc(100svh - 90px) ci-dessus), le fond empietant visiblement sur
-     Mon Parcours juste en dessous. Signale par Gilles (18/09). Clip au cadre du hero lui-meme
-     plutot que de retoucher la formule de hauteur du fond (partagee avec le desktop, jamais en
-     cause la-bas) : overflow:hidden borne tout enfant absolu (dont .mp-hero-bg) au rectangle
-     reellement rendu du hero, quelle que soit sa hauteur exacte. */
-  .mp-hero {
-    overflow: hidden;
-  }
-}
 @media (min-width: 640px) {
   .mp-hero {
     min-height: 78vh;
@@ -51,6 +40,18 @@
   overflow: hidden;
   z-index: -1;
   pointer-events: none;
+}
+@media (max-width: 639px) {
+  /* Sous 640px, le bas du fond depasse de 20px le bas reel du hero (min-height:calc(100svh -
+     90px), cf .mp-hero) et empiete visiblement sur Mon Parcours juste en dessous (signale par
+     Gilles, 18/09). Corrige ICI, jamais via overflow:hidden sur .mp-hero (tente puis retire
+     dans la foulee : ca coupait aussi le haut, qui doit au contraire rester plein ecran, top:
+     -160px inchange ci-dessus, comme sur desktop). Seule la hauteur change : height = hauteur
+     du hero (calc(100svh - 90px)) moins son propre top (-160px) = calc(100svh - 90px + 160px).
+     Le bas du fond tombe alors exactement au bas du hero, plus un pixel de trop. */
+  .mp-hero-bg {
+    height: calc(100svh - 90px + 160px);
+  }
 }
 
 .mp-hero-bg img {
