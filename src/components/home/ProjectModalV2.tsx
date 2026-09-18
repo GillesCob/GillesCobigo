@@ -56,6 +56,12 @@ const bodyItemVariants: Variants = {
   }),
 };
 
+// Projets dont le visuel de bandeau (photo chantier claire, pas un logo/illustration sombre) rend
+// la croix de fermeture blanche illisible : mockup, LIGHT_BG_PROJECTS + toggle de classe
+// `.light-bg` sur `#modalHero`. Comparaison par préfixe (noms réels "Mareterra - Monaco"/
+// "MRS3 - Marseille", le mockup n'a que "Mareterra"/"MRS3").
+const LIGHT_BG_PROJECTS = ["Mareterra", "MRS3"];
+
 // `side` ne pilote plus la couleur du modal (cf commentaire sur MODAL_OVERLAY_RGB plus bas) : gardé
 // dans les props pour la compat d'appel (ProjectsSectionV2 le passe toujours).
 export default function ProjectModalV2({ isOpen, onClose, project }: IProjectModalV2Props) {
@@ -98,6 +104,8 @@ export default function ProjectModalV2({ isOpen, onClose, project }: IProjectMod
   }, [isOpen, project]);
 
   if (!project) return null;
+
+  const isLightBg = LIGHT_BG_PROJECTS.some((p) => project.name.startsWith(p));
 
   const bodyBlocks: ReactNode[] = [
     <h3 key="title" className="mb-3 text-[26px] font-bold leading-tight text-white">
@@ -213,7 +221,10 @@ export default function ProjectModalV2({ isOpen, onClose, project }: IProjectMod
                 <button
                   onClick={onClose}
                   aria-label="Fermer"
-                  className="absolute right-2 top-2 z-10 p-2 text-white/60 hover:text-white"
+                  className={cn(
+                    "absolute right-2 top-2 z-10 p-2",
+                    isLightBg ? "text-[#14120F]/55 hover:text-[#14120F]" : "text-white/60 hover:text-white",
+                  )}
                 >
                   <X size={22} />
                 </button>

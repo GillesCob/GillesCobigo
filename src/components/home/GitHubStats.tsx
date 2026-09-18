@@ -1,4 +1,4 @@
-import { GitBranch, GitCommit, Clock, Folder } from "lucide-react";
+import { GitBranch, GitCommitHorizontal, Clock, Folder } from "lucide-react";
 import { useGitHubStats } from "@/hooks/useGitHubStats";
 import { cn } from "@/lib/utils";
 
@@ -52,7 +52,7 @@ export default function GitHubStats({ maxWidthClassName = "max-w-4xl", sectionCl
                   </div>
                 </div>
                 <div className="mp-github-stat">
-                  <GitCommit size={18} />
+                  <GitCommitHorizontal size={18} />
                   <div>
                     <p className="value">{formatRelativeDate(data?.lastCommitDate ?? null)}</p>
                     <p className="label">dernier commit</p>
