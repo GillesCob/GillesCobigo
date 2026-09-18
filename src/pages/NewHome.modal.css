@@ -1,0 +1,135 @@
+/* Port de la modale projet depuis Projets/Portfolio/mockups/refonte-v5-bascule.html (.modal-card,
+   .modal-hero, .modal-body, .modal-stack, .modal-links). CSS copié tel quel. Écarts volontaires
+   documentés ici (jamais silencieux, cf règle de portage) :
+   1. Fond de la modale ouverte via un vrai <div> backdrop (React, pas de <dialog>::backdrop natif),
+      couleur alignée sur celle du mockup (rgba(20,18,16,.6), PAS un noir pur) : cf MODAL_OVERLAY_RGB
+      dans ProjectModalV2.tsx, déjà utilisé pour le dégradé du bandeau mais pas encore pour le fond,
+      corrigé au passage.
+   2. `.mp-modal-hero` réduit à 140px sur mobile (contre 260px desktop, cf mockup) : demande
+      explicite de Gilles antérieure ("modale réduite pour tenir sur un écran"), absente du mockup,
+      qui n'a aucune règle mobile pour cette section. */
+
+.mp-modal-card {
+  /* Pile de police exacte du mockup, même cause que .mp-topbar/.mp-skills-list (Tailwind
+     ui-sans-serif donne des métriques de ligne légèrement différentes). */
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  width: 100%;
+  max-width: 720px;
+  border: none;
+  padding: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #14120f;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.4);
+}
+
+.mp-modal-hero {
+  position: relative;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+}
+@media (min-width: 640px) {
+  .mp-modal-hero {
+    height: 260px;
+  }
+}
+.mp-modal-hero img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+.mp-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 20px;
+  line-height: normal;
+  cursor: pointer;
+  padding: 0;
+}
+.mp-modal-close:hover {
+  color: #fff;
+}
+/* Croix foncée sur les visuels de fond clairs (photos chantier Mareterra/MRS3), sinon illisible
+   en blanc (mockup : LIGHT_BG_PROJECTS, .modal-hero.light-bg .close). */
+.mp-modal-hero.light-bg .mp-modal-close {
+  color: rgba(20, 18, 16, 0.55);
+}
+.mp-modal-hero.light-bg .mp-modal-close:hover {
+  color: #14120f;
+}
+
+.mp-modal-body {
+  padding: 32px 40px 36px;
+  color: #fff;
+}
+.mp-modal-body .top {
+  margin-bottom: 14px;
+}
+.mp-modal-body h3 {
+  margin: 0;
+  font-size: 26px;
+  line-height: normal;
+  font-weight: 700;
+}
+.mp-modal-body p.desc {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 20px;
+  max-width: 520px;
+}
+.mp-modal-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 22px;
+}
+.mp-modal-stack span {
+  font-size: 12px;
+  line-height: normal;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+}
+.mp-modal-body .status {
+  font-size: 12px;
+  line-height: normal;
+  color: rgba(255, 255, 255, 0.35);
+  margin-bottom: 18px;
+}
+.mp-modal-links {
+  display: flex;
+  gap: 10px;
+}
+.mp-modal-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  line-height: normal;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+.mp-modal-links a.gh {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+.mp-modal-links a.gh:hover {
+  border-color: #fff;
+}
+.mp-modal-links a.live {
+  background: #fff;
+  color: #14120f;
+}

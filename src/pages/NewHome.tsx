@@ -16,6 +16,7 @@ import "./NewHome.skills.css";
 import "./NewHome.github.css";
 import "./NewHome.contact.css";
 import "./NewHome.footer.css";
+import "./NewHome.modal.css";
 
 // Décalage du header sticky pour tout scroll calculé à la main (nav à points, CTA hero, bascule
 // de mode), identique au HEADER_OFFSET du mockup de référence.

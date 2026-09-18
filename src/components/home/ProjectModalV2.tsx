@@ -1,9 +1,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
-import { X, History } from "lucide-react";
+import { History } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { IBTPProject } from "@/data/btpProjects";
 import type { IDevProject } from "@/data/devProjects";
@@ -19,20 +17,15 @@ function isDevProject(p: IBTPProject | IDevProject): p is IDevProject {
   return "stack" in p;
 }
 
-// Fond du bandeau .modal-hero : constant quel que soit le mode (mockup, .modal-hero background
-// rgba(20,18,16,*) toujours, jamais un ton différent dev/BTP). Seule la couleur DESSOUS ce gradient
-// change avec le mode (var(--accent) du mockup, ici hsl(var(--mode-accent)) posé par NewHome.tsx) :
-// pas de logique par `side` ici, contrairement à l'implémentation précédente qui teintait toute la
-// carte différemment selon dev/BTP (bg-dev-dark/bg-btp-dark), un écart au mockup.
+// Fond du bandeau .modal-hero ET du backdrop plein écran : constant quel que soit le mode (mockup,
+// .modal-hero background rgba(20,18,16,*) et .modal-card::backdrop rgba(20,18,16,.6) toujours,
+// jamais un noir pur ni un ton différent dev/BTP). Seule la couleur DESSOUS le gradient du bandeau
+// change avec le mode (var(--accent) du mockup, ici hsl(var(--mode-accent)) posé par NewHome.tsx).
 const MODAL_OVERLAY_RGB = "20,18,16";
 
-// Deux styles de lien bien distincts dans le mockup (.modal-links a.gh vs a.live), jamais le même
-// style "outline" répété pour tout (écart de l'implémentation précédente) : GitHub/Articles/Versions
-// restent transparents et bordés, tandis que le lien principal (Voir le projet/Démo) est un pavé
-// blanc plein, sans variante hover définie côté mockup pour celui-ci (aucune n'est donc ajoutée ici).
-const MODAL_LINK_GH_CLASS =
-  "rounded-lg border-white/25 bg-transparent px-4 py-[9px] text-[13px] font-semibold text-white shadow-none hover:border-white hover:bg-transparent hover:text-white";
-const MODAL_LINK_LIVE_CLASS = "rounded-lg bg-white px-4 py-[9px] text-[13px] font-semibold text-[#14120F] shadow-none hover:bg-white";
+// Croix de fermeture foncée sur les visuels de fond clairs (photos chantier, pas les
+// logos/illustrations sombres des projets dev), sinon illisible en blanc (mockup, LIGHT_BG_PROJECTS).
+const LIGHT_BG_PROJECTS = ["Mareterra", "MRS3"];
 
 // Carte : léger fondu + montée + scale, retenu après plusieurs itérations avec Gilles sur le
 // mockup de référence (Projets/Portfolio/mockups/refonte-v5-bascule.html, #modalReveal).
@@ -55,12 +48,6 @@ const bodyItemVariants: Variants = {
     transition: { duration: 0.4, ease: "easeOut", delay: (i + 1) * 0.08 },
   }),
 };
-
-// Projets dont le visuel de bandeau (photo chantier claire, pas un logo/illustration sombre) rend
-// la croix de fermeture blanche illisible : mockup, LIGHT_BG_PROJECTS + toggle de classe
-// `.light-bg` sur `#modalHero`. Comparaison par préfixe (noms réels "Mareterra - Monaco"/
-// "MRS3 - Marseille", le mockup n'a que "Mareterra"/"MRS3").
-const LIGHT_BG_PROJECTS = ["Mareterra", "MRS3"];
 
 // `side` ne pilote plus la couleur du modal (cf commentaire sur MODAL_OVERLAY_RGB plus bas) : gardé
 // dans les props pour la compat d'appel (ProjectsSectionV2 le passe toujours).
@@ -105,13 +92,11 @@ export default function ProjectModalV2({ isOpen, onClose, project }: IProjectMod
 
   if (!project) return null;
 
-  const isLightBg = LIGHT_BG_PROJECTS.some((p) => project.name.startsWith(p));
-
   const bodyBlocks: ReactNode[] = [
-    <h3 key="title" className="mb-3 text-[26px] font-bold leading-tight text-white">
-      {project.name}
-    </h3>,
-    <p key="desc" className="mb-5 max-w-[520px] text-[15px] leading-[1.6] text-white/75">
+    <div key="title" className="top">
+      <h3>{project.name}</h3>
+    </div>,
+    <p key="desc" className="desc">
       {project.description}
     </p>,
   ];
@@ -119,17 +104,15 @@ export default function ProjectModalV2({ isOpen, onClose, project }: IProjectMod
   if (isDevProject(project)) {
     if (project.stack && project.stack.length > 0) {
       bodyBlocks.push(
-        <div key="stack" className="mb-[22px] flex flex-wrap gap-1.5">
+        <div key="stack" className="mp-modal-stack">
           {project.stack.map((tech) => (
-            <Badge key={tech} variant="outline" className="rounded-full border-white/20 bg-transparent px-3 py-[5px] text-xs text-white/60 shadow-none">
-              {tech}
-            </Badge>
+            <span key={tech}>{tech}</span>
           ))}
         </div>
       );
     }
     bodyBlocks.push(
-      <p key="status" className="mb-[18px] text-xs text-white/35">
+      <p key="status" className="status">
         {project.status}
       </p>
     );
@@ -143,40 +126,31 @@ export default function ProjectModalV2({ isOpen, onClose, project }: IProjectMod
 
     if (hasLinks) {
       bodyBlocks.push(
-        <div key="links" className="flex flex-wrap gap-2.5">
-          {/* Mockup : liens texte seul (#modalGithub "Code sur GitHub", #modalLive "Voir en ligne"),
-              jamais d'icône lucide dessus (trouvé au diff pixel : largeur des boutons différente,
-              icônes absentes du mockup). */}
+        <div key="links" className="mp-modal-links">
+          {/* Texte seul, sans icone : le mockup (#modalGithub/#modalLive) n'a jamais d'icone sur
+              ces deux liens, contrairement a la modale precedente (ProjectModal.tsx). */}
           {project.links?.github && (
-            <Button asChild variant="outline" size="sm" className={cn(MODAL_LINK_GH_CLASS)}>
-              <a href={project.links.github} target="_blank" rel="noopener noreferrer">
-                Code sur GitHub
-              </a>
-            </Button>
+            <a className="gh" href={project.links.github} target="_blank" rel="noopener noreferrer">
+              Code sur GitHub
+            </a>
           )}
           {project.links?.live && (
-            <Button asChild size="sm" className={cn(MODAL_LINK_LIVE_CLASS)}>
-              <a href={project.links.live} target="_blank" rel="noopener noreferrer">
-                Voir en ligne
-              </a>
-            </Button>
+            <a className="live" href={project.links.live} target="_blank" rel="noopener noreferrer">
+              Voir en ligne
+            </a>
           )}
           {project.links?.demo && (
-            <Button asChild size="sm" className={cn(MODAL_LINK_LIVE_CLASS)}>
-              <a href={project.links.demo} target="_blank" rel="noopener noreferrer">
-                Voir en ligne
-              </a>
-            </Button>
+            <a className="live" href={project.links.demo} target="_blank" rel="noopener noreferrer">
+              Démo
+            </a>
           )}
           {!project.links?.live && !project.links?.demo && project.comingSoon && (
             <span className="inline-flex items-center px-2 py-1.5 text-xs italic text-white/40">Lien à venir</span>
           )}
           {project.id === "cocotte-eclair" && (
-            <Button asChild variant="outline" size="sm" className={cn(MODAL_LINK_GH_CLASS)}>
-              <Link to="/projects/cocotte-eclair/versions" onClick={onClose}>
-                <History size={14} className="mr-1" /> Versions
-              </Link>
-            </Button>
+            <Link className="gh" to="/projects/cocotte-eclair/versions" onClick={onClose}>
+              <History size={14} /> Versions
+            </Link>
           )}
         </div>
       );
@@ -189,16 +163,14 @@ export default function ProjectModalV2({ isOpen, onClose, project }: IProjectMod
         <>
           <motion.div
             key="backdrop"
-            className="fixed inset-0 z-40 bg-black/60"
+            className="fixed inset-0 z-40"
+            style={{ background: `rgba(${MODAL_OVERLAY_RGB},0.6)` }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
           />
-          <motion.div
-            key="modal"
-            className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4"
-          >
+          <motion.div key="modal" className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div
               ref={containerRef}
               tabIndex={-1}
@@ -206,31 +178,24 @@ export default function ProjectModalV2({ isOpen, onClose, project }: IProjectMod
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="pointer-events-auto relative w-full max-w-[720px] overflow-hidden rounded-[18px] bg-[#14120F] shadow-2xl outline-none"
+              className={cn("mp-modal-card", "pointer-events-auto outline-none")}
               onClick={(e) => e.stopPropagation()}
             >
               <div
-                className="relative flex h-[140px] items-center justify-center bg-cover bg-center sm:h-[260px]"
+                className={cn("mp-modal-hero", LIGHT_BG_PROJECTS.includes(project.name) && "light-bg")}
                 style={{
                   background: `linear-gradient(to bottom, rgba(${MODAL_OVERLAY_RGB},0.15), rgba(${MODAL_OVERLAY_RGB},0.93)), hsl(var(--mode-accent))`,
                 }}
               >
                 {/* Image contenue (pas en fond cover) : le mockup affiche le visuel du projet en
                     médaillon centré sur le fond teinté accent, jamais en plein cadre recadré. */}
-                {project.image && <img src={project.image} alt="" className="max-h-full max-w-full object-contain" />}
-                <button
-                  onClick={onClose}
-                  aria-label="Fermer"
-                  className={cn(
-                    "absolute right-2 top-2 z-10 p-2",
-                    isLightBg ? "text-[#14120F]/55 hover:text-[#14120F]" : "text-white/60 hover:text-white",
-                  )}
-                >
-                  <X size={22} />
+                {project.image && <img src={project.image} alt="" />}
+                <button type="button" onClick={onClose} aria-label="Fermer" className="mp-modal-close">
+                  ✕
                 </button>
               </div>
 
-              <div className="flex flex-col px-10 pb-9 pt-8">
+              <div className="mp-modal-body">
                 {bodyBlocks.map((block, i) => (
                   <motion.div key={i} custom={i} variants={bodyItemVariants} initial="hidden" animate="visible">
                     {block}
