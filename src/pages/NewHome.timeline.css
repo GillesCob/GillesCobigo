@@ -1,0 +1,225 @@
+/* Port de la timeline "Mon parcours" depuis Projets/Portfolio/mockups/refonte-v5-bascule.html
+   (.parcours, .tl, .tl-line, .tl-item, .tl-side, .tl-year, .tl-dot, .tl-head, .tl-sub,
+   .tl-chevron, .tl-detail, .tl-portal). Même méthode que NewHome.hero.css/NewHome.navbar.css :
+   déclarations copiées telles quelles, seules les couleurs adaptées vers les tokens déjà définis
+   (--mode-accent / hsl(var(--foreground)) / hsl(var(--muted-foreground)) / hsl(var(--border)) à la
+   place de var(--accent) / var(--ink) / var(--muted) / var(--line)).
+
+   Écarts volontaires au mockup, documentés ici :
+   1. Le titre de section "Mon parcours" (mockup .row-label, classe générique partagée avec
+      Projets/Chantiers/Compétences, pas encore portées) est stylé ici via .mp-tl-row-label plutôt
+      que de créer un fichier .row-label partagé prématurément : mêmes déclarations exactes que le
+      mockup (`.row-label` ligne 92 du mockup), seulement renommé/scopé à ce composant. Si Projets/
+      Chantiers/Compétences sont portées un jour avec la même méthode, factoriser vers une classe
+      commune plutôt que dupliquer ce bloc.
+   2. `.tl-item` : les propriétés d'entrée du mockup (`opacity:0`, `transition`, `.dir-right`,
+      `.dir-left`, `.in-view`) sont volontairement absentes ici. Le mockup les anime via
+      IntersectionObserver + classe CSS togglée en JS vanilla ; React utilise Framer Motion
+      (whileInView) sur le même élément pour produire la même translation ±28px / fondu 0→1 sur
+      0.45s ease-out (mêmes valeurs), cf TimelineV2.tsx. Comportement demandé explicitement par
+      Gilles ("animations Framer Motion d'entrée" à conserver), pas une valeur du mockup.
+   3. `.tl-item.open .tl-dot` / `.tl-item.open .tl-chevron` / `.tl-item.open .tl-detail` : identiques
+      au mockup, pilotées par la même classe `.open` togglée par le state React `expanded` (au lieu
+      du JS vanilla du mockup qui fait `head.closest(".tl-item").classList.toggle("open")`).
+*/
+
+.mp-parcours {
+  /* Le mockup hérite cette pile de police du `body { font-family: ... }` global (pas de dark
+     mode/autre pile sur cette page). La timeline est un SIBLING de .mp-hero/.mp-topbar (pas un
+     descendant), donc ne profite pas de leur `font-family` propre : sans cette déclaration ici,
+     tous les enfants héritent de la pile Tailwind par défaut (`ui-sans-serif, system-ui, ...`)
+     posée par le Preflight sur `html`, une police visuellement différente. Trouvé par le diff
+     pixel (padding du bouton .tl-head ci-dessous aussi). */
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  margin-bottom: 70px;
+}
+
+.mp-tl-row-label {
+  font-size: 12px;
+  line-height: normal; /* sans ça, herite du line-height Tailwind au lieu du defaut navigateur (cf bug deja trouve sur .mp-eyebrow/.mp-lead) */
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 18px;
+}
+
+.mp-tl {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  padding: 6px 0;
+}
+
+.mp-tl-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: hsl(var(--border));
+  transform: translateX(-0.5px);
+}
+
+.mp-tl-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  position: relative;
+}
+
+.mp-tl-side {
+  flex: 1;
+}
+
+.mp-tl-year {
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+  line-height: normal;
+  color: hsl(var(--muted-foreground));
+  padding-top: 3px;
+}
+.mp-tl-item .mp-tl-side.mp-tl-year:first-child {
+  text-align: right;
+  padding-right: 26px;
+}
+.mp-tl-item .mp-tl-side.mp-tl-year:last-child {
+  padding-left: 26px;
+}
+.mp-tl-item .mp-tl-side.mp-tl-card:first-child {
+  text-align: right;
+  padding-right: 26px;
+}
+.mp-tl-item .mp-tl-side.mp-tl-card:last-child {
+  padding-left: 26px;
+}
+
+.mp-tl-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: hsl(var(--muted-foreground));
+  flex-shrink: 0;
+  margin-top: 5px;
+  transition: background 0.2s;
+}
+.mp-tl-item.open .mp-tl-dot {
+  background: hsl(var(--foreground));
+}
+
+.mp-tl-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: none;
+  border: none;
+  /* Le mockup ne remet jamais à zéro le padding par défaut du `<button>` (1px 6px, valeur UA
+     standard) : sans cette ligne, le Preflight Tailwind (`button { padding:0 }` globalement)
+     retire ce padding, écart mesuré à 2px de hauteur par item de timeline (~10-12px cumulés sur
+     5-6 items) + décalage horizontal de 6px du texte/chevron par rapport au bord, trouvé par le
+     diff pixel (invisible en comparant les déclarations CSS une par une : le mockup ne déclare
+     jamais `padding` sur .tl-head, seule la valeur UA implicite compte). */
+  padding: 1px 6px;
+  cursor: pointer;
+  font: inherit;
+  /* `font: inherit` ci-dessus n'inclut PAS line-height dans tous les navigateurs de la même façon
+     que le mockup (qui en hérite normalement à `normal`, valeur par défaut du navigateur) : sans
+     cette ligne, le `line-height:1.5` du Preflight Tailwind (règle globale sur `html`, pas un
+     utilitaire ponctuel) s'applique ici (16px * 1.5 = 24px) au lieu de `normal` (~18-19px), écart
+     mesuré à 10px de hauteur par item de timeline (~50px cumulés sur 5 items), trouvé par le diff
+     pixel. Même classe de bug que .mp-eyebrow/.mp-lead dans NewHome.hero.css, cause différente
+     (globale au lieu d'un utilitaire text-*). */
+  line-height: normal;
+  color: hsl(var(--foreground));
+  width: 100%;
+}
+.mp-tl-item .mp-tl-side.mp-tl-card:first-child .mp-tl-head {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.mp-tl-sub {
+  font-size: 13px;
+  line-height: normal;
+  color: hsl(var(--muted-foreground));
+  font-weight: 400;
+}
+
+.mp-tl-chevron {
+  color: hsl(var(--muted-foreground));
+  transition: transform 0.2s;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.mp-tl-item.open .mp-tl-chevron {
+  transform: rotate(180deg);
+}
+
+.mp-tl-detail {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  color: hsl(var(--muted-foreground));
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0;
+  transition:
+    max-height 0.25s ease,
+    opacity 0.2s ease,
+    margin 0.25s ease;
+}
+.mp-tl-item.open .mp-tl-detail {
+  max-height: 200px;
+  opacity: 1;
+  margin-top: 10px;
+}
+
+/* Entrée "portail" du parcours : un vrai item de timeline (pas juste un lien perdu), qui bascule
+   de mode et rejoint le parcours de l'autre côté. */
+.mp-tl-portal .mp-tl-dot {
+  background: hsl(var(--mode-accent));
+  width: 12px;
+  height: 12px;
+  margin-top: 4px;
+}
+.mp-tl-portal .mp-tl-chevron {
+  color: hsl(var(--mode-accent));
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+.mp-tl-portal .mp-tl-head:hover .mp-tl-chevron {
+  transform: translateX(4px);
+}
+.mp-tl-portal .mp-tl-head.mp-tl-head-left:hover .mp-tl-chevron {
+  transform: translateX(-4px);
+}
+.mp-tl-portal .mp-tl-head:hover strong {
+  color: hsl(var(--mode-accent));
+}
+
+@media (max-width: 720px) {
+  .mp-tl-line {
+    left: 5px;
+  }
+  .mp-tl-item {
+    flex-direction: row;
+  }
+  .mp-tl-item .mp-tl-side.mp-tl-year {
+    display: none;
+  }
+  .mp-tl-item .mp-tl-side.mp-tl-card:first-child,
+  .mp-tl-item .mp-tl-side.mp-tl-card:last-child {
+    text-align: left;
+    padding: 0 0 0 26px;
+    order: 2;
+  }
+  .mp-tl-item .mp-tl-side.mp-tl-card:first-child .mp-tl-head {
+    flex-direction: row;
+    text-align: left;
+  }
+  .mp-tl-dot {
+    order: 1;
+  }
+}
