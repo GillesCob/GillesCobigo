@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ArrowRight, ArrowLeft } from "lucide-react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { Mode } from "@/store/modeStore";
 
@@ -113,72 +112,35 @@ const devItems: ITimelineV2Item[] = [
 
 interface ITimelineCardProps {
   item: ITimelineV2Item;
-  isExpanded: boolean;
   onToggle: () => void;
   onGoToMode: (mode: Mode) => void;
-  alignRight: boolean;
 }
 
-function TimelineCard({ item, isExpanded, onToggle, onGoToMode, alignRight }: ITimelineCardProps) {
+// Reprend au mot près la structure du mockup (bouton `.tl-head` avec un span texte "titre + retour
+// à la ligne + sous-titre" et un span `.tl-chevron`, glyphes unicode ⌄/→/← comme dans le mockup,
+// pas des icônes lucide-react : différence de rendu réelle trouvée au diff pixel, cf commentaire
+// en tête de NewHome.timeline.css). Le rotate du chevron et la couleur du point sur l'état "ouvert"
+// sont pilotés par la classe `.open` posée sur le `.mp-tl-item` parent (cf NewHome.timeline.css),
+// pas par une prop locale : pas besoin de connaître `isExpanded` ici.
+function TimelineCard({ item, onToggle, onGoToMode }: ITimelineCardProps) {
   const isPortal = item.portalTo !== undefined;
-  const Icon = item.portalTo === "btp" ? ArrowLeft : ArrowRight;
+  const chevronGlyph = !isPortal ? "⌄" : item.portalTo === "btp" ? "←" : "→";
 
   return (
-    <div className={alignRight ? "text-right" : "text-left"}>
+    <div className="mp-tl-side mp-tl-card">
       <button
+        type="button"
         onClick={() => (isPortal ? onGoToMode(item.portalTo as Mode) : onToggle())}
-        className="w-full text-left group"
+        className={cn("mp-tl-head", item.portalTo === "btp" && "mp-tl-head-left")}
       >
-        <div className={cn("flex items-start gap-2", alignRight ? "flex-row-reverse" : "flex-row")}>
-          <div className={cn("flex-1", alignRight ? "text-right" : "text-left")}>
-            <p
-              className={cn(
-                "font-semibold text-base transition-colors",
-                isPortal ? "group-hover:text-mode-accent" : "group-hover:text-foreground"
-              )}
-            >
-              {item.title}
-            </p>
-            <p className="text-sm text-muted-foreground">{item.subtitle}</p>
-          </div>
-          {isPortal ? (
-            <Icon
-              size={16}
-              className={cn(
-                "mt-0.5 flex-shrink-0 text-mode-accent transition-transform duration-200",
-                item.portalTo === "btp" ? "group-hover:-translate-x-1" : "group-hover:translate-x-1"
-              )}
-            />
-          ) : (
-            <motion.div
-              animate={{ rotate: isExpanded ? 180 : 0 }}
-              transition={{ duration: 0.2 }}
-              className="mt-0.5 flex-shrink-0"
-            >
-              <ChevronDown size={16} className="text-muted-foreground" />
-            </motion.div>
-          )}
-        </div>
+        <span>
+          <strong>{item.title}</strong>
+          <br />
+          <span className="mp-tl-sub">{item.subtitle}</span>
+        </span>
+        <span className="mp-tl-chevron">{chevronGlyph}</span>
       </button>
-
-      {!isPortal && (
-        <AnimatePresence initial={false}>
-          {isExpanded && (
-            <motion.div
-              key="detail"
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="overflow-hidden"
-            >
-              <p className={cn("mt-3 text-sm leading-relaxed text-muted-foreground", alignRight ? "text-right" : "text-left")}>
-                {item.detail}
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      )}
+      {!isPortal && <p className="mp-tl-detail">{item.detail}</p>}
     </div>
   );
 }
@@ -197,7 +159,7 @@ export default function TimelineV2({ mode, onGoToMode }: ITimelineV2Props) {
   }
 
   return (
-    <section id="parcours" className="scroll-mt-[90px]">
+    <section id="parcours" className="mp-parcours scroll-mt-[90px]">
       <motion.div
         className="mx-auto flex min-h-0 w-full max-w-[880px] flex-col justify-center border-t border-border px-5 pt-12 sm:min-h-[82vh] sm:px-10"
         style={{ marginTop: 130 }}
@@ -206,70 +168,40 @@ export default function TimelineV2({ mode, onGoToMode }: ITimelineV2Props) {
         viewport={{ once: true, amount: 0.3, margin: "0px 0px -10% 0px" }}
         transition={{ duration: 0.7, ease: "easeOut" }}
       >
-        <p className="mb-[18px] text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">Mon parcours</p>
+        <p className="mp-tl-row-label">Mon parcours</p>
 
-        <div className="relative">
-          <div className="absolute left-1/2 -translate-x-px top-0 bottom-0 w-px bg-border hidden md:block" />
-          <div className="absolute left-4 top-0 bottom-0 w-px bg-border md:hidden" />
+        <div className="mp-tl">
+          <div className="mp-tl-line" />
 
-          <div className="flex flex-col gap-10">
-            {items.map((item) => {
-              const isExpanded = expanded === item.id;
-              const cardOnRight = item.cardSide === "right";
+          {items.map((item) => {
+            const isExpanded = expanded === item.id;
+            const cardFirst = item.cardSide === "left";
 
-              return (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, x: cardOnRight ? 28 : -28 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, amount: 0.3, margin: "0px 0px -80px 0px" }}
-                  transition={{ duration: 0.45, ease: "easeOut" }}
-                >
-                  {/* Desktop */}
-                  <div className="hidden md:flex items-start">
-                    <div className="flex-1 pr-10">
-                      {cardOnRight ? (
-                        <p className="text-right font-mono text-sm text-muted-foreground/60 pt-1">{item.year}</p>
-                      ) : (
-                        <TimelineCard item={item} isExpanded={isExpanded} onToggle={() => toggle(item.id)} onGoToMode={onGoToMode} alignRight />
-                      )}
-                    </div>
-
-                    <div className="flex flex-col items-center flex-shrink-0 w-4 pt-1">
-                      <div
-                        className={cn(
-                          "w-3 h-3 rounded-full ring-2 ring-background border border-border transition-colors",
-                          item.portalTo ? "bg-mode-accent" : isExpanded ? "bg-foreground" : "bg-muted-foreground/40"
-                        )}
-                      />
-                    </div>
-
-                    <div className="flex-1 pl-10">
-                      {cardOnRight ? (
-                        <TimelineCard item={item} isExpanded={isExpanded} onToggle={() => toggle(item.id)} onGoToMode={onGoToMode} alignRight={false} />
-                      ) : (
-                        <p className="font-mono text-sm text-muted-foreground/60 pt-1">{item.year}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Mobile */}
-                  <div className="flex md:hidden items-start pl-10 relative">
-                    <div
-                      className={cn(
-                        "absolute left-4 top-1.5 -translate-x-1/2 w-3 h-3 rounded-full ring-2 ring-background border border-border transition-colors",
-                        item.portalTo ? "bg-mode-accent" : isExpanded ? "bg-foreground" : "bg-muted-foreground/40"
-                      )}
-                    />
-                    <div className="flex-1">
-                      <p className="font-mono text-xs text-muted-foreground/60 mb-1">{item.year}</p>
-                      <TimelineCard item={item} isExpanded={isExpanded} onToggle={() => toggle(item.id)} onGoToMode={onGoToMode} alignRight={false} />
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
+            return (
+              <motion.div
+                key={item.id}
+                className={cn("mp-tl-item", item.portalTo && "mp-tl-portal", isExpanded && "open")}
+                initial={{ opacity: 0, x: cardFirst ? -28 : 28 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.3, margin: "0px 0px -80px 0px" }}
+                transition={{ duration: 0.45, ease: "easeOut" }}
+              >
+                {cardFirst ? (
+                  <>
+                    <TimelineCard item={item} onToggle={() => toggle(item.id)} onGoToMode={onGoToMode} />
+                    <div className="mp-tl-dot" />
+                    <div className="mp-tl-side mp-tl-year">{item.year}</div>
+                  </>
+                ) : (
+                  <>
+                    <div className="mp-tl-side mp-tl-year">{item.year}</div>
+                    <div className="mp-tl-dot" />
+                    <TimelineCard item={item} onToggle={() => toggle(item.id)} onGoToMode={onGoToMode} />
+                  </>
+                )}
+              </motion.div>
+            );
+          })}
         </div>
       </motion.div>
     </section>

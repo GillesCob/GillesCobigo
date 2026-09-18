@@ -10,6 +10,7 @@ import GitHubStats from "@/components/home/GitHubStats";
 import ContactSectionInline from "@/components/home/ContactSectionInline";
 import "./NewHome.hero.css";
 import "./NewHome.navbar.css";
+import "./NewHome.timeline.css";
 
 // Décalage du header sticky pour tout scroll calculé à la main (nav à points, CTA hero, bascule
 // de mode), identique au HEADER_OFFSET du mockup de référence.
