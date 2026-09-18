@@ -138,6 +138,14 @@
   line-height: normal;
   color: hsl(var(--foreground));
   width: 100%;
+  /* Un <button> a un text-align:center par defaut du navigateur (jamais heritee comme un
+     element normal). Jamais porte depuis le mockup (qui le declare explicitement, ligne
+     .tl-head) : invisible quand le titre est aussi large que le sous-titre (le bouton se
+     redimensionne alors a la largeur du titre, aucune marge pour que le centrage se voie),
+     flagrant quand le titre est plus court que le sous-titre ("Les formations", plus court
+     que "DWWM/CDA, Baticoop") -> le titre se retrouvait centre au lieu de suivre le bord du
+     texte. Signale par Gilles (18/09). */
+  text-align: left;
 }
 .mp-tl-item .mp-tl-side.mp-tl-card:first-child .mp-tl-head {
   flex-direction: row-reverse;
