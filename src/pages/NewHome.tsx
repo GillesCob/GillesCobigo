@@ -16,6 +16,7 @@ import "./NewHome.skills.css";
 import "./NewHome.github.css";
 import "./NewHome.contact.css";
 import "./NewHome.footer.css";
+import "./NewHome.modal.css";
 
 // Décalage du header sticky pour tout scroll calculé à la main (nav à points, CTA hero, bascule
 // de mode), identique au HEADER_OFFSET du mockup de référence.
@@ -146,6 +147,38 @@ export default function NewHome() {
     const observer = new ResizeObserver(measure);
     observer.observe(headerEl);
     return () => observer.disconnect();
+  }, []);
+
+  // Fond de la topbar : transparente en permanence sur desktop (mockup, .mp-topbar background:
+  // transparent), opaque progressivement au scroll UNIQUEMENT en mobile (<=720px, mockup :
+  // updateTopbarScrolled, sinon le hero défilant dessous devient illisible sous la topbar).
+  // rgb(250,250,248) codé en dur (comme le mockup) : var() ne s'évalue pas dans un rgba() calculé
+  // en JS.
+  useEffect(() => {
+    let ticking = false;
+    function update() {
+      ticking = false;
+      const el = headerRef.current;
+      if (!el || window.innerWidth > 720) {
+        if (el) el.style.backgroundColor = "";
+        return;
+      }
+      const progress = Math.max(0, Math.min(1, window.scrollY / 250));
+      el.style.backgroundColor = `rgba(250, 250, 248, ${progress})`;
+    }
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   // Ancre dans l'URL au premier montage (ex. "/#projets" ou "/#contact" depuis un lien externe,
