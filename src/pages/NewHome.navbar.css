@@ -56,8 +56,12 @@
   /* Horizontal 16px sous 640px (pas une valeur du mockup, demande explicite de Gilles pour
      resserrer la navbar mobile), 40px au-dessus (valeur du mockup). */
   padding: 18px 16px;
-  border-bottom: 1px solid hsl(var(--border));
-  background: hsl(var(--background));
+  /* Mockup : `.topbar { background: transparent }`, jamais de border-bottom. Le fond
+     n'est jamais opaque sur desktop (transparente en permanence sur le hero), seul le mobile
+     passe progressivement à l'opaque au scroll (cf effet dédié dans NewHome.tsx,
+     updateTopbarScrolled). background/border-bottom fixes ici étaient un écart : la topbar
+     restait opaque avec un liseré visible en permanence par-dessus le hero. */
+  background: transparent;
   transition: background-color 0.35s ease;
 }
 @media (min-width: 640px) {
