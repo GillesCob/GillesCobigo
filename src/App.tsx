@@ -22,17 +22,14 @@ import ScrollReset from "@/components/layout/ScrollReset";
 // isBareLayout ci-dessous.
 export default function App() {
   const location = useLocation();
-  // Pages partagées telles quelles par lien direct (prospection vidéo, preview client) : sans navbar ni footer du site.
-  // / (refonte v5, toggle Dev/Bâtiment, devenue la home le 18/09) a sa propre topbar (ModeToggle)
-  // et sa propre section Contact inline : le Navbar/Footer globaux (toujours fond sombre #0A0A0A
-  // quel que soit le thème) feraient doublon avec ce header et casseraient le rendu clair/sombre
-  // suivant le thème du visiteur.
-  const isBareLayout =
-    location.pathname.startsWith("/v/") ||
-    location.pathname.startsWith("/preview/") ||
-    location.pathname.startsWith("/cas-client/") ||
-    location.pathname.startsWith("/cgv-boutiques") ||
-    location.pathname === "/";
+  // Navbar/Footer globaux jamais utilises par aucune route de ce routeur : / (refonte v5,
+  // toggle Dev/Batiment) a sa propre topbar (ModeToggle) et sa propre section Contact
+  // inline, les pages partagees par lien direct (video, preview, cas client, CGV) n'en ont
+  // jamais eu besoin, et le catch-all 404 (`*`) vient de perdre le sien le 18/09 sur
+  // demande de Gilles (page 404 sans navbar, fond blanc, logo noir, cf NotFound.tsx). Si
+  // une future route a besoin du Navbar/Footer globaux, reintroduire une condition ici
+  // plutot que de les supprimer.
+  const isBareLayout = true;
   const hideFooter = isBareLayout;
 
   return (

@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center pt-16 px-4 text-center overflow-hidden">
+    <div className="relative min-h-screen flex flex-col items-center justify-center pt-16 px-4 text-center overflow-hidden bg-white">
       <img
-        src="/images/logo-gc-white.png"
+        src="/images/logo-gc-black.png"
         alt=""
         className="absolute inset-0 m-auto h-[95vh] w-auto max-w-none opacity-[0.06] select-none pointer-events-none"
       />
