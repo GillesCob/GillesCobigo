@@ -94,7 +94,7 @@ export default function VideoLanding() {
   return (
     <div
       ref={containerRef}
-      className="min-h-dvh bg-background flex items-center justify-center px-4 py-16 relative overflow-hidden"
+      className="min-h-dvh bg-background flex items-center justify-center px-4 py-16 sm:py-10 relative overflow-hidden"
       style={LIGHT_THEME_VARS}
     >
       <div ref={bgWrapRef} className="vl-bg" aria-hidden="true">
@@ -102,19 +102,19 @@ export default function VideoLanding() {
       </div>
 
       <div className="relative w-full max-w-xl lg:max-w-4xl">
-        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Gilles Cobigo</h1>
-        <p className="text-muted-foreground text-base md:text-lg max-w-md mb-6 leading-relaxed">
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-2">Gilles Cobigo</h1>
+        <p className="text-muted-foreground text-base md:text-lg max-w-md mb-6 sm:mb-4 leading-relaxed">
           10 ans dans le bâtiment, <BIMTerm>BIM Manager</BIMTerm> sur l&apos;extension en mer de Monaco. Aujourd&apos;hui
           développeur fullstack.
         </p>
 
-        <div className="flex flex-wrap gap-1.5 mb-8">
+        <div className="flex flex-wrap gap-1.5 mb-8 sm:mb-5">
           <Badge variant="secondary">Node.js</Badge>
           <Badge variant="secondary">TypeScript</Badge>
           <Badge variant="secondary">React</Badge>
         </div>
 
-        <div className="relative aspect-video rounded-xl border border-white/10 bg-zinc-950 overflow-hidden mb-10">
+        <div className="relative aspect-video rounded-xl border border-white/10 bg-zinc-950 overflow-hidden mb-10 sm:mb-6 sm:mx-auto sm:h-[26vh] sm:w-auto sm:max-w-full">
           {playing && video.videoUrl ? (
             <video src={video.videoUrl} controls autoPlay className="w-full h-full object-contain" />
           ) : (
