@@ -75,15 +75,15 @@ const btpSkills = [
   { cat: "Métier", items: "BIM, coordination chantier" },
 ];
 
-function scrollToSection(id: string): void {
+function scrollToSection(id: string, behavior: ScrollBehavior = "smooth"): void {
   if (id === "hero") {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior });
     return;
   }
   const el = document.getElementById(id);
   if (!el) return;
   const y = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
-  window.scrollTo({ top: y, behavior: "smooth" });
+  window.scrollTo({ top: y, behavior });
 }
 
 // Bascule instantanée (pas de smooth scroll : ça se passe pendant que le contenu est encore
@@ -152,14 +152,46 @@ export default function NewHome() {
   // cf VideoLanding.tsx) : le hash seul (navigation React Router, pas un rechargement complet) ne
   // déclenche aucun scroll automatique du navigateur, il faut le lire nous-mêmes. `scrollToSection`
   // gère déjà l'offset du header fixed ; ScrollReset.tsx ignore ce montage précis (hash présent)
-  // pour ne pas ramener le scroll à 0 juste après. Une frame de délai : au tout premier rendu, les
-  // sections (notamment le hero, qui dépend de `fixedHeaderHeight` mesuré ci-dessus) n'ont pas
-  // forcément leur position finale.
+  // pour ne pas ramener le scroll à 0 juste après.
+  //
+  // Correction du 18/09 : une seule frame de délai ne suffit pas, du contenu au-dessus de la
+  // cible peut encore bouger juste après (GitHub Stats charge ses données en async et remplace
+  // son squelette par le contenu réel, cf GitHubStats.tsx, hauteur différente une fois les
+  // données arrivées). Un scroll calculé sur ce layout pas encore stabilisé atterrit à côté de
+  // la cible (mesuré : jusqu'à 159px d'écart sur mobile étroit, la section ciblée se retrouve
+  // scrollée au-dessus de l'écran au lieu d'affichée en haut). On recalcule et recorrige tant que
+  // la hauteur totale du document bouge, borné pour ne jamais boucler indéfiniment.
   useEffect(() => {
     const id = window.location.hash.slice(1);
     if (!id) return;
-    const raf = requestAnimationFrame(() => scrollToSection(id));
-    return () => cancelAnimationFrame(raf);
+    let cancelled = false;
+    let lastHeight = -1;
+    let stableCount = 0;
+    let attempts = 0;
+    const maxAttempts = 20;
+
+    function tick() {
+      if (cancelled) return;
+      const height = document.documentElement.scrollHeight;
+      scrollToSection(id, attempts === 0 ? "smooth" : "auto");
+      attempts++;
+      if (height === lastHeight) {
+        stableCount++;
+      } else {
+        stableCount = 0;
+        lastHeight = height;
+      }
+      if (stableCount >= 3 || attempts >= maxAttempts) return;
+      setTimeout(() => {
+        if (!cancelled) requestAnimationFrame(tick);
+      }, 100);
+    }
+
+    const raf = requestAnimationFrame(tick);
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
