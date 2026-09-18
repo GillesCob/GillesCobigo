@@ -181,18 +181,31 @@
 }
 
 /* Entrée "portail" du parcours : un vrai item de timeline (pas juste un lien perdu), qui bascule
-   de mode et rejoint le parcours de l'autre côté. */
+   de mode et rejoint le parcours de l'autre côté. Couleur = mode de DESTINATION du lien (mockup :
+   --dev-accent-fixed/--btp-accent-fixed, jamais --mode-accent qui suit le mode COURANT) : sans
+   ça, l'item "vers BTP" affichait la teinte Dev en mode Dev (et inversement), jamais la couleur
+   du mode visé. */
 .mp-tl-portal .mp-tl-dot {
-  background: hsl(var(--mode-accent));
   width: 12px;
   height: 12px;
   margin-top: 4px;
 }
+.mp-tl-item[data-portal-to="btp"] .mp-tl-dot {
+  background: hsl(var(--btp-accent-fixed));
+}
+.mp-tl-item[data-portal-to="dev"] .mp-tl-dot {
+  background: hsl(var(--dev-accent-fixed));
+}
 .mp-tl-portal .mp-tl-chevron {
-  color: hsl(var(--mode-accent));
   transition:
     transform 0.2s ease,
     color 0.2s ease;
+}
+.mp-tl-item[data-portal-to="btp"] .mp-tl-chevron {
+  color: hsl(var(--btp-accent-fixed));
+}
+.mp-tl-item[data-portal-to="dev"] .mp-tl-chevron {
+  color: hsl(var(--dev-accent-fixed));
 }
 .mp-tl-portal .mp-tl-head:hover .mp-tl-chevron {
   transform: translateX(4px);
@@ -200,8 +213,11 @@
 .mp-tl-portal .mp-tl-head.mp-tl-head-left:hover .mp-tl-chevron {
   transform: translateX(-4px);
 }
-.mp-tl-portal .mp-tl-head:hover strong {
-  color: hsl(var(--mode-accent));
+.mp-tl-item[data-portal-to="btp"] .mp-tl-head:hover strong {
+  color: hsl(var(--btp-accent-fixed));
+}
+.mp-tl-item[data-portal-to="dev"] .mp-tl-head:hover strong {
+  color: hsl(var(--dev-accent-fixed));
 }
 
 @media (max-width: 720px) {

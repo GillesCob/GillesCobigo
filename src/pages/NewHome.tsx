@@ -311,6 +311,14 @@ export default function NewHome() {
   const rootStyle = {
     ...FIXED_LIGHT_TOKENS,
     "--mode-accent": mode === "btp" ? BTP_ACCENT_HSL : DEV_ACCENT_HSL,
+    // Couleurs FIXES des items "portail" du Parcours (mockup : --dev-accent-fixed/
+    // --btp-accent-fixed), jamais celle du mode courant : reflete le mode de DESTINATION du
+    // lien, pas le mode affiche actuellement. --mode-accent etait utilisee par erreur pour
+    // .mp-tl-portal (NewHome.timeline.css), ce qui faisait apparaitre l'item "vers BTP" dans
+    // la teinte Dev en mode Dev (et inversement), au lieu de rester toujours de la couleur du
+    // mode vise.
+    "--dev-accent-fixed": DEV_ACCENT_HSL,
+    "--btp-accent-fixed": BTP_ACCENT_HSL,
     // Pile de police du mockup (body { font-family: ... }), posée une seule fois ici plutôt que
     // répétée dans chaque fichier NewHome.*.css : hero/navbar/timeline la redéclarent chacun sur
     // leur propre classe racine (fait avant que ce point commun soit identifié), mais toute
