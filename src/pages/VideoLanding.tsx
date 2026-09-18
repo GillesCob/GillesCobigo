@@ -1,17 +1,33 @@
 import { useState } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
-import { ArrowRight, Download, Play, Sun, Moon } from "lucide-react";
+import { ArrowRight, Download, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import BIMTerm from "@/components/shared/BIMTerm";
 import { videoLinks, videoRedirects } from "@/data/videoLinks";
-import { useThemeStore } from "@/store/themeStore";
 import NotFound from "@/pages/NotFound";
+
+// Fond clair fixe, aligne sur le nouveau design du portfolio (/new, mode Dev), independant
+// du theme sombre/clair partage du reste du site (meme principe que NewHome.tsx). Les tokens
+// CSS ci-dessous reprennent les valeurs du theme clair de globals.css (`:root`, jamais `.dark`),
+// reappliquees localement pour que tous les composants partages (Button, Badge) qui lisent
+// var(--foreground)/var(--primary)/etc. rendent en clair sur cette page precise, sans toucher
+// au theme global. Plus de bouton de bascule sombre/clair ici (palette fixe = rien a basculer,
+// meme choix que NewHome).
+const LIGHT_THEME_VARS = {
+  "--background": "0 0% 100%",
+  "--foreground": "224 71.4% 4.1%",
+  "--muted-foreground": "220 8.9% 46.1%",
+  "--secondary": "220 14.3% 95.9%",
+  "--secondary-foreground": "220.9 39.3% 11%",
+  "--primary": "220.9 39.3% 11%",
+  "--primary-foreground": "210 20% 98%",
+  "--border": "220 13% 91%",
+} as React.CSSProperties;
 
 export default function VideoLanding() {
   const { token } = useParams<{ token: string }>();
   const [playing, setPlaying] = useState(false);
-  const { theme, toggleTheme } = useThemeStore();
 
   if (token && videoRedirects[token]) {
     return <Navigate to={`/v/${videoRedirects[token]}`} replace />;
@@ -22,17 +38,18 @@ export default function VideoLanding() {
   if (!video) return <NotFound />;
 
   return (
-    <div className="min-h-dvh bg-background flex items-center justify-center px-4 py-16 relative">
-      <button
-        type="button"
-        onClick={toggleTheme}
-        aria-label="Basculer le thème"
-        className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors p-2"
-      >
-        {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-      </button>
+    <div
+      className="min-h-dvh bg-background flex items-center justify-center px-4 py-16 relative overflow-hidden"
+      style={LIGHT_THEME_VARS}
+    >
+      <img
+        src="/images/obsidian-graph.svg"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 m-auto h-[130%] w-auto max-w-none opacity-[0.1] select-none pointer-events-none"
+      />
 
-      <div className="w-full max-w-xl lg:max-w-4xl">
+      <div className="relative w-full max-w-xl lg:max-w-4xl">
         <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Gilles Cobigo</h1>
         <p className="text-muted-foreground text-base md:text-lg max-w-md mb-6 leading-relaxed">
           10 ans dans le bâtiment, <BIMTerm>BIM Manager</BIMTerm> sur l&apos;extension en mer de Monaco. Aujourd&apos;hui
@@ -45,7 +62,7 @@ export default function VideoLanding() {
           <Badge variant="secondary">React</Badge>
         </div>
 
-        <div className="relative aspect-video rounded-xl border border-border bg-zinc-950 overflow-hidden mb-10">
+        <div className="relative aspect-video rounded-xl border border-white/10 bg-zinc-950 overflow-hidden mb-10">
           {playing && video.videoUrl ? (
             <video src={video.videoUrl} controls autoPlay className="w-full h-full object-contain" />
           ) : (
@@ -65,7 +82,7 @@ export default function VideoLanding() {
                 <Play size={22} className="text-white ml-0.5" fill="white" />
               </span>
               {!video.videoUrl && (
-                <span className="absolute bottom-3 left-4 text-xs font-medium text-muted-foreground">
+                <span className="absolute bottom-3 left-4 text-xs font-medium text-zinc-400">
                   Vidéo à venir
                 </span>
               )}
@@ -75,7 +92,7 @@ export default function VideoLanding() {
 
         <div className="flex flex-wrap lg:flex-nowrap gap-2.5">
           <Button asChild size="lg" className="whitespace-nowrap">
-            <a href="https://gillescobigo.com">
+            <a href="https://gillescobigo.com" target="_blank" rel="noopener noreferrer">
               gillescobigo.com <ArrowRight size={16} className="ml-1" />
             </a>
           </Button>
@@ -92,7 +109,9 @@ export default function VideoLanding() {
               // n'existe plus, la liste de projets vit maintenant dans la section #projets de /.
               // Toujours #projets (jamais #chantiers) : choix simple, demandé par Gilles plutôt
               // qu'une logique conditionnelle sur le mode par défaut du visiteur.
-              <Link to="/#projets">Voir mes projets</Link>
+              <Link to="/#projets" target="_blank" rel="noopener noreferrer">
+                Voir mes projets
+              </Link>
             )}
           </Button>
           <Button asChild size="lg" variant="outline" className="whitespace-nowrap">
@@ -104,7 +123,9 @@ export default function VideoLanding() {
               d'équivalent sur la nouvelle home (décision de Gilles, PR #206), plutôt que de
               pointer vers une section inexistante. */}
           <Button asChild size="lg" variant="outline" className="whitespace-nowrap">
-            <Link to="/#contact">Me contacter</Link>
+            <Link to="/#contact" target="_blank" rel="noopener noreferrer">
+              Me contacter
+            </Link>
           </Button>
         </div>
       </div>
