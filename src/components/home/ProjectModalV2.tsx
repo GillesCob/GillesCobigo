@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
-import { X, ExternalLink, Github, History } from "lucide-react";
+import { X, History } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -136,24 +136,27 @@ export default function ProjectModalV2({ isOpen, onClose, project }: IProjectMod
     if (hasLinks) {
       bodyBlocks.push(
         <div key="links" className="flex flex-wrap gap-2.5">
+          {/* Mockup : liens texte seul (#modalGithub "Code sur GitHub", #modalLive "Voir en ligne"),
+              jamais d'icône lucide dessus (trouvé au diff pixel : largeur des boutons différente,
+              icônes absentes du mockup). */}
           {project.links?.github && (
             <Button asChild variant="outline" size="sm" className={cn(MODAL_LINK_GH_CLASS)}>
               <a href={project.links.github} target="_blank" rel="noopener noreferrer">
-                <Github size={14} className="mr-1" /> GitHub
+                Code sur GitHub
               </a>
             </Button>
           )}
           {project.links?.live && (
             <Button asChild size="sm" className={cn(MODAL_LINK_LIVE_CLASS)}>
               <a href={project.links.live} target="_blank" rel="noopener noreferrer">
-                <ExternalLink size={14} className="mr-1" /> Voir le projet
+                Voir en ligne
               </a>
             </Button>
           )}
           {project.links?.demo && (
             <Button asChild size="sm" className={cn(MODAL_LINK_LIVE_CLASS)}>
               <a href={project.links.demo} target="_blank" rel="noopener noreferrer">
-                <ExternalLink size={14} className="mr-1" /> Démo
+                Voir en ligne
               </a>
             </Button>
           )}

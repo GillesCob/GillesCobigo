@@ -1,0 +1,92 @@
+/* Port de la bande "GitHub en direct" depuis Projets/Portfolio/mockups/refonte-v5-bascule.html
+   (.github-stats, .github-stats-inner, .github-stats-label, .github-stats-grid, .github-stat,
+   .github-stat-skeleton). Même méthode que les autres fichiers NewHome.*.css.
+
+   Écart trouvé au diff : l'implémentation précédente associait GitBranch à "repos publics", Clock à
+   "dernier commit" et Folder à "repo actif". Le mockup utilise en réalité une icône dossier pour
+   "repos publics", une icône commit (cercle + 2 traits) pour "dernier commit" et une icône branche
+   pour "repo actif" (svg inline du mockup, mêmes tracés que lucide Folder/GitCommit/GitBranch) :
+   les trois étaient permutées, corrigé dans GitHubStats.tsx. */
+
+.mp-github-stats {
+  padding: 40px 0;
+  border-top: 1px solid hsl(var(--border));
+}
+
+.mp-github-stats-inner {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.mp-github-stats-label {
+  font-size: 11px;
+  line-height: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: hsl(var(--muted-foreground));
+  font-family: ui-monospace, monospace;
+  margin: 0 0 24px;
+}
+
+.mp-github-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  justify-items: center;
+}
+@media (min-width: 640px) {
+  .mp-github-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.mp-github-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.mp-github-stat.repo-active {
+  grid-column: span 2;
+}
+@media (min-width: 640px) {
+  .mp-github-stat.repo-active {
+    grid-column: span 1;
+  }
+}
+.mp-github-stat svg {
+  flex-shrink: 0;
+  color: hsl(var(--muted-foreground));
+}
+.mp-github-stat .value {
+  font-size: 22px;
+  line-height: normal;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+.mp-github-stat .label {
+  font-size: 12px;
+  line-height: normal;
+  color: hsl(var(--muted-foreground));
+  margin: 0;
+}
+
+.mp-github-stat-skeleton {
+  height: 52px;
+  width: 100%;
+  max-width: 180px;
+  border-radius: 10px;
+  background: hsl(var(--border));
+  animation: mpSkeletonPulse 1.4s ease-in-out infinite;
+}
+@keyframes mpSkeletonPulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}

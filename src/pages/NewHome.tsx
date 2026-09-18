@@ -11,6 +11,11 @@ import ContactSectionInline from "@/components/home/ContactSectionInline";
 import "./NewHome.hero.css";
 import "./NewHome.navbar.css";
 import "./NewHome.timeline.css";
+import "./NewHome.work.css";
+import "./NewHome.skills.css";
+import "./NewHome.github.css";
+import "./NewHome.contact.css";
+import "./NewHome.footer.css";
 
 // Décalage du header sticky pour tout scroll calculé à la main (nav à points, CTA hero, bascule
 // de mode), identique au HEADER_OFFSET du mockup de référence.
@@ -258,6 +263,13 @@ export default function NewHome() {
   const rootStyle = {
     ...FIXED_LIGHT_TOKENS,
     "--mode-accent": mode === "btp" ? BTP_ACCENT_HSL : DEV_ACCENT_HSL,
+    // Pile de police du mockup (body { font-family: ... }), posée une seule fois ici plutôt que
+    // répétée dans chaque fichier NewHome.*.css : hero/navbar/timeline la redéclarent chacun sur
+    // leur propre classe racine (fait avant que ce point commun soit identifié), mais toute
+    // section ajoutée depuis en hérite directement d'ici, sans quoi elle retombe sur la pile
+    // Tailwind par défaut du Preflight (`ui-sans-serif, system-ui, ...`), un bug déjà trouvé deux
+    // fois au diff pixel (timeline, puis work-list).
+    fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif',
   } as CSSProperties;
   const skills = mode === "dev" ? devSkills : btpSkills;
 
@@ -354,7 +366,7 @@ export default function NewHome() {
 
         <ProjectsSectionV2 mode={mode} />
 
-        {mode === "dev" && <GitHubStats maxWidthClassName="max-w-[640px]" sectionClassName="mt-16" />}
+        {mode === "dev" && <GitHubStats newHomeStyle />}
 
         <section id="competences" className="scroll-mt-[90px]">
           <motion.div
@@ -365,7 +377,11 @@ export default function NewHome() {
             onViewportEnter={() => setSkillsRevealed(true)}
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
-            <p className="mb-[18px] text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">
+            {/* Mockup : `.row-label` de Compétences porte un style inline `margin:26px 0 0`, qui
+                remplace entièrement le margin-bottom:18px par défaut de la classe (pas un ajout) —
+                cas particulier à cette section seulement, jamais rencontré sur Parcours/Projets/
+                Chantiers. */}
+            <p className="mp-row-label" style={{ margin: "26px 0 0" }}>
               Compétences
             </p>
             <div className="flex flex-col">
@@ -381,14 +397,31 @@ export default function NewHome() {
 
       {/* Footer statique, hors de la transition de mode-fade (mockup : <footer> est un frère de
           <main>, jamais affecté par la classe mode-fade portée par main uniquement). */}
-      <footer className="mt-[70px] border-t border-border px-10 pb-[30px] pt-10">
-        <div className="mx-auto flex max-w-[880px] flex-wrap gap-[60px]">
-          <div className="flex flex-col">
-            <p className="mb-2.5 text-sm font-bold">Gilles Cobigo</p>
-            <p className="mb-1.5 text-[13px] text-muted-foreground">Développeur fullstack, ex-BIM Manager</p>
+      <footer className="mp-footer">
+        <div className="mp-footer-grid">
+          <div className="mp-footer-col">
+            <p className="h">Gilles Cobigo</p>
+            <p>Développeur fullstack, ex-BIM Manager</p>
+          </div>
+          <div className="mp-footer-col">
+            <p className="h">Liens</p>
+            <a href="https://github.com/GillesCob" target="_blank" rel="noopener noreferrer">
+              github.com/GillesCob
+            </a>
+            <a href="https://www.linkedin.com/in/gillescobigo" target="_blank" rel="noopener noreferrer">
+              linkedin.com/in/gillescobigo
+            </a>
+            <a href="mailto:contact@gillescobigo.com">contact@gillescobigo.com</a>
+          </div>
+          <div className="mp-footer-col">
+            <p className="h">Ce site</p>
+            <p>Construit en React + Vite. Hébergé sur Vercel.</p>
+            <a href="https://github.com/GillesCob/GillesCobigo" target="_blank" rel="noopener noreferrer">
+              Code sur GitHub
+            </a>
           </div>
         </div>
-        <p className="mt-[30px] text-center text-xs text-muted-foreground">© 2026 Gilles Cobigo</p>
+        <p className="mp-footer-copy">© 2026 Gilles Cobigo</p>
       </footer>
     </div>
   );
@@ -407,12 +440,12 @@ interface ISkillRowProps {
 
 function SkillRow({ cat, items, index, revealed }: ISkillRowProps) {
   return (
-    <div className="relative overflow-hidden border-b border-border py-10">
-      <p className="mb-3 text-[clamp(28px,4.8vw,48px)] font-extrabold leading-[1.05] tracking-[-0.01em]">{cat}</p>
-      <p className="max-w-full text-left text-[15px] text-muted-foreground">{items}</p>
+    <div className="mp-skills-row">
+      <p className="mp-cat">{cat}</p>
+      <p className="mp-items">{items}</p>
       <span
         aria-hidden="true"
-        className="absolute bottom-0 left-0 h-0.5 bg-mode-accent transition-[width] duration-700 ease-out"
+        className="mp-accent-bar transition-[width] duration-700 ease-out"
         style={{ width: revealed ? 64 : 0, transitionDelay: `${SKILL_ROW_DELAYS_MS[index] ?? 0}ms` }}
       />
     </div>

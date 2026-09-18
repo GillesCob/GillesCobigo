@@ -6,12 +6,10 @@
    place de var(--accent) / var(--ink) / var(--muted) / var(--line)).
 
    Écarts volontaires au mockup, documentés ici :
-   1. Le titre de section "Mon parcours" (mockup .row-label, classe générique partagée avec
-      Projets/Chantiers/Compétences, pas encore portées) est stylé ici via .mp-tl-row-label plutôt
-      que de créer un fichier .row-label partagé prématurément : mêmes déclarations exactes que le
-      mockup (`.row-label` ligne 92 du mockup), seulement renommé/scopé à ce composant. Si Projets/
-      Chantiers/Compétences sont portées un jour avec la même méthode, factoriser vers une classe
-      commune plutôt que dupliquer ce bloc.
+   1. Le titre de section "Mon parcours" (mockup .row-label) est stylé via `.mp-row-label`,
+      déclarée ici mais réutilisée telle quelle par Projets/Chantiers/Compétences (portées dans la
+      même session) : une seule déclaration, partagée entre tous les fichiers CSS de /new (import
+      global via NewHome.tsx), plutôt qu'une classe dupliquée par section.
    2. `.tl-item` : les propriétés d'entrée du mockup (`opacity:0`, `transition`, `.dir-right`,
       `.dir-left`, `.in-view`) sont volontairement absentes ici. Le mockup les anime via
       IntersectionObserver + classe CSS togglée en JS vanilla ; React utilise Framer Motion
@@ -34,7 +32,7 @@
   margin-bottom: 70px;
 }
 
-.mp-tl-row-label {
+.mp-row-label {
   font-size: 12px;
   line-height: normal; /* sans ça, herite du line-height Tailwind au lieu du defaut navigateur (cf bug deja trouve sur .mp-eyebrow/.mp-lead) */
   font-weight: 700;

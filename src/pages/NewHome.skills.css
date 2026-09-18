@@ -1,0 +1,49 @@
+/* Port de "Compétences" (#competences) depuis Projets/Portfolio/mockups/refonte-v5-bascule.html
+   (.skills-list, .skills-row, .cat, .items, liseré ::after). Même méthode que les autres fichiers
+   NewHome.*.css. `font-family` hérité du wrapper racine (NewHome.tsx), pas redéclaré ici. */
+
+.mp-skills-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 40px 0;
+  border-bottom: 1px solid hsl(var(--border));
+  position: relative;
+  overflow: hidden;
+}
+
+.mp-skills-row .mp-cat {
+  font-size: clamp(28px, 4.8vw, 48px);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.mp-skills-row .mp-items {
+  font-size: 15px;
+  line-height: normal;
+  color: hsl(var(--muted-foreground));
+  text-align: left;
+  max-width: 100%;
+}
+
+/* Liseré d'accent qui se déploie en cascade : dans le mockup, un pseudo-élément ::after togglé par
+   `.skills-list.in-view`. React pilote la même largeur/délai via Framer (style inline `width` +
+   `transitionDelay` déjà en place dans NewHome.tsx, cf SKILL_ROW_DELAYS_MS), donc pas de classe
+   `.in-view`/pseudo-élément ici : ce fichier ne fait que positionner l'élément qui porte ce style
+   inline (span absolu bas-gauche, hauteur 2px), identique à la géométrie du mockup.
+   Cf déviation équivalente déjà documentée dans NewHome.timeline.css pour l'entrée Framer. */
+.mp-skills-row .mp-accent-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  background: hsl(var(--mode-accent));
+}
+
+@media (max-width: 720px) {
+  .mp-skills-row {
+    padding: 28px 0;
+  }
+}

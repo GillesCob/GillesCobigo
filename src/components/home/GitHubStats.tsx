@@ -1,4 +1,4 @@
-import { GitBranch, Clock, Folder } from "lucide-react";
+import { GitBranch, GitCommit, Clock, Folder } from "lucide-react";
 import { useGitHubStats } from "@/hooks/useGitHubStats";
 import { cn } from "@/lib/utils";
 
@@ -20,12 +20,58 @@ interface IGitHubStatsProps {
   // Idem pour l'espacement au-dessus de la section : par défaut celui de Home, /new en passe un
   // plus grand pour se détacher davantage de la section Projets juste au-dessus.
   sectionClassName?: string;
+  // /new seul : bascule vers le CSS copié du mockup (NewHome.github.css, classes mp-github-*) au
+  // lieu des classes Tailwind historiques de Home, pour ne pas faire dépendre la Home actuelle
+  // (déjà en prod, jamais revue au diff pixel) d'un fichier CSS pensé uniquement pour /new.
+  newHomeStyle?: boolean;
 }
 
-export default function GitHubStats({ maxWidthClassName = "max-w-4xl", sectionClassName }: IGitHubStatsProps) {
+export default function GitHubStats({ maxWidthClassName = "max-w-4xl", sectionClassName, newHomeStyle }: IGitHubStatsProps) {
   const { data, isLoading, isError } = useGitHubStats();
 
   if (isError) return null;
+
+  if (newHomeStyle) {
+    return (
+      <section className="mp-github-stats">
+        <div className="mp-github-stats-inner">
+          <p className="mp-github-stats-label">GitHub en direct</p>
+          <div className="mp-github-stats-grid">
+            {isLoading ? (
+              Array.from({ length: 3 }).map((_, i) => <div key={i} className="mp-github-stat-skeleton" />)
+            ) : (
+              <>
+                {/* Icônes reprises telles quelles du mockup (tracés svg inline) : dossier pour
+                    "repos publics", commit pour "dernier commit", branche pour "repo actif" —
+                    permutées dans l'implémentation Home, corrigé ici (cf NewHome.github.css). */}
+                <div className="mp-github-stat">
+                  <Folder size={18} />
+                  <div>
+                    <p className="value">{data?.publicRepos ?? "N/A"}</p>
+                    <p className="label">repos publics</p>
+                  </div>
+                </div>
+                <div className="mp-github-stat">
+                  <GitCommit size={18} />
+                  <div>
+                    <p className="value">{formatRelativeDate(data?.lastCommitDate ?? null)}</p>
+                    <p className="label">dernier commit</p>
+                  </div>
+                </div>
+                <div className="mp-github-stat repo-active">
+                  <GitBranch size={18} />
+                  <div className="min-w-0">
+                    <p className="value truncate">{data?.lastRepo ?? "N/A"}</p>
+                    <p className="label">repo actif</p>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className={cn("py-10 px-4 border-b border-border", sectionClassName)}>

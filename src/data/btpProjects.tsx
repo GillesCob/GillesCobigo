@@ -14,6 +14,9 @@ export const btpProjects: IProjectCard[] = [
         de données complexes. Projet à 2 milliards €.
       </>
     ),
+    // cf commentaire équivalent dans devProjects.tsx (IProjectCard.summary) : blurb court de la
+    // ligne /new, verbatim mockup #chantiers .work-row.
+    summary: "Extension en mer de la ville de Monaco.",
     image: "/images/mareterra-placeholder.jpg",
   },
   {
@@ -26,6 +29,9 @@ export const btpProjects: IProjectCard[] = [
         de la synthèse technique avec Solibri et Navisworks. Projet à 58 millions €.
       </>
     ),
+    // Verbatim mockup ("Coordination BIM.") : blurb visiblement pas peaufiné côté maquette (identique
+    // à celui de MRS3 ci-dessous), à reprendre si Gilles veut un résumé plus distinctif par chantier.
+    summary: "Coordination BIM.",
     image: "/images/tpr2-placeholder.jpg",
   },
   {
@@ -39,6 +45,8 @@ export const btpProjects: IProjectCard[] = [
         bâti existant contraint. Projet à 157 millions €.
       </>
     ),
+    // Idem TPR2 : verbatim mockup, identique aux deux chantiers.
+    summary: "Coordination BIM.",
     image: "/images/mrs3-placeholder.jpg",
   },
 ];
