@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { ArrowRight, Download, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import BIMTerm from "@/components/shared/BIMTerm";
 import { videoLinks, videoRedirects } from "@/data/videoLinks";
 import NotFound from "@/pages/NotFound";
+import "./VideoLanding.bg.css";
 
 // Fond clair fixe, aligne sur le nouveau design du portfolio (/new, mode Dev), independant
 // du theme sombre/clair partage du reste du site (meme principe que NewHome.tsx). Les tokens
@@ -22,12 +23,65 @@ const LIGHT_THEME_VARS = {
   "--secondary-foreground": "220.9 39.3% 11%",
   "--primary": "220.9 39.3% 11%",
   "--primary-foreground": "210 20% 98%",
+  "--accent": "220 14.3% 95.9%",
+  "--accent-foreground": "220.9 39.3% 11%",
+  "--input": "220 13% 91%",
   "--border": "220 13% 91%",
 } as React.CSSProperties;
 
 export default function VideoLanding() {
   const { token } = useParams<{ token: string }>();
   const [playing, setPlaying] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const bgWrapRef = useRef<HTMLDivElement>(null);
+
+  // Parallax du fond obsidian-graph.svg au scroll de la page : meme calcul que le hero de
+  // /new (NewHome.tsx), simplifie puisqu'ici toute la page joue le role du "hero" (pas de
+  // sections distinctes). Bornee par le surdimensionnement de l'image en CSS (140% de hauteur,
+  // cf VideoLanding.bg.css) pour ne jamais laisser apparaitre un bord.
+  useEffect(() => {
+    let ticking = false;
+    let pageTop = 0;
+    let pageHeight = 0;
+    let bgImg: HTMLElement | null = null;
+
+    function measure() {
+      const el = containerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      pageTop = rect.top + window.scrollY;
+      pageHeight = rect.height;
+      bgImg = bgWrapRef.current?.querySelector<HTMLElement>("img") ?? null;
+    }
+    function update() {
+      ticking = false;
+      if (!bgImg) return;
+      const rectTop = pageTop - window.scrollY;
+      const max = pageHeight * 0.1;
+      const offset = Math.max(-max, Math.min(max, rectTop * 0.15));
+      bgImg.style.transform = `translateY(${offset}px)`;
+    }
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }
+    function onResize() {
+      measure();
+      onScroll();
+    }
+    measure();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
+    // Appel immediat obligatoire : sans lui, `transform` reste "none" jusqu'au premier scroll,
+    // ou il saute directement a sa valeur calculee (pas de transition douce depuis "none").
+    update();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
 
   if (token && videoRedirects[token]) {
     return <Navigate to={`/v/${videoRedirects[token]}`} replace />;
@@ -39,15 +93,13 @@ export default function VideoLanding() {
 
   return (
     <div
+      ref={containerRef}
       className="min-h-dvh bg-background flex items-center justify-center px-4 py-16 relative overflow-hidden"
       style={LIGHT_THEME_VARS}
     >
-      <img
-        src="/images/obsidian-graph.svg"
-        alt=""
-        aria-hidden="true"
-        className="absolute inset-0 m-auto h-[130%] w-auto max-w-none opacity-[0.1] select-none pointer-events-none"
-      />
+      <div ref={bgWrapRef} className="vl-bg" aria-hidden="true">
+        <img src="/images/obsidian-graph.svg" alt="" className="select-none pointer-events-none" />
+      </div>
 
       <div className="relative w-full max-w-xl lg:max-w-4xl">
         <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Gilles Cobigo</h1>
@@ -96,7 +148,7 @@ export default function VideoLanding() {
               gillescobigo.com <ArrowRight size={16} className="ml-1" />
             </a>
           </Button>
-          <Button asChild size="lg" variant="outline" className="whitespace-nowrap">
+          <Button asChild size="lg" variant="outline" className="whitespace-nowrap text-foreground">
             {video.secondaryCta ? (
               <a
                 href={video.secondaryCta.href}
@@ -114,7 +166,7 @@ export default function VideoLanding() {
               </Link>
             )}
           </Button>
-          <Button asChild size="lg" variant="outline" className="whitespace-nowrap">
+          <Button asChild size="lg" variant="outline" className="whitespace-nowrap text-foreground">
             <a href="/cv-gilles-cobigo.pdf" download>
               Télécharger le CV <Download size={16} className="ml-1" />
             </a>
@@ -122,7 +174,7 @@ export default function VideoLanding() {
           {/* Ancien bouton "Lire mes articles" (Link to="/articles") retiré : /articles n'a pas
               d'équivalent sur la nouvelle home (décision de Gilles, PR #206), plutôt que de
               pointer vers une section inexistante. */}
-          <Button asChild size="lg" variant="outline" className="whitespace-nowrap">
+          <Button asChild size="lg" variant="outline" className="whitespace-nowrap text-foreground">
             <Link to="/#contact" target="_blank" rel="noopener noreferrer">
               Me contacter
             </Link>
