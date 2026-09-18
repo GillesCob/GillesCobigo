@@ -21,16 +21,11 @@ interface IGitHubEvent {
 }
 
 const GITHUB_USERNAME = import.meta.env.VITE_GITHUB_USERNAME ?? "GillesCob";
-const GITHUB_HEADERS = import.meta.env.VITE_GITHUB_TOKEN
-  ? { Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}` }
-  : {};
 
 export async function fetchGitHubStats(): Promise<IGitHubStats> {
   const [userRes, eventsRes] = await Promise.all([
-    axios.get<IGitHubUser>(`https://api.github.com/users/${GITHUB_USERNAME}`, { headers: GITHUB_HEADERS }),
-    axios.get<IGitHubEvent[]>(`https://api.github.com/users/${GITHUB_USERNAME}/events/public?per_page=10`, {
-      headers: GITHUB_HEADERS,
-    }),
+    axios.get<IGitHubUser>(`https://api.github.com/users/${GITHUB_USERNAME}`),
+    axios.get<IGitHubEvent[]>(`https://api.github.com/users/${GITHUB_USERNAME}/events/public?per_page=10`),
   ]);
 
   const pushEvent = eventsRes.data.find((e) => e.type === "PushEvent");
