@@ -34,6 +34,43 @@ export default function VideoLanding() {
   const [playing, setPlaying] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const bgWrapRef = useRef<HTMLDivElement>(null);
+  const videoWrapRef = useRef<HTMLDivElement>(null);
+  const videoBoxRef = useRef<HTMLDivElement>(null);
+
+  // Dimensionne la boîte vidéo (ratio 16:9) pour qu'elle remplisse au mieux l'espace restant
+  // (flex-1) entre le nom en haut et les boutons en bas, sans jamais dépasser ni la largeur ni la
+  // hauteur disponibles. Pur CSS (aspect-ratio + max-height/max-width) ne suffit pas ici : un
+  // enfant avec `height:100%` d'un wrapper flex-1 ne se résout pas de façon fiable une fois
+  // combiné à `aspect-ratio` (constaté : la boîte s'effondrait à quelques px), et `flex-1` +
+  // `aspect-ratio` directement sur la boîte casse le ratio dès que la largeur est le facteur
+  // limitant (la hauteur reste celle du flex-grow, pas recalculée). Même logique qu'un
+  // `object-fit: contain`, appliquée manuellement au conteneur.
+  useEffect(() => {
+    function resize() {
+      const wrap = videoWrapRef.current;
+      const box = videoBoxRef.current;
+      if (!wrap || !box) return;
+      const { width: availW, height: availH } = wrap.getBoundingClientRect();
+      if (availW <= 0 || availH <= 0) return;
+      const ratio = 16 / 9;
+      let w = availW;
+      let h = w / ratio;
+      if (h > availH) {
+        h = availH;
+        w = h * ratio;
+      }
+      box.style.width = `${w}px`;
+      box.style.height = `${h}px`;
+    }
+    resize();
+    const observer = new ResizeObserver(resize);
+    if (videoWrapRef.current) observer.observe(videoWrapRef.current);
+    window.addEventListener("resize", resize);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
 
   // Parallax du fond obsidian-graph.svg au scroll de la page : meme calcul que le hero de
   // /new (NewHome.tsx), simplifie puisqu'ici toute la page joue le role du "hero" (pas de
@@ -94,27 +131,37 @@ export default function VideoLanding() {
   return (
     <div
       ref={containerRef}
-      className="min-h-dvh bg-background flex items-center justify-center px-4 py-16 sm:py-10 relative overflow-hidden"
+      className="min-h-dvh bg-background flex flex-col items-center px-4 relative overflow-hidden"
       style={LIGHT_THEME_VARS}
     >
       <div ref={bgWrapRef} className="vl-bg" aria-hidden="true">
         <img src="/images/obsidian-graph.svg" alt="" className="select-none pointer-events-none" />
       </div>
 
-      <div className="relative w-full max-w-xl lg:max-w-4xl">
-        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-2">Gilles Cobigo</h1>
-        <p className="text-muted-foreground text-base md:text-lg max-w-md mb-6 sm:mb-4 leading-relaxed">
-          10 ans dans le bâtiment, <BIMTerm>BIM Manager</BIMTerm> sur l&apos;extension en mer de Monaco. Aujourd&apos;hui
-          développeur fullstack.
-        </p>
+      {/* Colonne pleine hauteur : nom en haut (mt confortable), vidéo qui prend toute la place
+          restante (flex-1, dimensionnée par sa hauteur disponible plutôt que par la largeur de la
+          colonne), boutons en bas de page. Demande explicite de Gilles (18/09), remplace le
+          centrage vertical + vidéo à hauteur fixe précédent. */}
+      <div className="relative flex w-full max-w-xl flex-1 flex-col lg:max-w-4xl">
+        <div className="mt-10 sm:mt-14">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Gilles Cobigo</h1>
+          <p className="text-muted-foreground text-base md:text-lg max-w-md mb-6 leading-relaxed">
+            10 ans dans le bâtiment, <BIMTerm>BIM Manager</BIMTerm> sur l&apos;extension en mer de Monaco. Aujourd&apos;hui
+            développeur fullstack.
+          </p>
 
-        <div className="flex flex-wrap gap-1.5 mb-8 sm:mb-5">
-          <Badge variant="secondary">Node.js</Badge>
-          <Badge variant="secondary">TypeScript</Badge>
-          <Badge variant="secondary">React</Badge>
+          <div className="flex flex-wrap gap-1.5">
+            <Badge variant="secondary">Node.js</Badge>
+            <Badge variant="secondary">TypeScript</Badge>
+            <Badge variant="secondary">React</Badge>
+          </div>
         </div>
 
-        <div className="relative aspect-video rounded-xl border border-white/10 bg-zinc-950 overflow-hidden mb-10 sm:mb-6 sm:mx-auto sm:h-[26vh] sm:w-auto sm:max-w-full">
+        <div ref={videoWrapRef} className="flex flex-1 min-h-0 items-center justify-center my-6">
+          <div
+            ref={videoBoxRef}
+            className="relative rounded-xl border border-white/10 bg-zinc-950 overflow-hidden"
+          >
           {playing && video.videoUrl ? (
             <video src={video.videoUrl} controls autoPlay className="w-full h-full object-contain" />
           ) : (
@@ -140,9 +187,10 @@ export default function VideoLanding() {
               )}
             </button>
           )}
+          </div>
         </div>
 
-        <div className="flex flex-wrap lg:flex-nowrap gap-2.5">
+        <div className="flex flex-wrap lg:flex-nowrap gap-2.5 pb-6 sm:pb-8">
           <Button asChild size="lg" className="whitespace-nowrap">
             <a href="https://gillescobigo.com" target="_blank" rel="noopener noreferrer">
               gillescobigo.com <ArrowRight size={16} className="ml-1" />
