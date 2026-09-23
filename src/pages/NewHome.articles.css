@@ -1,0 +1,252 @@
+/* Port de la section "Articles" (#articles, mode Dev) depuis
+   Projets/Portfolio/mockups/refonte-v5-bascule.html (.art-*, cadre .section-block). Même méthode que
+   les autres fichiers NewHome.*.css : déclarations copiées telles quelles, seules les couleurs
+   passent par les tokens déjà utilisés par ce portage (--muted → --muted-foreground, --ink →
+   --foreground, --line → --border, --accent → --mode-accent). Les deux gris sans token du mockup
+   (#B9BCBF du contour du total, #3A3E42 des titres au repos) restent en dur, comme dans le mockup.
+
+   Écarts volontaires, documentés ici pour ne jamais être "redécouverts" comme des bugs :
+   1. `.mp-articles` porte le cadre de `main` du mockup (max-width 880px, padding horizontal 40px,
+      20px sous 720px) : côté React, chaque section porte son propre conteneur (pas de `main`
+      commun). Le filet du haut vit sur l'enfant `.mp-art-block` (équivalent de .section-block),
+      donc il ne couvre que la largeur de contenu (800px à 1440), exactement comme le mockup.
+   2. `line-height: normal` posé sur la racine de la section : le mockup n'a pas de line-height sur
+      body (défaut navigateur), la page React hérite sinon du 1.5 de Tailwind (bug déjà trouvé au
+      diff pixel sur hero/navbar/timeline).
+   3. `.art-date` du mockup non reprise : aucune date n'est affichée dans le HTML du mockup (règle
+      sans élément cible). */
+
+.mp-articles {
+  max-width: 880px;
+  margin: 130px auto 0;
+  padding: 0 40px;
+  line-height: normal;
+}
+.mp-art-block {
+  border-top: 1px solid hsl(var(--border));
+  padding-top: 48px;
+  min-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mp-art-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 56px;
+  align-items: start;
+}
+.mp-art-count {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 6px;
+}
+.mp-art-total {
+  font-size: 152px;
+  line-height: 0.8;
+  font-weight: 200;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: transparent;
+  -webkit-text-stroke: 1px #b9bcbf;
+}
+.mp-art-total-label {
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+.mp-art-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+.mp-art-list::before,
+.mp-art-row::before,
+.mp-art-row::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform-origin: left center;
+}
+.mp-art-list::before {
+  top: 0;
+  background: hsl(var(--border));
+}
+.mp-art-row {
+  position: relative;
+}
+.mp-art-row::before {
+  bottom: 0;
+  background: hsl(var(--border));
+}
+.mp-art-row::after {
+  bottom: 0;
+  background: hsl(var(--mode-accent));
+  transform: scaleX(0);
+  transition: transform 0.45s ease;
+}
+.mp-art-link {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 26px 0;
+  text-decoration: none;
+  color: #3a3e42;
+  transition: color 0.25s ease;
+}
+.mp-art-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mp-art-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+}
+.mp-art-title {
+  display: block;
+  font-size: clamp(19px, 2.2vw, 23px);
+  line-height: 1.35;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.mp-art-arrow {
+  flex-shrink: 0;
+  font-size: 18px;
+  color: hsl(var(--foreground));
+  opacity: 0;
+  transform: translateX(-10px);
+  transition:
+    opacity 0.25s ease,
+    transform 0.3s ease;
+}
+.mp-art-link:hover,
+.mp-art-link:focus-visible {
+  color: hsl(var(--foreground));
+}
+.mp-art-row:hover::after,
+.mp-art-row:focus-within::after {
+  transform: scaleX(1);
+}
+.mp-art-link:hover .mp-art-arrow,
+.mp-art-link:focus-visible .mp-art-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+.mp-art-all {
+  display: inline-block;
+  margin-top: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  color: hsl(var(--mode-accent));
+  text-decoration: none;
+  padding-bottom: 3px;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0 1px;
+  transition: background-size 0.35s ease;
+}
+.mp-art-all:hover,
+.mp-art-all:focus-visible {
+  background-size: 100% 1px;
+}
+
+/* Apparition au scroll (classe .mp-art-anim posée par ArticlesSectionV2.tsx, jamais si
+   prefers-reduced-motion ou sans IntersectionObserver : tout reste alors visible).
+   1. filets tracés de gauche à droite, 2. titres qui montent derrière un masque ligne par ligne
+   (cascade 120ms), 3. total en fondu pendant qu'il compte de 0 au total réel, 4. lien final. */
+.mp-art-anim .mp-art-list::before,
+.mp-art-anim .mp-art-row::before {
+  transform: scaleX(0);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mp-art-anim .mp-art-title {
+  transform: translateY(105%);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mp-art-anim .mp-art-all,
+.mp-art-anim .mp-art-count {
+  opacity: 0;
+  transition: opacity 0.45s ease-out;
+}
+.mp-art-anim.mp-art-in .mp-art-list::before,
+.mp-art-anim.mp-art-in .mp-art-row::before {
+  transform: scaleX(1);
+}
+.mp-art-anim.mp-art-in .mp-art-title {
+  transform: translateY(0);
+}
+.mp-art-anim.mp-art-in .mp-art-all,
+.mp-art-anim.mp-art-in .mp-art-count {
+  opacity: 1;
+}
+.mp-art-anim.mp-art-in .mp-art-row:nth-child(1)::before {
+  transition-delay: 0.08s;
+}
+.mp-art-anim.mp-art-in .mp-art-row:nth-child(2)::before {
+  transition-delay: 0.16s;
+}
+.mp-art-anim.mp-art-in .mp-art-row:nth-child(3)::before {
+  transition-delay: 0.24s;
+}
+.mp-art-anim.mp-art-in .mp-art-row:nth-child(1) .mp-art-title {
+  transition-delay: 0.2s;
+}
+.mp-art-anim.mp-art-in .mp-art-row:nth-child(2) .mp-art-title {
+  transition-delay: 0.32s;
+}
+.mp-art-anim.mp-art-in .mp-art-row:nth-child(3) .mp-art-title {
+  transition-delay: 0.44s;
+}
+.mp-art-anim.mp-art-in .mp-art-all {
+  transition-delay: 0.7s;
+}
+
+@media (max-width: 720px) {
+  .mp-articles {
+    padding: 0 20px;
+  }
+  .mp-art-block {
+    min-height: auto;
+  }
+  .mp-art-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .mp-art-count {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 14px;
+    padding-top: 0;
+  }
+  .mp-art-total {
+    font-size: 88px;
+  }
+  .mp-art-total-label {
+    padding-bottom: 4px;
+  }
+  .mp-art-link {
+    padding: 22px 0;
+    gap: 14px;
+  }
+  .mp-art-title {
+    font-size: 18px;
+  }
+  .mp-art-arrow {
+    opacity: 1;
+    transform: none;
+    color: hsl(var(--muted-foreground));
+    font-size: 16px;
+  }
+}
