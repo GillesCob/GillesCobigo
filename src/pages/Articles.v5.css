@@ -1,0 +1,124 @@
+/* Pages articles (/articles, /articles/scheduled, /articles/:slug) en palette v5 mode Dev, clair
+   fixe, depuis Projets/Portfolio/mockups/articles-v5.html. Le mockup reproduit les anciennes pages
+   React à l'identique (structure, espacements) : seule la palette change. Les classes Tailwind
+   existantes sont donc gardées telles quelles, et ce fichier ne fait que deux choses :
+   1. `.av5-tokens` fige localement les tokens shadcn consommés par ces pages sur les hex du mockup
+      (même principe que FIXED_LIGHT_TOKENS de NewHome.tsx) : ils gagnent sur les valeurs `.dark`
+      posées sur <html> par le thème global du site, sans toucher à ce thème. Posée sur la racine
+      de chaque page ET sur le contenu du tiroir de sommaire mobile (rendu en portail hors de la
+      racine).
+   2. Copie telle quelle des règles du mockup que les tokens seuls ne couvrent pas : navbar v5
+      (nouvelle), couleurs de la prose (plugin typography sans dark:prose-invert), code en ligne et
+      bordure des blocs de code (règles globales de globals.css qui lisent les tokens de <html>). */
+
+.av5-tokens {
+  --background: 60 16.7% 97.6%; /* --bg #FAFAF8 */
+  --foreground: 210 8.3% 9.4%; /* --ink #16181A */
+  --card: 60 16.7% 97.6%;
+  --card-foreground: 210 8.3% 9.4%;
+  --popover: 60 16.7% 97.6%;
+  --popover-foreground: 210 8.3% 9.4%;
+  /* Mockup --fill #F0EFEC (ancien token --muted : fond des tags, item actif de la sidebar,
+     poignée du tiroir, squelettes de chargement). */
+  --muted: 45 11.8% 93.3%;
+  --muted-foreground: 210 4.3% 45.1%; /* --muted #6E7378 */
+  --border: 42.9 12.3% 88.8%; /* --line #E6E4DF */
+  --input: 42.9 12.3% 88.8%;
+  --ring: 210 8.3% 9.4%;
+  /* Boutons en HTML brut dans certains MDX (mockup .a-cta, .a-link-btn) : bouton primaire
+     `bg-primary text-primary-foreground` = --ink / --bg, liens `hover:bg-accent
+     hover:text-accent-foreground` = --fill / --ink. */
+  --primary: 210 8.3% 9.4%;
+  --primary-foreground: 60 16.7% 97.6%;
+  --accent: 45 11.8% 93.3%;
+  --accent-foreground: 210 8.3% 9.4%;
+  /* Mockup --prose-body : texte courant des articles et titre des cartes de la liste au repos
+     (ancien prose-invert #d4d4d4), dérivé de --ink, même écart titre/texte que la prose Tailwind. */
+  --av5-prose-body: color-mix(in srgb, #16181a 82%, #fafaf8);
+  color: hsl(var(--foreground));
+}
+
+.av5-page {
+  background: hsl(var(--background));
+  min-height: 100vh;
+}
+
+/* ---------- Navbar (mockup .nav, .nav-inner, .nav-row, .brand, .nav-back) ---------- */
+/* Hauteur 82px (22 + 41 + 18 + 1px de bordure, mockup --nav-h), reprise par pt-[82px] des pages et
+   par top/hauteur de la sidebar et du sommaire. Logo + nom calés au px sur la topbar de la home
+   (liseré 4px + padding 18px 40px + ligne de 41px = hauteur du switch de mode). */
+.av5-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 50;
+  background: hsl(var(--background));
+  border-bottom: 1px solid hsl(var(--border));
+}
+.av5-nav-inner {
+  padding: 22px 40px 18px;
+}
+.av5-nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 41px;
+}
+/* Copie de .brand (home), police et line-height de la home explicités (pile système, `normal`). */
+.av5-brand {
+  font-weight: 700;
+  font-size: 20px;
+  border: none;
+  background: none;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: normal;
+  color: hsl(var(--foreground));
+  cursor: pointer;
+  padding: 0;
+}
+/* Mockup : <img style="height:38px;width:auto;vertical-align:middle;margin-right:10px">, image en
+   ligne. `display:inline` rétablit le défaut navigateur que le Preflight Tailwind remplace par
+   `display:block` sur toute image. */
+.av5-brand img {
+  display: inline;
+  height: 38px;
+  width: auto;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+.av5-nav-back {
+  color: hsl(var(--muted-foreground));
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+.av5-nav-back:hover {
+  color: hsl(var(--foreground));
+}
+
+/* ---------- Prose (plugin @tailwindcss/typography, "prose prose-neutral max-w-none") ---------- */
+/* Mockup : texte courant --prose-body (dérivé de --ink, même écart titre/texte que la prose
+   Tailwind), titres, liens, gras et code en --ink. Les autres couleurs de prose-neutral clair
+   (puces, filets, citations...) restent celles du plugin, déjà claires. */
+.av5-tokens .prose {
+  --tw-prose-body: var(--av5-prose-body);
+  --tw-prose-headings: #16181a;
+  --tw-prose-links: #16181a;
+  --tw-prose-bold: #16181a;
+  --tw-prose-code: #16181a;
+}
+
+/* Code en ligne (globals.css `:not(pre) > code`) : fond --fill, filet --line, texte --ink. */
+.av5-tokens :not(pre) > code {
+  background-color: hsl(var(--muted));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+/* Blocs de code rehype-pretty-code : thème Shiki github-dark conservé (couleurs en style inline),
+   seul le filet autour du bloc passe à --line. */
+.av5-tokens [data-rehype-pretty-code-figure] {
+  border-color: hsl(var(--border));
+}

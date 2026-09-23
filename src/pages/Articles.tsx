@@ -3,6 +3,8 @@ import { Link, useSearchParams, useLocation, useNavigate } from 'react-router-do
 import { ArrowLeft, ArrowRight, X } from 'lucide-react'
 import { getArticles, isScheduled } from '@/lib/articles'
 import ArticleSidebar from '@/components/articles/ArticleSidebar'
+import ArticlesNavbar from '@/components/articles/ArticlesNavbar'
+import './Articles.v5.css'
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('fr-FR', {
@@ -57,8 +59,11 @@ export default function Articles({ scheduledOnly = false }: IArticlesProps) {
     .filter((t) => tagCounts[t] >= 2)
     .sort()
 
+  // Palette v5 mode Dev, clair fixe (mockup articles-v5.html) : cf Articles.v5.css.
   return (
-    <div className="flex min-h-screen pt-16">
+    <div className="av5-tokens av5-page">
+    <ArticlesNavbar />
+    <div className="flex min-h-screen pt-[82px]">
       <ArticleSidebar articles={articles} />
 
       <main className="flex-1 min-w-0 md:ml-64 px-6 lg:px-12 py-12">
@@ -118,7 +123,7 @@ export default function Articles({ scheduledOnly = false }: IArticlesProps) {
                     remaining.forEach((t) => params.append('tag', t));
                     setSearchParams(withPreview(params));
                   }}
-                  className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md bg-[#E8734A]/10 text-[#E8734A] hover:bg-[#E8734A]/20 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md bg-[#2B4A4A]/10 text-[#2B4A4A] hover:bg-[#2B4A4A]/20 transition-colors"
                 >
                   {tag} <X size={12} />
                 </button>
@@ -154,12 +159,12 @@ export default function Articles({ scheduledOnly = false }: IArticlesProps) {
                         {formatDate(article.date)}
                       </time>
                       {isPreview && isScheduled(article.date) && (
-                        <span className="text-xs font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#E8734A]/10 text-[#E8734A]">
+                        <span className="text-xs font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#2B4A4A]/10 text-[#2B4A4A]">
                           Programmé · {formatTime(article.date)}
                         </span>
                       )}
                     </div>
-                    <h2 className="text-xl font-semibold mt-2 mb-2 group-hover:text-muted-foreground transition-colors leading-snug">
+                    <h2 className="text-xl font-semibold mt-2 mb-2 text-[color:var(--av5-prose-body)] group-hover:text-foreground transition-colors leading-snug">
                       {article.title}
                     </h2>
                     <p className="text-muted-foreground text-sm leading-relaxed mb-3">
@@ -176,7 +181,7 @@ export default function Articles({ scheduledOnly = false }: IArticlesProps) {
                               setSearchParams(withPreview(new URLSearchParams({ tag: tag.toLowerCase() })))
                               scrollToTop()
                             }}
-                            className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground hover:bg-muted/70 transition-colors cursor-pointer"
+                            className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/70 transition-colors cursor-pointer"
                           >
                             {tag}
                           </button>
@@ -193,6 +198,7 @@ export default function Articles({ scheduledOnly = false }: IArticlesProps) {
           )}
         </div>
       </main>
+    </div>
     </div>
   )
 }

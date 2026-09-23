@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useModeStore, type Mode } from "@/store/modeStore";
@@ -7,13 +7,16 @@ import SectionDots from "@/components/home/SectionDots";
 import TimelineV2 from "@/components/home/TimelineV2";
 import ProjectsSectionV2 from "@/components/home/ProjectsSectionV2";
 import GitHubStats from "@/components/home/GitHubStats";
+import ArticlesSectionV2 from "@/components/home/ArticlesSectionV2";
 import ContactSectionInline from "@/components/home/ContactSectionInline";
+import { useGitHubStats } from "@/hooks/useGitHubStats";
 import "./NewHome.hero.css";
 import "./NewHome.navbar.css";
 import "./NewHome.timeline.css";
 import "./NewHome.work.css";
 import "./NewHome.skills.css";
 import "./NewHome.github.css";
+import "./NewHome.articles.css";
 import "./NewHome.contact.css";
 import "./NewHome.footer.css";
 import "./NewHome.modal.css";
@@ -101,10 +104,28 @@ function jumpToSection(id: string): void {
 }
 
 // Projets ↔ Chantiers occupent la même place dans le menu mais pas le même id (cf mockup).
+// Articles n'existe qu'en mode Dev : en passant en Bâtiment, on atterrit sur la section suivante
+// (Compétences), comme le mockup.
 function mapSectionToMode(section: string, nextMode: Mode): string {
   if (section === "projets" && nextMode === "btp") return "chantiers";
   if (section === "chantiers" && nextMode === "dev") return "projets";
+  if (section === "articles" && nextMode === "btp") return "competences";
   return section;
+}
+
+// Sections qui n'existent qu'en mode Dev et qu'un lien externe vise par ancre (lien
+// "← Portfolio · Articles" des pages articles, vers "/#articles") : le mode étant mémorisé
+// (localStorage, cf modeStore.ts), un visiteur passé en Bâtiment plus tôt arriverait sinon sur une
+// section masquée. Le mockup n'a pas ce cas (mode jamais mémorisé, toujours Dev au chargement).
+const DEV_ONLY_HASH_SECTIONS = ["articles"];
+
+// Position de la section hors transform (chaîne des offsetTop), jamais getBoundingClientRect :
+// reprise telle quelle du realignHashSection du mockup, pour qu'une section encore en cours
+// d'apparition (translateY) ne fausse pas le point d'arrivée.
+function getLayoutTop(el: HTMLElement): number {
+  let y = 0;
+  for (let n: HTMLElement | null = el; n; n = n.offsetParent as HTMLElement | null) y += n.offsetTop;
+  return y;
 }
 
 export default function NewHome() {
@@ -181,20 +202,56 @@ export default function NewHome() {
     };
   }, []);
 
-  // Ancre dans l'URL au premier montage (ex. "/#projets" ou "/#contact" depuis un lien externe,
-  // cf VideoLanding.tsx) : le hash seul (navigation React Router, pas un rechargement complet) ne
-  // déclenche aucun scroll automatique du navigateur, il faut le lire nous-mêmes. `scrollToSection`
-  // gère déjà l'offset du header fixed ; ScrollReset.tsx ignore ce montage précis (hash présent)
-  // pour ne pas ramener le scroll à 0 juste après. Une frame de délai : au tout premier rendu, les
-  // sections (notamment le hero, qui dépend de `fixedHeaderHeight` mesuré ci-dessus) n'ont pas
-  // forcément leur position finale.
-  useEffect(() => {
+  // Arrivée par ancre sur une section propre au mode Dev alors que le mode mémorisé est Bâtiment
+  // (cf DEV_ONLY_HASH_SECTIONS) : bascule en Dev avant la première peinture (layout effect), sans
+  // animation de bascule, pour atterrir directement sur la section visée.
+  useLayoutEffect(() => {
     const id = window.location.hash.slice(1);
-    if (!id) return;
-    const raf = requestAnimationFrame(() => scrollToSection(id));
-    return () => cancelAnimationFrame(raf);
+    if (!DEV_ONLY_HASH_SECTIONS.includes(id) || useModeStore.getState().mode === "dev") return;
+    setMode("dev");
+    setDisplayMode("dev");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Ancre dans l'URL au premier montage (ex. "/#projets" ou "/#contact" depuis un lien externe,
+  // cf VideoLanding.tsx, "/#articles" depuis les pages articles) : le hash seul (navigation React
+  // Router, pas un rechargement complet) ne déclenche aucun scroll automatique du navigateur, il
+  // faut le lire nous-mêmes. ScrollReset.tsx ignore ce montage précis (hash présent) pour ne pas
+  // ramener le scroll à 0 juste après. Recalage repris du mockup (realignHashSection) : saut
+  // instantané sur la position hors transform, une première fois une frame après le montage (au
+  // tout premier rendu, le hero dépend de `fixedHeaderHeight` mesuré ci-dessus), puis une seconde
+  // fois quand les stats GitHub remplacent leurs squelettes (hauteur différente, décale tout ce
+  // qui suit), seulement si le visiteur n'a pas scrollé entre-temps.
+  const hashAlignYRef = useRef<number | null>(null);
+  const realignHashSection = useCallback(() => {
+    const id = window.location.hash.slice(1);
+    const el = id ? document.getElementById(id) : null;
+    if (!el || el.offsetParent === null || id === "hero") return;
+    const lastY = hashAlignYRef.current;
+    if (lastY !== null && Math.abs(window.scrollY - lastY) > 2) return;
+    window.scrollTo({ top: getLayoutTop(el) - HEADER_OFFSET });
+    hashAlignYRef.current = window.scrollY;
+  }, []);
+
+  useEffect(() => {
+    if (!window.location.hash) return;
+    const raf = requestAnimationFrame(realignHashSection);
+    // Chargement complet de la page (mockup : window "load") : seulement sur un vrai chargement
+    // encore en cours, jamais sur une navigation interne où l'événement est déjà passé.
+    const isPageLoading = document.readyState !== "complete";
+    if (isPageLoading) window.addEventListener("load", realignHashSection, { once: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      if (isPageLoading) window.removeEventListener("load", realignHashSection);
+    };
+  }, [realignHashSection]);
+
+  const { isLoading: isGitHubStatsLoading } = useGitHubStats();
+  useEffect(() => {
+    if (isGitHubStatsLoading || !window.location.hash) return;
+    const raf = requestAnimationFrame(realignHashSection);
+    return () => cancelAnimationFrame(raf);
+  }, [isGitHubStatsLoading, realignHashSection]);
 
   // Parallax du visuel de fond du hero (image BIM côté Bâtiment, graphe Obsidian côté Dev) :
   // bouge à une fraction de la vitesse du scroll, borné pour ne jamais dépasser la marge ménagée
@@ -423,6 +480,8 @@ export default function NewHome() {
         <ProjectsSectionV2 mode={mode} />
 
         {mode === "dev" && <GitHubStats newHomeStyle />}
+
+        <ArticlesSectionV2 hidden={mode !== "dev"} />
 
         <section id="competences" className="scroll-mt-[90px]">
           <motion.div

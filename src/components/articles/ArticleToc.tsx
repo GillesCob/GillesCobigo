@@ -31,7 +31,7 @@ export default function ArticleToc({ headings }: IArticleTocProps) {
   return (
     <>
       {/* Desktop sidebar — xl+ only */}
-      <aside className="hidden xl:flex flex-col w-56 shrink-0 fixed top-16 right-0 h-[calc(100vh-4rem)] overflow-y-auto bg-background py-8 px-4 gap-3">
+      <aside className="hidden xl:flex flex-col w-56 shrink-0 fixed top-[82px] right-0 h-[calc(100vh-82px)] overflow-y-auto bg-background py-8 px-4 gap-3">
         <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-1 underline">
           Dans cet article
         </p>
@@ -65,7 +65,7 @@ export default function ArticleToc({ headings }: IArticleTocProps) {
 
       {/* Mobile TOC drawer */}
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent className="xl:hidden max-h-[70vh] flex flex-col">
+        <DrawerContent className="av5-tokens xl:hidden max-h-[70vh] flex flex-col">
           <DrawerHeader className="border-b border-border pb-4">
             <DrawerTitle>Sommaire</DrawerTitle>
           </DrawerHeader>

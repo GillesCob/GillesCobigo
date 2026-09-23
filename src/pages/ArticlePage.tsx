@@ -4,6 +4,8 @@ import { ArrowLeft, Copy, Check } from "lucide-react";
 import { getArticles, getArticleBySlug, isScheduled, slugify } from "@/lib/articles";
 import ArticleSidebar from "@/components/articles/ArticleSidebar";
 import ArticleToc from "@/components/articles/ArticleToc";
+import ArticlesNavbar from "@/components/articles/ArticlesNavbar";
+import "./Articles.v5.css";
 
 const mdxModules = import.meta.glob("/content/articles/**/*.mdx");
 
@@ -33,11 +35,11 @@ function CopyButton({ text, label }: { text: string; label: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 text-xs transition-colors hover:border-[#E8734A]/50"
+      className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 text-xs transition-colors hover:border-[#2B4A4A]/50"
     >
       {copied ? (
         <>
-          <Check size={12} className="text-[#E8734A]" /> Copié
+          <Check size={12} className="text-[#2B4A4A]" /> Copié
         </>
       ) : (
         <>
@@ -61,11 +63,11 @@ function CopyableLine({ text }: { text: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="flex w-full items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-left text-sm font-mono transition-colors hover:border-[#E8734A]/50"
+      className="flex w-full items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-left text-sm font-mono transition-colors hover:border-[#2B4A4A]/50"
     >
       <span className="flex-1 select-all break-all">{text}</span>
       {copied ? (
-        <Check size={14} className="flex-shrink-0 text-[#E8734A]" />
+        <Check size={14} className="flex-shrink-0 text-[#2B4A4A]" />
       ) : (
         <Copy size={14} className="flex-shrink-0 text-muted-foreground" />
       )}
@@ -113,7 +115,7 @@ export default function ArticlePage() {
             : "";
         const id = headingIdMap.get(text.toLowerCase().trim()) ?? slugify(text);
         return (
-          <h2 id={id} className="scroll-mt-20 mt-12 mb-4 text-2xl font-bold tracking-tight" {...props}>
+          <h2 id={id} className="scroll-mt-[98px] mt-12 mb-4 text-2xl font-bold tracking-tight" {...props}>
             {" "}
             {children}
           </h2>
@@ -127,7 +129,7 @@ export default function ArticlePage() {
             : "";
         const id = headingIdMap.get(text.toLowerCase().trim()) ?? slugify(text);
         return (
-          <h3 id={id} className="scroll-mt-20 mt-8 mb-3 text-xl font-semibold" {...props}>
+          <h3 id={id} className="scroll-mt-[98px] mt-8 mb-3 text-xl font-semibold" {...props}>
             {" "}
             {children}
           </h3>
@@ -155,9 +157,12 @@ export default function ArticlePage() {
 
   if (!existingMeta) return <Navigate to="/articles" replace />;
 
+  // Palette v5 mode Dev, clair fixe (mockup articles-v5.html) : cf Articles.v5.css.
   if (!meta) {
     return (
-      <div className="flex min-h-screen pt-16">
+      <div className="av5-tokens av5-page">
+      <ArticlesNavbar />
+      <div className="flex min-h-screen pt-[82px]">
         <ArticleSidebar articles={articles} activeSlug={fullSlug} />
         <main className="flex-1 min-w-0 md:ml-64 px-6 lg:px-12 py-12">
           <div className="max-w-3xl mx-auto">
@@ -174,11 +179,14 @@ export default function ArticlePage() {
           </div>
         </main>
       </div>
+      </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen pt-16">
+    <div className="av5-tokens av5-page">
+    <ArticlesNavbar />
+    <div className="flex min-h-screen pt-[82px]">
       <ArticleSidebar articles={articles} activeSlug={fullSlug} />
 
       <main className="flex-1 min-w-0 md:ml-64 xl:mr-56 px-6 lg:px-12 py-12">
@@ -230,7 +238,7 @@ export default function ArticlePage() {
             <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
               <span>{formatDate(meta.date)}</span>
               {isPreview && isScheduled(meta.date) && (
-                <span className="text-xs font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#E8734A]/10 text-[#E8734A]">
+                <span className="text-xs font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#2B4A4A]/10 text-[#2B4A4A]">
                   Programmé · {formatTime(meta.date)}
                 </span>
               )}
@@ -243,9 +251,9 @@ export default function ArticlePage() {
           </header>
 
           {meta.post && isScheduled(meta.date) && (
-            <section className="mb-10 rounded-lg border border-[#E8734A]/30 bg-[#E8734A]/5 p-4">
+            <section className="mb-10 rounded-lg border border-[#2B4A4A]/30 bg-[#2B4A4A]/5 p-4">
               <div className="flex items-center justify-between gap-2 mb-2">
-                <p className="text-xs font-mono uppercase tracking-widest text-[#E8734A]">
+                <p className="text-xs font-mono uppercase tracking-widest text-[#2B4A4A]">
                   Post LinkedIn (visible tant que l'article n'est pas publié)
                 </p>
                 <CopyButton text={meta.post} label="Copier le post" />
@@ -257,7 +265,7 @@ export default function ArticlePage() {
           )}
 
           {Content ? (
-            <article className="prose prose-neutral dark:prose-invert max-w-none">
+            <article className="prose prose-neutral max-w-none">
               <Content components={mdxComponents} />
             </article>
           ) : (
@@ -275,6 +283,7 @@ export default function ArticlePage() {
       </main>
 
       <ArticleToc headings={meta.headings} />
+    </div>
     </div>
   );
 }

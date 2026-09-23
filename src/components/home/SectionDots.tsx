@@ -21,6 +21,8 @@ export default function SectionDots({ mode, activeSection, onActiveChange }: ISe
     { id: "hero", label: "Accueil" },
     { id: "parcours", label: "Parcours" },
     mode === "dev" ? { id: "projets", label: "Projets" } : { id: "chantiers", label: "Chantiers" },
+    // Articles : mode Dev uniquement (mockup, lien .dev-only entre Projets et Compétences).
+    ...(mode === "dev" ? [{ id: "articles", label: "Articles" }] : []),
     { id: "competences", label: "Compétences" },
     { id: "contact", label: "Contact" },
   ];
