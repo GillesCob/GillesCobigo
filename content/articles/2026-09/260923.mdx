@@ -1,0 +1,108 @@
+export const frontmatter = {
+  title: "Du mockup HTML à React : pourquoi le rendu n'est jamais identique du premier coup",
+  date: "2026-09-23T16:00:00",
+  description:
+    "Je maquette mes interfaces en HTML brut pour itérer vite avec l'IA. Le passage en React, lui, donnait un rendu presque identique. Voilà pourquoi et la méthode qui a fait passer l'écart de 17 % à 0,016 %.",
+  tags: ["frontend", "react", "claude code", "portfolio"],
+  post: `Mon mockup HTML et ma page React avaient le même CSS. Ils n'avaient pas le même rendu.
+
+Je maquette toutes mes interfaces en HTML brut avant de coder, pour itérer vite avec l'IA sans rien casser. Sur la refonte de mon portfolio, je passais autant de temps à corriger les écarts en React qu'à construire le mockup.
+
+Dans l'article, je documente :
+- pourquoi une marge de 10px retranscrite en mb-2 (8px) suffit à désaligner une page entière
+- les styles que Tailwind applique sans qu'on les écrive (hauteur de ligne, padding des boutons)
+- comment un diff pixel Playwright + pixelmatch a fait passer l'écart de 17 % à 0,016 %
+
+L'article dans le 1er commentaire.
+
+#dev #react #tailwind #claudecode #frontend`,
+  headings: [
+    { level: 2, text: "Pourquoi je maquette en HTML brut", id: "section-1" },
+    { level: 2, text: "Le problème arrive au passage en React", id: "section-2" },
+    { level: 2, text: "Pourquoi le même rendu en un seul passage est si difficile", id: "section-3" },
+    { level: 2, text: "Arrêter de traduire, commencer à mesurer", id: "section-4" },
+    { level: 2, text: "Ce que j'en retiens", id: "section-5" },
+  ],
+};
+
+Quand je prépare une nouvelle interface, je ne commence jamais par React. Je commence par un fichier HTML.
+
+Tous mes projets passent par mon Dashboard, un ensemble de pages HTML que j'ai construit dans Obsidian (mon outil de prise de notes). C'est là que je crée mes mockups avec Claude Code, l'agent IA avec lequel je développe. Un mockup, chez moi, c'est un seul fichier avec son HTML, son CSS et son JavaScript. Pas de build, pas de framework.
+
+La refonte de la page d'accueil de mon <a href="https://gillescobigo.com" target="_blank" rel="noopener">portfolio</a> est passée par là. Le mockup a été rapide à construire. Le passage en React, beaucoup moins.
+
+## Pourquoi je maquette en HTML brut
+
+J'y vois trois avantages. Je vais plus vite, parce qu'un fichier statique s'ouvre dans le navigateur et se rafraîchit instantanément. J'échange mieux avec l'IA, parce qu'elle n'a qu'un fichier à lire et à modifier au lieu d'une arborescence de composants. Et j'économise des tokens (l'unité que l'IA consomme), puisque chaque retouche porte sur quelques lignes et non sur toute l'application.
+
+Tant que le mockup n'est pas validé, le vrai code n'est pas touché.
+
+## Le problème arrive au passage en React
+
+Une fois le mockup validé, il faut en faire une vraie page avec des composants React, Tailwind pour le style et le CSS global déjà en place sur le site. Le rendu était presque pareil. Presque.
+
+Après une vingtaine de pull requests de correctifs, le constat est tombé. Je passais autant de temps à corriger les écarts entre React et le mockup qu'à construire le mockup lui-même. De quoi agacer, puisque le mockup existe justement pour gagner du temps.
+
+## Pourquoi le même rendu en un seul passage est si difficile
+
+Le mockup et la page React ne partent pas de la même base.
+
+Le premier piège, c'est la retranscription en classes Tailwind. Le mockup indique une marge de 10px. La classe la plus proche, `mb-2`, vaut 8px. À la relecture du code, les deux se ressemblent. À l'écran, deux pixels d'écart par élément finissent par donner une page où rien n'est tout à fait aligné.
+
+Le deuxième piège, ce sont les styles que personne n'écrit. Tailwind embarque une remise à zéro globale appelée Preflight. Elle fixe une hauteur de ligne de 1.5 sur toute la page, retire le padding natif des boutons et leur fait hériter la police du parent. Le mockup, lui, profite des valeurs par défaut du navigateur sans jamais les déclarer.
+
+Comparer les deux fichiers propriété par propriété, comme je le faisais jusque-là avec l'IA, ne montre donc rien. Le bouton de ma timeline ne déclarait aucun padding dans le mockup. Dans React non plus. Pourtant l'un avait les 1px 6px du navigateur, l'autre 0.
+
+Le troisième piège, c'est la structure. Mon composant de timeline dupliquait son balisage entre desktop et mobile, là où le mockup n'en avait qu'un seul piloté par media query. Deux arbres HTML différents donnent deux rendus différents.
+
+## Arrêter de traduire, commencer à mesurer
+
+J'ai alors demandé une vraie recherche sur les pratiques des équipes pros. Elles ne comparent pas à l'œil. Elles font du visual regression testing avec des outils comme Percy, Chromatic ou BackstopJS. On capture deux rendus et on compare les images pixel par pixel.
+
+J'en ai tiré deux règles. D'abord, le CSS du mockup est copié tel quel dans un fichier dédié à chaque section, sans retranscription en Tailwind. Seules les couleurs passent par les variables du site et chaque écart volontaire est documenté en commentaire. Voilà le correctif du bouton de timeline.
+
+```css
+.mp-tl-head {
+  /* Le mockup garde le padding natif du navigateur (1px 6px).
+     Le Preflight Tailwind le remet à 0, on le rétablit ici. */
+  padding: 1px 6px;
+  font: inherit;
+  /* Sinon hérite du line-height 1.5 du Preflight au lieu de "normal". */
+  line-height: normal;
+}
+```
+
+Ensuite, la vérification est automatisée. Un script Playwright capture le mockup et la page React à la même position. La librairie pixelmatch compare ensuite les deux images et colore chaque pixel qui diffère. Claude boucle seul dessus jusqu'à convergence. Voilà le principe, simplifié.
+
+```js
+const mockup = PNG.sync.read(await pageMockup.screenshot());
+const react = PNG.sync.read(await pageReact.screenshot());
+const { width, height } = mockup;
+const diff = new PNG({ width, height });
+
+const ecarts = pixelmatch(mockup.data, react.data, diff.data, width, height, { threshold: 0.1 });
+console.log(`${((ecarts / (width * height)) * 100).toFixed(3)} % de pixels différents`);
+```
+
+Sur le hero et la navbar, l'écart est passé de 17 % à 0,016 %. Ce résidu vient du lissage des polices entre deux rendus indépendants, un plancher qu'aucun CSS ne fait disparaître. Les sections compétences et chantiers sont descendues à 0,0000 %. Cette version est aujourd'hui la page d'accueil du site.
+
+Une règle s'est ajoutée en route. Tout écart mesuré est traité comme réel. On ne le range jamais dans le « bruit » sans avoir trouvé sa cause.
+
+## Ce que j'en retiens
+
+Le mockup HTML reste mon meilleur outil pour itérer avec l'IA. Il fallait simplement arrêter de le traduire à la main.
+
+Ce qui m'a le plus marqué, c'est que les bugs trouvés par le diff étaient invisibles en relisant le code. Une hauteur de ligne héritée, un padding que personne n'a écrit. Une image comparée pixel par pixel les montre tous.
+
+Cette méthode est désormais la règle écrite pour chaque mockup que je passe en React.
+
+<div class="flex flex-wrap gap-3 mt-8">
+  <a href="https://gillescobigo.com" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+    <img src="/images/logo-gc-black.png" alt="" width="32" height="32" class="rounded-full border border-input bg-white p-0.5" />
+    Voir le portfolio en ligne
+  </a>
+  <a href="https://github.com/GillesCob/GillesCobigo" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.79-.25.79-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.87-1.36-3.87-1.36-.53-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.72-1.53-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.08.78 2.17 0 1.57-.01 2.83-.01 3.22 0 .3.21.66.8.55A11.5 11.5 0 0 0 23.5 12c0-6.35-5.15-11.5-11.5-11.5Z"/></svg>
+    Voir le code sur GitHub
+  </a>
+</div>
