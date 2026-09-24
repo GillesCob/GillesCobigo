@@ -54,11 +54,13 @@ export default function ArticleToc({ headings }: IArticleTocProps) {
         </nav>
       </aside>
 
-      {/* Mobile floating button — hidden on xl+ */}
+      {/* Mobile floating button, hidden on xl+. Au-dessus de ScrollToTop (24px du bas sur les
+          pages articles, cf ScrollToTop.tsx), safe-area iOS ajoutée aux deux bulles pour garder
+          les 14px d'écart (mockup articles-v5.html, .toc-fab). */}
       <button
         onClick={() => setOpen(true)}
         aria-label="Sommaire"
-        className="xl:hidden fixed bottom-20 right-6 z-40 w-11 h-11 rounded-full bg-foreground text-background flex items-center justify-center shadow-lg transition-opacity hover:opacity-90"
+        className="xl:hidden fixed bottom-[calc(80px_+_env(safe-area-inset-bottom,0px))] right-6 z-40 w-11 h-11 rounded-full bg-foreground text-background flex items-center justify-center shadow-lg transition-opacity hover:opacity-90"
       >
         <List size={18} />
       </button>
