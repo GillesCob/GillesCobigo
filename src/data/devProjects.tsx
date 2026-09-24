@@ -21,9 +21,9 @@ export const devProjects: IProjectCard[] = [
     id: "dressing-mailys",
     name: "Le Dressing de Maïlys",
     description:
-      "Site vitrine sur mesure pour une boutique de dépôt-vente à Mont-de-Marsan, mon premier client. Il remplace l'ancien WordPress/WooCommerce et est en ligne depuis août 2026. Front hébergé sur mon VPS (Nginx, HTTPS) et petit serveur Node/Express dans Docker pour afficher les avis Google triés par date, ce qu'aucun widget du marché ne permettait.",
+      "Site vitrine sur mesure d'une boutique de dépôt-vente à Mont-de-Marsan, mon premier client. En ligne depuis août 2026, hébergé sur mon VPS.",
     summary: "Site vitrine d'une boutique de dépôt-vente, premier client réel, hébergé sur mon VPS.",
-    stack: ["HTML", "CSS", "JavaScript", "Node.js", "Express", "Docker", "Nginx"],
+    stack: ["JavaScript", "Node.js", "Express", "Docker", "Nginx"],
     status: "En production",
     image: "/images/dressing-mailys-logo.png",
     links: { live: "https://dressing-de-mailys.fr" },
