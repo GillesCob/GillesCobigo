@@ -9,6 +9,8 @@ import PreviewHome from "@/pages/PreviewHome";
 import PreviewRound from "@/pages/PreviewRound";
 import CaseStudyRound from "@/pages/CaseStudyRound";
 import CGVBoutiques from "@/pages/CGVBoutiques";
+import SalonRecruiter from "@/pages/salon/SalonRecruiter";
+import SalonStand from "@/pages/salon/SalonStand";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import ScrollReset from "@/components/layout/ScrollReset";
@@ -53,6 +55,10 @@ export default function App() {
           <Route path="/preview/:project/:secret/:round" element={<PreviewRound />} />
           <Route path="/cas-client/:round" element={<CaseStudyRound />} />
           <Route path="/cgv-boutiques" element={<CGVBoutiques />} />
+          {/* Carte salon du 24/09 (mockup Projets/Portfolio/mockups/carte-salon.html) : page
+              recruteur ouverte par le QR, et écran QR affiché au stand. noindex, cf useSalonDocument. */}
+          <Route path="/salon-pays-basque" element={<SalonRecruiter />} />
+          <Route path="/salon-pays-basque/stand" element={<SalonStand />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
@@ -60,7 +66,8 @@ export default function App() {
       {/* Absent du mockup /new (contrairement aux autres pages "bare layout" type /preview/*, qui
           le gardent) : exclusion scopée à /, seule route qui sert encore ce contenu depuis le
           retrait de /new le 18/09 (doublon devenu inutile une fois / passé sur le même composant). */}
-      {location.pathname !== "/" && <ScrollToTop />}
+      {/* Exclu aussi des pages salon : bouton absent du mockup carte-salon.html. */}
+      {location.pathname !== "/" && !location.pathname.startsWith("/salon-pays-basque") && <ScrollToTop />}
     </div>
   );
 }
