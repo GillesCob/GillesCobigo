@@ -6,8 +6,8 @@ import { btpProjects, type IBTPProject } from "@/data/btpProjects";
 import ProjectModalV2 from "@/components/home/ProjectModalV2";
 import type { Mode } from "@/store/modeStore";
 
-// Mêmes 4 projets dev mis en avant que sur la Home actuelle (src/components/home/ProjectsSection.tsx).
-const PREVIEW_IDS = ["cerithe", "nexio", "chouxfleurs", "ouvra"];
+// Projets dev mis en avant dans #projets, affichés dans l'ordre de devProjects.tsx (filtre, pas tri).
+const PREVIEW_IDS = ["cerithe", "dressing-mailys", "nexio", "chouxfleurs", "ouvra"];
 
 // Décalage droit du logo en filigrane, par projet : chaque asset a sa propre marge transparente
 // interne (mesurée sur le fichier source, bbox de contenu réel vs canvas), donc une valeur unique
@@ -17,6 +17,7 @@ const PREVIEW_IDS = ["cerithe", "nexio", "chouxfleurs", "ouvra"];
 // les autres logos, sans toucher au fichier source (partagé avec la modale/Home).
 const WORK_LOGO_RIGHT_OFFSET: Record<string, string> = {
   cerithe: "right-6", // marge interne ~0
+  "dressing-mailys": "right-1", // même asset que le mockup, donc son right:4px tel quel
   nexio: "right-5", // marge interne ~4px à 160px affiché
   chouxfleurs: "right-4", // marge interne ~8px
   ouvra: "-right-[34px]", // marge interne ~58px à 160px affiché
