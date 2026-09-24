@@ -47,10 +47,16 @@ export default function ScrollToTop() {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           aria-label="Retour en haut"
           className={cn(
-            'fixed bottom-24 right-4 sm:bottom-6 sm:right-6 z-50 p-3 rounded-full text-white shadow-lg transition-colors',
+            'fixed z-50 p-3 rounded-full text-white shadow-lg transition-colors',
+            // Pages articles (mockup articles-v5.html, .to-top, correctif du 24/09) : 24px du bas
+            // et de la droite à TOUTES les largeurs, sous la bulle du sommaire (ArticleToc.tsx,
+            // 80px du bas) avec 14px d'écart. Le décalage mobile des autres pages (bottom-24/
+            // right-4, remonté le 20/08 pour ne pas chevaucher le footer de /preview/* et
+            // /cas-client/*) faisait chevaucher les deux bulles sous 640px ; les pages articles
+            // n'ont pas de footer. Safe-area iOS ajoutée ici et sur le sommaire pour garder l'écart.
             isArticlesPage
-              ? 'bg-[#2B4A4A] hover:bg-[color:color-mix(in_srgb,#2B4A4A_85%,#000)]'
-              : 'bg-[#D85A30] hover:bg-[#c24f27]'
+              ? 'bottom-[calc(24px_+_env(safe-area-inset-bottom,0px))] right-6 bg-[#2B4A4A] hover:bg-[color:color-mix(in_srgb,#2B4A4A_85%,#000)]'
+              : 'bottom-24 right-4 sm:bottom-6 sm:right-6 bg-[#D85A30] hover:bg-[#c24f27]'
           )}
         >
           <ArrowUp size={18} />
