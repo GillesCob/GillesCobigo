@@ -1,0 +1,250 @@
+/* Carte salon (/salon-pays-basque et /salon-pays-basque/stand), port du mockup
+   Projets/Portfolio/mockups/carte-salon.html. Déclarations copiées telles quelles depuis le
+   <style> du mockup, jamais retranscrites en classes Tailwind (même méthode que
+   NewHome.hero.css). Écarts volontaires, tous structurels, aucun sur une valeur visuelle :
+
+   1. Portée : chaque sélecteur est préfixé par `.cs-root` (le wrapper de page). Le CSS de toutes
+      les pages finit dans une seule feuille globale au build, un `.cta` ou `a {}` nu fuirait
+      ailleurs. Le préfixe ajoute la même spécificité à toutes les règles, l'ordre relatif du
+      mockup est donc conservé. Même raison pour les @keyframes, préfixés `cs-` (spin, pop,
+      sheen), nom global lui aussi.
+   2. `:root` et `body` du mockup deviennent `.cs-root` : tokens posés localement (thème clair
+      fixe, indépendant du dark mode global, même principe que LIGHT_THEME_VARS de NewHome.tsx).
+      Ils écrasent pour ce sous-arbre seulement les --border/--accent/--muted/--radius HSL de
+      globals.css. Le fond de <body> est posé par useSalonDocument (fond de canvas identique).
+   3. Bloc "Remise à zéro Tailwind" : neutralise ce que le preflight et globals.css ajoutent et
+      que le mockup n'a pas (svg en block, soulignement retiré des liens, font-feature-settings
+      du body, style du `code` inline global).
+   4. `.mock-bar` et `.screen[hidden]` non portés (bascule du mockup, hors prod). Le <svg> du
+      QR n'est plus rempli au runtime par qrcode-generator : SVG statique pré-généré
+      (public/images/qr-salon-pays-basque.svg), injecté inline, cf SalonStand.tsx. */
+
+.cs-root {
+  /* Tokens clairs du portfolio en prod, mode Dev (src/pages/NewHome.tsx, LIGHT_THEME_VARS) */
+  --bg: #FAFAF8;
+  --surface: #FFFFFF;
+  --surface-2: #F4F4F1;
+  --border: #E6E4DF;
+  --border-strong: #CFCCC4;
+  --fg: #16181A;              /* 17.3:1 sur --bg */
+  --fg-2: #33373B;            /* texte courant secondaire, 11.9:1 sur --bg */
+  --muted: #6E7378;           /* 4.7:1 sur --bg, 4.8:1 sur blanc */
+  --subtle: #6E7378;
+  /* Accent mode Dev, bleu pétrole */
+  --accent: #2B4A4A;          /* texte blanc dessus 9.9:1, sur --bg 9.5:1 */
+  --accent-strong: #2B4A4A;
+  --accent-hover: #213A3A;
+  --accent-text: #2B4A4A;
+  --accent-soft: rgba(43, 74, 74, 0.07);
+  --accent-line: rgba(43, 74, 74, 0.30);
+  --success: #15803d;
+  --shadow: 0 1px 2px rgba(20, 18, 16, 0.04), 0 2px 8px rgba(20, 18, 16, 0.04);
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "Cascadia Code", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --radius: 14px;
+  --gutter: 16px;
+  --ease-out: cubic-bezier(.2, .7, .2, 1);
+  color-scheme: light;
+}
+
+.cs-root *, .cs-root *::before, .cs-root *::after { box-sizing: border-box; }
+.cs-root {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ───────── Remise à zéro Tailwind (écart 3, absent du mockup) ───────── */
+.cs-root { font-feature-settings: normal; -webkit-text-size-adjust: 100%; }
+.cs-root svg { display: inline; vertical-align: baseline; }
+.cs-root a { text-decoration: underline; }
+.cs-root code { padding: 0; border-radius: 0; background-color: transparent; }
+
+.cs-root a { color: inherit; }
+.cs-root :focus-visible { outline: 2px solid var(--accent-text); outline-offset: 3px; border-radius: 6px; }
+.cs-root .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.cs-root .icon { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ───────── Fond graphe Obsidian (même technique que VideoLanding.bg.css) ───────── */
+.cs-root .screen { position: relative; overflow: hidden; }
+.cs-root .bg { position: absolute; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
+.cs-root .bg img {
+  position: absolute; top: -20%; left: -12.5%; width: 125%; height: 140%;
+  object-fit: cover; opacity: 0.1; display: block; max-width: none;
+  user-select: none; will-change: transform;
+}
+.cs-root .screen > :not(.bg) { position: relative; z-index: 1; }
+
+/* ───────── ÉCRAN 1 : STAND ───────── */
+.cs-root .stand {
+  min-height: 100dvh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 22px;
+  padding: 64px var(--gutter) max(28px, env(safe-area-inset-bottom));
+  text-align: center;
+  background: var(--bg);
+}
+.cs-root .stand-id { display: flex; align-items: center; gap: 12px; }
+.cs-root .stand-id img { width: 40px; height: 40px; }
+.cs-root .stand-id p { margin: 0; text-align: left; line-height: 1.25; }
+.cs-root .stand-id strong { display: block; font-size: 20px; letter-spacing: -.01em; }
+.cs-root .stand-id small { font-size: 14px; color: var(--muted); }
+
+.cs-root .plate-wrap {
+  --size: min(84vw, 56dvh, 420px);
+  position: relative; width: var(--size); padding: 3px; border-radius: 26px;
+  background: conic-gradient(from var(--angle, 0deg), var(--accent) 0 12%, transparent 22% 50%, var(--accent) 60% 72%, transparent 82%);
+  animation: cs-spin 4s linear infinite;
+}
+@property --angle { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+@keyframes cs-spin { to { --angle: 360deg; } }
+.cs-root .plate { background: #fff; border-radius: 23px; padding: 6px; box-shadow: 0 0 0 1px var(--border), 0 8px 24px -10px rgba(20, 18, 16, .18); }
+.cs-root .plate svg { display: block; width: 100%; height: auto; }
+
+.cs-root .scan-cta { margin: 0; font-size: clamp(28px, 8vw, 40px); font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+.cs-root .scan-cta em { font-style: normal; color: var(--accent-text); }
+.cs-root .stand-url { margin: -10px 0 0; font-family: var(--font-mono); font-size: 14px; color: var(--muted); }
+.cs-root .stand-url b { color: var(--fg); font-weight: 600; display: block; white-space: nowrap; }
+
+/* ───────── ÉCRAN 2 : RECRUTEUR ───────── */
+.cs-root .page { max-width: 1040px; margin: 0 auto; padding: 56px var(--gutter) 40px; }
+
+.cs-root .hero { display: grid; gap: 4px; }
+
+.cs-root .context {
+  justify-self: start; display: inline-block;
+  margin: 4px 0 14px; padding: 6px 12px 6px 10px;
+  border: 1px solid var(--accent-line); border-radius: 12px; background: #fff;
+  font-size: 13px; line-height: 1.4; font-weight: 500; color: var(--accent);
+}
+.cs-root .context::before { content: ""; display: inline-block; margin-right: 8px; vertical-align: middle; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px rgba(43, 74, 74, .18); transform: translateY(-1px); }
+/* Une seule ligne quelle que soit la largeur : la taille suit la largeur d'écran, plafonnée à 13px. */
+.cs-root .context { white-space: nowrap; max-width: 100%; font-size: min(13px, 2.8vw); padding-left: 9px; padding-right: 10px; }
+
+.cs-root .name { margin: 0; font-size: clamp(36px, 10.5vw, 56px); line-height: 1.02; font-weight: 800; letter-spacing: -.035em; }
+.cs-root .role { margin: 8px 0 0; font-size: 18px; font-weight: 600; color: var(--accent-text); letter-spacing: -.01em; }
+.cs-root .pitch { margin: 14px 0 0; color: var(--fg-2); font-size: 16px; max-width: 34em; }
+
+.cs-root .actions { display: grid; gap: 10px; margin-top: 24px; }
+.cs-root .cta {
+  position: relative; display: flex; align-items: center; gap: 14px;
+  min-height: 64px; width: 100%; padding: 12px 18px;
+  border: 0; border-radius: var(--radius); cursor: pointer; text-align: left;
+  background: var(--accent-strong); color: #fff; font: inherit;
+  box-shadow: 0 10px 24px -12px rgba(43, 74, 74, .55), inset 0 1px 0 rgba(255, 255, 255, .12);
+  transition: transform .15s var(--ease-out), background-color .2s, box-shadow .2s;
+  overflow: hidden;
+}
+.cs-root .cta:hover { background: var(--accent-hover); }
+.cs-root .cta:active { transform: scale(.985); }
+.cs-root .cta .cta-ico { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: rgba(255, 255, 255, .16); flex: none; }
+.cs-root .cta .cta-ico .icon { width: 22px; height: 22px; }
+.cs-root .cta-txt { display: grid; line-height: 1.25; }
+.cs-root .cta-txt strong { font-size: 18px; font-weight: 700; letter-spacing: -.01em; }
+.cs-root .cta-txt small { font-size: 13px; opacity: .92; }
+.cs-root .cta .ico-done { display: none; }
+.cs-root .cta[data-state="done"] { background: #15803d; box-shadow: 0 10px 24px -12px rgba(21, 128, 61, .5), inset 0 1px 0 rgba(255, 255, 255, .18); }
+.cs-root .cta[data-state="done"] .ico-add { display: none; }
+.cs-root .cta[data-state="done"] .ico-done { display: block; animation: cs-pop .35s var(--ease-out); }
+.cs-root .cta::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, .22) 50%, transparent 70%);
+  transform: translateX(-100%);
+}
+.cs-root .cta[data-state="done"]::after { animation: cs-sheen .7s ease-out; }
+@keyframes cs-pop { 0% { transform: scale(.4); opacity: 0; } 70% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
+@keyframes cs-sheen { to { transform: translateX(100%); } }
+
+.cs-root .secondary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cs-root .sec {
+  display: flex; align-items: center; gap: 10px;
+  min-height: 56px; padding: 10px 12px;
+  border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow);
+  text-decoration: none; line-height: 1.2;
+  transition: border-color .2s, background-color .2s, transform .15s var(--ease-out);
+}
+.cs-root .sec:hover { border-color: var(--border-strong); background: var(--surface-2); }
+.cs-root .sec:active { transform: scale(.98); }
+.cs-root .sec .icon { width: 18px; height: 18px; color: var(--accent-text); }
+.cs-root .sec span { display: grid; min-width: 0; }
+.cs-root .sec strong { font-size: 14px; font-weight: 600; }
+.cs-root .sec small { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.cs-root section.block { margin-top: 40px; }
+.cs-root .block h2 {
+  margin: 0 0 14px; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+  display: flex; align-items: center; gap: 10px;
+}
+.cs-root .block h2::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+.cs-root .apps { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.cs-root .app {
+  position: relative; display: grid; grid-template-columns: 44px 1fr 20px; gap: 14px; align-items: start;
+  padding: 14px; min-height: 44px;
+  border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow);
+  text-decoration: none;
+  transition: border-color .2s, background-color .2s, transform .15s var(--ease-out);
+}
+.cs-root .app:hover { border-color: var(--accent-line); background: var(--surface-2); }
+.cs-root .app:hover .go { color: var(--accent-text); transform: translate(2px, -2px); }
+.cs-root .app-mark {
+  width: 44px; height: 44px; border-radius: 11px; display: grid; place-items: center;
+  background: var(--accent-soft); border: 1px solid var(--border);
+  font-family: var(--font-mono); font-weight: 700; font-size: 15px; color: var(--accent-text);
+}
+.cs-root .app h3 { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -.01em; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cs-root .app p { margin: 4px 0 6px; font-size: 14px; color: var(--fg-2); line-height: 1.45; }
+.cs-root .app code { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.cs-root .method { margin: 14px 0 0; font-size: 14px; line-height: 1.5; color: var(--fg-2); max-width: 40em; }
+.cs-root .method-link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 14px; font-weight: 600; color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
+.cs-root .method-link:hover { text-decoration-thickness: 2px; }
+.cs-root .tag { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--border-strong); color: var(--muted); letter-spacing: .02em; }
+.cs-root .go { color: var(--subtle); transition: color .2s, transform .2s var(--ease-out); margin-top: 2px; }
+.cs-root .go .icon { width: 18px; height: 18px; }
+
+.cs-root .stack { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.cs-root .stack li {
+  font-family: var(--font-mono); font-size: 13px; padding: 6px 10px;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--fg-2);
+}
+.cs-root .stack-layers { display: grid; gap: 12px; margin: 0; }
+.cs-root .layer { display: grid; grid-template-columns: 56px 1fr; align-items: start; gap: 12px; }
+.cs-root .layer dt { padding-top: 7px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-text); }
+.cs-root .layer dd { margin: 0; }
+
+.cs-root .made {
+  margin-top: 44px; padding-top: 18px; border-top: 1px dashed var(--border);
+  font-size: 13px; color: var(--muted);
+}
+.cs-root .made p { margin: 0; max-width: 60em; }
+.cs-root .made { text-align: center; }
+.cs-root .made .brand { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; text-decoration: none; color: var(--fg); }
+.cs-root .made .brand img { width: 38px; height: 38px; flex: none; }
+.cs-root .made .brand-name { font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
+.cs-root .made .sign { margin: 6px auto 0; font-size: 13px; color: var(--muted); }
+.cs-root .made .sign a { color: var(--accent-text); }
+
+/* Desktop */
+@media (min-width: 900px) {
+  .cs-root .page { padding-top: 80px; }
+  .cs-root .hero { grid-template-columns: 1fr 1.05fr; grid-template-areas: "text visual"; column-gap: 48px; align-items: center; }
+  .cs-root .hero-text { grid-area: text; }
+  .cs-root .hero-visual { grid-area: visual; margin: 0; }
+  .cs-root .actions { max-width: 480px; }
+  .cs-root .apps { grid-template-columns: repeat(3, 1fr); }
+  .cs-root .app { grid-template-columns: 1fr 20px; }
+  .cs-root .app-mark { grid-column: 1 / -1; }
+}
+
+
+/* Mouvement réduit : état final direct, aucune animation */
+@media (prefers-reduced-motion: reduce) {
+  .cs-root *, .cs-root *::before, .cs-root *::after { animation: none !important; transition: none !important; }
+  .cs-root .plate-wrap { background: var(--accent); }
+}
