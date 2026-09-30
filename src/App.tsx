@@ -11,9 +11,14 @@ import CaseStudyRound from "@/pages/CaseStudyRound";
 import CGVBoutiques from "@/pages/CGVBoutiques";
 import SalonRecruiter from "@/pages/salon/SalonRecruiter";
 import SalonStand from "@/pages/salon/SalonStand";
+import HabitatExpoVisitor from "@/pages/salon/habitatExpo/HabitatExpoVisitor";
+import HabitatExpoStand from "@/pages/salon/habitatExpo/HabitatExpoStand";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import ScrollReset from "@/components/layout/ScrollReset";
+
+// Préfixes des routes des cartes salon (pages sans bouton retour en haut, cf fin du rendu).
+const SALON_PATHS = ["/salon-pays-basque", "/habitat-expo"];
 
 // Bascule du 18/09 : /new devient la page d'accueil (décision de Gilles, la refonte v5 est
 // pixel-perfect sur toutes ses sections, cf PR #204/#205), puis /new lui-même retiré du routeur
@@ -59,6 +64,10 @@ export default function App() {
               recruteur ouverte par le QR, et écran QR affiché au stand. noindex, cf useSalonDocument. */}
           <Route path="/salon-pays-basque" element={<SalonRecruiter />} />
           <Route path="/salon-pays-basque/stand" element={<SalonStand />} />
+          {/* Carte salon Habitat Expo, Mont-de-Marsan, 2 au 4 octobre 2026 (mockup
+              Projets/Portfolio/mockups/carte-salon-habitat.html) : même principe que ci-dessus. */}
+          <Route path="/habitat-expo" element={<HabitatExpoVisitor />} />
+          <Route path="/habitat-expo/stand" element={<HabitatExpoStand />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
@@ -66,8 +75,10 @@ export default function App() {
       {/* Absent du mockup /new (contrairement aux autres pages "bare layout" type /preview/*, qui
           le gardent) : exclusion scopée à /, seule route qui sert encore ce contenu depuis le
           retrait de /new le 18/09 (doublon devenu inutile une fois / passé sur le même composant). */}
-      {/* Exclu aussi des pages salon : bouton absent du mockup carte-salon.html. */}
-      {location.pathname !== "/" && !location.pathname.startsWith("/salon-pays-basque") && <ScrollToTop />}
+      {/* Exclu aussi des pages salon : bouton absent des mockups carte-salon.html et
+          carte-salon-habitat.html. */}
+      {location.pathname !== "/" &&
+        !SALON_PATHS.some((path) => location.pathname.startsWith(path)) && <ScrollToTop />}
     </div>
   );
 }

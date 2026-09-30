@@ -1,0 +1,74 @@
+/* Carte salon Habitat Expo (/habitat-expo), port du mockup
+   Projets/Portfolio/mockups/carte-salon-habitat.html. Ce mockup est une copie de carte-salon.html
+   (déjà porté dans ../salon.css) : ce fichier ne contient QUE le diff entre les <style> des deux
+   mockups, déclarations copiées telles quelles, scopées sous `.cs-root.cs-habitat` (modificateur
+   posé par HabitatExpoVisitor via SalonScreen rootClassName). /salon-pays-basque n'a pas ce
+   modificateur : aucune règle ci-dessous ne peut l'atteindre. Spécificité (0,3,0) > (0,2,0) de
+   salon.css, les surcharges l'emportent quel que soit l'ordre des feuilles au build.
+   L'écran stand n'a aucun écart entre les deux mockups : pas de modificateur dessus.
+
+   Écarts volontaires avec le mockup, structurels, aucun sur une valeur visuelle :
+   1. `.app-mark.dark` du mockup devient `.app-mark.cs-dark` : `.dark` est la classe du thème
+      sombre global (globals.css), elle redéfinit --border en triplet HSL pour tout le sous-arbre,
+      la bordure du cadre devenait invalide (0 px, logo Ouvra 44 px au lieu de 42 au diff pixel).
+   2. Bloc "Remise à zéro Tailwind" : le preflight met les titres en `font-weight: inherit`,
+      les h3 des offres (sans graisse déclarée dans le mockup) reprennent le gras natif. */
+
+/* ───────── Remise à zéro Tailwind (écart 2) ───────── */
+.cs-root.cs-habitat .offer h3 { font-weight: bold; }
+
+/* Hero sur une seule colonne à toutes les largeurs (minmax(0, 1fr) : la colonne peut descendre
+   sous la largeur min-content, sinon le badge .context en nowrap élargit la page sur mobile).
+   Le mockup a retiré la grille 2 colonnes desktop de carte-salon.html : ses propriétés sont
+   remises à leur valeur de base ci-dessous (media query desktop). */
+.cs-root.cs-habitat .hero { grid-template-columns: minmax(0, 1fr); }
+
+.cs-root.cs-habitat .context { overflow: hidden; text-overflow: ellipsis; font-size: min(13px, 2.6vw); }
+
+.cs-root.cs-habitat .sec.wide { grid-column: 1 / -1; }
+/* Mobile : contacts sur une colonne, sinon l'adresse mail est tronquée */
+@media (max-width: 899px) {
+  .cs-root.cs-habitat .secondary { grid-template-columns: 1fr; }
+  .cs-root.cs-habitat .page { padding-top: 24px; }
+}
+
+/* Réalisations : vrais logos au lieu des initiales en police mono de carte-salon.html. */
+.cs-root.cs-habitat .app-mark {
+  background: #fff; overflow: hidden;
+  font-family: inherit; font-weight: inherit; font-size: inherit; color: inherit;
+}
+.cs-root.cs-habitat .app-mark img { width: 100%; height: 100%; object-fit: contain; }
+.cs-root.cs-habitat .app-mark.pad img { padding: 3px; }
+.cs-root.cs-habitat .app-mark.cs-dark { background: #16181A; }
+
+/* Apparition du nom et du rôle. Le mockup pose `.run` sur .page à l'affichage de l'écran visiteur
+   (sauf mouvement réduit) : ici `.run` est dans le JSX dès le premier rendu, même effet. Avec
+   mouvement réduit, l'animation est coupée par le `animation: none !important` de salon.css et
+   .reveal repasse à opacity 1 (bloc en fin de fichier), même état final que le mockup. */
+@keyframes cs-in-up { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+.cs-root.cs-habitat .reveal { opacity: 0; }
+.cs-root.cs-habitat .page.run .reveal { animation: cs-in-up 480ms var(--ease-out) forwards; animation-delay: var(--d); }
+
+/* ───────── Ce que je peux faire pour vous ───────── */
+.cs-root.cs-habitat .offers { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.cs-root.cs-habitat .offer { display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: start; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+.cs-root.cs-habitat .offer-ico { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 10px; background: var(--accent-soft); color: var(--accent); }
+.cs-root.cs-habitat .offer-ico .icon { width: 20px; height: 20px; }
+.cs-root.cs-habitat .offer h3 { margin: 0; font-size: 16px; line-height: 1.3; letter-spacing: -.01em; }
+.cs-root.cs-habitat .offer p { margin: 4px 0 0; font-size: 14px; line-height: 1.5; color: var(--fg-2); }
+.cs-root.cs-habitat .offer-cta { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin-top: 2px; font-size: 14px; font-weight: 600; color: var(--accent-text); text-decoration: none; }
+.cs-root.cs-habitat .offer-cta .icon { width: 16px; height: 16px; transition: transform .2s var(--ease-out); }
+.cs-root.cs-habitat .offer-cta:hover .icon { transform: translateX(3px); }
+@media (min-width: 900px) { .cs-root.cs-habitat .offers { grid-template-columns: repeat(3, 1fr); } .cs-root.cs-habitat .offer { grid-template-columns: 1fr; } }
+
+/* Desktop : annule la grille hero 2 colonnes de salon.css (absente de ce mockup). */
+@media (min-width: 900px) {
+  .cs-root.cs-habitat .hero { grid-template-areas: none; column-gap: 4px; align-items: normal; }
+  .cs-root.cs-habitat .hero-text { grid-area: auto; }
+}
+
+/* Mouvement réduit : état final direct */
+@media (prefers-reduced-motion: reduce) {
+  .cs-root.cs-habitat .reveal { opacity: 1; }
+}
