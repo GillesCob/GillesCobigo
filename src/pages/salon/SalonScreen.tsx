@@ -5,6 +5,9 @@ import "./salon.css";
 
 interface ISalonScreenProps {
   className?: string;
+  // Modificateur posé sur `.cs-root`, pour les écarts d'une carte par rapport à salon.css
+  // (ex. `cs-habitat`, cf habitatExpo/habitatExpo.css). Absent sur /salon-pays-basque.
+  rootClassName?: string;
   children: ReactNode;
 }
 
@@ -14,14 +17,14 @@ interface ISalonScreenProps {
  * parallax. Un <div> plutôt que le <main> du mockup : App.tsx rend déjà toutes les routes dans un
  * <main>, un second <main> imbriqué serait invalide (rendu identique, les deux sont en block).
  */
-export default function SalonScreen({ className, children }: ISalonScreenProps) {
+export default function SalonScreen({ className, rootClassName, children }: ISalonScreenProps) {
   const screenRef = useRef<HTMLDivElement>(null);
   const bgImageRef = useRef<HTMLImageElement>(null);
   useSalonDocument();
   useBackgroundParallax(screenRef, bgImageRef);
 
   return (
-    <div className="cs-root">
+    <div className={rootClassName ? `cs-root ${rootClassName}` : "cs-root"}>
       <div ref={screenRef} className={className ? `screen ${className}` : "screen"}>
         <div className="bg" aria-hidden="true">
           <img ref={bgImageRef} src="/images/obsidian-graph.svg" alt="" />
