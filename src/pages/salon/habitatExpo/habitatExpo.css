@@ -26,6 +26,11 @@
 .cs-root.cs-habitat .context { overflow: hidden; text-overflow: ellipsis; font-size: min(13px, 2.6vw); }
 
 .cs-root.cs-habitat .sec.wide { grid-column: 1 / -1; }
+/* Mobile : contacts sur une colonne, sinon l'adresse mail est tronquée */
+@media (max-width: 899px) {
+  .cs-root.cs-habitat .secondary { grid-template-columns: 1fr; }
+  .cs-root.cs-habitat .page { padding-top: 24px; }
+}
 
 /* Réalisations : vrais logos au lieu des initiales en police mono de carte-salon.html. */
 .cs-root.cs-habitat .app-mark {

@@ -192,15 +192,7 @@ export default function HabitatExpoVisitor() {
                     <img src={app.logo} alt="" />
                   </span>
                   <span>
-                    <h3>
-                      {app.name}
-                      {app.tag && (
-                        <>
-                          {" "}
-                          <span className="tag">{app.tag}</span>
-                        </>
-                      )}
-                    </h3>
+                    <h3>{app.name}</h3>
                     <p>{app.description}</p>
                     <code>{app.host}</code>
                   </span>

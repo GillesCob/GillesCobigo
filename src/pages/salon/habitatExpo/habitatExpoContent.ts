@@ -68,7 +68,6 @@ export const HABITAT_OFFERS: IHabitatOffer[] = [
 export interface IHabitatApp {
   id: string;
   name: string;
-  tag?: string;
   description: string;
   host: string;
   href: string;
@@ -89,7 +88,6 @@ export const HABITAT_APPS: IHabitatApp[] = [
   {
     id: "dressing-mailys",
     name: "Le Dressing de Maïlys",
-    tag: "En ligne",
     description: "Site vitrine sur mesure d'une boutique de dépôt-vente à Mont-de-Marsan.",
     host: "dressing-de-mailys.fr",
     href: liveUrl("dressing-mailys", "https://dressing-de-mailys.fr"),
@@ -98,7 +96,6 @@ export const HABITAT_APPS: IHabitatApp[] = [
   {
     id: "ouvra",
     name: "Ouvra",
-    tag: "Mobile",
     description: "Coordination BIM dans le navigateur. Viewer IFC et détection de collisions entre maquettes.",
     host: "ouvra.gillescobigo.com",
     href: liveUrl("ouvra", "https://ouvra.gillescobigo.com/"),
