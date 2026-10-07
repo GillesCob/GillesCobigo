@@ -20,6 +20,7 @@ import {
 // Même habillage que la carte Habitat Expo (le mockup de la journée n'ajoute aucune règle CSS) :
 // feuille et modificateur `cs-habitat` réutilisés tels quels, pas dupliqués.
 import "../habitatExpo/habitatExpo.css";
+import "./construireNumerique.css";
 
 const EXTERNAL = { target: "_blank", rel: "noopener noreferrer" } as const;
 
@@ -62,11 +63,16 @@ export default function ConstruireNumeriqueVisitor() {
   const { isDone, statusMessage, download } = useVCardDownload(NUMERIQUE_CONTACT, VCARD_FILENAME);
 
   return (
-    <SalonScreen rootClassName="cs-habitat">
+    <SalonScreen rootClassName="cs-habitat cs-numerique">
       <div className="page run" id="page">
         <header className="hero">
           <div className="hero-text">
-            <p className="context">Rencontré à « Construire en numérique » · Domolandes · 3 nov. 2026</p>
+            <p className="context">
+              <span className="context-text">
+                <span>Rencontré à « Construire en numérique »</span>
+                <strong className="context-date">Mardi 3 novembre 2026 · Domolandes</strong>
+              </span>
+            </p>
             <h1 className="name reveal" style={revealDelay(0)}>
               Gilles Cobigo
             </h1>
