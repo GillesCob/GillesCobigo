@@ -1,0 +1,14 @@
+/* Carte « Construire en numérique » (/construire-en-numerique), écarts avec la carte Habitat Expo
+   (habitatExpo.css, réutilisée via `cs-habitat`). Seul écart : l'encart de contexte en haut de
+   page, sur deux lignes avec la date en évidence. Sur une seule ligne tronquée par ellipsis, la
+   date était coupée sur mobile. Déclarations copiées du mockup
+   carte-salon-construire-en-numerique.html, scopées sous `.cs-root.cs-habitat.cs-numerique`
+   (spécificité (0,4,0) > (0,3,0) de habitatExpo.css, l'ordre des feuilles au build ne compte pas). */
+.cs-root.cs-habitat.cs-numerique .context {
+  display: inline-flex; align-items: flex-start; gap: 0; max-width: 100%;
+  white-space: normal; overflow: visible; text-overflow: clip; font-size: 13px;
+  padding: 8px 14px 8px 12px; border-radius: 14px;
+}
+.cs-root.cs-habitat.cs-numerique .context::before { flex: none; margin-top: 5px; transform: none; }
+.cs-root.cs-habitat.cs-numerique .context-text { display: grid; gap: 2px; min-width: 0; }
+.cs-root.cs-habitat.cs-numerique .context-date { font-size: 17px; line-height: 1.25; font-weight: 700; letter-spacing: -.01em; }
