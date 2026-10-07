@@ -13,12 +13,14 @@ import SalonRecruiter from "@/pages/salon/SalonRecruiter";
 import SalonStand from "@/pages/salon/SalonStand";
 import HabitatExpoVisitor from "@/pages/salon/habitatExpo/HabitatExpoVisitor";
 import HabitatExpoStand from "@/pages/salon/habitatExpo/HabitatExpoStand";
+import ConstruireNumeriqueVisitor from "@/pages/salon/construireNumerique/ConstruireNumeriqueVisitor";
+import ConstruireNumeriqueStand from "@/pages/salon/construireNumerique/ConstruireNumeriqueStand";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import ScrollReset from "@/components/layout/ScrollReset";
 
 // Préfixes des routes des cartes salon (pages sans bouton retour en haut, cf fin du rendu).
-const SALON_PATHS = ["/salon-pays-basque", "/habitat-expo"];
+const SALON_PATHS = ["/salon-pays-basque", "/habitat-expo", "/construire-en-numerique"];
 
 // Bascule du 18/09 : /new devient la page d'accueil (décision de Gilles, la refonte v5 est
 // pixel-perfect sur toutes ses sections, cf PR #204/#205), puis /new lui-même retiré du routeur
@@ -68,6 +70,10 @@ export default function App() {
               Projets/Portfolio/mockups/carte-salon-habitat.html) : même principe que ci-dessus. */}
           <Route path="/habitat-expo" element={<HabitatExpoVisitor />} />
           <Route path="/habitat-expo/stand" element={<HabitatExpoStand />} />
+          {/* Carte de la journée « Construire en numérique », Domolandes, 3 novembre 2026 (mockup
+              Projets/Portfolio/mockups/carte-salon-construire-en-numerique.html). */}
+          <Route path="/construire-en-numerique" element={<ConstruireNumeriqueVisitor />} />
+          <Route path="/construire-en-numerique/stand" element={<ConstruireNumeriqueStand />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
