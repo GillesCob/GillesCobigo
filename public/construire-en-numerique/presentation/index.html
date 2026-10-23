@@ -923,8 +923,10 @@
         }
       }, REDUIT ? 0 : (duree || 0));
     }
-    function avancer() {
+    var demoSuivant = function () { return false; };
+    function avancer(parMolette) {
       if (Date.now() < verrou) { return; }
+      if (!parMolette && demoSuivant()) { return; }
       if (enCours) { terminerAnim(); return; }
       if (etape < nbEtapes(current)) { lancerEtape(); return; }
       show(current + 1);
@@ -1961,7 +1963,7 @@
     }
 
     clicSimple(document.getElementById("stage"), function () { avancer(); }, function (e) {
-      return !!e.target.closest("a, button, .point-cliquable, .detail-piste, .s8-logo");
+      return !!e.target.closest("a, button, .point-cliquable, .detail-piste, .s8-logo") || (!(window.getSelection && String(window.getSelection())) && demoSuivant());
     });
     (function () {
       var logo = document.querySelector(".s8-logo");
@@ -1996,6 +1998,14 @@
           setTimeout(versCloture, 2000);
         }, 650 + 600);
       };
+      demoSuivant = function () {
+        if (current !== indexDemo || enAttente || !logo.classList.contains("actif")) { return false; }
+        if (enCoursOuverture) { return true; }
+        window.open(URL_OUVRA, "_blank", "noopener,noreferrer");
+        enAttente = true;
+        setTimeout(versCloture, 2000);
+        return true;
+      };
       logo.addEventListener("click", function (e) { e.stopPropagation(); ouvrir(); });
       logo.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); ouvrir(); } });
     })();
@@ -2023,7 +2033,7 @@
       stageWheelLastAbs = abs;
       stageWheelAccu += delta;
       if (Math.abs(stageWheelAccu) < 50) return;
-      if (stageWheelAccu > 0) { avancer(); } else { reculer(); }
+      if (stageWheelAccu > 0) { avancer(true); } else { reculer(); }
       stageWheelLocked = true;
       stageWheelLockedAt = now;
       stageWheelAccu = 0;
