@@ -208,7 +208,7 @@ export default function ConstruireNumeriqueVisitor() {
                 <path d="M12 15V3" />
               </svg>
               <span>
-                <strong>Mon CV</strong>
+                <strong>Mon parcours</strong>
               </span>
             </a>
             <a className="sec" href={NUMERIQUE_BOOKING_URL} {...EXTERNAL}>
