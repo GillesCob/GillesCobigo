@@ -104,7 +104,7 @@ describe("ConstruireNumeriqueVisitor", () => {
     expect(within(more).queryByRole("link", { name: /Cerithe/ })).toBeNull();
     expect(within(more).getByRole("link", { name: /Mon CV/ })).toHaveAttribute(
       "href",
-      expect.stringMatching(/\.pdf$/),
+      "/cv/",
     );
     expect(
       within(more).getByRole("link", { name: /Prendre rendez-vous/ }),
@@ -137,7 +137,7 @@ describe("ConstruireNumeriqueVisitor", () => {
     const external = Array.from(
       container.querySelectorAll<HTMLAnchorElement>('a[href^="http"]'),
     );
-    expect(external.length).toBeGreaterThanOrEqual(6);
+    expect(external.length).toBeGreaterThanOrEqual(5);
     external.forEach((anchor) => {
       expect(anchor).toHaveAttribute("target", "_blank");
       expect(anchor.getAttribute("rel")).toContain("noopener");

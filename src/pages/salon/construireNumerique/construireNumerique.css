@@ -24,11 +24,18 @@
 .cs-root.cs-habitat.cs-numerique .duo { display: grid; gap: 0; }
 .cs-root.cs-habitat.cs-numerique .block .actions { margin-top: 0; max-width: none; }
 @media (max-width: 899px) { .cs-root.cs-habitat.cs-numerique .page { padding-top: 16px; } .cs-root.cs-habitat.cs-numerique section.block { margin-top: 28px; } .cs-root.cs-habitat.cs-numerique .hero + .duo section.block:first-child { margin-top: 18px; } }
-/* Laptop : colonne de gauche (titre, Ouvra, coordonnées empilés), maquette filaire qui se dessine à droite. */
+/* Laptop : maquette filaire qui se dessine à droite de la carte Ouvra, coordonnées en pleine largeur dessous. */
 .cs-root.cs-habitat.cs-numerique .wire { display: none; }
 @media (min-width: 900px) {
+  /* Grille : titre et Ouvra à gauche, bâtiment centré sur la hauteur de la carte Ouvra à droite, coordonnées en pleine largeur dessous. */
   .cs-root.cs-habitat.cs-numerique .top { display: grid; grid-template-columns: minmax(0, 540px) minmax(0, 1fr); column-gap: 64px; align-items: start; }
-  .cs-root.cs-habitat.cs-numerique .wire { display: block; position: sticky; top: 96px; width: 72%; margin-inline: auto; max-height: calc(100vh - 120px); margin-top: 12px; }
+  .cs-root.cs-habitat.cs-numerique .top-main, .cs-root.cs-habitat.cs-numerique .duo { display: contents; }
+  .cs-root.cs-habitat.cs-numerique .hero { grid-column: 1; grid-row: 1; margin-bottom: 40px; }
+  .cs-root.cs-habitat.cs-numerique section.block-ouvra { grid-column: 1; grid-row: 2; align-self: center; margin-top: 0; }
+  .cs-root.cs-habitat.cs-numerique .wire { display: block; grid-column: 2; grid-row: 2; align-self: center; width: 72%; margin-inline: auto; max-height: 300px; transform: translateY(-5%); }
+  .cs-root.cs-habitat.cs-numerique .block-contact { grid-column: 1 / -1; grid-row: 3; }
+  .cs-root.cs-habitat.cs-numerique .block-contact .secondary { grid-template-columns: repeat(3, 1fr); }
+  .cs-root.cs-habitat.cs-numerique .block-contact .sec.wide { grid-column: auto; }
   .cs-root.cs-habitat.cs-numerique .wire-line { fill: none; stroke: var(--fg-2); stroke-opacity: .55; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: wire-draw 900ms var(--ease-out) forwards; animation-delay: calc(var(--i) * 32ms + 300ms); }
   .cs-root.cs-habitat.cs-numerique .wire-ground { stroke-opacity: .25; stroke-dasharray: 1; }
   .cs-root.cs-habitat.cs-numerique .wire-back { stroke-opacity: .25; }

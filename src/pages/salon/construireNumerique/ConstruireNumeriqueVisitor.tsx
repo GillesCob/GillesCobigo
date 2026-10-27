@@ -60,7 +60,7 @@ export default function ConstruireNumeriqueVisitor() {
             </header>
 
             <div className="duo">
-              <section className="block" aria-labelledby="ouvra-title">
+              <section className="block block-ouvra" aria-labelledby="ouvra-title">
                 <div className="actions">
                   <a
                     className="ouvra-card"
@@ -95,7 +95,7 @@ export default function ConstruireNumeriqueVisitor() {
                 </div>
               </section>
 
-              <section className="block" aria-labelledby="contact-title">
+              <section className="block block-contact" aria-labelledby="contact-title">
                 <h2 id="contact-title">Mes coordonnées</h2>
                 <div className="actions">
                   <a
@@ -195,7 +195,7 @@ export default function ConstruireNumeriqueVisitor() {
         <section className="block" aria-labelledby="more-title">
           <h2 id="more-title">Pour aller plus loin</h2>
           <div className="secondary more-links">
-            <a className="sec" href={NUMERIQUE_CV_URL} download {...EXTERNAL}>
+            <a className="sec" href={NUMERIQUE_CV_URL} {...EXTERNAL}>
               <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="7 10 12 15 17 10" />
@@ -203,7 +203,7 @@ export default function ConstruireNumeriqueVisitor() {
               </svg>
               <span>
                 <strong>Mon CV</strong>
-                <small>Télécharger le PDF</small>
+                <small>Voir, puis enregistrer en PDF</small>
               </span>
             </a>
             <a className="sec" href={NUMERIQUE_BOOKING_URL} {...EXTERNAL}>
