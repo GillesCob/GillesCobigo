@@ -2,7 +2,7 @@
 // Projection isométrique calculée ici : x part vers le bas à droite, y vers le bas à gauche, z vers le haut.
 // Faces visibles : x = WIDTH (à droite) et y = DEPTH (à gauche).
 
-export type StrokeKind = "ground" | "back" | "structure" | "glass";
+export type StrokeKind = "ground" | "back" | "roof" | "structure" | "glass";
 
 export interface IStroke {
   d: string;
@@ -77,7 +77,7 @@ export function buildStrokes(): IStroke[] {
   );
   add(
     back,
-    "back",
+    "roof",
     path([
       [0, DEPTH, LEVELS],
       [0, 0, LEVELS],
