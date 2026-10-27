@@ -7,9 +7,9 @@
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="apple-touch-icon" href="favicon.png" />
   <style>
-    /* CV A4, une page, export PDF par l'impression du navigateur (Cmd + P, « Enregistrer au format PDF », marges « Aucune », graphiques d'arrière-plan cochés).
+    /* CV A4, version V3 (identite visuelle du portfolio depuis le 27/10 : vert du mode Dev, terracotta du mode Batiment, graphe Obsidian en filigrane ; contenu de la V2 : panneaux de competences a logos, frise des experiences, projets en production et experience BIM distingues). Une page, export PDF par l'impression du navigateur (Cmd + P, « Enregistrer au format PDF », marges « Aucune », graphiques d'arrière-plan cochés).
        Toutes les cotes sont en mm : la page fait exactement 210 x 297 mm. Polices et images en local (cv-assets/), aucune requete reseau.
-       Version développeur seulement (copie du PDF). Barre d'outils visible a l'ecran seulement, jamais dans le PDF ni dans l'aperçu embarque. */
+       Version developpeur seulement (projets d'abord), copie du CV du Dashboard (mockups/cv-a4-v3.html). Barre d'outils visible a l'ecran seulement, jamais dans le PDF ni dans l'aperçu embarque. */
     @font-face {
       font-family: "Montserrat"; font-style: normal; font-weight: 400 700; font-display: block;
       src: url("cv-assets/fonts/montserrat-latin.woff2") format("woff2");
@@ -36,11 +36,8 @@
 
     /* ---------- Barre d'outils (ecran seulement) ---------- */
     .barre { max-width: 210mm; margin: 0 auto; padding: 10px 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; font-size: 13px; }
-    .barre .choix { display: flex; border: 1px solid #CFCCC4; border-radius: 8px; overflow: hidden; background: #fff; }
     .barre button { font: inherit; font-size: 13px; padding: 7px 14px; border: 0; background: transparent; color: #33373B; cursor: pointer; }
-    .barre .choix button + button { border-left: 1px solid #CFCCC4; }
-    .barre .choix button[aria-pressed="true"] { background: var(--marine); color: #fff; }
-    .barre .exporter { border: 1px solid var(--marine); border-radius: 8px; background: #fff; color: var(--marine); font-weight: 700; }
+    .barre .exporter { border: 1px solid var(--marine); border-radius: 8px; background: #fff; color: var(--marine); font-weight: 700; padding: 7px 14px; text-decoration: none; }
     .barre button:focus-visible { outline: 2px solid var(--marine-clair); outline-offset: 2px; }
     html.embarque .barre { display: none; }
     html.embarque body { background: #fff; }
@@ -59,7 +56,7 @@
 
     /* ---------- En-tete ---------- */
     .entete {
-      position: relative; height: 33mm; border-radius: 6mm 6mm 8mm 8mm; padding: 5mm 41mm 0 7mm; color: #fff;
+      position: relative; height: 34.5mm; border-radius: 6mm 6mm 8mm 8mm; padding: 5mm 41mm 0 7mm; color: #fff;
       background: linear-gradient(115deg, var(--marine-fonce) 0%, var(--marine) 55%, #3A6060 100%); box-shadow: var(--ombre);
     }
     .entete h1 { margin: 0; text-align: center; font-weight: 500; font-size: 20pt; line-height: 1.15; letter-spacing: 0.01em; }
@@ -72,7 +69,7 @@
     .contact img { width: 3.6mm; height: 3.6mm; object-fit: contain; }
     /* Graphe Obsidian du portfolio, en traits blancs très discrets, cadré par le bandeau (arrondi hérité). */
     .entete::before { content: ""; position: absolute; inset: 0; z-index: 0; border-radius: inherit; pointer-events: none; opacity: 0.14; filter: brightness(0) invert(1); background: url("cv-assets/img/obsidian-graph.svg") center / cover no-repeat; }
-    .entete h1, .contact { position: relative; z-index: 1; }
+    .entete h1, .entete .sous-titre, .contact { position: relative; z-index: 1; }
     .photo {
       position: absolute; z-index: 2; top: -3.2mm; right: 3.5mm; width: 35mm; height: 35mm; border-radius: 50%; overflow: hidden; background: #fff;
       border: 1.1mm solid #fff; box-shadow: 0 0.6mm 2.4mm rgba(20, 18, 16, 0.3);
@@ -80,79 +77,106 @@
     .photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; }
 
     /* ---------- Profil ---------- */
-    .profil { margin-top: 5mm; padding: 4mm 5mm; border-radius: var(--rayon); background: var(--carte); box-shadow: var(--ombre); font-size: 9pt; line-height: 1.48; }
+    .profil { margin-top: 4.6mm; padding: 3.4mm 5mm; border-radius: var(--rayon); background: var(--carte); box-shadow: var(--ombre); font-size: 8.6pt; line-height: 1.48; }
     .profil p { margin: 0; }
 
     /* ---------- Titres de section ---------- */
     .titre { display: flex; align-items: center; gap: 2.2mm; margin: 5.2mm 0 2.6mm; font-size: 12.4pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.005em; color: #0b1330; }
     .titre img { width: 5.4mm; height: 5.4mm; object-fit: contain; }
 
-    /* ---------- Competences ---------- */
-    .competences { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ecart); }
-    .panneau { padding: 2.6mm; border-radius: 4mm; color: #fff; background: linear-gradient(160deg, var(--marine) 0%, var(--marine-fonce) 100%); box-shadow: var(--ombre); display: grid; gap: 1.8mm; }
-    .panneau-gauche { grid-template-rows: repeat(3, 1fr); }
-    .ligne { display: grid; grid-template-columns: 22mm 1fr; align-items: center; gap: 2.6mm; padding: 1.5mm 3mm; border-radius: 3.2mm; background: rgba(64, 92, 92, 0.92); box-shadow: inset 0 0 0 0.2mm rgba(255, 255, 255, 0.12); }
-    .ligne .nom { display: flex; flex-direction: column; align-items: center; gap: 0.5mm; font-weight: 700; font-size: 8.2pt; }
-    .ligne .nom img { width: 5.2mm; height: 5.2mm; object-fit: contain; }
-    .ligne .techs { display: flex; flex-direction: column; gap: 0.8mm; font-size: 8.2pt; }
-    .techs .logos { display: flex; align-items: center; gap: 4mm; }
-    .techs .logos span { display: inline-flex; align-items: center; gap: 1.4mm; }
-    .techs .logos img { width: 4.6mm; height: 4.6mm; object-fit: contain; }
-    .techs .logos img.blanc { filter: invert(1); }
-    .panneau-droit { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); }
-    .outil { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1mm; padding: 1.4mm 2mm; border-radius: 3.4mm; background: rgba(64, 92, 92, 0.92); box-shadow: inset 0 0 0 0.2mm rgba(255, 255, 255, 0.12); font-size: 7.6pt; text-align: center; }
-    .outil.large { grid-column: 1 / -1; }
-    .outil .logos { display: flex; align-items: center; justify-content: center; gap: 3mm; }
-    .outil .logos span { display: inline-flex; align-items: center; gap: 1.2mm; }
-    .outil img { width: 4.6mm; height: 4.6mm; object-fit: contain; }
-    .outil img.grand { width: 5mm; height: 5mm; }
-    .outil img.devops { width: 11mm; height: 4.6mm; }
-    .outil img.blanc { filter: invert(1); }
+    /* ---------- V3 : en-tete avec sous-titre, puis les blocs de la V1 avec le contenu de la V2 ---------- */
+    .entete h1 { font-size: 19pt; }
+    .entete .sous-titre { margin: 1mm 0 0; text-align: center; font-size: 8pt; font-weight: 500; letter-spacing: 0.02em; opacity: 0.92; }
+    .entete .sous-titre.site { margin-top: 0.3mm; }
+    .entete .sous-titre a { color: inherit; text-decoration: none; font-weight: 700; }
+    .contact { margin-top: 2.6mm; }
+    .titre { margin: 3mm 0 1.8mm; font-size: 11.6pt; }
+    .page { display: flex; flex-direction: column; padding-bottom: 8mm; }
+    /* Le CV occupe toute la hauteur de l'A4 : l'espace libre est réparti entre compétences, projets, bâtiment et bas de page. */
+    .page > * { flex-shrink: 0; }
+    .competences { flex: 1 1 0; }
+    .contenu { flex: 2 1 0; display: flex; flex-direction: column; }
+    .contenu > section { flex: 1 1 0; display: flex; flex-direction: column; }
+    .contenu .frise { flex: 1; }
+    .bas { flex: 1 1 0; }
 
-    /* ---------- Experiences : une frise, deux rangees alignees sur 4 colonnes ---------- */
-    .frise { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--ecart); padding-top: 4.6mm; margin-bottom: 2.4mm; }
-    .frise::before { content: ""; position: absolute; left: 0; right: 0; top: 1.2mm; height: 0.9mm; border-radius: 0.5mm; background: var(--marine); }
-    .exp { position: relative; padding: 2.2mm 2.8mm 2.6mm; border-radius: var(--rayon); background: var(--carte); box-shadow: var(--ombre); font-size: 7.3pt; line-height: 1.4; }
-    .exp::before { content: ""; position: absolute; top: -4.5mm; left: 50%; width: 3.2mm; height: 3.2mm; margin-left: -1.6mm; border-radius: 50%; background: var(--marine); box-shadow: 0 0 0 0.9mm #fff; }
-    /* Graphe Obsidian du portfolio en filigrane dans les deux panneaux de compétences, derrière les cartes individuelles. */
+    /* Competences : deux panneaux bleus a logos (V1), regroupes par famille */
+    .competences { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ecart); }
+    .panneau { padding: 2mm; border-radius: 4mm; color: #fff; background: linear-gradient(160deg, var(--marine) 0%, var(--marine-fonce) 100%); box-shadow: var(--ombre); display: grid; gap: 1.4mm; }
+    /* Graphe Obsidian du portfolio en filigrane dans les deux panneaux, derrière les cartes individuelles. */
     .panneau { position: relative; }
     .panneau::before { content: ""; position: absolute; inset: 0; z-index: 0; border-radius: inherit; pointer-events: none; opacity: 0.16; filter: brightness(0) invert(1); background: url("cv-assets/img/obsidian-graph.svg") center / cover no-repeat; }
     .panneau > * { position: relative; z-index: 1; }
-    .exp.double { grid-column: span 2; }
-    /* Passif bâtiment : couleur du mode Bâtiment du portfolio (#B5562B), le reste garde le vert du mode Dev (#2B4A4A). */
-    .frise[aria-label*="bâtiment"]::before, .frise[aria-label*="bâtiment"] .exp::before { background: var(--btp); }
-    .frise[aria-label*="bâtiment"] .exp .poste { color: var(--btp-fonce); }
-    .formation li:last-child .pt { background: var(--btp); }
-    ul.formation::before { background: linear-gradient(to bottom, var(--marine) 0 50%, var(--btp) 50% 100%); }
-    .exp .date { margin: 0 0 1mm; text-align: center; font-size: 8pt; font-weight: 500; }
-    .exp .poste { margin: 0 0 0.7mm; font-weight: 700; color: var(--marine); font-size: 8pt; line-height: 1.3; }
-    .exp p { margin: 0; }
-    .exp a { color: #2B4A4A; }
+    .panneau-gauche { grid-template-rows: repeat(3, 1fr); }
+    .ligne { display: grid; grid-template-columns: 21mm 1fr; align-items: center; gap: 2.2mm; padding: 0.7mm 2.4mm; border-radius: 3.2mm; background: rgba(64, 92, 92, 0.65); box-shadow: inset 0 0 0 0.2mm rgba(255, 255, 255, 0.12); }
+    .ligne .nom { display: flex; flex-direction: column; align-items: center; gap: 0.3mm; font-weight: 700; font-size: 7.4pt; text-align: center; line-height: 1.2; }
+    .ligne .nom img { width: 4.4mm; height: 4.4mm; object-fit: contain; }
+    .ligne .techs { display: flex; flex-direction: column; gap: 0.4mm; font-size: 7.2pt; line-height: 1.3; }
+    .techs .logos { display: flex; align-items: center; gap: 3.2mm; flex-wrap: wrap; }
+    .techs .logos span { display: inline-flex; align-items: center; gap: 1.1mm; }
+    .techs .logos img { width: 4.2mm; height: 4.2mm; object-fit: contain; }
+    .panneau-droit { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); }
+    .outil { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.8mm; padding: 0.6mm 1.6mm; border-radius: 3.4mm; background: rgba(64, 92, 92, 0.65); box-shadow: inset 0 0 0 0.2mm rgba(255, 255, 255, 0.12); font-size: 7.1pt; text-align: center; line-height: 1.25; }
+    .outil.large { grid-column: 1 / -1; }
+    .outil b { font-weight: 700; }
+    .outil .logos { display: flex; align-items: center; justify-content: center; gap: 2.6mm; }
+    .outil .logos span { display: inline-flex; align-items: center; gap: 1mm; }
+    .outil img { width: 4.2mm; height: 4.2mm; object-fit: contain; }
+    .blanc { filter: invert(1); }
 
-    /* ---------- Formation et centres d'interet ---------- */
-    .bas { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ecart); align-items: stretch; }
+    /* Experiences : frise (V1), quatre colonnes alignees, une rangee par groupe */
+    .frise { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--ecart); padding-top: 4.2mm; }
+    .frise::before { content: ""; position: absolute; left: 0; right: 0; top: 1.2mm; height: 0.9mm; border-radius: 0.5mm; background: var(--marine); }
+    .exp { position: relative; padding: 1.8mm 2.5mm 2.2mm; border-radius: var(--rayon); background: var(--carte); box-shadow: var(--ombre); font-size: 6.95pt; line-height: 1.34; }
+    .exp::before { content: ""; position: absolute; top: -4.3mm; left: 50%; width: 3.2mm; height: 3.2mm; margin-left: -1.6mm; border-radius: 50%; background: var(--marine); box-shadow: 0 0 0 0.9mm #fff; }
+    .exp .date { margin: 0 0 0.6mm; text-align: center; font-size: 7.4pt; font-weight: 500; }
+    .exp .poste { margin: 0; font-weight: 700; color: var(--marine); font-size: 7.5pt; line-height: 1.28; }
+    .exp .lieu { white-space: nowrap; margin: 0 0 0.6mm; color: var(--gris); font-size: 6.6pt; font-weight: 500; }
+    .exp p { margin: 0; }
+    .exp .lieu ~ p + p { margin-top: 0.9mm; }
+    /* Passif bâtiment : couleur du mode Bâtiment du portfolio (#B5562B), le reste garde le vert du mode Dev (#2B4A4A). */
+    #blocBim .frise::before, #blocBim .exp::before { background: var(--btp); }
+    #blocBim .exp .poste { color: var(--btp-fonce); }
+    /* Lieu : couleur d'accent et filet dessous, pour le distinguer du texte descriptif (vert en Dev, terracotta en Bâtiment). */
+    .exp .lieu { color: var(--marine-clair); padding-bottom: 0.7mm; margin-bottom: 1mm; border-bottom: 0.2mm solid rgba(43, 74, 74, 0.35); }
+    #blocBim .exp .lieu { color: var(--btp-fonce); border-bottom-color: rgba(181, 86, 43, 0.4); }
+    .formation li:nth-child(n+3) .pt { background: var(--btp); }
+    /* Lien entre deux lignes de formation : segment du centre d'une ligne au centre de la suivante, terracotta entre deux formations bâtiment. */
+    ul.formation::before { content: none; }
+    .formation li { position: relative; }
+    .formation li:not(:last-child)::after { content: ""; position: absolute; left: calc(var(--c-an) + var(--c-pt) / 2 - 0.3mm); top: 50%; height: calc(100% + 1.5mm); width: 0.6mm; background: var(--marine); }
+    .formation li:nth-child(n+3):not(:last-child)::after { background: var(--btp); }
+
+    /* Bas de page : formation (V1) et langues avec centres d'interet */
+    .bas { display: grid; grid-template-columns: 1.25fr 1fr; gap: var(--ecart); align-items: stretch; }
     .bas section { display: flex; flex-direction: column; }
-    .bas .bloc-bas { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-    .bas .titre { margin-top: 4.2mm; }
-    .bloc-bas { padding: 2.6mm 4mm; border-radius: var(--rayon); background: var(--carte); box-shadow: var(--ombre); }
-    .formation { --c-an: 11mm; --c-pt: 7mm; position: relative; display: grid; gap: 2.2mm; margin: 0; padding: 0; list-style: none; }
+    .bloc-bas { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 2mm 4mm; border-radius: var(--rayon); background: var(--carte); box-shadow: var(--ombre); }
+    .formation { --c-an: 11.4mm; --c-pt: 5.5mm; position: relative; display: grid; gap: 1.5mm; margin: 0; padding: 0; list-style: none; }
+    /* Barre centree sur la colonne des points : meme variables que la grille des lignes, donc alignement exact. */
     .formation::before { content: ""; position: absolute; left: calc(var(--c-an) + var(--c-pt) / 2 - 0.3mm); top: 2mm; bottom: 2mm; width: 0.6mm; background: var(--marine); }
-    .formation li { display: grid; grid-template-columns: var(--c-an) var(--c-pt) 1fr; align-items: center; font-size: 8.4pt; }
-    .formation .an { font-weight: 700; font-size: 8.8pt; }
-    .formation .pt { position: relative; z-index: 1; width: 2.6mm; height: 2.6mm; border-radius: 50%; background: var(--marine); justify-self: center; }
-    .interets { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4mm 4mm; margin: 0; padding: 0; list-style: none; font-size: 8pt; }
-    .interets li { display: flex; align-items: center; gap: 2mm; }
-    .interets img { width: 4.6mm; height: 4.6mm; object-fit: contain; flex: none; }
+    .formation li { display: grid; grid-template-columns: var(--c-an) var(--c-pt) 1fr; align-items: center; font-size: 7.8pt; line-height: 1.3; }
+    .formation .an { font-weight: 700; font-size: 7.8pt; white-space: nowrap; }
+    .formation li > span:last-child { white-space: nowrap; }
+    .formation .pt { position: relative; z-index: 1; width: 2.4mm; height: 2.4mm; border-radius: 50%; background: var(--marine); justify-self: center; }
+    .formation small { color: var(--gris); font-size: 6.8pt; }
+    .formation small::before { content: " · "; }
+    .interets { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9mm 4mm; margin: 0; padding: 0; list-style: none; font-size: 7.3pt; }
+    .interets li { display: flex; align-items: center; gap: 1.8mm; }
+    .interets img { width: 3.8mm; height: 3.8mm; object-fit: contain; flex: none; }
+    .langues { margin: 1.2mm 0 0; padding: 1.2mm 0 0; border-top: 0.25mm solid rgba(43, 74, 74, 0.25); font-size: 7.6pt; display: flex; gap: 5mm; list-style: none; }
+    .langues b { font-weight: 700; }
   </style>
 </head>
 <body>
   <div class="barre" role="toolbar" aria-label="Options du CV">
-    <button type="button" class="exporter" id="exporter">Exporter en PDF (A4)</button>
+    <a class="exporter" href="/cv-gilles-cobigo.pdf" download>Télécharger le PDF</a>
   </div>
 
   <main class="page" id="page">
     <header class="entete">
-      <h1 id="titre">Gilles COBIGO - Développeur</h1>
+      <h1>Gilles COBIGO</h1>
+      <p class="sous-titre">Développeur, BIM Manager · Applications web et IA</p>
+      <p class="sous-titre site"><a href="https://gillescobigo.com" target="_blank" rel="noopener noreferrer">gillescobigo.com</a></p>
       <div class="contact">
         <a href="tel:+33679629460"><img src="cv-assets/img/telephone.png" alt="" />06 79 62 94 60</a>
         <a href="mailto:contact@gillescobigo.com"><img src="cv-assets/img/mail.png" alt="" />contact@gillescobigo.com</a>
@@ -163,100 +187,133 @@
     </header>
 
     <section class="profil" aria-label="Profil">
-      <p>Ancien BIM Manager chez Bouygues Construction, j'ai passé 10 ans à coordonner des projets complexes dont l'extension en mer de Monaco. Ce que j'aimais dans ce métier : comprendre un système dans sa globalité avant d'intervenir dessus. C'est exactement comme ça que j'aborde le développement aujourd'hui. Je construis Cerithe, un carnet de santé numérique du bâtiment, from scratch. Chaque décision technique est réfléchie, chaque choix d'architecture est défendu.</p>
+      <p>Dix ans dans le bâtiment, dont cinq en BIM chez Bouygues Construction. BIM Manager sur Mareterra, l'extension en mer de Monaco (plus de 100 maquettes interconnectées). Depuis 2022 je conçois et je développe des applications web de bout en bout. Cerithe, un carnet de santé numérique du bâtiment, est en production. Ouvra, un outil de coordination BIM avec IA, est en ligne. Je pilote l'IA et je vérifie ce qu'elle produit.</p>
     </section>
 
-    <h2 class="titre"><img src="cv-assets/img/competences.png" alt="" />Compétences techniques</h2>
+    <h2 class="titre"><img src="cv-assets/img/competences.png" alt="" />Compétences</h2>
     <section class="competences">
       <div class="panneau panneau-gauche">
         <div class="ligne">
-          <div class="nom"><img src="cv-assets/img/back.png" alt="" />Back-end</div>
+          <div class="nom"><img src="cv-assets/img/front.png" alt="" />Développement</div>
           <div class="techs">
-            <span>JavaScript / Node.js</span>
-            <div class="logos"><span><img class="blanc" src="cv-assets/img/express.png" alt="" />Express</span><span><img src="cv-assets/img/nestjs.png" alt="" />Nest.js</span></div>
+            <span>TypeScript, JavaScript, Node.js</span>
+            <div class="logos"><span><img src="cv-assets/img/react.png" alt="" />React</span><span><img src="cv-assets/img/tailwind.png" alt="" />Tailwind</span><span><img class="blanc" src="cv-assets/img/express.png" alt="" />Express</span><span><img src="cv-assets/img/nestjs.png" alt="" />Nest.js</span></div>
           </div>
         </div>
         <div class="ligne">
-          <div class="nom"><img src="cv-assets/img/front.png" alt="" />Front-end</div>
-          <div class="techs">
-            <span>TypeScript, JavaScript</span>
-            <div class="logos"><span><img src="cv-assets/img/react.png" alt="" />React</span><span><img src="cv-assets/img/tailwind.png" alt="" />Tailwind</span></div>
-          </div>
+          <div class="nom"><img src="cv-assets/img/bdd.png" alt="" />Données</div>
+          <div class="techs"><span>Prisma, PostgreSQL, MySQL</span><span>Java, Spring Boot (CocotteEclair)</span></div>
         </div>
         <div class="ligne">
-          <div class="nom"><img src="cv-assets/img/bdd.png" alt="" />BDD</div>
-          <div class="techs"><span>Prisma</span><span>PostgreSQL/Supabase</span></div>
+          <div class="nom"><img src="cv-assets/img/ia.svg" alt="" />IA</div>
+          <div class="techs"><span>API Claude et Groq, sortie structurée</span><span>Pilotage d'agents (Claude Code)</span></div>
         </div>
       </div>
       <div class="panneau panneau-droit">
-        <div class="outil">Conteneurisation<div class="logos"><span><img class="grand" src="cv-assets/img/docker.png" alt="" /><img class="grand" src="cv-assets/img/compose.png" alt="" />Docker</span></div></div>
-        <div class="outil">Versioning<div class="logos"><span><img class="grand" src="cv-assets/img/git.png" alt="" />Git</span></div></div>
-        <div class="outil">Déploiement<div class="logos"><span><img class="blanc" src="cv-assets/img/vercel.png" alt="" />Vercel</span><span><img src="cv-assets/img/render.png" alt="" />Render</span></div></div>
-        <div class="outil">Qualité &amp; tests<div class="logos"><span><img src="cv-assets/img/jest.png" alt="" />Jest</span><span><img src="cv-assets/img/cypress.png" alt="" />Cypress</span></div></div>
-        <div class="outil large">Devops<div class="logos"><img class="devops" src="cv-assets/img/devops.png" alt="" /></div></div>
+        <div class="outil"><b>Conteneurisation</b><div class="logos"><span><img src="cv-assets/img/docker.png" alt="" />Docker</span><span>Nginx</span></div></div>
+        <div class="outil"><b>Versioning</b><div class="logos"><span><img src="cv-assets/img/git.png" alt="" />Git</span></div></div>
+        <div class="outil"><b>Déploiement</b><div class="logos"><span><img class="blanc" src="cv-assets/img/vercel.png" alt="" />Vercel</span><span><img src="cv-assets/img/render.png" alt="" />Render</span></div></div>
+        <div class="outil"><b>Qualité et tests</b><div class="logos"><span><img src="cv-assets/img/jest.png" alt="" />Jest</span><span><img src="cv-assets/img/cypress.png" alt="" />Cypress</span></div></div>
+        <div class="outil large"><b><img src="cv-assets/img/bim.svg" alt="" style="display:inline-block;vertical-align:-1mm;margin-right:1.4mm" />BIM</b><span>IFC, BCF, Navisworks, Solibri, BIMcollab, BIM Track, M-Files</span></div>
       </div>
     </section>
 
-    <h2 class="titre"><img src="cv-assets/img/experiences.png" alt="" />Expériences professionnelles</h2>
-    <section class="frise" aria-label="Expériences de développeur">
-      <article class="exp">
-        <p class="date">2025/2026</p>
-        <p class="poste">Baticoop</p>
-        <p>Conception et développement d'un outil de gestion de travaux. User story, maquettes, création de pages et de composants sous React, développement du backend avec Node.js et Express.</p>
-      </article>
-      <article class="exp">
-        <p class="date">2024/2026</p>
-        <p class="poste">Freelance</p>
-        <p><strong>Sites WordPress :</strong> conception UI/UX, intégration front-end et déploiement complet (o2switch, SSL, gestion DNS) pour des sites e-commerce, site vitrine et blog, scraping d'évènements sportifs, ... Liste présente sur mon site <a href="https://gillescobigo.com">gillescobigo.com</a></p>
-      </article>
-      <article class="exp">
-        <p class="date">2024</p>
-        <p class="poste">ChouxFleurs</p>
-        <p><strong>App Web Python/Flask :</strong> premier projet personnel en autodidacte. Système de pronostics avec algorithme de pondération de scores et gestion d'une liste de naissance interactive. API MongoDB, Wasabi S3.</p>
-      </article>
-      <article class="exp">
-        <p class="date">2022/2026</p>
-        <p class="poste">Cerithe</p>
-        <p><strong>Carnet de santé numérique du bâtiment :</strong> à l'origine de ma reconversion. Construit from scratch en TypeScript, Node.js, React, Prisma. MVP prévu juillet 2026</p>
-      </article>
-    </section>
-    <section class="frise" aria-label="Expériences dans le bâtiment">
-      <article class="exp double">
-        <p class="date">2017/2021</p>
-        <p class="poste">BIM Manager - Bouygues</p>
-        <p>Structuration &amp; synchronisation de jeux de données massifs (Extension en mer de Monaco : 100+ modèles interconnectés, TPR2). Automatisation des protocoles d'échanges afin de garantir l'intégrité des maquettes BIM.</p>
-      </article>
-      <article class="exp double">
-        <p class="date">2011/2016</p>
-        <p class="poste">EP - Analyste bâtiment et rénovation</p>
-        <p>Conseil, analyse et gestion de projets de rénovation énergétique. Modélisation de données, création d'outils, paramétrage Salesforce. Formation et accompagnement.</p>
-      </article>
-    </section>
+    <div class="contenu">
+      <section id="blocProjets" aria-label="Projets en production">
+        <h2 class="titre"><img src="cv-assets/img/experiences.png" alt="" />Projets en production</h2>
+        <div class="frise">
+          <article class="exp">
+            <p class="date">2026</p>
+            <p class="poste">Ouvra</p>
+            <p class="lieu">Coordination BIM avec IA</p>
+            <p>Outil de coordination BIM : visionneuse, détection de collisions, échanges.</p>
+            <p>Pilotage par l'IA, avec des instructions écrites ou dictées à la voix.</p>
+          </article>
+          <article class="exp">
+            <p class="date">2026</p>
+            <p class="poste">Nexio</p>
+            <p class="lieu">Prospection et suivi de contacts</p>
+            <p>Application de suivi de recherche d'emploi et de prospection.</p>
+            <p>Contacts LinkedIn, relances automatiques, kanban, classement des contacts par LLM.</p>
+          </article>
+          <article class="exp">
+            <p class="date">2024/2026</p>
+            <p class="poste">Autres réalisations</p>
+            <p class="lieu">Outils et sites</p>
+            <p>ChouxFleurs : pronostics de naissance et liste de naissance.</p>
+            <p>Deux sites WordPress : Le Dressing de Maïlys et Niort Endurance 79.</p>
+          </article>
+          <article class="exp">
+            <p class="date">2022/2026</p>
+            <p class="poste">Cerithe</p>
+            <p class="lieu">Carnet de santé numérique du bâtiment</p>
+            <p>Travaux et documents consignés par le propriétaire, historique transmis lors d'une vente.</p>
+            <p>Dirigeant de la société (2022/2023), puis développeur de l'application.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="blocBim" aria-label="Expérience bâtiment et BIM">
+        <h2 class="titre"><img src="cv-assets/img/formation.png" alt="" />Expérience bâtiment et BIM</h2>
+        <div class="frise">
+          <article class="exp">
+            <p class="date">2020/2021</p>
+            <p class="poste">BIM Manager</p>
+            <p class="lieu">Bouygues Construction, Monaco</p>
+            <p>Mareterra, extension en mer de Monaco : plus de 100 maquettes interconnectées.</p>
+            <p>Protocoles d'échange entre les métiers, coordination de la synthèse, conflits entre maquettes.</p>
+          </article>
+          <article class="exp">
+            <p class="date">2018/2020</p>
+            <p class="poste">BIM Coordinateur</p>
+            <p class="lieu">Bouygues Bâtiment Sud-Est, Marseille</p>
+            <p>Chantiers TPR2 et MRS3.</p>
+            <p>Convention BIM, contrôle des maquettes multi-lots, échanges IFC, règles Solibri.</p>
+          </article>
+          <article class="exp">
+            <p class="date">2016/2017</p>
+            <p class="poste">Assistant études techniques BIM</p>
+            <p class="lieu">Bouygues Travaux Publics, Paris</p>
+            <p>Processus BIM de la construction des caissons de Monaco et leur mise en place :</p>
+            <p>GED M-Files, BCF avec BIMcollab, maquettes de synthèse Navisworks.</p>
+          </article>
+          <article class="exp">
+            <p class="date">2011/2016</p>
+            <p class="poste">Analyste bâtiment et rénovation</p>
+            <p class="lieu">EP, Nantes</p>
+            <p>Projet R&amp;D SmartDiag avec le CSTB : création de 300 modèles représentatifs du parc immobilier français.</p>
+            <p>8 collaborateurs formés.</p>
+          </article>
+        </div>
+      </section>
+    </div>
 
     <div class="bas">
       <section aria-label="Formation">
         <h2 class="titre"><img src="cv-assets/img/formation.png" alt="" />Formation</h2>
         <div class="bloc-bas">
           <ul class="formation">
-            <li><span class="an">2025</span><span class="pt"></span><span>Concepteur Développeur d'Applications</span></li>
-            <li><span class="an">2025</span><span class="pt"></span><span>Développeur Web et Web Mobile</span></li>
-            <li><span class="an">2017</span><span class="pt"></span><span>Mastère Spécialisé Conception BIM</span></li>
+            <li><span class="an">2025/26</span><span class="pt"></span><span>Concepteur Développeur d'Applications<small>niveau 6</small></span></li>
+            <li><span class="an">2025</span><span class="pt"></span><span>Développeur Web et Web Mobile<small>niveau 5</small></span></li>
+            <li><span class="an">2017</span><span class="pt"></span><span>Mastère Spécialisé Conception BIM<small>ESITC Caen</small></span></li>
+            <li><span class="an">2013</span><span class="pt"></span><span>Licence Performance Énergétique et Génie Climatique</span></li>
           </ul>
         </div>
       </section>
-      <section aria-label="Centres d'intérêt">
-        <h2 class="titre"><img src="cv-assets/img/boussole.png" alt="" />Centres d'intérêt</h2>
+      <section aria-label="Centres d'intérêt et langues">
+        <h2 class="titre"><img src="cv-assets/img/boussole.png" alt="" />Centres d'intérêt et langues</h2>
         <div class="bloc-bas">
           <ul class="interets">
             <li><img src="cv-assets/img/handball.png" alt="" />Handball (16 ans)</li>
             <li><img src="cv-assets/img/guitare.png" alt="" />Guitare (8 ans)</li>
-            <li><img src="cv-assets/img/entraineur.png" alt="" />Entraineur de -16 ans (3 ans)</li>
+            <li><img src="cv-assets/img/entraineur.png" alt="" />Entraineur (3 ans)</li>
             <li><img src="cv-assets/img/piano.png" alt="" />Piano (2 ans)</li>
             <li><img src="cv-assets/img/triathlon.png" alt="" />Triathlons</li>
             <li><img src="cv-assets/img/theatre.png" alt="" />Théâtre</li>
             <li><img src="cv-assets/img/padel.png" alt="" />Padel (2 ans)</li>
             <li><img src="cv-assets/img/echecs.png" alt="" />Échecs</li>
           </ul>
+          <ul class="langues"><li><b>Français</b> langue maternelle</li><li><b>Anglais</b> intermédiaire</li></ul>
         </div>
       </section>
     </div>
@@ -264,18 +321,9 @@
 
   <script>
     (function () {
-      var page = document.getElementById("page");
-      var LARGEUR_A4_PX = 210 * 96 / 25.4;
-      // Écran : la page A4 (cotes en mm) est réduite pour tenir dans la largeur du téléphone. Impression : jamais réduite.
-      function ajuster() {
-        var dispo = document.documentElement.clientWidth - 16;
-        page.style.zoom = dispo < LARGEUR_A4_PX ? String(dispo / LARGEUR_A4_PX) : "";
-      }
-      window.addEventListener("resize", ajuster);
-      window.addEventListener("beforeprint", function () { page.style.zoom = ""; });
-      window.addEventListener("afterprint", ajuster);
-      ajuster();
-      document.getElementById("exporter").addEventListener("click", function () { window.print(); });
+      var racine = document.documentElement;
+      // Aperçu embarque dans le widget du Dashboard : pas de barre d'outils.
+      try { if (window.self !== window.top) racine.classList.add("embarque"); } catch (e) { racine.classList.add("embarque"); }
     })();
   </script>
 </body>

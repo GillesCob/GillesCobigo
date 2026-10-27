@@ -27,8 +27,8 @@ export const NUMERIQUE_TEL_HREF = `tel:${NUMERIQUE_CONTACT.tel}`;
 export const NUMERIQUE_TEL_DISPLAY = "06 79 62 94 60";
 export const NUMERIQUE_MAILTO =
   "mailto:contact@gillescobigo.com?subject=Construire%20en%20num%C3%A9rique%20Domolandes";
-// CV en page HTML (copie de la version PDF, développeur), servie par public/cv/ ; l'export PDF se fait par l'impression.
-export const NUMERIQUE_CV_URL = "/cv/";
+// CV en PDF (version développeur, même fichier que le bouton « Télécharger le CV » de l'accueil), généré depuis public/cv/.
+export const NUMERIQUE_CV_URL = "/cv-gilles-cobigo.pdf";
 
 // URL Cal.com gardées telles que dans le mockup (apostrophe encodée en %27, ce que
 // encodeURIComponent ne fait pas). Sujet décodé vérifié par construireNumeriqueContent.test.ts.
