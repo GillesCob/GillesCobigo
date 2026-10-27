@@ -175,8 +175,10 @@
     width: min(60vh, 560px); height: auto; opacity: 0.12; pointer-events: none; user-select: none; z-index: 0;
   }
   .final-content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
-  .final-content .lead { margin-bottom: 4vh; }
-  .contacts { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.4vh; font-family: var(--font-mono); font-size: clamp(16px, 1.6vw, 24px); }
+  .final-content h1 { margin-bottom: 2.5vh; }
+  .final-qr-lien { display: block; margin-bottom: 4vh; }
+  .final-qr { display: block; width: min(42vh, 36vw); height: auto; border-radius: 1.2vh; box-shadow: 0 0 0 1px var(--border), 0 1vh 3vh -1.5vh rgba(20, 18, 16, .25); }
+  .contacts { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.4vh; font-family: var(--font-mono); font-size: clamp(18px, min(1.8vw, 3vh), 32px); }
   .contacts a { color: var(--accent); text-decoration: none; }
   .contacts a:hover { text-decoration: underline; }
 
@@ -404,8 +406,8 @@
             <rect class="barre" x="188" y="345" width="4" height="80" rx="2"/>
             <g class="icone" transform="translate(232 385)"><path d="M-17 -8 H15 M9 -15 L16 -8 L9 -1 M17 9 H-15 M-9 2 L-16 9 L-9 16"/></g>
             <text x="278" y="381" class="titre">Échanges</text>
-            <rect class="puce" x="278" y="395" width="170" height="34" rx="17"/>
-            <text x="363.0" y="412" text-anchor="middle" class="sigle">BCF · IDS</text>
+            <rect class="puce" x="278" y="395" width="80" height="34" rx="17"/>
+            <text x="318.0" y="412" text-anchor="middle" class="sigle">BCF</text>
           </g>
         </svg>
       </div>
@@ -556,10 +558,9 @@
       <img class="final-watermark" src="assets/logo-gc-black.png" alt="" aria-hidden="true">
       <div class="final-content">
         <h1>Merci pour votre écoute</h1>
-        <p class="lead">Pour me joindre</p>
+        <a class="final-qr-lien" href="https://www.gillescobigo.com/construire-en-numerique" target="_blank" rel="noopener noreferrer" aria-label="Ouvrir la page gillescobigo.com/construire-en-numerique"><img class="final-qr" src="assets/qr-construire-en-numerique.svg" alt="QR code vers gillescobigo.com/construire-en-numerique" width="45" height="45"></a>
         <ul class="contacts">
           <li><a href="mailto:contact@gillescobigo.com">contact@gillescobigo.com</a></li>
-          <li><a href="https://gillescobigo.com/construire-en-numerique" target="_blank" rel="noopener noreferrer">gillescobigo.com/construire-en-numerique</a></li>
           <li><a href="https://ouvra.gillescobigo.com" target="_blank" rel="noopener noreferrer">ouvra.gillescobigo.com</a></li>
         </ul>
       </div>
@@ -697,7 +698,7 @@
     var AUTO_SUITE = { "a1-batiment": { 1: 0 }, "a2-etapes": { 2: 400 }, "a2-outils": { 3: 400 }, "a2-ouvra": { 2: 0 } };
     var PREPARE = {};
     var INTRO_SUITE = {};
-    var DUREES = { "a1-batiment": [650], "a2-ouvra": [4400, 1000], "a2-outils": [3200, 1100, 2400], "a2-etapes": [700, 1250], "a2-capacites": [3000, 1100, 2400] };
+    var DUREES = { "a1-batiment": [650], "a2-ouvra": [4400, 1000], "a2-outils": [3200, 1100, 2550], "a2-etapes": [700, 1250], "a2-capacites": [3000, 1100, 2400] };
     var IA_SCENARIO = [
       { acteurs: [["Maître d'ouvrage"], ["Architecte", "ArchiCAD", "Allplan"], ["BIM manager", "Revit"]] },
       { acteurs: [["Maître d'ouvrage"], ["Maître d'œuvre"], ["Économiste", "Attic+", "JustBIM"]] },
@@ -740,7 +741,7 @@
     AUTO_SUITE["a2-problemes"] = { 3: 400, 4: 400 };
     var SOUCIS = {
       "a2-etapes": [["Acteurs multiples", "Besoins différents selon l'étape"]],
-      "a2-outils": [["Outils multiples", "Fonctions en double", "Licences multiples", "Prise en main"]]
+      "a2-outils": [["Outils multiples", "Fonctions en double", "Licences multiples", "Prise en main", "Maquettes à mettre à jour"]]
     };
     SOUCIS["a2-problemes"] = [["IA à connecter à chaque outil", "Continuité du projet"]];
     var SOUCIS_ORDRE = ["a2-etapes", "a2-outils", "a2-problemes"];
@@ -1398,7 +1399,7 @@
         ajouter(el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 900, delay: 300, fill: "forwards" }), 1);
       });
       animsSoucis(SOUCIS["a2-outils"][0], 2, 3, PANIER_BASE["a2-outils"], "a2-outils").forEach(function (a) { anims.push(a); });
-      var gR = geometrieRangee(), DEPART_POINTS = 1150;
+      var gR = geometrieRangee(), DEPART_POINTS = 1300;
       rangeePts.forEach(function (pt, k) {
         var l = lignes[RANGEE_FONCTIONS[k]], t = DEPART_POINTS + k * 60;
         ajouter(pt.animate([{ transform: posRangee(l, l.w / gR.d) }, { transform: posRangee(gR.centres[k], 1) }], { duration: 800, delay: t, easing: "cubic-bezier(.5,0,.2,1)", fill: "both" }), 3);
@@ -1763,7 +1764,7 @@
       var rs = scene.getBoundingClientRect();
       var u = rs.width / 100;
       var logo = s.querySelector(".s8-logo");
-      var SOUCIS_LIGNES = { 1: ["Besoins différents selon l'étape", SOUCIS["a2-problemes"][0][1]], 2: ["Acteurs multiples"], 5: ["Outils multiples", "Fonctions en double", "Licences multiples", "Prise en main"] };
+      var SOUCIS_LIGNES = { 1: ["Besoins différents selon l'étape", SOUCIS["a2-problemes"][0][1]], 2: ["Acteurs multiples"], 3: ["Maquettes à mettre à jour"], 5: ["Outils multiples", "Fonctions en double", "Licences multiples", "Prise en main"] };
       Array.prototype.forEach.call(s.querySelectorAll(".s8-soucis"), function (el) { el.parentNode.removeChild(el); });
       var etiquettes = [];
       Array.prototype.forEach.call(s.querySelectorAll(".s8-ia"), function (el) { el.parentNode.removeChild(el); });
