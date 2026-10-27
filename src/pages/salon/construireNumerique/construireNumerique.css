@@ -29,9 +29,13 @@
 @media (min-width: 900px) {
   .cs-root.cs-habitat.cs-numerique .top { display: grid; grid-template-columns: minmax(0, 540px) minmax(0, 1fr); column-gap: 64px; align-items: start; }
   .cs-root.cs-habitat.cs-numerique .wire { display: block; position: sticky; top: 72px; width: 100%; max-height: calc(100vh - 120px); margin-top: 12px; }
-  .cs-root.cs-habitat.cs-numerique .wire-line { fill: none; stroke: var(--fg-2); stroke-opacity: .55; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: wire-draw 900ms var(--ease-out) forwards; animation-delay: calc(var(--i) * 70ms + 300ms); }
-  .cs-root.cs-habitat.cs-numerique .wire-accent { stroke: var(--accent-text); stroke-opacity: 1; stroke-width: 2; }
-  .cs-root.cs-habitat.cs-numerique .wire-ring { fill: none; stroke: var(--accent-text); stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; animation: wire-ring 2.4s ease-out 4.6s infinite; }
+  .cs-root.cs-habitat.cs-numerique .wire-line { fill: none; stroke: var(--fg-2); stroke-opacity: .55; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: wire-draw 900ms var(--ease-out) forwards; animation-delay: calc(var(--i) * 32ms + 300ms); }
+  .cs-root.cs-habitat.cs-numerique .wire-ground { stroke-opacity: .25; stroke-dasharray: 1; }
+  .cs-root.cs-habitat.cs-numerique .wire-back { stroke-opacity: .25; }
+  .cs-root.cs-habitat.cs-numerique .wire-structure { stroke-opacity: .85; stroke-width: 1.6; }
+  .cs-root.cs-habitat.cs-numerique .wire-glass { stroke: var(--accent-text); stroke-opacity: .55; stroke-width: 1; }
+  .cs-root.cs-habitat.cs-numerique .wire-accent { stroke: var(--accent-text); stroke-opacity: 1; stroke-width: 2.4; }
+  .cs-root.cs-habitat.cs-numerique .wire-ring { fill: none; stroke: var(--accent-text); stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; animation: wire-ring 2.4s ease-out 4.8s infinite; }
 }
 @keyframes wire-draw { to { stroke-dashoffset: 0; } }
 @keyframes wire-ring { 0% { opacity: 0; transform: scale(.7); } 15% { opacity: 1; } 100% { opacity: 0; transform: scale(1.6); } }
@@ -55,8 +59,9 @@
 .cs-root.cs-habitat.cs-numerique .ouvra-go strong { display: block; font-size: 15px; font-weight: 700; }
 .cs-root.cs-habitat.cs-numerique .ouvra-go small { display: block; font-size: 13px; color: var(--fg-2); }
 .cs-root.cs-habitat.cs-numerique .ouvra-go .icon { width: 22px; height: 22px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.cs-root.cs-habitat.cs-numerique .ouvra-card .app-mark { width: 56px; height: 56px; border-radius: 13px; }
-.cs-root.cs-habitat.cs-numerique .ouvra-card h2 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
+.cs-root.cs-habitat.cs-numerique .ouvra-card .app-mark { grid-column: auto; width: 56px; height: 56px; border-radius: 13px; }
+.cs-root.cs-habitat.cs-numerique .ouvra-card h2 { display: block; margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -.01em; text-transform: none; color: var(--fg); }
+.cs-root.cs-habitat.cs-numerique .ouvra-card h2::after { content: none; }
 .cs-root.cs-habitat.cs-numerique .ouvra-tagline { margin: 2px 0 0; font-size: 14px; line-height: 1.35; color: var(--fg-2); text-wrap: balance; }
 .cs-root.cs-habitat.cs-numerique .ouvra-desc { grid-column: 1 / -1; margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: var(--fg-2); text-wrap: pretty; }
 

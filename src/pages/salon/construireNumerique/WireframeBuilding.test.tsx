@@ -17,6 +17,9 @@ describe("WireframeBuilding", () => {
       strokes.length,
     );
     expect(container.querySelectorAll("path.wire-accent")).toHaveLength(2);
+    expect(
+      container.querySelectorAll("path.wire-glass").length,
+    ).toBeGreaterThan(30);
   });
 
   it("ne produit aucune coordonnée invalide", () => {
