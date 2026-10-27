@@ -201,7 +201,7 @@ export default function ConstruireNumeriqueVisitor() {
         <section className="block" aria-labelledby="more-title">
           <h2 id="more-title">Pour aller plus loin</h2>
           <div className="secondary more-links">
-            <a className="sec" href={NUMERIQUE_CV_URL} {...EXTERNAL}>
+            <a className="sec" href={NUMERIQUE_CV_URL} download {...EXTERNAL}>
               <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="7 10 12 15 17 10" />
