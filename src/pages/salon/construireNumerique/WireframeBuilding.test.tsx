@@ -22,6 +22,13 @@ describe("WireframeBuilding", () => {
     ).toBeGreaterThan(30);
   });
 
+  it("dessine la ligne de toiture arrière avec sa propre classe, épaisse comme l'acrotère", () => {
+    const roofStrokes = buildStrokes().filter(({ kind }) => kind === "roof");
+    expect(roofStrokes).toHaveLength(1);
+    const { container } = render(<WireframeBuilding />);
+    expect(container.querySelectorAll("path.wire-roof")).toHaveLength(1);
+  });
+
   it("ne produit aucune coordonnée invalide", () => {
     expect(buildStrokes().every(({ d }) => !d.includes("NaN"))).toBe(true);
   });

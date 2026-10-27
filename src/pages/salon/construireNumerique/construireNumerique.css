@@ -39,6 +39,7 @@
   .cs-root.cs-habitat.cs-numerique .wire-line { fill: none; stroke: var(--fg-2); stroke-opacity: .55; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: wire-draw 900ms var(--ease-out) forwards; animation-delay: calc(var(--i) * 32ms + 300ms); }
   .cs-root.cs-habitat.cs-numerique .wire-ground { stroke-opacity: .25; stroke-dasharray: 1; }
   .cs-root.cs-habitat.cs-numerique .wire-back { stroke-opacity: .25; }
+  .cs-root.cs-habitat.cs-numerique .wire-roof { stroke-opacity: .55; stroke-width: 1.6; }
   .cs-root.cs-habitat.cs-numerique .wire-structure { stroke-opacity: .85; stroke-width: 1.6; }
   .cs-root.cs-habitat.cs-numerique .wire-glass { stroke: var(--accent-text); stroke-opacity: .55; stroke-width: 1; }
 }
