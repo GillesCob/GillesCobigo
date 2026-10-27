@@ -103,8 +103,8 @@ describe("ConstruireNumeriqueVisitor", () => {
     ) as HTMLElement;
     expect(within(more).queryByRole("link", { name: /Cerithe/ })).toBeNull();
     const cv = within(more).getByRole("link", { name: /Mon CV/ });
-    expect(cv).toHaveAttribute("href", "/cv-gilles-cobigo.pdf");
-    expect(cv).toHaveAttribute("download");
+    expect(cv).toHaveAttribute("href", "/cv/");
+    expect(cv).not.toHaveAttribute("download");
     expect(
       within(more).getByRole("link", { name: /Prendre rendez-vous/ }),
     ).toHaveAttribute(
