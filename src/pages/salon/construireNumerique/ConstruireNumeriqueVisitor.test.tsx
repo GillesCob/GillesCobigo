@@ -36,7 +36,7 @@ describe("ConstruireNumeriqueVisitor", () => {
   it("présente Ouvra avec son logo, son accroche et sa description", () => {
     const { container } = render(<ConstruireNumeriqueVisitor />);
     expect(screen.getByText("Mon démonstrateur BIM")).toBeInTheDocument();
-    expect(screen.getByText(/Visionneuse 3D et détection de collisions/)).toBeInTheDocument();
+    expect(screen.getByText(/Visionneuse 3D, collisions, discussions/)).toBeInTheDocument();
     expect(container.querySelector('.ouvra-card img[src="/images/app-ouvra.png"]')).not.toBeNull();
   });
 
