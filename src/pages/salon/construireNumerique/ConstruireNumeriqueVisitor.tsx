@@ -68,14 +68,13 @@ export default function ConstruireNumeriqueVisitor() {
 
         <div className="duo">
           <section className="block" aria-labelledby="ouvra-title">
-            <h2 id="ouvra-title">À tester sur votre téléphone</h2>
             <div className="actions">
               <div className="ouvra-card">
                 <span className="app-mark cs-dark pad" aria-hidden="true">
                   <img src={NUMERIQUE_FEATURED_APP.logo} alt="" />
                 </span>
                 <span>
-                  <h3>{NUMERIQUE_FEATURED_APP.name}</h3>
+                  <h2 id="ouvra-title">{NUMERIQUE_FEATURED_APP.name}</h2>
                   <p className="ouvra-tagline">{NUMERIQUE_FEATURED_APP.tagline}</p>
                 </span>
                 <p className="ouvra-desc">{NUMERIQUE_FEATURED_APP.description}</p>

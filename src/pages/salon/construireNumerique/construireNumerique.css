@@ -32,7 +32,7 @@
   padding: 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow);
 }
 .cs-root.cs-habitat.cs-numerique .ouvra-card .app-mark { width: 56px; height: 56px; border-radius: 13px; }
-.cs-root.cs-habitat.cs-numerique .ouvra-card h3 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
+.cs-root.cs-habitat.cs-numerique .ouvra-card h2 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
 .cs-root.cs-habitat.cs-numerique .ouvra-tagline { margin: 2px 0 0; font-size: 14px; line-height: 1.35; color: var(--fg-2); text-wrap: balance; }
 .cs-root.cs-habitat.cs-numerique .ouvra-desc { grid-column: 1 / -1; margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: var(--fg-2); text-wrap: pretty; }
 

@@ -18,7 +18,7 @@ const heading = (name: string) => screen.getByRole("heading", { level: 2, name }
 describe("ConstruireNumeriqueVisitor", () => {
   it("range les blocs dans l'ordre Ouvra, coordonnées, puis le reste", () => {
     render(<ConstruireNumeriqueVisitor />);
-    const ouvra = heading("À tester sur votre téléphone");
+    const ouvra = heading("Ouvra");
     const contact = heading("Mes coordonnées");
     const more = heading("Pour aller plus loin");
     expect(ouvra.compareDocumentPosition(contact) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
