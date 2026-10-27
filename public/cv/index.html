@@ -30,12 +30,12 @@
     }
     * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     @page { size: A4; margin: 0; }
-    html, body { margin: 0; padding: 0; }
+    html, body { margin: 0; padding: 0; overflow-x: hidden; }
     body { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; color: var(--texte); background: #EDECE7; font-size: 8.2pt; line-height: 1.4; }
     img { display: block; }
 
     /* ---------- Barre d'outils (ecran seulement) ---------- */
-    .barre { max-width: 210mm; margin: 0 auto; padding: 10px 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; font-size: 13px; }
+    .barre { max-width: 210mm; margin: 0 auto; padding: 10px 8px; display: flex; align-items: center; justify-content: flex-end; gap: 12px; font-size: 13px; }
     .barre button { font: inherit; font-size: 13px; padding: 7px 14px; border: 0; background: transparent; color: #33373B; cursor: pointer; }
     .barre .exporter { border: 1px solid var(--marine); border-radius: 8px; background: #fff; color: var(--marine); font-weight: 700; padding: 7px 14px; text-decoration: none; }
     .barre button:focus-visible { outline: 2px solid var(--marine-clair); outline-offset: 2px; }
@@ -44,14 +44,20 @@
 
     /* ---------- Page ---------- */
     .page {
-      position: relative; width: 210mm; height: 297mm; margin: 0 auto 16px; overflow: hidden; background: #fff;
+      position: relative; width: 210mm; height: 297mm; margin: 0; overflow: hidden; background: #fff;
       padding: 9mm var(--marge) 0; box-shadow: 0 2mm 8mm rgba(15, 33, 80, 0.25);
+      transform-origin: top left; transform: scale(var(--echelle, 1));
     }
-    html.embarque .page { margin: 0; box-shadow: none; }
+    /* Sur téléphone, le script ci-dessous règle --echelle (largeur de l'écran / largeur de la feuille) : la feuille A4 est réduite d'un bloc,
+       et ce cadre prend la taille réduite pour que la page se centre et ne défile pas horizontalement. */
+    .cadre { width: calc(210mm * var(--echelle, 1)); height: calc(297mm * var(--echelle, 1)); margin: 0 auto 16px; }
+    html.embarque .cadre { margin: 0; }
+    html.embarque .page { box-shadow: none; }
     @media print {
       body { background: #fff; }
       .barre { display: none; }
-      .page { margin: 0; box-shadow: none; break-after: avoid; break-inside: avoid; }
+      .cadre { width: auto; height: auto; margin: 0; }
+      .page { margin: 0; box-shadow: none; transform: none; break-after: avoid; break-inside: avoid; }
     }
 
     /* ---------- En-tete ---------- */
@@ -172,6 +178,7 @@
     <a class="exporter" href="/cv-gilles-cobigo.pdf" download>Télécharger le PDF</a>
   </div>
 
+  <div class="cadre" id="cadre">
   <main class="page" id="page">
     <header class="entete">
       <h1>Gilles COBIGO</h1>
@@ -318,12 +325,26 @@
       </section>
     </div>
   </main>
+  </div>
 
   <script>
     (function () {
       var racine = document.documentElement;
       // Aperçu embarque dans le widget du Dashboard : pas de barre d'outils.
       try { if (window.self !== window.top) racine.classList.add("embarque"); } catch (e) { racine.classList.add("embarque"); }
+
+      // Téléphone : la feuille fait 210 mm (environ 794 px), plus large qu'un écran. On la réduit à la largeur disponible
+      // (jamais agrandie), avec 8 px de marge de chaque côté ; offsetWidth ignore la réduction, donc la mesure reste stable.
+      var page = document.getElementById("page");
+      var MARGE_PX = 8;
+      function ajuster() {
+        if (racine.classList.contains("embarque")) return;
+        var echelle = Math.min(1, (racine.clientWidth - 2 * MARGE_PX) / page.offsetWidth);
+        racine.style.setProperty("--echelle", String(echelle));
+      }
+      ajuster();
+      window.addEventListener("resize", ajuster);
+      window.addEventListener("orientationchange", ajuster);
     })();
   </script>
 </body>

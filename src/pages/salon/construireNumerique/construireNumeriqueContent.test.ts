@@ -33,7 +33,8 @@ describe("construireNumeriqueContent", () => {
         "TEL;TYPE=CELL,VOICE:+33679629460",
         "URL:https://gillescobigo.com",
         "X-SOCIALPROFILE;type=linkedin:https://www.linkedin.com/in/gillescobigo",
-        "NOTE:Rencontré à Construire en numérique\\, Domolandes\\, 3 novembre 2026",
+        "NOTE:Développeur d'Ouvra\\, rencontré à Construire en numérique\\, Domola",
+        " ndes\\, 3 novembre 2026",
         "REV:2026-10-07T08:00:00Z",
         "END:VCARD",
         "",
@@ -51,12 +52,12 @@ describe("construireNumeriqueContent", () => {
     expect(NUMERIQUE_TEL_HREF).toBe(`tel:${NUMERIQUE_CONTACT.tel}`);
   });
 
-  it("pré-remplit le sujet du mail avec la journée", () => {
+  it("pré-remplit le sujet du mail en présentant Gilles comme développeur d'Ouvra", () => {
     const mail = new URL(NUMERIQUE_MAILTO);
     expect(mail.protocol).toBe("mailto:");
     expect(mail.pathname).toBe(NUMERIQUE_CONTACT.email);
     expect(mail.searchParams.get("subject")).toBe(
-      "Construire en numérique Domolandes",
+      "Ouvra, suite à notre échange à Construire en numérique",
     );
   });
 
@@ -113,7 +114,9 @@ describe("public/gilles-cobigo.vcf", () => {
   });
 
   it("reprend les champs de NUMERIQUE_CONTACT, à la photo et à la date de révision près", () => {
-    const generated = buildVCard(NUMERIQUE_CONTACT, NOW).split("\r\n");
+    const generated = buildVCard(NUMERIQUE_CONTACT, NOW)
+      .replace(/\r\n /g, "")
+      .split("\r\n");
     const stat = lines.filter(
       (line) => !line.startsWith("PHOTO") && !line.startsWith("REV:"),
     );

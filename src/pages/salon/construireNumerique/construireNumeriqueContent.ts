@@ -20,13 +20,13 @@ export const NUMERIQUE_CONTACT: IVCardContact = {
   tel: "+33679629460",
   url: "https://gillescobigo.com",
   linkedin: "https://www.linkedin.com/in/gillescobigo",
-  note: "Rencontré à Construire en numérique, Domolandes, 3 novembre 2026",
+  note: "Développeur d'Ouvra, rencontré à Construire en numérique, Domolandes, 3 novembre 2026",
 };
 
 export const NUMERIQUE_TEL_HREF = `tel:${NUMERIQUE_CONTACT.tel}`;
 export const NUMERIQUE_TEL_DISPLAY = "06 79 62 94 60";
 export const NUMERIQUE_MAILTO =
-  "mailto:contact@gillescobigo.com?subject=Construire%20en%20num%C3%A9rique%20Domolandes";
+  "mailto:contact@gillescobigo.com?subject=Ouvra%2C%20suite%20%C3%A0%20notre%20%C3%A9change%20%C3%A0%20Construire%20en%20num%C3%A9rique";
 // CV affiché en page HTML (public/cv/), avec son bouton « Télécharger le PDF » (/cv-gilles-cobigo.pdf).
 export const NUMERIQUE_CV_URL = "/cv/";
 
