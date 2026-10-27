@@ -14,7 +14,6 @@ import {
   NUMERIQUE_TEL_HREF,
   NUMERIQUE_VCARD_URL,
 } from "./construireNumeriqueContent";
-import { useCopyText } from "./useCopyText";
 import { useTransientFlag } from "./useTransientFlag";
 // Même habillage que la carte Habitat Expo (le mockup de la journée n'ajoute aucune règle CSS) :
 // feuille et modificateur `cs-habitat` réutilisés tels quels, pas dupliqués.
@@ -29,11 +28,6 @@ const VCARD_DONE_MS = 4000;
 // Délai d'apparition de chaque élément `.reveal` (variable CSS --d du mockup).
 const revealDelay = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 
-const COPY_MESSAGES = {
-  idle: "",
-  copied: "Numéro copié.",
-  failed: "Copie impossible. Appuyez longuement sur le numéro pour le copier.",
-} as const;
 
 // Page ouverte après le scan du QR, aussi carte de visite : Ouvra d'abord, coordonnées ensuite,
 // le reste en dessous (mockup carte-salon-construire-en-numerique.html, #visiteur, réordonné le
@@ -41,7 +35,6 @@ const COPY_MESSAGES = {
 export default function ConstruireNumeriqueVisitor() {
   useDocumentIcon("/images/favicon.png");
   const [isVCardDone, markVCardDone] = useTransientFlag(VCARD_DONE_MS);
-  const { status: copyStatus, copy: copyPhone } = useCopyText(NUMERIQUE_TEL_DISPLAY);
 
   return (
     <SalonScreen rootClassName="cs-habitat cs-numerique">
@@ -59,9 +52,6 @@ export default function ConstruireNumeriqueVisitor() {
             </h1>
             <p className="role reveal" style={revealDelay(140)}>
               {NUMERIQUE_ROLE}
-            </p>
-            <p className="pitch">
-              10 ans dans le BTP dont 5 ans de BIM, BIM Manager sur Mareterra, l&apos;extension en mer de Monaco.
             </p>
           </div>
         </header>
@@ -126,19 +116,6 @@ export default function ConstruireNumeriqueVisitor() {
               </a>
               <p className="sr-only" id="vcard-status" aria-live="polite">
                 {isVCardDone ? `Fiche contact ${VCARD_FILENAME} téléchargée.` : ""}
-              </p>
-
-              <p className="vcard-fallback" id="vcard-fallback">
-                Si le fichier ne s&apos;ouvre pas, copiez le numéro{" "}
-                <strong className="phone-number" id="phone-number">
-                  {NUMERIQUE_TEL_DISPLAY}
-                </strong>
-                <button type="button" className="copy-btn" id="copy-phone" onClick={copyPhone}>
-                  {copyStatus === "copied" ? "Copié" : "Copier le numéro"}
-                </button>
-              </p>
-              <p className="copy-status" id="copy-status" role="status" data-status={copyStatus}>
-                {COPY_MESSAGES[copyStatus]}
               </p>
 
               <div className="secondary">

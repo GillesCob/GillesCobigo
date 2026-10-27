@@ -67,48 +67,6 @@ describe("ConstruireNumeriqueVisitor", () => {
     expect(link).toHaveTextContent("Ajouter à mes contacts");
   });
 
-  it("affiche en permanence le texte de repli avec le numéro", () => {
-    render(<ConstruireNumeriqueVisitor />);
-    expect(screen.getByText(/Si le fichier ne s'ouvre pas, copiez le numéro/)).toBeVisible();
-    expect(screen.getByText("06 79 62 94 60", { selector: ".phone-number" })).toBeVisible();
-  });
-
-  it("copie le numéro dans le presse-papiers et le confirme", async () => {
-    const writeText = vi.fn().mockResolvedValue(undefined);
-    vi.stubGlobal("navigator", { ...navigator, clipboard: { writeText } });
-    render(<ConstruireNumeriqueVisitor />);
-
-    await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: "Copier le numéro" }));
-    });
-    expect(writeText).toHaveBeenCalledWith("06 79 62 94 60");
-    expect(screen.getByRole("status")).toHaveTextContent("Numéro copié.");
-    expect(screen.getByRole("button", { name: "Copié" })).toBeInTheDocument();
-  });
-
-  it("indique comment copier à la main quand le presse-papiers est refusé ou absent", async () => {
-    const writeText = vi.fn().mockRejectedValue(new Error("refusé"));
-    vi.stubGlobal("navigator", { ...navigator, clipboard: { writeText } });
-    const { unmount } = render(<ConstruireNumeriqueVisitor />);
-    await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: "Copier le numéro" }));
-    });
-    expect(screen.getByRole("status")).toHaveTextContent(/Copie impossible/);
-    unmount();
-
-    vi.stubGlobal("navigator", { ...navigator, clipboard: undefined });
-    render(<ConstruireNumeriqueVisitor />);
-    await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: "Copier le numéro" }));
-    });
-    expect(screen.getByRole("status")).toHaveTextContent(/Copie impossible/);
-  });
-
-  it("garde un statut de copie vide tant qu'on n'a pas copié", () => {
-    render(<ConstruireNumeriqueVisitor />);
-    expect(screen.getByRole("status")).toBeEmptyDOMElement();
-  });
-
   it("expose appel, mail et LinkedIn", () => {
     render(<ConstruireNumeriqueVisitor />);
     expect(screen.getByRole("link", { name: /M'appeler/ })).toHaveAttribute("href", "tel:+33679629460");
@@ -143,10 +101,9 @@ describe("ConstruireNumeriqueVisitor", () => {
     expect(text).not.toMatch(/règles de collision en français/i);
   });
 
-  it("annonce « 10 ans dans le BTP dont 5 ans de BIM », jamais « 10 ans BIM »", () => {
+  it("n'annonce jamais « 10 ans BIM »", () => {
     const { container } = render(<ConstruireNumeriqueVisitor />);
     const text = container.textContent ?? "";
-    expect(text).toContain("10 ans dans le BTP dont 5 ans de BIM");
     expect(text).not.toMatch(/10 ans (de |en )?BIM/);
   });
 
