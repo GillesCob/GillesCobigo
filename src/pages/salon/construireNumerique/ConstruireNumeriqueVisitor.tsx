@@ -50,7 +50,7 @@ export default function ConstruireNumeriqueVisitor() {
           <div className="hero-text">
             <p className="context">
               <span className="context-text">
-                <span>Rencontré à « Construire en numérique »</span>
+                <span>Construire en numérique</span>
                 <strong className="context-date">Mardi 3 novembre 2026 · Domolandes</strong>
               </span>
             </p>
@@ -69,7 +69,7 @@ export default function ConstruireNumeriqueVisitor() {
         <div className="duo">
           <section className="block" aria-labelledby="ouvra-title">
             <div className="actions">
-              <div className="ouvra-card">
+              <a className="ouvra-card" id="ouvra-cta" href={NUMERIQUE_FEATURED_APP.href} aria-label="Tester Ouvra" {...EXTERNAL}>
                 <span className="app-mark cs-dark pad" aria-hidden="true">
                   <img src={NUMERIQUE_FEATURED_APP.logo} alt="" />
                 </span>
@@ -78,17 +78,15 @@ export default function ConstruireNumeriqueVisitor() {
                   <p className="ouvra-tagline">{NUMERIQUE_FEATURED_APP.tagline}</p>
                 </span>
                 <p className="ouvra-desc">{NUMERIQUE_FEATURED_APP.description}</p>
-              </div>
-              <a className="cta" id="ouvra-cta" href={NUMERIQUE_FEATURED_APP.href} {...EXTERNAL}>
-                <span className="cta-ico" aria-hidden="true">
+                <span className="ouvra-go" aria-hidden="true">
+                  <span>
+                    <strong>Tester Ouvra</strong>
+                    <small>{NUMERIQUE_FEATURED_APP.host}</small>
+                  </span>
                   <svg className="icon" viewBox="0 0 24 24">
                     <path d="M7 7h10v10" />
                     <path d="M7 17 17 7" />
                   </svg>
-                </span>
-                <span className="cta-txt">
-                  <strong>Tester Ouvra</strong>
-                  <small>{NUMERIQUE_FEATURED_APP.host}</small>
                 </span>
               </a>
             </div>
