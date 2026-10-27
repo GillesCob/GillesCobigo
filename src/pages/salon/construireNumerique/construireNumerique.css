@@ -12,3 +12,44 @@
 .cs-root.cs-habitat.cs-numerique .context::before { flex: none; margin-top: 4px; transform: none; }
 .cs-root.cs-habitat.cs-numerique .context-text { display: grid; gap: 2px; min-width: 0; }
 .cs-root.cs-habitat.cs-numerique .context-date { font-size: 14px; line-height: 1.25; font-weight: 700; letter-spacing: -.01em; }
+
+/* ───────── Réordonnancement du 27/10 : Ouvra, coordonnées, puis le reste ─────────
+   Même préfixe que ci-dessus. Aucune règle de habitatExpo.css ni de salon.css n'est modifiée. */
+.cs-root.cs-habitat.cs-numerique .pitch { font-size: 15px; margin-top: 10px; text-wrap: balance; }
+
+/* Les deux blocs du haut : une colonne sur mobile, côte à côte sur laptop. */
+.cs-root.cs-habitat.cs-numerique .duo { display: grid; gap: 0; }
+.cs-root.cs-habitat.cs-numerique .block .actions { margin-top: 0; max-width: none; }
+@media (max-width: 899px) { .cs-root.cs-habitat.cs-numerique .page { padding-top: 16px; } .cs-root.cs-habitat.cs-numerique section.block { margin-top: 28px; } .cs-root.cs-habitat.cs-numerique .hero + .duo section.block:first-child { margin-top: 18px; } }
+@media (min-width: 900px) { .cs-root.cs-habitat.cs-numerique .duo { grid-template-columns: 1fr 1fr; column-gap: 40px; align-items: start; } }
+
+/* Les boutons sont des liens : pas de soulignement (`.cs-root a` en met un). */
+.cs-root.cs-habitat.cs-numerique a.cta { text-decoration: none; }
+
+/* Carte Ouvra : logo, nom et accroche sur une ligne, description dessous. */
+.cs-root.cs-habitat.cs-numerique .ouvra-card {
+  display: grid; grid-template-columns: 56px 1fr; gap: 6px 14px; align-items: center;
+  padding: 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow);
+}
+.cs-root.cs-habitat.cs-numerique .ouvra-card .app-mark { width: 56px; height: 56px; border-radius: 13px; }
+.cs-root.cs-habitat.cs-numerique .ouvra-card h3 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
+.cs-root.cs-habitat.cs-numerique .ouvra-tagline { margin: 2px 0 0; font-size: 14px; line-height: 1.35; color: var(--fg-2); text-wrap: balance; }
+.cs-root.cs-habitat.cs-numerique .ouvra-desc { grid-column: 1 / -1; margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: var(--fg-2); text-wrap: pretty; }
+
+/* Repli de la fiche contact : numéro sélectionnable d'un geste, bouton de copie de 44 px. */
+.cs-root.cs-habitat.cs-numerique .vcard-fallback { margin: 0; font-size: 14px; line-height: 1.5; color: var(--fg-2); }
+.cs-root.cs-habitat.cs-numerique .phone-number { color: var(--fg); font-weight: 700; white-space: nowrap; -webkit-user-select: all; user-select: all; }
+.cs-root.cs-habitat.cs-numerique .copy-btn {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; margin-left: 8px; padding: 0 14px;
+  border: 1px solid var(--border-strong); border-radius: 10px; background: var(--surface);
+  font: inherit; font-size: 14px; font-weight: 600; color: var(--accent-text); cursor: pointer;
+}
+.cs-root.cs-habitat.cs-numerique .copy-btn:hover { background: var(--surface-2); }
+.cs-root.cs-habitat.cs-numerique .copy-status { margin: -4px 0 0; min-height: 20px; font-size: 13px; line-height: 1.5; color: var(--muted); }
+.cs-root.cs-habitat.cs-numerique .copy-status[data-status="failed"] { color: var(--fg); font-weight: 600; }
+
+.cs-root.cs-habitat.cs-numerique .more-links { margin-top: 10px; }
+@media (max-width: 899px) { .cs-root.cs-habitat.cs-numerique .more-links { grid-template-columns: 1fr; } }
+
+/* Lien « gillescobigo.com » de la signature : zone tactile de 44 px (le texte seul en faisait 16). */
+.cs-root.cs-habitat.cs-numerique .made .sign a { display: inline-flex; align-items: center; min-height: 44px; }
