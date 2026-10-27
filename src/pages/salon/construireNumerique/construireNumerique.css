@@ -34,7 +34,7 @@
   .cs-root.cs-habitat.cs-numerique section.block-ouvra { grid-column: 1; grid-row: 2; margin-top: 0; }
   .cs-root.cs-habitat.cs-numerique .wire { display: block; position: absolute; grid-column: 2; grid-row: 1 / 3; top: 70px; right: 0; bottom: 0; left: 0; width: 100%; height: calc(100% - 70px); }
   .cs-root.cs-habitat.cs-numerique .block-contact { grid-column: 1 / -1; grid-row: 3; }
-  .cs-root.cs-habitat.cs-numerique .block-contact .secondary { grid-template-columns: repeat(3, 1fr); }
+  .cs-root.cs-habitat.cs-numerique .block-contact .secondary { grid-template-columns: repeat(4, 1fr); }
   .cs-root.cs-habitat.cs-numerique .block-contact .sec.wide { grid-column: auto; }
   .cs-root.cs-habitat.cs-numerique .wire-line { fill: none; stroke: var(--fg-2); stroke-opacity: .55; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: wire-draw 900ms var(--ease-out) forwards; animation-delay: calc(var(--i) * 32ms + 300ms); }
   .cs-root.cs-habitat.cs-numerique .wire-ground { stroke-opacity: .25; stroke-dasharray: 1; }

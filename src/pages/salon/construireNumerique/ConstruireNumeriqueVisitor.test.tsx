@@ -96,6 +96,18 @@ describe("ConstruireNumeriqueVisitor", () => {
     );
   });
 
+  it("place le lien vers le site avant « M'appeler », dans un nouvel onglet", () => {
+    render(<ConstruireNumeriqueVisitor />);
+    const site = screen.getByRole("link", { name: /^Mon site/ });
+    expect(site).toHaveAttribute("href", "https://gillescobigo.com");
+    expect(site).toHaveAttribute("target", "_blank");
+    expect(site).toHaveAttribute("rel", expect.stringContaining("noopener"));
+    const appeler = screen.getByRole("link", { name: /M'appeler/ });
+    expect(
+      site.compareDocumentPosition(appeler) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
   it("regroupe le CV, le rendez-vous et le portfolio sous « Pour aller plus loin », sans Cerithe", () => {
     const { container } = render(<ConstruireNumeriqueVisitor />);
     const more = heading("Pour aller plus loin").closest(

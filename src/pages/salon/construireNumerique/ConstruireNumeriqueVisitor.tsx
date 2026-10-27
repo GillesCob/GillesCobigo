@@ -144,6 +144,25 @@ export default function ConstruireNumeriqueVisitor() {
                   </p>
 
                   <div className="secondary">
+                    <a
+                      className="sec wide"
+                      href={NUMERIQUE_CONTACT.url}
+                      {...EXTERNAL}
+                    >
+                      <svg
+                        className="icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M2 12h20" />
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                      </svg>
+                      <span>
+                        <strong>Mon site</strong>
+                        <small>gillescobigo.com</small>
+                      </span>
+                    </a>
                     <a className="sec" href={NUMERIQUE_TEL_HREF}>
                       <svg
                         className="icon"
