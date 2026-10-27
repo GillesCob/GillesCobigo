@@ -113,6 +113,10 @@
     .frise::before { content: ""; position: absolute; left: 0; right: 0; top: 1.2mm; height: 0.9mm; border-radius: 0.5mm; background: var(--marine); }
     .exp { position: relative; padding: 2.2mm 2.8mm 2.6mm; border-radius: var(--rayon); background: var(--carte); box-shadow: var(--ombre); font-size: 7.3pt; line-height: 1.4; }
     .exp::before { content: ""; position: absolute; top: -4.5mm; left: 50%; width: 3.2mm; height: 3.2mm; margin-left: -1.6mm; border-radius: 50%; background: var(--marine); box-shadow: 0 0 0 0.9mm #fff; }
+    /* Graphe Obsidian du portfolio en filigrane dans les deux panneaux de compétences, derrière les cartes individuelles. */
+    .panneau { position: relative; }
+    .panneau::before { content: ""; position: absolute; inset: 0; z-index: 0; border-radius: inherit; pointer-events: none; opacity: 0.16; filter: brightness(0) invert(1); background: url("cv-assets/img/obsidian-graph.svg") center / cover no-repeat; }
+    .panneau > * { position: relative; z-index: 1; }
     .exp.double { grid-column: span 2; }
     /* Passif bâtiment : couleur du mode Bâtiment du portfolio (#B5562B), le reste garde le vert du mode Dev (#2B4A4A). */
     .frise[aria-label*="bâtiment"]::before, .frise[aria-label*="bâtiment"] .exp::before { background: var(--btp); }
