@@ -60,7 +60,10 @@ export default function ConstruireNumeriqueVisitor() {
             </header>
 
             <div className="duo">
-              <section className="block block-ouvra" aria-labelledby="ouvra-title">
+              <section
+                className="block block-ouvra"
+                aria-labelledby="ouvra-title"
+              >
                 <div className="actions">
                   <a
                     className="ouvra-card"
@@ -95,7 +98,10 @@ export default function ConstruireNumeriqueVisitor() {
                 </div>
               </section>
 
-              <section className="block block-contact" aria-labelledby="contact-title">
+              <section
+                className="block block-contact"
+                aria-labelledby="contact-title"
+              >
                 <h2 id="contact-title">Mes coordonnées</h2>
                 <div className="actions">
                   <a
@@ -203,7 +209,6 @@ export default function ConstruireNumeriqueVisitor() {
               </svg>
               <span>
                 <strong>Mon CV</strong>
-                <small>Voir, puis enregistrer en PDF</small>
               </span>
             </a>
             <a className="sec" href={NUMERIQUE_BOOKING_URL} {...EXTERNAL}>
@@ -215,7 +220,6 @@ export default function ConstruireNumeriqueVisitor() {
               </svg>
               <span>
                 <strong>Prendre rendez-vous</strong>
-                <small>Choisir un créneau</small>
               </span>
             </a>
           </div>

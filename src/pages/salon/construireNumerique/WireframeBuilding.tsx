@@ -302,7 +302,7 @@ export default function WireframeBuilding() {
   return (
     <svg
       className="wire"
-      viewBox="0 0 570 640"
+      viewBox="14 54 552 564"
       aria-hidden="true"
       focusable="false"
     >
