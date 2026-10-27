@@ -10,13 +10,13 @@ describe("WireframeBuilding", () => {
     expect(svg).toHaveAttribute("focusable", "false");
   });
 
-  it("dessine un trait par arête, dont deux en couleur d'accent", () => {
+  it("dessine un trait par arête, sans élément d'accent ni cercle", () => {
     const strokes = buildStrokes();
     const { container } = render(<WireframeBuilding />);
     expect(container.querySelectorAll("path.wire-line")).toHaveLength(
       strokes.length,
     );
-    expect(container.querySelectorAll("path.wire-accent")).toHaveLength(2);
+    expect(container.querySelector(".wire-accent, .wire-ring")).toBeNull();
     expect(
       container.querySelectorAll("path.wire-glass").length,
     ).toBeGreaterThan(30);

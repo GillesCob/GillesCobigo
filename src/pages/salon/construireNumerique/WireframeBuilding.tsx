@@ -2,7 +2,7 @@
 // Projection isométrique calculée ici : x part vers le bas à droite, y vers le bas à gauche, z vers le haut.
 // Faces visibles : x = WIDTH (à droite) et y = DEPTH (à gauche).
 
-export type StrokeKind = "ground" | "back" | "structure" | "glass" | "accent";
+export type StrokeKind = "ground" | "back" | "structure" | "glass";
 
 export interface IStroke {
   d: string;
@@ -27,9 +27,6 @@ const SILL = 0.28;
 const HEAD = 0.78;
 const CORE = { x0: 5, x1: 7, y0: 1, y1: 3, height: 0.9 } as const;
 const CANOPY = { x0: 3, x1: 5, depth: 1, z: 0.85 } as const;
-const RISER = { x: 6, y: 4.5 } as const;
-const DUCT_Z = 2.5;
-const RING_LEVEL = 3;
 
 const project = ([x, y, z]: Point3): [number, number] => [
   ORIGIN_X + (x - y) * 0.866 * SCALE,
@@ -53,7 +50,6 @@ export function buildStrokes(): IStroke[] {
   const back: IStroke[] = [];
   const structure: IStroke[] = [];
   const glass: IStroke[] = [];
-  const accent: IStroke[] = [];
   const add = (list: IStroke[], kind: StrokeKind, d: string) =>
     list.push({ d, kind });
 
@@ -297,28 +293,10 @@ export function buildStrokes(): IStroke[] {
       [cx1, DEPTH + depth, z],
     ]),
   );
-
-  add(
-    accent,
-    "accent",
-    path([
-      [RISER.x, RISER.y, 0],
-      [RISER.x, RISER.y, LEVELS],
-    ]),
-  );
-  add(
-    accent,
-    "accent",
-    path([
-      [RISER.x, RISER.y, DUCT_Z],
-      [WIDTH, RISER.y, DUCT_Z],
-    ]),
-  );
-  return [...ground, ...back, ...structure, ...glass, ...accent];
+  return [...ground, ...back, ...structure, ...glass];
 }
 
 const STROKES = buildStrokes();
-const [RING_X, RING_Y] = project([RISER.x, RISER.y, RING_LEVEL]);
 
 export default function WireframeBuilding() {
   return (
@@ -337,7 +315,6 @@ export default function WireframeBuilding() {
           style={{ ["--i" as string]: index }}
         />
       ))}
-      <ellipse className="wire-ring" cx={RING_X} cy={RING_Y} rx="24" ry="14" />
     </svg>
   );
 }
