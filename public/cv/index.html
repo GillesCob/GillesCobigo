@@ -15,28 +15,30 @@
       src: url("cv-assets/fonts/montserrat-latin.woff2") format("woff2");
     }
     :root {
-      --marine: #14295f;
-      --marine-fonce: #0f2150;
-      --marine-clair: #2a4a96;
-      --carte: #e9ecf4;
-      --texte: #16224a;
-      --gris: #44506f;
+      --marine: #2B4A4A;
+      --marine-fonce: #213A3A;
+      --marine-clair: #3F6B6B;
+      --btp: #B5562B;
+      --btp-fonce: #8F4322;
+      --carte: #F4F4F1;
+      --texte: #16181A;
+      --gris: #4B5056;
       --rayon: 3.4mm;
       --marge: 11mm;
       --ecart: 3.6mm;
-      --ombre: 0 0.5mm 1.6mm rgba(15, 33, 80, 0.22);
+      --ombre: 0 0 0 0.25mm #E6E4DF, 0 0.5mm 1.4mm rgba(20, 18, 16, 0.07);
     }
     * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     @page { size: A4; margin: 0; }
     html, body { margin: 0; padding: 0; }
-    body { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; color: var(--texte); background: #dfe3ec; font-size: 8.2pt; line-height: 1.4; }
+    body { font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; color: var(--texte); background: #EDECE7; font-size: 8.2pt; line-height: 1.4; }
     img { display: block; }
 
     /* ---------- Barre d'outils (ecran seulement) ---------- */
     .barre { max-width: 210mm; margin: 0 auto; padding: 10px 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; font-size: 13px; }
-    .barre .choix { display: flex; border: 1px solid #aab3c8; border-radius: 8px; overflow: hidden; background: #fff; }
-    .barre button { font: inherit; font-size: 13px; padding: 7px 14px; border: 0; background: transparent; color: #3b4766; cursor: pointer; }
-    .barre .choix button + button { border-left: 1px solid #aab3c8; }
+    .barre .choix { display: flex; border: 1px solid #CFCCC4; border-radius: 8px; overflow: hidden; background: #fff; }
+    .barre button { font: inherit; font-size: 13px; padding: 7px 14px; border: 0; background: transparent; color: #33373B; cursor: pointer; }
+    .barre .choix button + button { border-left: 1px solid #CFCCC4; }
     .barre .choix button[aria-pressed="true"] { background: var(--marine); color: #fff; }
     .barre .exporter { border: 1px solid var(--marine); border-radius: 8px; background: #fff; color: var(--marine); font-weight: 700; }
     .barre button:focus-visible { outline: 2px solid var(--marine-clair); outline-offset: 2px; }
@@ -58,7 +60,7 @@
     /* ---------- En-tete ---------- */
     .entete {
       position: relative; height: 33mm; border-radius: 6mm 6mm 8mm 8mm; padding: 5mm 41mm 0 7mm; color: #fff;
-      background: linear-gradient(115deg, var(--marine-fonce) 0%, var(--marine) 55%, #1d3b82 100%); box-shadow: var(--ombre);
+      background: linear-gradient(115deg, var(--marine-fonce) 0%, var(--marine) 55%, #3A6060 100%); box-shadow: var(--ombre);
     }
     .entete h1 { margin: 0; text-align: center; font-weight: 500; font-size: 20pt; line-height: 1.15; letter-spacing: 0.01em; }
     .contact {
@@ -69,7 +71,7 @@
     .contact img { width: 3.6mm; height: 3.6mm; object-fit: contain; }
     .photo {
       position: absolute; top: -3.2mm; right: 3.5mm; width: 35mm; height: 35mm; border-radius: 50%; overflow: hidden; background: #fff;
-      border: 1.1mm solid #fff; box-shadow: 0 0.6mm 2.4mm rgba(15, 33, 80, 0.4);
+      border: 1.1mm solid #fff; box-shadow: 0 0.6mm 2.4mm rgba(20, 18, 16, 0.3);
     }
     .photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; }
 
@@ -109,10 +111,14 @@
     .exp { position: relative; padding: 2.2mm 2.8mm 2.6mm; border-radius: var(--rayon); background: var(--carte); box-shadow: var(--ombre); font-size: 7.3pt; line-height: 1.4; }
     .exp::before { content: ""; position: absolute; top: -4.5mm; left: 50%; width: 3.2mm; height: 3.2mm; margin-left: -1.6mm; border-radius: 50%; background: var(--marine); box-shadow: 0 0 0 0.9mm #fff; }
     .exp.double { grid-column: span 2; }
+    /* Passif bâtiment : couleur du mode Bâtiment du portfolio (#B5562B), le reste garde le vert du mode Dev (#2B4A4A). */
+    .frise[aria-label*="bâtiment"]::before, .frise[aria-label*="bâtiment"] .exp::before { background: var(--btp); }
+    .frise[aria-label*="bâtiment"] .exp .poste { color: var(--btp-fonce); }
+    .formation li:last-child .pt { background: var(--btp); }
     .exp .date { margin: 0 0 1mm; text-align: center; font-size: 8pt; font-weight: 500; }
     .exp .poste { margin: 0 0 0.7mm; font-weight: 700; color: var(--marine); font-size: 8pt; line-height: 1.3; }
     .exp p { margin: 0; }
-    .exp a { color: #1f5fbf; }
+    .exp a { color: #2B4A4A; }
 
     /* ---------- Formation et centres d'interet ---------- */
     .bas { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ecart); align-items: stretch; }
