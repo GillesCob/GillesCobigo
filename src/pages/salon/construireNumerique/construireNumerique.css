@@ -9,6 +9,67 @@
   white-space: normal; overflow: visible; text-overflow: clip; font-size: 12px;
   padding: 6px 12px 6px 10px; border-radius: 12px;
 }
+/* Mobile : la carte de la journée prend toute la largeur. Laptop : page plus large, moins de marges de chaque côté. */
+@media (max-width: 899px) { .cs-root.cs-habitat.cs-numerique .context { display: flex; width: 100%; box-sizing: border-box; } }
+@media (min-width: 900px) { .cs-root.cs-habitat.cs-numerique .page { max-width: 1280px; padding-left: 48px; padding-right: 48px; } }
 .cs-root.cs-habitat.cs-numerique .context::before { flex: none; margin-top: 4px; transform: none; }
 .cs-root.cs-habitat.cs-numerique .context-text { display: grid; gap: 2px; min-width: 0; }
 .cs-root.cs-habitat.cs-numerique .context-date { font-size: 14px; line-height: 1.25; font-weight: 700; letter-spacing: -.01em; }
+
+/* ───────── Réordonnancement du 27/10 : Ouvra, coordonnées, puis le reste ─────────
+   Même préfixe que ci-dessus. Aucune règle de habitatExpo.css ni de salon.css n'est modifiée. */
+.cs-root.cs-habitat.cs-numerique .pitch { font-size: 15px; margin-top: 10px; text-wrap: balance; }
+
+/* Les deux blocs du haut : une colonne sur mobile, côte à côte sur laptop. */
+.cs-root.cs-habitat.cs-numerique .duo { display: grid; gap: 0; }
+.cs-root.cs-habitat.cs-numerique .block .actions { margin-top: 0; max-width: none; }
+@media (max-width: 899px) { .cs-root.cs-habitat.cs-numerique .page { padding-top: 16px; } .cs-root.cs-habitat.cs-numerique section.block { margin-top: 28px; } .cs-root.cs-habitat.cs-numerique .hero + .duo section.block:first-child { margin-top: 18px; } }
+/* Laptop : maquette filaire qui se dessine à droite de la carte Ouvra, coordonnées en pleine largeur dessous. */
+.cs-root.cs-habitat.cs-numerique .wire { display: none; }
+@media (min-width: 900px) {
+  /* Grille : titre et Ouvra à gauche ; à droite, le bâtiment va du haut du nom (70 px sous le haut du bloc titre, après le badge) au bas de la carte Ouvra ; coordonnées en pleine largeur dessous. */
+  .cs-root.cs-habitat.cs-numerique .top { position: relative; display: grid; grid-template-columns: minmax(0, 540px) minmax(0, 1fr); column-gap: 64px; align-items: start; }
+  .cs-root.cs-habitat.cs-numerique .top-main, .cs-root.cs-habitat.cs-numerique .duo { display: contents; }
+  .cs-root.cs-habitat.cs-numerique .hero { grid-column: 1; grid-row: 1; margin-bottom: 40px; }
+  .cs-root.cs-habitat.cs-numerique section.block-ouvra { grid-column: 1; grid-row: 2; margin-top: 0; }
+  .cs-root.cs-habitat.cs-numerique .wire { display: block; position: absolute; grid-column: 2; grid-row: 1 / 3; top: 70px; right: 0; bottom: 0; left: 0; width: 100%; height: calc(100% - 70px); }
+  .cs-root.cs-habitat.cs-numerique .block-contact { grid-column: 1 / -1; grid-row: 3; }
+  .cs-root.cs-habitat.cs-numerique .block-contact .secondary { grid-template-columns: repeat(3, 1fr); }
+  .cs-root.cs-habitat.cs-numerique .block-contact .sec.wide { grid-column: auto; }
+  .cs-root.cs-habitat.cs-numerique .wire-line { fill: none; stroke: var(--fg-2); stroke-opacity: .55; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: wire-draw 900ms var(--ease-out) forwards; animation-delay: calc(var(--i) * 32ms + 300ms); }
+  .cs-root.cs-habitat.cs-numerique .wire-ground { stroke-opacity: .25; stroke-dasharray: 1; }
+  .cs-root.cs-habitat.cs-numerique .wire-back { stroke-opacity: .25; }
+  .cs-root.cs-habitat.cs-numerique .wire-structure { stroke-opacity: .85; stroke-width: 1.6; }
+  .cs-root.cs-habitat.cs-numerique .wire-glass { stroke: var(--accent-text); stroke-opacity: .55; stroke-width: 1; }
+}
+@keyframes wire-draw { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .cs-root.cs-habitat.cs-numerique .wire-line { animation: none; stroke-dashoffset: 0; }
+}
+
+/* Les boutons sont des liens : pas de soulignement (`.cs-root a` en met un). */
+.cs-root.cs-habitat.cs-numerique a.cta { text-decoration: none; }
+
+/* Carte Ouvra : logo, nom et accroche sur une ligne, description dessous. */
+.cs-root.cs-habitat.cs-numerique .ouvra-card {
+  display: grid; grid-template-columns: 56px 1fr; gap: 6px 14px; align-items: center;
+  padding: 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow);
+  text-decoration: none; color: inherit; transition: border-color .15s ease;
+}
+.cs-root.cs-habitat.cs-numerique .ouvra-card:hover { border-color: var(--accent-text); }
+/* Pied de carte : dit que toute la carte ouvre Ouvra (la cible tactile fait au moins 44 px). */
+.cs-root.cs-habitat.cs-numerique .ouvra-go { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--border); color: var(--accent-text); }
+.cs-root.cs-habitat.cs-numerique .ouvra-go strong { display: block; font-size: 15px; font-weight: 700; }
+.cs-root.cs-habitat.cs-numerique .ouvra-go small { display: block; font-size: 13px; color: var(--fg-2); }
+.cs-root.cs-habitat.cs-numerique .ouvra-go .icon { width: 22px; height: 22px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.cs-root.cs-habitat.cs-numerique .ouvra-card .app-mark { grid-column: auto; width: 56px; height: 56px; border-radius: 13px; }
+.cs-root.cs-habitat.cs-numerique .ouvra-card h2 { display: block; margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -.01em; text-transform: none; color: var(--fg); }
+.cs-root.cs-habitat.cs-numerique .ouvra-card h2::after { content: none; }
+.cs-root.cs-habitat.cs-numerique .ouvra-tagline { margin: 2px 0 0; font-size: 14px; line-height: 1.35; color: var(--fg-2); text-wrap: balance; }
+.cs-root.cs-habitat.cs-numerique .ouvra-desc { grid-column: 1 / -1; margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: var(--fg-2); text-wrap: pretty; }
+
+.cs-root.cs-habitat.cs-numerique .more-links { margin-top: 10px; }
+@media (max-width: 899px) { .cs-root.cs-habitat.cs-numerique .more-links { grid-template-columns: 1fr; } }
+
+/* Lien « gillescobigo.com » de la signature : zone tactile de 44 px (le texte seul en faisait 16). */
+.cs-root.cs-habitat.cs-numerique .made .sign a { display: inline-flex; align-items: center; min-height: 44px; }
