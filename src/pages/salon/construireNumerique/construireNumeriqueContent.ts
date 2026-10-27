@@ -60,7 +60,7 @@ export const NUMERIQUE_FEATURED_APP: INumeriqueApp = {
   name: "Ouvra",
   tagline: "Mon démonstrateur BIM",
   description:
-    "Une maquette BIM dans le navigateur, sans installation. Visionneuse 3D, collisions, discussions. Testez les fonctionnalités autour de la maquette et explorez comment l'IA peut vous simplifier la vie.",
+    "Une maquette BIM dans le navigateur, sans installation. Visionneuse 3D, collisions, discussions. Testez les fonctionnalités autour de la maquette et voyez ce que change l'IA quand une simple phrase remplace les menus.",
   host: "ouvra.gillescobigo.com",
   href: liveUrl("ouvra", "https://ouvra.gillescobigo.com/"),
   logo: "/images/app-ouvra.png",
