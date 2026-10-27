@@ -4,7 +4,9 @@ import ConstruireNumeriqueVisitor from "./ConstruireNumeriqueVisitor";
 
 // jsdom n'a pas matchMedia, lu par useBackgroundParallax de la coque SalonScreen.
 beforeEach(() => {
-  window.matchMedia = vi.fn().mockReturnValue({ matches: false }) as unknown as typeof window.matchMedia;
+  window.matchMedia = vi
+    .fn()
+    .mockReturnValue({ matches: false }) as unknown as typeof window.matchMedia;
 });
 
 afterEach(() => {
@@ -13,7 +15,8 @@ afterEach(() => {
   document.head.innerHTML = "";
 });
 
-const heading = (name: string) => screen.getByRole("heading", { level: 2, name });
+const heading = (name: string) =>
+  screen.getByRole("heading", { level: 2, name });
 
 describe("ConstruireNumeriqueVisitor", () => {
   it("range les blocs dans l'ordre Ouvra, coordonnées, puis le reste", () => {
@@ -21,8 +24,12 @@ describe("ConstruireNumeriqueVisitor", () => {
     const ouvra = heading("Ouvra");
     const contact = heading("Mes coordonnées");
     const more = heading("Pour aller plus loin");
-    expect(ouvra.compareDocumentPosition(contact) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(contact.compareDocumentPosition(more) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      ouvra.compareDocumentPosition(contact) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      contact.compareDocumentPosition(more) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   it("ouvre Ouvra dans un nouvel onglet depuis le bouton « Tester Ouvra »", () => {
@@ -36,8 +43,12 @@ describe("ConstruireNumeriqueVisitor", () => {
   it("présente Ouvra avec son logo, son accroche et sa description", () => {
     const { container } = render(<ConstruireNumeriqueVisitor />);
     expect(screen.getByText("Mon démonstrateur BIM")).toBeInTheDocument();
-    expect(screen.getByText(/Visionneuse 3D, collisions, discussions/)).toBeInTheDocument();
-    expect(container.querySelector('.ouvra-card img[src="/images/app-ouvra.png"]')).not.toBeNull();
+    expect(
+      screen.getByText(/Visionneuse 3D, collisions, discussions/),
+    ).toBeInTheDocument();
+    expect(
+      container.querySelector('.ouvra-card img[src="/images/app-ouvra.png"]'),
+    ).not.toBeNull();
   });
 
   it("propose la fiche contact statique en téléchargement", () => {
@@ -58,7 +69,9 @@ describe("ConstruireNumeriqueVisitor", () => {
     fireEvent.click(link);
     expect(link).toHaveAttribute("data-state", "done");
     expect(link).toHaveTextContent("Fiche contact prête");
-    expect(screen.getByText("Fiche contact gilles-cobigo.vcf téléchargée.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Fiche contact gilles-cobigo.vcf téléchargée."),
+    ).toBeInTheDocument();
 
     act(() => {
       vi.advanceTimersByTime(4000);
@@ -69,7 +82,10 @@ describe("ConstruireNumeriqueVisitor", () => {
 
   it("expose appel, mail et LinkedIn", () => {
     render(<ConstruireNumeriqueVisitor />);
-    expect(screen.getByRole("link", { name: /M'appeler/ })).toHaveAttribute("href", "tel:+33679629460");
+    expect(screen.getByRole("link", { name: /M'appeler/ })).toHaveAttribute(
+      "href",
+      "tel:+33679629460",
+    );
     expect(screen.getByRole("link", { name: /M'écrire/ })).toHaveAttribute(
       "href",
       expect.stringMatching(/^mailto:contact@gillescobigo\.com/),
@@ -80,16 +96,25 @@ describe("ConstruireNumeriqueVisitor", () => {
     );
   });
 
-  it("regroupe Cerithe, le CV, le rendez-vous et le portfolio sous « Pour aller plus loin »", () => {
+  it("regroupe le CV, le rendez-vous et le portfolio sous « Pour aller plus loin », sans Cerithe", () => {
     const { container } = render(<ConstruireNumeriqueVisitor />);
-    const more = heading("Pour aller plus loin").closest("section") as HTMLElement;
-    expect(within(more).getByRole("link", { name: /Cerithe/ })).toHaveAttribute("href", "https://cerithe.gillescobigo.com");
-    expect(within(more).getByRole("link", { name: /Mon CV/ })).toHaveAttribute("href", expect.stringMatching(/\.pdf$/));
-    expect(within(more).getByRole("link", { name: /Prendre rendez-vous/ })).toHaveAttribute(
+    const more = heading("Pour aller plus loin").closest(
+      "section",
+    ) as HTMLElement;
+    expect(within(more).queryByRole("link", { name: /Cerithe/ })).toBeNull();
+    expect(within(more).getByRole("link", { name: /Mon CV/ })).toHaveAttribute(
+      "href",
+      expect.stringMatching(/\.pdf$/),
+    );
+    expect(
+      within(more).getByRole("link", { name: /Prendre rendez-vous/ }),
+    ).toHaveAttribute(
       "href",
       expect.stringMatching(/^https:\/\/cal\.com\/gillescobigo\/echange/),
     );
-    expect(container.querySelector('footer a[href="https://gillescobigo.com"]')).not.toBeNull();
+    expect(
+      container.querySelector('footer a[href="https://gillescobigo.com"]'),
+    ).not.toBeNull();
   });
 
   it("n'affiche plus le bloc IA, les offres ni la phrase non sourcée sur l'usage de l'IA", () => {
@@ -109,7 +134,9 @@ describe("ConstruireNumeriqueVisitor", () => {
 
   it("ouvre en nouvel onglet, avec noopener, tout lien vers un autre site", () => {
     const { container } = render(<ConstruireNumeriqueVisitor />);
-    const external = Array.from(container.querySelectorAll<HTMLAnchorElement>('a[href^="http"]'));
+    const external = Array.from(
+      container.querySelectorAll<HTMLAnchorElement>('a[href^="http"]'),
+    );
     expect(external.length).toBeGreaterThanOrEqual(6);
     external.forEach((anchor) => {
       expect(anchor).toHaveAttribute("target", "_blank");
@@ -119,6 +146,9 @@ describe("ConstruireNumeriqueVisitor", () => {
 
   it("pose le logo GC comme icône d'onglet", () => {
     render(<ConstruireNumeriqueVisitor />);
-    expect(document.head.querySelector('link[rel="icon"]')).toHaveAttribute("href", "/images/favicon.png");
+    expect(document.head.querySelector('link[rel="icon"]')).toHaveAttribute(
+      "href",
+      "/images/favicon.png",
+    );
   });
 });

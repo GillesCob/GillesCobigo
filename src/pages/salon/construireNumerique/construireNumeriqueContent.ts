@@ -25,12 +25,14 @@ export const NUMERIQUE_CONTACT: IVCardContact = {
 
 export const NUMERIQUE_TEL_HREF = `tel:${NUMERIQUE_CONTACT.tel}`;
 export const NUMERIQUE_TEL_DISPLAY = "06 79 62 94 60";
-export const NUMERIQUE_MAILTO = "mailto:contact@gillescobigo.com?subject=Construire%20en%20num%C3%A9rique%20Domolandes";
+export const NUMERIQUE_MAILTO =
+  "mailto:contact@gillescobigo.com?subject=Construire%20en%20num%C3%A9rique%20Domolandes";
 export const NUMERIQUE_CV_URL = "https://gillescobigo.com/cv-gilles-cobigo.pdf";
 
 // URL Cal.com gardées telles que dans le mockup (apostrophe encodée en %27, ce que
 // encodeURIComponent ne fait pas). Sujet décodé vérifié par construireNumeriqueContent.test.ts.
-export const NUMERIQUE_BOOKING_URL = "https://cal.com/gillescobigo/echange?notes=Construire%20en%20num%C3%A9rique";
+export const NUMERIQUE_BOOKING_URL =
+  "https://cal.com/gillescobigo/echange?notes=Construire%20en%20num%C3%A9rique";
 
 // Fiche contact statique servie par l'hébergeur (en-têtes dans vercel.json). Même contenu que
 // buildVCard(NUMERIQUE_CONTACT), plus la photo (logo GC), vérifié par construireNumeriqueContent.test.ts.
@@ -50,8 +52,7 @@ export interface INumeriqueApp {
 }
 
 // URL d'Ouvra reprise de devProjects.tsx (TODO du mockup), repli sur la valeur du mockup si
-// l'entrée disparaît. Cerithe en dur : devProjects.tsx construit son URL depuis VITE_CERITHE_URL,
-// absente du repo (même choix que habitatExpoContent.ts).
+// l'entrée disparaît.
 const liveUrl = (id: string, fallback: string) =>
   devProjects.find((project) => project.id === id)?.links?.live ?? fallback;
 
@@ -66,15 +67,3 @@ export const NUMERIQUE_FEATURED_APP: INumeriqueApp = {
   logo: "/images/app-ouvra.png",
   markVariant: "dark",
 };
-
-export const NUMERIQUE_APPS: INumeriqueApp[] = [
-  {
-    id: "cerithe",
-    name: "Cerithe",
-    description:
-      "Carnet de santé numérique du bâtiment. Interventions, équipements et conformité sur toute la vie d'un ouvrage.",
-    host: "cerithe.gillescobigo.com",
-    href: "https://cerithe.gillescobigo.com",
-    logo: "/images/app-cerithe-crop.png",
-  },
-];

@@ -6,7 +6,6 @@ import vercelConfigRaw from "../../../../vercel.json?raw";
 import vcfRaw from "../../../../public/gilles-cobigo.vcf?raw";
 import { buildVCard } from "../vcard";
 import {
-  NUMERIQUE_APPS,
   NUMERIQUE_BOOKING_URL,
   NUMERIQUE_CONTACT,
   NUMERIQUE_FEATURED_APP,
@@ -43,7 +42,9 @@ describe("construireNumeriqueContent", () => {
   });
 
   it("pointe le QR vers la route /construire-en-numerique, avec www pour éviter la redirection 308", () => {
-    expect(NUMERIQUE_QR_URL).toBe("https://www.gillescobigo.com/construire-en-numerique");
+    expect(NUMERIQUE_QR_URL).toBe(
+      "https://www.gillescobigo.com/construire-en-numerique",
+    );
   });
 
   it("reprend le téléphone de la vCard pour le lien d'appel", () => {
@@ -54,7 +55,9 @@ describe("construireNumeriqueContent", () => {
     const mail = new URL(NUMERIQUE_MAILTO);
     expect(mail.protocol).toBe("mailto:");
     expect(mail.pathname).toBe(NUMERIQUE_CONTACT.email);
-    expect(mail.searchParams.get("subject")).toBe("Construire en numérique Domolandes");
+    expect(mail.searchParams.get("subject")).toBe(
+      "Construire en numérique Domolandes",
+    );
   });
 
   it("pré-remplit le sujet Cal.com de la prise de rendez-vous", () => {
@@ -63,28 +66,30 @@ describe("construireNumeriqueContent", () => {
 
   it("n'envoie la prise de rendez-vous que vers l'agenda Cal.com de Gilles", () => {
     const url = new URL(NUMERIQUE_BOOKING_URL);
-    expect(url.origin + url.pathname).toBe("https://cal.com/gillescobigo/echange");
+    expect(url.origin + url.pathname).toBe(
+      "https://cal.com/gillescobigo/echange",
+    );
   });
 
   it("reprend l'URL d'Ouvra depuis devProjects.tsx", () => {
-    const live = devProjects.find((project) => project.id === "ouvra")?.links?.live;
+    const live = devProjects.find((project) => project.id === "ouvra")?.links
+      ?.live;
     expect(live).toMatch(/^https:\/\//);
     expect(NUMERIQUE_FEATURED_APP.href).toBe(live);
   });
 
-  it("expose Cerithe seul en réalisation secondaire, en https absolu avec son logo", () => {
-    expect(NUMERIQUE_APPS.map((app) => app.id)).toEqual(["cerithe"]);
-    [NUMERIQUE_FEATURED_APP, ...NUMERIQUE_APPS].forEach((app) => {
-      expect(app.href).toMatch(/^https:\/\/[^/]+\.[a-z]+(\/|$)/);
-      expect(app.logo).toMatch(/^\/images\/app-[a-z-]+\.png$/);
-    });
+  it("expose Ouvra en https absolu avec son logo", () => {
+    expect(NUMERIQUE_FEATURED_APP.href).toMatch(
+      /^https:\/\/[^/]+\.[a-z]+(\/|$)/,
+    );
+    expect(NUMERIQUE_FEATURED_APP.logo).toMatch(/^\/images\/app-[a-z-]+\.png$/);
   });
 
   it("présente Ouvra comme un démonstrateur, sans promesse de nouveauté", () => {
     expect(NUMERIQUE_FEATURED_APP.tagline).toMatch(/démonstrateur/i);
-    expect(`${NUMERIQUE_FEATURED_APP.tagline} ${NUMERIQUE_FEATURED_APP.description}`).not.toMatch(
-      /nouveau|premier|jamais vu|révolution/i,
-    );
+    expect(
+      `${NUMERIQUE_FEATURED_APP.tagline} ${NUMERIQUE_FEATURED_APP.description}`,
+    ).not.toMatch(/nouveau|premier|jamais vu|révolution/i);
   });
 });
 
@@ -109,16 +114,22 @@ describe("public/gilles-cobigo.vcf", () => {
 
   it("reprend les champs de NUMERIQUE_CONTACT, à la photo et à la date de révision près", () => {
     const generated = buildVCard(NUMERIQUE_CONTACT, NOW).split("\r\n");
-    const stat = lines.filter((line) => !line.startsWith("PHOTO") && !line.startsWith("REV:"));
+    const stat = lines.filter(
+      (line) => !line.startsWith("PHOTO") && !line.startsWith("REV:"),
+    );
     const gen = generated.filter((line) => !line.startsWith("REV:"));
     expect(stat).toEqual(gen);
     expect(unfolded).toMatch(/^REV:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/m);
   });
 
   it("embarque une photo JPEG en base64 de 256 px au plus, sous 20 Ko", () => {
-    const photo = lines.find((line) => line.startsWith("PHOTO;ENCODING=b;TYPE=JPEG:"));
+    const photo = lines.find((line) =>
+      line.startsWith("PHOTO;ENCODING=b;TYPE=JPEG:"),
+    );
     expect(photo).toBeDefined();
-    const bytes = Uint8Array.from(atob(photo!.split(":")[1]), (char) => char.charCodeAt(0));
+    const bytes = Uint8Array.from(atob(photo!.split(":")[1]), (char) =>
+      char.charCodeAt(0),
+    );
     expect(Array.from(bytes.subarray(0, 3))).toEqual([0xff, 0xd8, 0xff]);
     expect(bytes.length).toBeLessThan(20_000);
     // Dimensions lues dans l'en-tête SOF0/SOF2 du JPEG (hauteur puis largeur, 16 bits).
@@ -137,7 +148,11 @@ describe("public/gilles-cobigo.vcf", () => {
   });
 
   it("plie chaque ligne à 75 octets au plus", () => {
-    raw.split("\r\n").forEach((line) => expect(new TextEncoder().encode(line).length).toBeLessThanOrEqual(75));
+    raw
+      .split("\r\n")
+      .forEach((line) =>
+        expect(new TextEncoder().encode(line).length).toBeLessThanOrEqual(75),
+      );
   });
 });
 
@@ -147,9 +162,14 @@ describe("vercel.json", () => {
   };
 
   it("sert la fiche contact en text/vcard, en pièce jointe", () => {
-    const rule = config.headers.find((entry) => entry.source === NUMERIQUE_VCARD_URL);
-    const value = (key: string) => rule?.headers.find((header) => header.key === key)?.value;
+    const rule = config.headers.find(
+      (entry) => entry.source === NUMERIQUE_VCARD_URL,
+    );
+    const value = (key: string) =>
+      rule?.headers.find((header) => header.key === key)?.value;
     expect(value("Content-Type")).toBe("text/vcard; charset=utf-8");
-    expect(value("Content-Disposition")).toBe('attachment; filename="gilles-cobigo.vcf"');
+    expect(value("Content-Disposition")).toBe(
+      'attachment; filename="gilles-cobigo.vcf"',
+    );
   });
 });

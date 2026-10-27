@@ -4,7 +4,6 @@ import { VCARD_FILENAME } from "../salonContent";
 import WireframeBuilding from "./WireframeBuilding";
 import { useDocumentIcon } from "../useDocumentIcon";
 import {
-  NUMERIQUE_APPS,
   NUMERIQUE_BOOKING_URL,
   NUMERIQUE_CONTACT,
   NUMERIQUE_CV_URL,
@@ -195,35 +194,6 @@ export default function ConstruireNumeriqueVisitor() {
 
         <section className="block" aria-labelledby="more-title">
           <h2 id="more-title">Pour aller plus loin</h2>
-          <ul className="apps">
-            {NUMERIQUE_APPS.map((app) => (
-              <li key={app.id}>
-                <a className="app" href={app.href} {...EXTERNAL}>
-                  <span
-                    className={
-                      app.markVariant === "dark"
-                        ? "app-mark cs-dark pad"
-                        : "app-mark"
-                    }
-                    aria-hidden="true"
-                  >
-                    <img src={app.logo} alt="" />
-                  </span>
-                  <span>
-                    <h3>{app.name}</h3>
-                    <p>{app.description}</p>
-                    <code>{app.host}</code>
-                  </span>
-                  <span className="go" aria-hidden="true">
-                    <svg className="icon" viewBox="0 0 24 24">
-                      <path d="M7 7h10v10" />
-                      <path d="M7 17 17 7" />
-                    </svg>
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
           <div className="secondary more-links">
             <a className="sec" href={NUMERIQUE_CV_URL} download {...EXTERNAL}>
               <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
