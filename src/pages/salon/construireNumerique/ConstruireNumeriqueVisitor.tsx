@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import SalonScreen from "../SalonScreen";
 import { VCARD_FILENAME } from "../salonContent";
+import WireframeBuilding from "./WireframeBuilding";
 import { useDocumentIcon } from "../useDocumentIcon";
 import {
   NUMERIQUE_APPS,
@@ -28,7 +29,6 @@ const VCARD_DONE_MS = 4000;
 // Délai d'apparition de chaque élément `.reveal` (variable CSS --d du mockup).
 const revealDelay = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 
-
 // Page ouverte après le scan du QR, aussi carte de visite : Ouvra d'abord, coordonnées ensuite,
 // le reste en dessous (mockup carte-salon-construire-en-numerique.html, #visiteur, réordonné le
 // 27/10 sur décision de Gilles).
@@ -39,119 +39,158 @@ export default function ConstruireNumeriqueVisitor() {
   return (
     <SalonScreen rootClassName="cs-habitat cs-numerique">
       <div className="page run" id="page">
-        <header className="hero">
-          <div className="hero-text">
-            <p className="context">
-              <span className="context-text">
-                <span>Construire en numérique</span>
-                <strong className="context-date">Mardi 3 novembre 2026 · Domolandes</strong>
-              </span>
-            </p>
-            <h1 className="name reveal" style={revealDelay(0)}>
-              Gilles Cobigo
-            </h1>
-            <p className="role reveal" style={revealDelay(140)}>
-              {NUMERIQUE_ROLE}
-            </p>
-          </div>
-        </header>
-
-        <div className="duo">
-          <section className="block" aria-labelledby="ouvra-title">
-            <div className="actions">
-              <a className="ouvra-card" id="ouvra-cta" href={NUMERIQUE_FEATURED_APP.href} aria-label="Tester Ouvra" {...EXTERNAL}>
-                <span className="app-mark cs-dark pad" aria-hidden="true">
-                  <img src={NUMERIQUE_FEATURED_APP.logo} alt="" />
-                </span>
-                <span>
-                  <h2 id="ouvra-title">{NUMERIQUE_FEATURED_APP.name}</h2>
-                  <p className="ouvra-tagline">{NUMERIQUE_FEATURED_APP.tagline}</p>
-                </span>
-                <p className="ouvra-desc">{NUMERIQUE_FEATURED_APP.description}</p>
-                <span className="ouvra-go" aria-hidden="true">
-                  <span>
-                    <strong>Tester Ouvra</strong>
-                    <small>{NUMERIQUE_FEATURED_APP.host}</small>
+        <div className="top">
+          <div className="top-main">
+            <header className="hero">
+              <div className="hero-text">
+                <p className="context">
+                  <span className="context-text">
+                    <span>Construire en numérique</span>
+                    <strong className="context-date">
+                      Mardi 3 novembre 2026 · Domolandes
+                    </strong>
                   </span>
-                  <svg className="icon" viewBox="0 0 24 24">
-                    <path d="M7 7h10v10" />
-                    <path d="M7 17 17 7" />
-                  </svg>
-                </span>
-              </a>
-            </div>
-          </section>
-
-          <section className="block" aria-labelledby="contact-title">
-            <h2 id="contact-title">Mes coordonnées</h2>
-            <div className="actions">
-              <a
-                className="cta"
-                id="vcard"
-                href={NUMERIQUE_VCARD_URL}
-                download={VCARD_FILENAME}
-                aria-describedby="vcard-status"
-                data-state={isVCardDone ? "done" : undefined}
-                onClick={markVCardDone}
-              >
-                <span className="cta-ico" aria-hidden="true">
-                  <svg className="icon ico-add" viewBox="0 0 24 24">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M19 8v6" />
-                    <path d="M22 11h-6" />
-                  </svg>
-                  <svg className="icon ico-done" viewBox="0 0 24 24">
-                    <path d="M20 6 9 17l-5-5" />
-                  </svg>
-                </span>
-                <span className="cta-txt">
-                  <strong id="vcard-label">{isVCardDone ? "Fiche contact prête" : "Ajouter à mes contacts"}</strong>
-                  <small id="vcard-sub">
-                    {isVCardDone
-                      ? `Ouvrez ${VCARD_FILENAME} pour l'enregistrer`
-                      : "Mail, téléphone et LinkedIn en un geste"}
-                  </small>
-                </span>
-              </a>
-              <p className="sr-only" id="vcard-status" aria-live="polite">
-                {isVCardDone ? `Fiche contact ${VCARD_FILENAME} téléchargée.` : ""}
-              </p>
-
-              <div className="secondary">
-                <a className="sec" href={NUMERIQUE_TEL_HREF}>
-                  <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                  </svg>
-                  <span>
-                    <strong>M&apos;appeler</strong>
-                    <small>{NUMERIQUE_TEL_DISPLAY}</small>
-                  </span>
-                </a>
-                <a className="sec" href={NUMERIQUE_MAILTO}>
-                  <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <rect width="20" height="16" x="2" y="4" rx="2" />
-                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                  </svg>
-                  <span>
-                    <strong>M&apos;écrire</strong>
-                    <small>{NUMERIQUE_CONTACT.email}</small>
-                  </span>
-                </a>
-                <a className="sec wide" href={NUMERIQUE_CONTACT.linkedin} {...EXTERNAL}>
-                  <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
-                    <rect width="4" height="12" x="2" y="9" />
-                    <circle cx="4" cy="4" r="2" />
-                  </svg>
-                  <span>
-                    <strong>LinkedIn</strong>
-                    <small>/in/gillescobigo</small>
-                  </span>
-                </a>
+                </p>
+                <h1 className="name reveal" style={revealDelay(0)}>
+                  Gilles Cobigo
+                </h1>
+                <p className="role reveal" style={revealDelay(140)}>
+                  {NUMERIQUE_ROLE}
+                </p>
               </div>
+            </header>
+
+            <div className="duo">
+              <section className="block" aria-labelledby="ouvra-title">
+                <div className="actions">
+                  <a
+                    className="ouvra-card"
+                    id="ouvra-cta"
+                    href={NUMERIQUE_FEATURED_APP.href}
+                    aria-label="Tester Ouvra"
+                    {...EXTERNAL}
+                  >
+                    <span className="app-mark cs-dark pad" aria-hidden="true">
+                      <img src={NUMERIQUE_FEATURED_APP.logo} alt="" />
+                    </span>
+                    <span>
+                      <h2 id="ouvra-title">{NUMERIQUE_FEATURED_APP.name}</h2>
+                      <p className="ouvra-tagline">
+                        {NUMERIQUE_FEATURED_APP.tagline}
+                      </p>
+                    </span>
+                    <p className="ouvra-desc">
+                      {NUMERIQUE_FEATURED_APP.description}
+                    </p>
+                    <span className="ouvra-go" aria-hidden="true">
+                      <span>
+                        <strong>Tester Ouvra</strong>
+                        <small>{NUMERIQUE_FEATURED_APP.host}</small>
+                      </span>
+                      <svg className="icon" viewBox="0 0 24 24">
+                        <path d="M7 7h10v10" />
+                        <path d="M7 17 17 7" />
+                      </svg>
+                    </span>
+                  </a>
+                </div>
+              </section>
+
+              <section className="block" aria-labelledby="contact-title">
+                <h2 id="contact-title">Mes coordonnées</h2>
+                <div className="actions">
+                  <a
+                    className="cta"
+                    id="vcard"
+                    href={NUMERIQUE_VCARD_URL}
+                    download={VCARD_FILENAME}
+                    aria-describedby="vcard-status"
+                    data-state={isVCardDone ? "done" : undefined}
+                    onClick={markVCardDone}
+                  >
+                    <span className="cta-ico" aria-hidden="true">
+                      <svg className="icon ico-add" viewBox="0 0 24 24">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M19 8v6" />
+                        <path d="M22 11h-6" />
+                      </svg>
+                      <svg className="icon ico-done" viewBox="0 0 24 24">
+                        <path d="M20 6 9 17l-5-5" />
+                      </svg>
+                    </span>
+                    <span className="cta-txt">
+                      <strong id="vcard-label">
+                        {isVCardDone
+                          ? "Fiche contact prête"
+                          : "Ajouter à mes contacts"}
+                      </strong>
+                      <small id="vcard-sub">
+                        {isVCardDone
+                          ? `Ouvrez ${VCARD_FILENAME} pour l'enregistrer`
+                          : "Mail, téléphone et LinkedIn en un geste"}
+                      </small>
+                    </span>
+                  </a>
+                  <p className="sr-only" id="vcard-status" aria-live="polite">
+                    {isVCardDone
+                      ? `Fiche contact ${VCARD_FILENAME} téléchargée.`
+                      : ""}
+                  </p>
+
+                  <div className="secondary">
+                    <a className="sec" href={NUMERIQUE_TEL_HREF}>
+                      <svg
+                        className="icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                      </svg>
+                      <span>
+                        <strong>M&apos;appeler</strong>
+                        <small>{NUMERIQUE_TEL_DISPLAY}</small>
+                      </span>
+                    </a>
+                    <a className="sec" href={NUMERIQUE_MAILTO}>
+                      <svg
+                        className="icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <rect width="20" height="16" x="2" y="4" rx="2" />
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                      </svg>
+                      <span>
+                        <strong>M&apos;écrire</strong>
+                        <small>{NUMERIQUE_CONTACT.email}</small>
+                      </span>
+                    </a>
+                    <a
+                      className="sec wide"
+                      href={NUMERIQUE_CONTACT.linkedin}
+                      {...EXTERNAL}
+                    >
+                      <svg
+                        className="icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
+                        <rect width="4" height="12" x="2" y="9" />
+                        <circle cx="4" cy="4" r="2" />
+                      </svg>
+                      <span>
+                        <strong>LinkedIn</strong>
+                        <small>/in/gillescobigo</small>
+                      </span>
+                    </a>
+                  </div>
+                </div>
+              </section>
             </div>
-          </section>
+          </div>
+          <WireframeBuilding />
         </div>
 
         <section className="block" aria-labelledby="more-title">
@@ -160,7 +199,14 @@ export default function ConstruireNumeriqueVisitor() {
             {NUMERIQUE_APPS.map((app) => (
               <li key={app.id}>
                 <a className="app" href={app.href} {...EXTERNAL}>
-                  <span className={app.markVariant === "dark" ? "app-mark cs-dark pad" : "app-mark"} aria-hidden="true">
+                  <span
+                    className={
+                      app.markVariant === "dark"
+                        ? "app-mark cs-dark pad"
+                        : "app-mark"
+                    }
+                    aria-hidden="true"
+                  >
                     <img src={app.logo} alt="" />
                   </span>
                   <span>
@@ -206,8 +252,18 @@ export default function ConstruireNumeriqueVisitor() {
         </section>
 
         <footer className="made">
-          <a className="brand" href={NUMERIQUE_CONTACT.url} {...EXTERNAL} aria-label="gillescobigo.com, ouvre le portfolio">
-            <img src="/images/logo-gc-black.png" alt="" width="38" height="38" />
+          <a
+            className="brand"
+            href={NUMERIQUE_CONTACT.url}
+            {...EXTERNAL}
+            aria-label="gillescobigo.com, ouvre le portfolio"
+          >
+            <img
+              src="/images/logo-gc-black.png"
+              alt=""
+              width="38"
+              height="38"
+            />
             <span className="brand-name">Gilles Cobigo</span>
           </a>
           {/* Un seul nœud texte avant le lien, comme le mockup (même leçon que SalonRecruiter.tsx :
