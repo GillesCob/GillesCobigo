@@ -17,12 +17,7 @@
   /* Preflight Tailwind reset `font-weight: inherit` sur les headings (h1-h6), contrairement au
      défaut navigateur (bold) que le mockup ne redéfinit jamais lui-même pour .contact h2. */
   font-weight: 700;
-  margin: 0 0 8px;
-}
-.mp-contact p.sub {
-  line-height: normal;
-  color: hsl(var(--muted-foreground));
-  margin: 0 0 26px;
+  margin: 0 0 32px; /* la phrase d'accroche sous le titre est supprimee (28/10) : l'espace avant le formulaire reste celui d'avant */
 }
 .mp-contact-grid {
   display: grid;

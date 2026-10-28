@@ -52,7 +52,6 @@ export default function ContactSectionInline() {
         transition={{ duration: 0.7, ease: "easeOut" }}
       >
         <h2>Contact</h2>
-        <p className="sub">Pour une mission, un projet, ou juste échanger sur la stack.</p>
 
         <div className="mp-contact-grid">
           {submitted ? (
