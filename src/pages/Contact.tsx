@@ -39,8 +39,7 @@ export default function Contact() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-16 mt-11">
-      <h1 className="text-3xl font-bold mb-3">Contact</h1>
-      <p className="text-muted-foreground mb-12">Pour une mission, un projet, ou juste échanger sur la stack.</p>
+      <h1 className="text-3xl font-bold mb-12">Contact</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         <div>
