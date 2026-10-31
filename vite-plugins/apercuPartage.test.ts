@@ -33,7 +33,7 @@ describe("appliquerApercu", () => {
 
   it("description courte (lisible dans un aperçu WhatsApp) et sans tiret quadratin", () => {
     expect(APERCU_CONSTRUIRE_NUMERIQUE.description.length).toBeLessThanOrEqual(160);
-    expect(APERCU_CONSTRUIRE_NUMERIQUE.description).toMatch(/3 novembre/);
+    expect(APERCU_CONSTRUIRE_NUMERIQUE.description).toBe("Développeur et BIM Manager. Des outils qui rendent la maquette accessible à tous les acteurs d'un projet.");
     expect(html.includes(String.fromCharCode(0x2014))).toBe(false);
   });
 

@@ -10,7 +10,7 @@ const SITE = "https://www.gillescobigo.com";
 export const APERCU_CONSTRUIRE_NUMERIQUE = {
   chemin: "construire-en-numerique",
   titre: "Gilles Cobigo, Développeur et BIM Manager",
-  description: "Ouvra, mon démonstrateur BIM : maquette 3D, collisions et IA dans le navigateur. Présentation et démo le 3 novembre.",
+  description: "Développeur et BIM Manager. Des outils qui rendent la maquette accessible à tous les acteurs d'un projet.",
   image: `${SITE}/images/og-construire-en-numerique.png`,
   url: `${SITE}/construire-en-numerique`,
 };
