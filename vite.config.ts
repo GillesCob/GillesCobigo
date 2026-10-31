@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm'
 import remarkHeadingId from 'remark-heading-id'
 import rehypePrettyCode from 'rehype-pretty-code'
 import path from 'path'
+import { apercuPartage } from './vite-plugins/apercuPartage'
 
 export default defineConfig({
   plugins: [
@@ -16,6 +17,7 @@ export default defineConfig({
       }),
     },
     react(),
+    apercuPartage(),
   ],
   resolve: {
     alias: {
