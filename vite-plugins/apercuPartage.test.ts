@@ -1,7 +1,7 @@
 // Aperçu de partage de /construire-en-numerique (31/10) : le site est une SPA dont toutes les adresses renvoient index.html, donc un lien partagé
 // montrait l'aperçu général du portfolio. Un second index.html, au chemin de la page, porte ses propres balises. Écrits avant le code.
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { APERCU_CONSTRUIRE_NUMERIQUE, appliquerApercu } from "./apercuPartage";
 
@@ -44,5 +44,26 @@ describe("appliquerApercu", () => {
 
   it("une balise introuvable fait échouer le build plutôt que de publier un mauvais aperçu", () => {
     expect(() => appliquerApercu("<html><head></head></html>", APERCU_CONSTRUIRE_NUMERIQUE)).toThrow(/introuvable/);
+  });
+});
+
+// Aperçu général du portfolio (31/10) : plus d'année de code, et l'image existe vraiment à l'adresse annoncée (elle renvoyait la page d'accueil, donc aucune image en partage).
+describe("aperçu général de index.html", () => {
+  it("plus de « 4 ans de code » ni de reconversion dans les balises de partage", () => {
+    expect(indexSource).not.toMatch(/4 ans de code/);
+    expect(indexSource).not.toMatch(/property="og:description"\s+content="[^"]*reconversion/);
+  });
+
+  it("og:image et twitter:image pointent vers un fichier réel de public/", () => {
+    const images = [...indexSource.matchAll(/(?:og|twitter):image"\s+content="([^"]*)"/g)].map((m) => m[1]);
+    expect(images).toHaveLength(2);
+    for (const url of images) {
+      expect(url).toMatch(/^https:\/\/www\.gillescobigo\.com\/images\/[a-z-]+\.png$/);
+      expect(existsSync(path.resolve(__dirname, "../public", new URL(url).pathname.slice(1)))).toBe(true);
+    }
+  });
+
+  it("description générale, identique à celle de la page Construire en numérique", () => {
+    expect(indexSource).toContain(APERCU_CONSTRUIRE_NUMERIQUE.description);
   });
 });
