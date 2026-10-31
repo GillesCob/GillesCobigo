@@ -86,6 +86,15 @@ describe("construireNumeriqueContent", () => {
     expect(NUMERIQUE_FEATURED_APP.logo).toMatch(/^\/images\/app-[a-z-]+\.png$/);
   });
 
+  it("description d'Ouvra en trois lignes : navigateur, fonctionnalités, invitation à tester, sans « sans installation »", () => {
+    const lignes = NUMERIQUE_FEATURED_APP.description.split("\n");
+    expect(lignes).toHaveLength(3);
+    expect(lignes[0]).toBe("Une maquette BIM dans le navigateur.");
+    expect(lignes[1]).toBe("Visionneuse 3D, collisions, discussions.");
+    expect(lignes[2]).toMatch(/^Testez les fonctionnalités autour de la maquette/);
+    expect(NUMERIQUE_FEATURED_APP.description).not.toMatch(/sans installation/i);
+  });
+
   it("présente Ouvra comme un démonstrateur, sans promesse de nouveauté", () => {
     expect(NUMERIQUE_FEATURED_APP.tagline).toMatch(/démonstrateur/i);
     expect(
