@@ -441,8 +441,9 @@ export default function NewHome() {
                 <p className="mp-eyebrow">Développeur · 2022 à aujourd'hui</p>
                 <h1>La précision du code, héritée du terrain.</h1>
                 <p className="mp-lead">
-                  TypeScript, Node.js, React, Prisma. 10 ans dans le bâtiment avant ça, dont BIM Manager sur
-                  l'extension en mer de la ville de Monaco. Une reconversion qui n'en est pas une.
+                  Je construis des applications web de bout en bout : TypeScript, Node.js, React, Prisma. Des outils
+                  pour le bâtiment comme pour mon propre usage, toujours partis d'un vrai besoin. Venu du bâtiment,
+                  une reconversion qui n'en est pas une.
                 </p>
                 <div className="mp-ctas">
                   <button onClick={() => scrollToSection("projets")} className="mp-btn mp-btn-primary">
