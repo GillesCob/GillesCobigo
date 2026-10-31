@@ -67,7 +67,7 @@
 .cs-root.cs-habitat.cs-numerique .ouvra-card h2 { display: block; margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -.01em; text-transform: none; color: var(--fg); }
 .cs-root.cs-habitat.cs-numerique .ouvra-card h2::after { content: none; }
 .cs-root.cs-habitat.cs-numerique .ouvra-tagline { margin: 2px 0 0; font-size: 14px; line-height: 1.35; color: var(--fg-2); text-wrap: balance; }
-.cs-root.cs-habitat.cs-numerique .ouvra-desc { grid-column: 1 / -1; margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: var(--fg-2); text-wrap: pretty; }
+.cs-root.cs-habitat.cs-numerique .ouvra-desc { grid-column: 1 / -1; margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: var(--fg-2); text-wrap: pretty; white-space: pre-line; /* trois lignes : navigateur, fonctionnalités, invitation à tester */ }
 
 .cs-root.cs-habitat.cs-numerique .more-links { margin-top: 10px; }
 @media (max-width: 899px) { .cs-root.cs-habitat.cs-numerique .more-links { grid-template-columns: 1fr; } }
