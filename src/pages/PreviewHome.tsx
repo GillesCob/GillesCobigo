@@ -191,13 +191,15 @@ export default function PreviewHome() {
               />
               <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{project.projectName}</h1>
               <p className="text-muted-foreground text-lg mb-1">Suivi du projet avec {project.contactName}</p>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className={`text-sm text-muted-foreground ${project.nextAction ? "mb-4" : "mb-14"}`}>
                 Version en cours de discussion : <span className="font-mono font-semibold">{project.currentRound}</span>
               </p>
-              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 mb-14">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
-                <span className="text-sm text-foreground">{project.nextAction}</span>
-              </div>
+              {project.nextAction && (
+                <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 mb-14">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
+                  <span className="text-sm text-foreground">{project.nextAction}</span>
+                </div>
+              )}
 
               <div className="flex flex-col gap-3 text-left">
                 {project.rounds.length === 0 && (
