@@ -3,7 +3,8 @@
 import { describe, expect, it } from "vitest";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { APERCU_CONSTRUIRE_NUMERIQUE, appliquerApercu } from "./apercuPartage";
+import { APERCU_CONSTRUIRE_NUMERIQUE, appliquerApercu, apercusPreview } from "./apercuPartage";
+import { previewProjects } from "../src/data/previewProjects";
 
 const indexSource = readFileSync(path.resolve(__dirname, "../index.html"), "utf8");
 
@@ -65,5 +66,50 @@ describe("aperçu général de index.html", () => {
 
   it("description générale, identique à celle de la page Construire en numérique", () => {
     expect(indexSource).toContain(APERCU_CONSTRUIRE_NUMERIQUE.description);
+  });
+});
+
+// Aperçu de partage de la page d'échanges de Philippe André (17/11) : uniquement les projets qui renseignent shareTitle, shareDescription et shareImage.
+describe("apercusPreview", () => {
+  const apercus = apercusPreview();
+  const base = "preview/cours-guitare-philippe-andre/3677b1ae2b81935e";
+
+  it("exactement l'accueil et /v1 de Philippe, aucun autre chemin", () => {
+    expect(apercus.map((a) => a.chemin)).toEqual([base, `${base}/v1`]);
+  });
+
+  it("les autres projets (Mylène, etc.) n'ont aucun aperçu propre", () => {
+    expect(apercus.some((a) => a.chemin.includes("EuMLnfc8Uk"))).toBe(false);
+    expect(apercusPreview({ x: { ...previewProjects.EuMLnfc8Uk } })).toEqual([]);
+  });
+
+  it("balises complètes, texte demandé, image absolue https en JPG", () => {
+    const html = appliquerApercu(indexSource, apercus[0]);
+    const b = (re: RegExp) => (html.match(re) ?? [])[1];
+    expect(b(/<title>([^<]*)<\/title>/)).toBe("Cours de guitare de Philippe André");
+    expect(b(/property="og:title"\s+content="([^"]*)"/)).toBe("Cours de guitare de Philippe André");
+    expect(b(/property="og:description"\s+content="([^"]*)"/)).toBe("Deux propositions pour ton site, à découvrir et à commenter.");
+    expect(b(/name="twitter:title"\s+content="([^"]*)"/)).toBe("Cours de guitare de Philippe André");
+    expect(b(/name="twitter:description"\s+content="([^"]*)"/)).toBe("Deux propositions pour ton site, à découvrir et à commenter.");
+    expect(b(/name="description"\s+content="([^"]*)"/)).toBe("Deux propositions pour ton site, à découvrir et à commenter.");
+    expect(b(/property="og:type"\s+content="([^"]*)"/)).toBe("website");
+    expect(b(/property="og:site_name"\s+content="([^"]*)"/)).toBe("Cours de guitare de Philippe André");
+    expect(b(/property="og:url"\s+content="([^"]*)"/)).toBe(`https://www.gillescobigo.com/${base}`);
+    const image = b(/property="og:image"\s+content="([^"]*)"/);
+    expect(image).toMatch(/^https:\/\/www\.gillescobigo\.com\/.*\.jpg$/);
+    expect(b(/name="twitter:image"\s+content="([^"]*)"/)).toBe(image);
+    expect(existsSync(path.resolve(__dirname, "../public", new URL(image).pathname.slice(1)))).toBe(true);
+    expect(html).toContain('<div id="root"></div>');
+    expect(html).toContain('src="/src/main.tsx"');
+  });
+
+  it("l'accueil de index.html reste sans og:site_name (aperçu général intact)", () => {
+    expect(indexSource).not.toContain("og:site_name");
+  });
+
+  it("sans tiret quadratin, sans « petit », sans virgule avant et/ou", () => {
+    const texte = `${apercus[0].titre} ${apercus[0].description}`;
+    expect(texte.includes(String.fromCharCode(0x2014))).toBe(false);
+    expect(texte).not.toMatch(/petit|, (et|ou) /i);
   });
 });
