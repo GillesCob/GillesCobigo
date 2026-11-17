@@ -236,6 +236,13 @@ export function RoundContent({
     </>
   );
 
+  const roundInfoBlock = entry.roundInfo && (
+    <div className="rounded-xl border border-border p-6 bg-card mb-8">
+      <h2 className="text-sm font-semibold mb-3">À savoir</h2>
+      <p className="text-sm text-muted-foreground whitespace-pre-line">{entry.roundInfo}</p>
+    </div>
+  );
+
   const ownerNoteBlock = entry.ownerNote && (
     <>
       {showGuide && guideTexts?.ownerNote && <GuideCallout>{guideTexts.ownerNote}</GuideCallout>}
@@ -256,12 +263,14 @@ export function RoundContent({
       {wrapsTrailingCardsInTour ? (
         <div data-tour-key="v2-proposals">
           {proposalsBlock}
+          {roundInfoBlock}
           {changesAppliedBlock}
           {ownerNoteBlock}
         </div>
       ) : (
         <>
           {proposalsBlock}
+          {roundInfoBlock}
           {changesAppliedBlock}
           {ownerNoteBlock}
         </>

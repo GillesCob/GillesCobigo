@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { previewProjects } from '@/data/previewProjects'
 
 type Theme = 'dark' | 'light'
 
@@ -15,6 +16,18 @@ function applyTheme(theme: Theme): void {
     root.classList.remove('dark')
   }
   localStorage.setItem('theme', theme)
+  const secret = getPreviewDefaultTheme()?.secret
+  if (secret) localStorage.setItem(`theme-preview-${secret}`, theme)
+}
+
+// Page d'echanges dont l'entree previewProjects porte un defaultTheme (ex. Philippe Andre) :
+// cle de stockage propre a cette page, distincte du "theme" partage du portfolio (que /preview ignore).
+function getPreviewDefaultTheme(): { secret: string; theme: Theme } | null {
+  const path = typeof window !== 'undefined' ? window.location.pathname : ''
+  const match = /^\/preview\/[^/]+\/([^/]+)(\/|$)/.exec(path)
+  const secret = match?.[1]
+  const theme = secret ? previewProjects[secret]?.defaultTheme : undefined
+  return secret && theme ? { secret, theme } : null
 }
 
 // Sombre par defaut sur tout le portfolio (public recruteurs/devs), sauf sur les pages Boutiques
@@ -34,7 +47,13 @@ function applyTheme(theme: Theme): void {
 export function getDefaultTheme(): Theme {
   const path = typeof window !== 'undefined' ? window.location.pathname : ''
   const isProspectFacing = /^\/(preview|cas-client|cgv-boutiques)(\/|$)/.test(path)
-  if (isProspectFacing) return 'light'
+  if (isProspectFacing) {
+    const preview = getPreviewDefaultTheme()
+    if (!preview) return 'light'
+    // Theme par defaut propre a cette page, sauf choix deja fait par le visiteur sur cette page.
+    const stored = typeof localStorage !== 'undefined' ? localStorage.getItem(`theme-preview-${preview.secret}`) : null
+    return stored === 'dark' || stored === 'light' ? stored : preview.theme
+  }
   const saved = typeof localStorage !== 'undefined' ? (localStorage.getItem('theme') as Theme | null) : null
   return saved ?? 'dark'
 }

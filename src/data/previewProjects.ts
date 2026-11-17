@@ -19,6 +19,8 @@ export interface IPreviewRound {
   ownerNote?: string;
   /** Aperçus visuels illustrant les points d'ownerNote (ex. rendu du repli automatique) : affichés après ownerNote, jamais mélangés à l'avant/après principal de `proposals`. */
   supportingVisuals?: IPreviewProposal[];
+  /** Information affichée dans une carte « À savoir » sous les propositions (ex. rappel d'une fonctionnalité des maquettes). Absent = aucune carte. */
+  roundInfo?: string;
 }
 
 export interface IPreviewProject {
@@ -37,6 +39,8 @@ export interface IPreviewProject {
   coldIntro?: string;
   /** Numéro de téléphone trouvé en prospection (fiche Google), affiché dans la card tarifs pour confirmer le canal de rappel. Absent pour un client déjà engagé (le numéro se cale en direct avec lui). */
   phone?: string;
+  /** Thème initial de la page d'échanges (accueil et rounds). Absent = clair. Le choix du visiteur via le bouton de bascule prime ensuite. */
+  defaultTheme?: "dark" | "light";
   rounds: IPreviewRound[];
 }
 
@@ -588,10 +592,13 @@ export const previewProjects: Record<string, IPreviewProject> = {
     contactName: "Philippe",
     currentRound: "V1",
     feedbackFormId: "xgoggnej",
+    defaultTheme: "dark",
     rounds: [
       {
         round: "V1",
         date: "17 novembre 2026",
+        roundInfo:
+          "Sur chaque page des deux propositions, le bouton « Couleurs » de la barre du haut permet de changer les couleurs. C'est pour te donner des idées de ce que ça peut donner, tu peux revenir aux couleurs de départ quand tu veux.",
         proposals: [
           { label: "Proposition 1", screenshot: "/preview/cours-guitare-philippe-andre/screenshots/proposition-1.webp", htmlPath: "/preview/cours-guitare-philippe-andre/8d720daaa28e052a/", group: "V1 : à choisir" },
           { label: "Proposition 2", screenshot: "/preview/cours-guitare-philippe-andre/screenshots/proposition-2.webp", htmlPath: "/preview/cours-guitare-philippe-andre/3677b1ae2b81935e/V1/P2/", group: "V1 : à choisir" },
