@@ -14,7 +14,8 @@ describe("previewProjects", () => {
     expect(project.logo).toBeTruthy();
     expect(project.contactName).toBeTruthy();
     expect(project.currentRound).toBeTruthy();
-    expect(project.nextAction).toBeTruthy();
+    // nextAction est optionnel (pas de pastille), mais jamais une chaîne vide
+    expect(project.nextAction ?? "ok").toBeTruthy();
     expect(project.feedbackFormId).toBeTruthy();
     expect(project.rounds.length).toBeGreaterThan(0);
   });

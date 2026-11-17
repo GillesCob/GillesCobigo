@@ -31,7 +31,7 @@ export interface IPreviewProject {
   logoMaxWidth?: number;
   contactName: string;
   currentRound: string;
-  nextAction: string;
+  nextAction?: string;
   feedbackFormId: string;
   /** Message d'orientation pour un premier contact à froid (prospect qui n'a jamais échangé avec Gilles) : qui envoie ce lien, pourquoi, avec un lien vers un exemple de résultat déjà livré. Absent pour un client déjà engagé (ex. Mylène), affiché uniquement si présent. */
   coldIntro?: string;
@@ -587,7 +587,6 @@ export const previewProjects: Record<string, IPreviewProject> = {
     logo: "/preview/cours-guitare-philippe-andre/logo.svg",
     contactName: "Philippe",
     currentRound: "V1",
-    nextAction: "Jette un œil aux deux propositions et dis-moi laquelle te parle le plus, ou ce que tu changerais.",
     feedbackFormId: "xgoggnej",
     rounds: [
       {
@@ -597,7 +596,10 @@ export const previewProjects: Record<string, IPreviewProject> = {
           { label: "Proposition 1", screenshot: "/preview/cours-guitare-philippe-andre/screenshots/proposition-1.webp", htmlPath: "/preview/cours-guitare-philippe-andre/8d720daaa28e052a/", group: "V1 : à choisir" },
           { label: "Proposition 2", screenshot: "/preview/cours-guitare-philippe-andre/screenshots/proposition-2.webp", htmlPath: "/preview/cours-guitare-philippe-andre/3677b1ae2b81935e/V1/P2/", group: "V1 : à choisir" },
         ],
-        missingInfo: ["Adresse précise du lieu de cours", "Tarif spécifique du coaching"],
+        missingInfo: [
+          "Me dire ce qui te plaît dans chaque proposition ou ce qui t'inspire. Cette première passe sert à piocher et à explorer les possibilités pour construire ensemble une version 2.",
+          "Tarif spécifique du coaching",
+        ],
       },
     ],
   },
