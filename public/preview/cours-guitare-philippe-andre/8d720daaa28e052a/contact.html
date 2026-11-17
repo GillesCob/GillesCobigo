@@ -37,6 +37,14 @@
         var t = localStorage.getItem("pa-theme");
         if (t === "dark" || t === "light") { document.documentElement.setAttribute("data-theme", t); }
       } catch (e) {}
+      try {
+        var ids = ["origine", "ocean", "sauge", "prune", "ambre", "graphite"];
+        var q = new URLSearchParams(location.search).get("palette");
+        var p = q === null ? null : (ids.indexOf(q) > -1 ? q : "origine");
+        if (p) { try { localStorage.setItem("pa-palette", p); } catch (e) {} }
+        else { try { p = localStorage.getItem("pa-palette"); } catch (e) {} }
+        document.documentElement.setAttribute("data-palette", ids.indexOf(p) > -1 ? p : "origine");
+      } catch (e) { document.documentElement.setAttribute("data-palette", "origine"); }
     })();
   </script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","@id":"https://www.coursdeguitarephilippeandre.com/#entreprise","name":"Cours de guitare Philippe André","description":"Cours de guitare individuels sur-mesure et coaching musical pour artistes solo et groupes amateurs, à Rezé près de Nantes.","url":"https://www.coursdeguitarephilippeandre.com/","image":"https://www.gillescobigo.com/preview/cours-guitare-philippe-andre/8d720daaa28e052a/assets/img/og.jpg","telephone":"+33607131011","email":"andrephilippe001@gmail.com","founder":{"@type":"Person","name":"Philippe André"},"address":{"@type":"PostalAddress","addressLocality":"Rezé","addressCountry":"FR"},"areaServed":["Rezé","Nantes"],"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday"],"opens":"10:00","closes":"21:00"}],"priceRange":"27 à 35 euros de l'heure"}</script>
@@ -46,7 +54,7 @@
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="index.html" aria-label="Philippe André, cours de guitare à Rezé, accueil">
-        <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="18" fill="#10262f"/><circle cx="50" cy="50" r="44.5" fill="#d98f3f"/><circle cx="50" cy="50" r="35.5" fill="#06121a"/><circle cx="50" cy="50" r="30" fill="#8a5a2a"/><circle cx="50" cy="50" r="27" fill="#06121a"/><rect x="26.8" y="0" width="4.4" height="100" fill="#b8e0e0"/><rect x="37.3" y="0" width="4.4" height="100" fill="#b8e0e0"/><rect x="47.8" y="0" width="4.4" height="100" fill="#b8e0e0"/><rect x="58.3" y="0" width="4.4" height="100" fill="#b8e0e0"/><rect x="68.8" y="0" width="4.4" height="100" fill="#b8e0e0"/></svg>
+        <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="18" class="bm-ink"/><circle cx="50" cy="50" r="44.5" class="bm-acc"/><circle cx="50" cy="50" r="35.5" class="bm-deep"/><circle cx="50" cy="50" r="30" class="bm-mid"/><circle cx="50" cy="50" r="27" class="bm-deep"/><rect x="26.8" y="0" width="4.4" height="100" class="bm-glass"/><rect x="37.3" y="0" width="4.4" height="100" class="bm-glass"/><rect x="47.8" y="0" width="4.4" height="100" class="bm-glass"/><rect x="58.3" y="0" width="4.4" height="100" class="bm-glass"/><rect x="68.8" y="0" width="4.4" height="100" class="bm-glass"/></svg>
         <span class="brand-text"><span class="brand-name">Philippe André</span><span class="brand-sub">Cours de guitare à Rezé</span></span>
       </a>
       <div class="header-actions">
@@ -55,10 +63,27 @@
           <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
           <span>Thème</span>
         </button>
+        <button class="icon-btn palette-toggle" type="button" aria-expanded="false" aria-controls="palette-pop" aria-label="Couleurs : choisir une palette">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+          <span>Couleurs</span>
+        </button>
         <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Ouvrir le menu">
           <svg class="i-burger" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
           <svg class="i-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
         </button>
+      </div>
+      <div class="palette-pop" id="palette-pop" role="group" aria-labelledby="palette-title" hidden>
+        <p class="palette-title" id="palette-title">Choisir une palette</p>
+        <div class="palette-list" role="radiogroup" aria-labelledby="palette-title">
+          <button type="button" role="radio" aria-checked="false" data-pal="origine" class="pal-opt"><span class="pal-sw" aria-hidden="true"></span><span class="pal-name">Origine</span><span class="pal-tag">d'origine</span><svg class="pal-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+          <button type="button" role="radio" aria-checked="false" data-pal="ocean" class="pal-opt"><span class="pal-sw" aria-hidden="true"></span><span class="pal-name">Océan</span><svg class="pal-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+          <button type="button" role="radio" aria-checked="false" data-pal="sauge" class="pal-opt"><span class="pal-sw" aria-hidden="true"></span><span class="pal-name">Sauge</span><svg class="pal-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+          <button type="button" role="radio" aria-checked="false" data-pal="prune" class="pal-opt"><span class="pal-sw" aria-hidden="true"></span><span class="pal-name">Prune</span><svg class="pal-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+          <button type="button" role="radio" aria-checked="false" data-pal="ambre" class="pal-opt"><span class="pal-sw" aria-hidden="true"></span><span class="pal-name">Ambre</span><svg class="pal-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+          <button type="button" role="radio" aria-checked="false" data-pal="graphite" class="pal-opt"><span class="pal-sw" aria-hidden="true"></span><span class="pal-name">Graphite</span><svg class="pal-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+        </div>
+        <p class="palette-note">Origine, ce sont les couleurs de mon logo, avec un cuivre ajusté pour rester lisible.</p>
+        <button type="button" class="btn btn-outline palette-reset" disabled>Revenir aux couleurs du logo</button>
       </div>
       <nav class="site-nav" id="site-nav" aria-label="Navigation principale">
         <ul class="nav-list">
@@ -145,7 +170,7 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <a class="brand" href="index.html" aria-label="Philippe André, accueil">
-            <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="18" fill="#10262f"/><circle cx="50" cy="50" r="44.5" fill="#d98f3f"/><circle cx="50" cy="50" r="35.5" fill="#06121a"/><circle cx="50" cy="50" r="30" fill="#8a5a2a"/><circle cx="50" cy="50" r="27" fill="#06121a"/><rect x="26.8" y="0" width="4.4" height="100" fill="#b8e0e0"/><rect x="37.3" y="0" width="4.4" height="100" fill="#b8e0e0"/><rect x="47.8" y="0" width="4.4" height="100" fill="#b8e0e0"/><rect x="58.3" y="0" width="4.4" height="100" fill="#b8e0e0"/><rect x="68.8" y="0" width="4.4" height="100" fill="#b8e0e0"/></svg>
+            <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="18" class="bm-ink"/><circle cx="50" cy="50" r="44.5" class="bm-acc"/><circle cx="50" cy="50" r="35.5" class="bm-deep"/><circle cx="50" cy="50" r="30" class="bm-mid"/><circle cx="50" cy="50" r="27" class="bm-deep"/><rect x="26.8" y="0" width="4.4" height="100" class="bm-glass"/><rect x="37.3" y="0" width="4.4" height="100" class="bm-glass"/><rect x="47.8" y="0" width="4.4" height="100" class="bm-glass"/><rect x="58.3" y="0" width="4.4" height="100" class="bm-glass"/><rect x="68.8" y="0" width="4.4" height="100" class="bm-glass"/></svg>
             <span class="brand-text"><span class="brand-name">Philippe André</span><span class="brand-sub">Cours de guitare à Rezé</span></span>
           </a>
           <p>Cours de guitare individuels sur-mesure et coaching musical pour artistes solo et groupes amateurs.</p>

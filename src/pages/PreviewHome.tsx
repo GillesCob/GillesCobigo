@@ -66,7 +66,7 @@ export default function PreviewHome() {
           type="button"
           onClick={toggleTheme}
           aria-label="Basculer le thème"
-          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors p-2"
+          className="absolute top-4 right-4 z-20 text-muted-foreground hover:text-foreground transition-colors p-2"
         >
           {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
         </button>
