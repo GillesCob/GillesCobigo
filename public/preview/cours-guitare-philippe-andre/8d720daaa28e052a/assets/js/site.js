@@ -1,4 +1,4 @@
-/* Cours de guitare Philippe André : thème, navigation mobile, apparition douce, formulaire mailto.
+/* Cours de guitare Philippe André : thème, sélecteur de palette, navigation mobile, apparition douce, formulaire mailto.
    Aucun cookie, aucun script tiers. Le stockage local est enveloppé dans try/catch. */
 (function () {
   "use strict";
@@ -64,6 +64,84 @@
     });
   });
 
+  // ===== Sélecteur de palette =====
+  // Six palettes à identifiants fixes, partagées avec l'autre proposition via la clé "pa-palette".
+  var PALETTES = [
+    { id: "origine", name: "Origine", ink: "#10262f" },
+    { id: "ocean", name: "Océan", ink: "#11283b" },
+    { id: "sauge", name: "Sauge", ink: "#192e20" },
+    { id: "prune", name: "Prune", ink: "#2e1736" },
+    { id: "ambre", name: "Ambre", ink: "#2d2416" },
+    { id: "graphite", name: "Graphite", ink: "#212327" }
+  ];
+  function palById(id) {
+    for (var i = 0; i < PALETTES.length; i++) { if (PALETTES[i].id === id) { return PALETTES[i]; } }
+    return PALETTES[0];
+  }
+  var palBtn = document.querySelector(".palette-toggle");
+  var palPop = document.getElementById("palette-pop");
+  var palOpts = palPop ? Array.prototype.slice.call(palPop.querySelectorAll(".pal-opt")) : [];
+  var palReset = palPop ? palPop.querySelector(".palette-reset") : null;
+  var themeMeta = document.querySelector('meta[name="theme-color"]');
+  function currentPalette() { return palById(root.getAttribute("data-palette")); }
+  function paintPalette() {
+    var cur = currentPalette();
+    if (themeMeta) { themeMeta.setAttribute("content", cur.ink); }
+    palOpts.forEach(function (o) {
+      var on = o.getAttribute("data-pal") === cur.id;
+      o.setAttribute("aria-checked", on ? "true" : "false");
+      o.tabIndex = on ? 0 : -1;
+    });
+    if (palReset) { palReset.disabled = cur.id === "origine"; }
+  }
+  function setPalette(id) {
+    root.setAttribute("data-palette", palById(id).id);
+    try {
+      if (palById(id).id === "origine") { localStorage.removeItem("pa-palette"); }
+      else { localStorage.setItem("pa-palette", palById(id).id); }
+    } catch (e) { /* stockage indisponible */ }
+    paintPalette();
+  }
+  function setPop(open, returnFocus) {
+    if (!palBtn || !palPop) { return; }
+    palPop.hidden = !open;
+    palBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    if (open) {
+      setNav(false);
+      details.forEach(function (d) { d.open = false; });
+      var chk = palPop.querySelector('.pal-opt[aria-checked="true"]');
+      if (chk) { chk.focus(); }
+    } else if (returnFocus) { palBtn.focus(); }
+  }
+  if (palBtn && palPop) {
+    paintPalette();
+    palBtn.addEventListener("click", function () { setPop(palPop.hidden, false); });
+    palOpts.forEach(function (o, i) {
+      o.addEventListener("click", function () { setPalette(o.getAttribute("data-pal")); });
+      o.addEventListener("keydown", function (e) {
+        var k = e.key, n = -1;
+        if (k === "ArrowRight" || k === "ArrowDown") { n = (i + 1) % palOpts.length; }
+        else if (k === "ArrowLeft" || k === "ArrowUp") { n = (i + palOpts.length - 1) % palOpts.length; }
+        if (n > -1) { e.preventDefault(); setPalette(palOpts[n].getAttribute("data-pal")); palOpts[n].focus(); }
+      });
+    });
+    if (palReset) {
+      palReset.addEventListener("click", function () { setPalette("origine"); palOpts[0].focus(); });
+    }
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !palPop.hidden) { setPop(false, true); }
+    });
+    document.addEventListener("click", function (e) {
+      if (!palPop.hidden && !palPop.contains(e.target) && !palBtn.contains(e.target)) { setPop(false, false); }
+    });
+    if (navBtn) {
+      navBtn.addEventListener("click", function () { if (navBtn.getAttribute("aria-expanded") === "true") { setPop(false, false); } });
+    }
+    details.forEach(function (d) {
+      d.addEventListener("toggle", function () { if (d.open) { setPop(false, false); } });
+    });
+  }
+
   // Apparition douce au défilement
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var items = document.querySelectorAll(".reveal");
@@ -100,7 +178,7 @@
       }
       err.textContent = "";
       var tel = form.elements["tel"].value.trim();
-      var body = message + "\n\n" + nom + "\n" + email + (tel ? "\n" + tel : "");
+      var body = message + "\n\n" + nom + "\n" + email + (tel ? "\n" + tel : "") + "\n\nPalette choisie : " + currentPalette().name;
       var to = form.getAttribute("data-to");
       window.location.href = "mailto:" + to + "?subject=" + encodeURIComponent(sujet) + "&body=" + encodeURIComponent(body);
     });

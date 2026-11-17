@@ -38,6 +38,7 @@
   if (menuBtn && nav) {
     menuBtn.addEventListener("click", function () {
       var open = menuBtn.getAttribute("aria-expanded") !== "true";
+      if (open) { closePalette(false); }
       setMenu(open);
       if (open) { var f = nav.querySelector("a"); if (f) { f.focus(); } }
     });
@@ -49,6 +50,83 @@
     });
     nav.addEventListener("click", function (e) {
       if (e.target.closest && e.target.closest("a")) { setMenu(false); }
+    });
+  }
+
+  // ===== SÉLECTEUR DE PALETTE =====
+  // Clé commune pa-palette (partagée avec la proposition P1). Le script inline du <head> applique la palette avant le premier rendu.
+  var PALETTES = {
+    origine: { name: "Couleurs d'origine", theme: "#9e253f" },
+    ocean: { name: "Océan", theme: "#1f60bd" },
+    sauge: { name: "Sauge", theme: "#317247" },
+    prune: { name: "Prune", theme: "#9139a2" },
+    ambre: { name: "Ambre", theme: "#ab4907" },
+    graphite: { name: "Graphite", theme: "#566171" }
+  };
+  var palBtn = document.querySelector(".palette-btn");
+  var palPop = document.getElementById("palette-pop");
+  var palOpts = palPop ? Array.prototype.slice.call(palPop.querySelectorAll(".pal-opt")) : [];
+  var palReset = palPop ? palPop.querySelector(".pal-reset") : null;
+  function currentPalette() {
+    var p = root.getAttribute("data-palette");
+    return PALETTES[p] ? p : "origine";
+  }
+  function paintPalette() {
+    var cur = currentPalette();
+    palOpts.forEach(function (o) {
+      var on = o.getAttribute("data-palette-id") === cur;
+      o.setAttribute("aria-checked", on ? "true" : "false");
+      o.tabIndex = on ? 0 : -1;
+    });
+    if (palReset) { palReset.disabled = cur === "origine"; }
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) { meta.setAttribute("content", PALETTES[cur].theme); }
+  }
+  function setPalette(id) {
+    if (!PALETTES[id]) { id = "origine"; }
+    root.setAttribute("data-palette", id);
+    try {
+      if (id === "origine") { localStorage.removeItem("pa-palette"); } else { localStorage.setItem("pa-palette", id); }
+    } catch (e) { /* stockage indisponible */ }
+    paintPalette();
+  }
+  function closePalette(focusBack) {
+    if (!palBtn || !palPop || palPop.hidden) { return; }
+    palPop.hidden = true;
+    palBtn.setAttribute("aria-expanded", "false");
+    if (focusBack) { palBtn.focus(); }
+  }
+  function openPalette() {
+    setMenu(false);
+    palPop.hidden = false;
+    palBtn.setAttribute("aria-expanded", "true");
+    var sel = palPop.querySelector('.pal-opt[aria-checked="true"]') || palOpts[0];
+    if (sel) { sel.focus(); }
+  }
+  if (palBtn && palPop) {
+    paintPalette();
+    palBtn.addEventListener("click", function () {
+      if (palPop.hidden) { openPalette(); } else { closePalette(false); }
+    });
+    palOpts.forEach(function (o, i) {
+      o.addEventListener("click", function () { setPalette(o.getAttribute("data-palette-id")); });
+      o.addEventListener("keydown", function (e) {
+        var step = e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : (e.key === "ArrowUp" || e.key === "ArrowLeft" ? -1 : 0);
+        if (!step) { return; }
+        e.preventDefault();
+        var n = palOpts[(i + step + palOpts.length) % palOpts.length];
+        n.focus();
+        setPalette(n.getAttribute("data-palette-id"));
+      });
+    });
+    if (palReset) { palReset.addEventListener("click", function () { setPalette("origine"); var s = palPop.querySelector('.pal-opt[aria-checked="true"]'); if (s) { s.focus(); } }); }
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !palPop.hidden) { closePalette(true); }
+    });
+    document.addEventListener("click", function (e) {
+      if (palPop.hidden) { return; }
+      if (palPop.contains(e.target) || palBtn.contains(e.target)) { return; }
+      closePalette(false);
     });
   }
 
@@ -146,7 +224,7 @@
       }
       err.textContent = "";
       var tel = form.elements["tel"].value.trim();
-      var body = message + "\n\n" + nom + "\n" + email + (tel ? "\n" + tel : "");
+      var body = message + "\n\n" + nom + "\n" + email + (tel ? "\n" + tel : "") + "\n\nPalette choisie : " + PALETTES[currentPalette()].name;
       var to = form.getAttribute("data-to");
       window.location.href = "mailto:" + to + "?subject=" + encodeURIComponent(sujet) + "&body=" + encodeURIComponent(body);
     });
