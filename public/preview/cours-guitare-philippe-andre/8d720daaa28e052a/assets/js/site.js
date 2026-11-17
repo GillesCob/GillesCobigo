@@ -183,4 +183,27 @@
       window.location.href = "mailto:" + to + "?subject=" + encodeURIComponent(sujet) + "&body=" + encodeURIComponent(body);
     });
   }
+
+  /* Parallaxe du héros : l'image descend moins vite que la page (transform uniquement) */
+  var heroEl = document.querySelector(".hero");
+  var heroImg = heroEl && heroEl.querySelector(".hero-bg");
+  if (heroImg && !reduce && "IntersectionObserver" in window) {
+    var heroVisible = false, heroTick = false;
+    var heroUpdate = function () {
+      heroTick = false;
+      var h = heroEl.offsetHeight;
+      var y = Math.min(Math.max(window.scrollY, 0), h);
+      heroImg.style.setProperty("--hero-shift", (y * 0.28).toFixed(1) + "px");
+    };
+    var heroOnScroll = function () {
+      if (!heroTick) { heroTick = true; window.requestAnimationFrame(heroUpdate); }
+    };
+    new IntersectionObserver(function (entries) {
+      var vis = entries[0].isIntersecting;
+      if (vis === heroVisible) { return; }
+      heroVisible = vis;
+      if (vis) { window.addEventListener("scroll", heroOnScroll, { passive: true }); window.addEventListener("resize", heroOnScroll, { passive: true }); heroOnScroll(); }
+      else { window.removeEventListener("scroll", heroOnScroll); window.removeEventListener("resize", heroOnScroll); }
+    }).observe(heroEl);
+  }
 })();
