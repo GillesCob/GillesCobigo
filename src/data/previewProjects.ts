@@ -578,6 +578,29 @@ export const previewProjects: Record<string, IPreviewProject> = {
       },
     ],
   },
+  // Philippe André (cours de guitare, Rezé) : page d'échanges sans coldIntro ni phone (pas de tarif,
+  // pas de tracking). Secret distinct de celui de la maquette statique P1 (8d720daaa28e052a, déjà
+  // en ligne, jamais à réutiliser ici : le fichier statique gagnerait sur cette route).
+  "3677b1ae2b81935e": {
+    slug: "cours-guitare-philippe-andre",
+    projectName: "Cours de guitare de Philippe André",
+    logo: "/preview/cours-guitare-philippe-andre/logo.svg",
+    contactName: "Philippe",
+    currentRound: "V1",
+    nextAction: "Jette un œil aux deux propositions et dis-moi laquelle te parle le plus, ou ce que tu changerais.",
+    feedbackFormId: "xgoggnej",
+    rounds: [
+      {
+        round: "V1",
+        date: "17 novembre 2026",
+        proposals: [
+          { label: "Proposition 1", screenshot: "/preview/cours-guitare-philippe-andre/screenshots/proposition-1.webp", htmlPath: "/preview/cours-guitare-philippe-andre/8d720daaa28e052a/", group: "V1 : à choisir" },
+          { label: "Proposition 2", screenshot: "/preview/cours-guitare-philippe-andre/screenshots/proposition-2.webp", htmlPath: "/preview/cours-guitare-philippe-andre/3677b1ae2b81935e/V1/P2/", group: "V1 : à choisir" },
+        ],
+        missingInfo: ["Adresse précise du lieu de cours", "Tarif spécifique du coaching"],
+      },
+    ],
+  },
   // Entree de demo, donnees factices (nom generique + logo de Gilles), sert a visualiser
   // le template "V1-Echanges" sans exposer de vraie donnee client. Cf Projets/V1-Echanges/suivi.html.
   "demo-template": {
