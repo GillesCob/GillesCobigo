@@ -40,4 +40,16 @@ describe("previewProjects", () => {
     const labels = project.rounds.map((r) => r.round.toLowerCase());
     expect(new Set(labels).size).toBe(labels.length);
   });
+
+  it.each(entries)("project %s optional defaultTheme and roundInfo are valid when present", (_secret, project) => {
+    expect(["dark", "light", undefined]).toContain(project.defaultTheme);
+    project.rounds.forEach((round) => {
+      expect(round.roundInfo ?? "ok").toBeTruthy();
+    });
+  });
+
+  it("only Philippe André defaults to dark", () => {
+    const dark = entries.filter(([, p]) => p.defaultTheme === "dark").map(([, p]) => p.slug);
+    expect(dark).toEqual(["cours-guitare-philippe-andre"]);
+  });
 });
