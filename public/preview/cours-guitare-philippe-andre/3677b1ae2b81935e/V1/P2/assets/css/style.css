@@ -458,7 +458,7 @@ select { height: 3rem; -webkit-appearance: none; appearance: none; padding-right
 .footer-call:hover { color: var(--accent-on-deep); }
 .footer-mail { display: inline-flex; align-items: center; min-height: 2.75rem; margin-bottom: 2rem; font-weight: 700; overflow-wrap: anywhere; }
 .footer-grid { display: grid; gap: 2rem; padding-block: 2rem; border-top: 2px solid var(--on-deep); }
-@media (min-width: 860px) { .footer-grid { grid-template-columns: 1.2fr 1fr 1.4fr; gap: 3rem; } }
+@media (min-width: 860px) { .footer-grid { grid-template-columns: 1.2fr 1fr; gap: 3rem; } }
 .site-footer h2 { font: 700 0.85rem/1.2 var(--font-body); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-on-deep); margin-bottom: 0.75rem; }
 .site-footer p { color: var(--on-deep-muted); margin-bottom: 0.5rem; font-size: 0.98rem; }
 .site-footer .brand-mark .m-o { fill: var(--accent-on-deep); }
@@ -467,9 +467,6 @@ select { height: 3rem; -webkit-appearance: none; appearance: none; padding-right
 .site-footer .brand-mark .m-s { fill: var(--deep); }
 .site-footer .brand-text { display: flex; }
 .site-footer .brand-sub { color: var(--on-deep-muted); }
-.footer-nav { list-style: none; margin: 0; padding: 0; }
-.footer-nav a { display: inline-flex; align-items: center; min-height: 2.75rem; font-weight: 700; text-decoration: none; }
-.footer-nav a:hover { text-decoration: underline; }
 .proposal { background: #000; color: #d4dcdc; padding: 0.9rem 0; font-size: 0.95rem; }
 .proposal p { margin: 0; color: #d4dcdc; }
 .proposal a { color: #ffffff; display: inline-flex; align-items: center; min-height: 2.75rem; }

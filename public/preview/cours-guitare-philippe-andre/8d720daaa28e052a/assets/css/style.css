@@ -349,13 +349,11 @@ a[href^="tel:"]:not(.btn), a[href^="mailto:"]:not(.btn) { display: inline-flex; 
 /* Pied de page */
 .site-footer { margin-top: auto; padding-top: 3rem; background: var(--ink-deep); font-size: 0.97rem; }
 .footer-grid { display: grid; gap: 2rem; padding-bottom: 2rem; }
-@media (min-width: 48rem) { .footer-grid { grid-template-columns: 1.3fr 1fr 1.2fr; } }
+@media (min-width: 48rem) { .footer-grid { grid-template-columns: 1.3fr 1fr; gap: 3rem; } }
 .site-footer h2 { font-size: 1.1rem; margin-bottom: 0.75rem; }
 .site-footer a { color: var(--on-ink); }
 .site-footer a:hover { color: var(--accent-on-ink); }
-.footer-nav { list-style: none; margin: 0; padding: 0; }
-.footer-nav li { margin-bottom: 0; }
-.footer-nav a { display: inline-flex; align-items: center; min-height: 2.75rem; min-width: 2.75rem; padding: 0.2rem 0; }
+.site-footer .infos-pratiques a { display: inline-flex; align-items: center; min-height: 2.75rem; }
 .footer-brand .brand-name { color: var(--on-ink); }
 .legal { padding-block: 1.25rem; border-top: 1px solid color-mix(in srgb, var(--on-ink) 20%, transparent); color: var(--on-ink-muted); font-size: 0.9rem; }
 .legal p { margin-bottom: 0.35rem; }
