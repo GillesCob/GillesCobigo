@@ -158,7 +158,7 @@ p { margin: 0 0 1rem; }
 }
 
 /* Motif de cordes (décoratif) */
-.strings { height: 3rem; background: repeating-linear-gradient(to bottom, transparent 0 0.5rem, var(--accent-on-ink) 0.5rem calc(0.5rem + 1px)); opacity: 0.35; }
+.strings { height: 3rem; background: repeating-linear-gradient(to bottom, transparent 0 7px, var(--accent-on-ink) 7px 8px); opacity: 0.35; }
 .fret-dots { display: flex; gap: 0.6rem; margin-bottom: 1rem; }
 .fret-dots span { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--accent); opacity: 0.9; }
 .fret-dots span:nth-child(2) { opacity: 0.6; }
