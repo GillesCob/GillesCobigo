@@ -606,7 +606,7 @@ export const previewProjects: Record<string, IPreviewProject> = {
         missingInfo: [
           "Me dire ce qui te plaît dans chaque proposition ou ce qui t'inspire. Cette première passe sert à piocher et à explorer les possibilités pour construire ensemble une version 2.",
           "Me dire quelles couleurs te plaisent le plus. Chaque proposition a un bouton « Couleurs » pour essayer plusieurs palettes et tu peux revenir aux couleurs de départ quand tu veux.",
-          "Tarif spécifique du coaching",
+          "Tarif spécifique du coaching : manquant sur ton site actuel.",
         ],
       },
     ],
