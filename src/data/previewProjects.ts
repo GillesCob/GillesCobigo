@@ -41,6 +41,10 @@ export interface IPreviewProject {
   phone?: string;
   /** Thème initial de la page d'échanges (accueil et rounds). Absent = clair. Le choix du visiteur via le bouton de bascule prime ensuite. */
   defaultTheme?: "dark" | "light";
+  /** Aperçu de partage (WhatsApp, etc.) de la page d'échanges : les trois champs ensemble pour l'activer, absents = aperçu général du site. shareImage : URL absolue https, JPG ou PNG. */
+  shareTitle?: string;
+  shareDescription?: string;
+  shareImage?: string;
   rounds: IPreviewRound[];
 }
 
@@ -593,6 +597,9 @@ export const previewProjects: Record<string, IPreviewProject> = {
     currentRound: "V1",
     feedbackFormId: "xgoggnej",
     defaultTheme: "dark",
+    shareTitle: "Cours de guitare de Philippe André",
+    shareDescription: "Deux propositions pour ton site, à découvrir et à commenter.",
+    shareImage: "https://www.gillescobigo.com/preview/cours-guitare-philippe-andre/8d720daaa28e052a/assets/img/og.jpg",
     rounds: [
       {
         round: "V1",
