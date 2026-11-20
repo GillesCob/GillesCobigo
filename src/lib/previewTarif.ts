@@ -71,7 +71,7 @@ export function resolveTarifTheme(theme: IPreviewTarifTheme | undefined): IResol
 /**
  * Prospect a froid designe par l'adresse /preview/<slug>/<secret>/tarif. Le secret doit etre une cle propre de la liste connue
  * (jamais une propriete heritee comme « constructor »), le slug doit etre celui de cette entree, et l'entree doit etre un
- * premier contact a froid publie avec une identite de page de prix (tarifTheme, donc une page d'entree /V1/ a laquelle revenir) :
+ * premier contact a froid publie avec une identite de page partagee (tarifTheme : page d'entree /preview/<slug>/<secret> et page de prix) :
  * toute autre combinaison renvoie undefined (page 404), sans rien reveler.
  */
 export function findTarifProspect(slug: string | undefined, secret: string | undefined): IPreviewProject | undefined {

@@ -46,7 +46,7 @@ function TarifPage({ prospect, secret }: { prospect: IPreviewProject; secret: st
 
       <main className="wrap" id="tarif">
         <div className="nav-haut">
-          <a className="btn btn-sec" href={`/preview/${prospect.slug}/${secret}/V1/`}>
+          <a className="btn btn-sec" href={`/preview/${prospect.slug}/${secret}`}>
             <span aria-hidden="true">←</span> Retour à vos deux propositions
           </a>
         </div>

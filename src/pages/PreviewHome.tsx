@@ -11,8 +11,10 @@ import { usePreviewFavicon } from "@/hooks/usePreviewFavicon";
 import { usePreviewTitle } from "@/hooks/usePreviewTitle";
 import { trackFunnelBeacon } from "@/lib/funnelTracking";
 import NotFound from "@/pages/NotFound";
+import PreviewEntree from "@/pages/PreviewEntree";
+import { findTarifProspect } from "@/lib/previewTarif";
 
-export default function PreviewHome() {
+function PreviewHomeClassique() {
   const { secret } = useParams<{ project: string; secret: string }>();
   const project = secret ? previewProjects[secret] : undefined;
   const { theme, toggleTheme } = useThemeStore();
@@ -234,4 +236,15 @@ export default function PreviewHome() {
       </div>
     </div>
   );
+}
+
+/**
+ * Racine /preview/<slug>/<secret> : un prospect a froid qui porte une identite de page partagee (tarifTheme) voit la page d'entree
+ * unique a deux propositions (PreviewEntree, maquette S-121) ; tout autre prospect garde la page historique ci-dessus, inchangee.
+ */
+export default function PreviewHome() {
+  const { project: slug, secret } = useParams<{ project: string; secret: string }>();
+  const prospect = findTarifProspect(slug, secret);
+  if (prospect !== undefined && secret !== undefined) return <PreviewEntree prospect={prospect} secret={secret} />;
+  return <PreviewHomeClassique />;
 }

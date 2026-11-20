@@ -1,0 +1,81 @@
+/* Page d'entree partagee /preview/<slug>/<secret> : portage de la maquette S-121 (Projets/Sites/mockups/page-entree-deux-propositions.html).
+   Tout est scope sous .pe ; la palette arrive par variables CSS posees sur .pe (cf lib/previewTarif.ts). */
+.pe, .pe *, .pe *::before, .pe *::after { box-sizing: border-box; }
+.pe {
+      -webkit-text-size-adjust: 100%; margin: 0; background: var(--bg); color: var(--text);
+      font-family: var(--font-body); font-size: 17px; line-height: 1.6;
+      min-height: 100dvh; overflow-x: clip; overflow-wrap: break-word;
+    }
+.pe .wrap { width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+.pe header.top { background: var(--ink); color: var(--bg); }
+.pe header.top .wrap { display: flex; align-items: center; gap: 12px; padding-top: 14px; padding-bottom: 14px; }
+.pe .brand-mark { width: 44px; height: 44px; flex: none; object-fit: contain; }
+.pe .brand-name { display: block; font-family: var(--font-title); font-weight: 700; font-size: 19px; line-height: 1.2; }
+.pe .brand-sub { display: block; font-size: 14px; color: var(--ink-sub); line-height: 1.3; }
+.pe main.wrap { padding: 40px 16px 24px; }
+.pe h1 { font-family: var(--font-title); font-weight: 700; font-size: clamp(28px, 5vw, 44px); line-height: 1.15; margin: 0 0 16px; color: var(--ink); max-width: 20ch; }
+.pe .principe { margin: 0 0 32px; font-size: 18px; }
+.pe .principe .ajuste { display: inline-block; }
+.pe .duo { display: grid; grid-template-columns: 1fr; gap: 24px; margin: 0 0 40px; padding: 0; list-style: none; }
+.pe .prop { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.pe .prop h2 { font-family: var(--font-title); font-weight: 700; font-size: 22px; line-height: 1.2; margin: 0; color: var(--ink); }
+.pe a.apercu { display: block; cursor: pointer; text-decoration: none; color: inherit; }
+.pe a.apercu:hover { border-color: var(--accent); }
+.pe .apercu { position: relative; width: 100%; overflow: hidden; border: 1px solid var(--border); border-radius: 8px; background: #fff; height: 200px; }
+.pe .apercu iframe { position: absolute; top: 0; left: 0; border: 0; transform-origin: 0 0; pointer-events: none; background: #fff; }
+.pe .btn {
+      display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 10px 22px;
+      background: var(--accent); color: var(--on-accent); border-radius: 999px; font-weight: 700; font-size: 16px;
+      text-decoration: none; align-self: flex-start;
+    }
+.pe .btn:hover { background: color-mix(in srgb, var(--accent) 85%, black); }
+.pe .btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.pe .tarif-ligne { display: flex; justify-content: center; margin: 0 0 40px; }
+.pe .btn-tarif { min-width: min(220px, 100%); }
+/* Animations : transform et opacity uniquement, aucune au defilement, aucune boucle, rien dans les iframes */
+.pe .prop { position: relative; cursor: pointer; transition: transform .2s ease; }
+.pe .prop .btn::after { content: ""; position: absolute; inset: 0; border-radius: 14px; }
+.pe .prop .btn:focus-visible { outline: none; }
+.pe .prop:has(.btn:focus-visible) { outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 14px; }
+.pe .prop a.apercu { transition: transform .2s ease; }
+.pe .prop:hover, .pe .prop:focus-within { transform: translateY(-4px); }
+.pe .prop:hover a.apercu, .pe .prop:focus-within a.apercu { transform: scale(1.02); }
+.pe .prop:active { transform: translateY(-1px); }
+.pe .btn-tarif { transition: transform .15s ease; }
+.pe .btn-tarif:hover, .pe .btn-tarif:focus-visible { transform: translateY(-2px); }
+.pe .btn-tarif:active { transform: translateY(1px) scale(.97); }
+.pe .duo { animation: arrivee .4s ease-out both; }
+@keyframes arrivee { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+.pe .duo { animation: none; }
+.pe .prop, .pe .prop a.apercu, .pe .btn-tarif { transition: none; }
+.pe .prop:hover, .pe .prop:focus-within, .pe .prop:active, .pe .prop:hover a.apercu, .pe .prop:focus-within a.apercu, .pe .btn-tarif:hover, .pe .btn-tarif:focus-visible, .pe .btn-tarif:active { transform: none; }
+
+    }
+.pe .etapes-titre { font-family: var(--font-title); font-weight: 700; font-size: 24px; margin: 0 0 16px; color: var(--ink); }
+.pe .etapes { display: grid; grid-template-columns: 1fr; gap: 16px; margin: 0; padding: 0; list-style: none; counter-reset: etape; }
+.pe .etapes li { counter-increment: etape; background: var(--surface-2); border-radius: 12px; padding: 16px 16px 16px 64px; position: relative; min-width: 0; display: flex; align-items: center; min-height: 66px; }
+.pe .etapes li::before {
+      content: counter(etape); position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%;
+      background: var(--ink); color: var(--bg); display: flex; align-items: center; justify-content: center; font-weight: 700;
+    }
+.pe .etapes span { font-size: 16px; color: var(--text); }
+/* Pied officiel (PreviewCredit.tsx du Portfolio, classes Tailwind converties) */
+.pe .credit { margin-top: 32px; margin-bottom: 24px; padding: 12px 8px; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 20px; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 14px; line-height: 20px; color: hsl(220 8.9% 36%); }
+.pe .credit a { display: flex; align-items: center; color: inherit; text-decoration: none; transition: color .15s; }
+.pe .credit a:hover { color: hsl(224 71.4% 4.1%); }
+.pe .credit .credit-gc { gap: 10px; }
+.pe .credit .credit-gc img { height: 32px; width: auto; opacity: .9; }
+.pe .credit .credit-gc span { text-decoration: underline; }
+.pe .credit .credit-li { gap: 6px; }
+.pe .credit .credit-li svg { width: 18px; height: 18px; }
+@media (min-width: 768px) {
+.pe .wrap { padding: 0 32px; }
+.pe main.wrap { padding: 56px 32px 32px; }
+.pe .duo { grid-template-columns: 1fr 1fr; gap: 28px; }
+.pe .prop { padding: 20px; }
+.pe .etapes { grid-template-columns: repeat(3, 1fr); }
+
+    }
+
+  

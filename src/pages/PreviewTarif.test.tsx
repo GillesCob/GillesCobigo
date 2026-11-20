@@ -73,7 +73,7 @@ describe("PreviewTarif", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Le tarif" })).toBeInTheDocument();
     expect(screen.getByText("500€", { selector: ".prix" })).toBeInTheDocument();
     const retour = screen.getByRole("link", { name: /Retour à vos deux propositions/ });
-    expect(retour).toHaveAttribute("href", "/preview/atelier-fictif/0123456789abcdef/V1/");
+    expect(retour).toHaveAttribute("href", "/preview/atelier-fictif/0123456789abcdef");
     expect(retour).not.toHaveAttribute("target");
   });
 
