@@ -20,12 +20,14 @@ vi.mock("@/data/previewProjects", () => ({
 }));
 
 import PreviewTarif from "./PreviewTarif";
+import PreviewRound from "./PreviewRound";
 
 function renderAt(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
         <Route path="/preview/:project/:secret/tarif" element={<PreviewTarif />} />
+        <Route path="/preview/:project/:secret/:round" element={<PreviewRound />} />
       </Routes>
     </MemoryRouter>,
   );

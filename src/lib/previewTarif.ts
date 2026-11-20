@@ -18,6 +18,8 @@ export const DEFAULT_TARIF_THEME: IPreviewTarifTheme = {
     "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap",
 };
 
+// Ces trois formats sont dupliques cote outil Sites (publication.ts : estHex, POLICE_SURE, POLICES_URL_SURE) qui refuse d'ecrire une valeur
+// non conforme : toute modification ici doit etre repercutee la-bas, sinon une valeur ecrite retomberait sur la palette par defaut.
 const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
 // Liste de familles : lettres, chiffres, espaces, virgules, guillemets, point et tiret. Jamais « ; { } ( ) < > \ / ».
 const FONT_FAMILY = /^[\w\s,"'.-]{1,200}$/;
