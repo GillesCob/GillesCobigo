@@ -7,6 +7,7 @@ import ArticlePage from "@/pages/ArticlePage";
 import VideoLanding from "@/pages/VideoLanding";
 import PreviewHome from "@/pages/PreviewHome";
 import PreviewRound from "@/pages/PreviewRound";
+import PreviewTarif from "@/pages/PreviewTarif";
 import CaseStudyRound from "@/pages/CaseStudyRound";
 import CGVBoutiques from "@/pages/CGVBoutiques";
 import SalonRecruiter from "@/pages/salon/SalonRecruiter";
@@ -59,6 +60,8 @@ export default function App() {
           <Route path="/articles/:slug/*" element={<ArticlePage />} />
           <Route path="/v/:token" element={<VideoLanding />} />
           <Route path="/preview/:project/:secret" element={<PreviewHome />} />
+          {/* Page de prix partagee par tous les prospects (S-252) : route statique, prioritaire sur :round. */}
+          <Route path="/preview/:project/:secret/tarif" element={<PreviewTarif />} />
           <Route path="/preview/:project/:secret/:round" element={<PreviewRound />} />
           <Route path="/cas-client/:round" element={<CaseStudyRound />} />
           <Route path="/cgv-boutiques" element={<CGVBoutiques />} />

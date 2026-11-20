@@ -4,27 +4,21 @@ import { ArrowRight, Check, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { trackFunnelBeacon } from "@/lib/funnelTracking";
+import {
+  ADHOC_MODIF_PRICE,
+  BASE_PRICE,
+  CONTACT_ERROR_MESSAGE,
+  DOMAIN_PRICE_YEAR,
+  SUBSCRIPTION_INCLUDED_MODIFS,
+  SUBSCRIPTION_PRICE_YEAR,
+  computePricing,
+  sendContactRequest,
+} from "@/lib/boutiquesPricing";
 
-// Tarifs pilote Boutiques (cadres le 14/08, cf Projets/Boutiques/workflow-cc.md) : chiffres a
-// ajuster une fois les premiers clients reels convertis, pas figes dans le marbre. La case a
-// cocher ne declenche aucun achat (V1 statique, pas de paiement en ligne) : elle sert uniquement a
-// comparer visuellement les deux scenarios avant contact.
-// Structure alignee a la lettre sur Projets/V1-Echanges/mockups/preview-prospect.html (variante
-// A5, tranchee avec Gilles le 20/08) : le forfait de base reste a prix fixe (500€, ce nombre
-// nomme une offre, il ne doit jamais varier avec les options), le montant reel a payer vit dans
-// une ligne "Total de la prestation" separee, avec le detail chiffre des options cochees juste
-// en dessous. Palier reduit a 30€ pour un abonne Serenite retire le 19/08 (Gilles) : ADHOC_MODIF_PRICE
-// s'applique desormais a tout le monde, avec ou sans Formule Serenite.
-const BASE_PRICE = 500;
-const DOMAIN_PRICE_YEAR = 20;
-const ADHOC_MODIF_PRICE = 40;
-const SUBSCRIPTION_PRICE_YEAR = 75;
-const SUBSCRIPTION_INCLUDED_MODIFS = 2;
-// Meme endpoint Formspree que Contact.tsx (pas de compte dedie a creer pour l'instant, cf
-// "ne pas construire d'outil par anticipation" dans workflow-cc.md) : le payload precise
-// explicitement la source pour ne pas confondre un lead Boutiques chaud avec un contact generique
-// du portfolio dans la meme boite mail.
-const FORMSPREE_ENDPOINT = "https://formspree.io/f/mykarjar";
+// Montants et envoi Formspree : source unique dans src/lib/boutiquesPricing.ts (partagee avec la page
+// de prix partagee PreviewTarif.tsx). Structure alignee a la lettre sur Projets/V1-Echanges/mockups/
+// preview-prospect.html (variante A5, tranchee avec Gilles le 20/08) : le forfait de base reste a prix
+// fixe, le montant reel a payer vit dans la ligne "Total de la prestation".
 
 export default function PricingCard({
   projectName,
@@ -41,8 +35,7 @@ export default function PricingCard({
   // Non pertinente une fois l'abonnement coche (nom de domaine deja inclus dedans) : decochee
   // automatiquement au moment ou l'abonnement est coche, cf onChange ci-dessous.
   const [withDomain, setWithDomain] = useState(false);
-  const domainActive = withDomain && !withSubscription;
-  const total = BASE_PRICE + (withSubscription ? SUBSCRIPTION_PRICE_YEAR : 0) + (domainActive ? DOMAIN_PRICE_YEAR : 0);
+  const { total, domainActive } = computePricing({ withSubscription, withDomain });
   // Le clic sur "Ça m'intéresse" ouvre la modale mais n'envoie rien : on confirme d'abord le canal
   // de rappel dedans, un seul envoi Formspree au clic sur "Confirmer" (retex du 14/08 : 2 envois
   // separes, un a l'interet et un a la correction du numero, faisait doublon cote Gilles).
@@ -82,34 +75,13 @@ export default function PricingCard({
     const contact = overrideContact ?? contactValue;
     setSubmitting(true);
     setSubmitError(null);
-    try {
-      const res = await fetch(FORMSPREE_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          source: "Boutiques - PricingCard",
-          projet: projectName,
-          formule: `${total}€ (${withSubscription ? "avec" : "sans"} Formule Sérénité${
-            domainActive ? ", avec nom de domaine" : ""
-          })`,
-          contact: contact || "Non précisé",
-          message: `${projectName} est intéressé(e) par son site, première facture à ${total}€ (${
-            withSubscription ? "avec" : "sans"
-          } Formule Sérénité${domainActive ? ", avec nom de domaine" : ""}). Rappel : ${
-            contact || "canal non précisé"
-          }.`,
-        }),
-      });
-      if (res.ok) {
-        setConfirmed(true);
-      } else {
-        setSubmitError("Envoi échoué, réessayez ou écrivez-moi directement.");
-      }
-    } catch {
-      setSubmitError("Envoi échoué, réessayez ou écrivez-moi directement.");
-    } finally {
-      setSubmitting(false);
+    const sent = await sendContactRequest({ projectName, withSubscription, withDomain, contact });
+    if (sent) {
+      setConfirmed(true);
+    } else {
+      setSubmitError(CONTACT_ERROR_MESSAGE);
     }
+    setSubmitting(false);
   }
 
   return (
