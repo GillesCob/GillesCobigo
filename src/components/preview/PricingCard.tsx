@@ -239,18 +239,18 @@ export default function PricingCard({
           <span className="min-w-0">Création et mise en ligne du site</span>
           <span className="ml-auto whitespace-nowrap">{BASE_PRICE}€</span>
         </li>
-        {withSubscription && (
-          <li className="flex items-start gap-2 text-[12.5px] font-semibold text-foreground">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1" />
-            <span className="min-w-0">Formule Sérénité</span>
-            <span className="ml-auto whitespace-nowrap">{SUBSCRIPTION_PRICE_YEAR}€</span>
-          </li>
-        )}
         {withDomain && (
           <li className="flex items-start gap-2 text-[12.5px] font-semibold text-foreground">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1" />
             <span className="min-w-0">Nom de domaine</span>
             <span className="ml-auto whitespace-nowrap">{DOMAIN_PRICE_YEAR}€</span>
+          </li>
+        )}
+        {withSubscription && (
+          <li className="flex items-start gap-2 text-[12.5px] font-semibold text-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1" />
+            <span className="min-w-0">Formule Sérénité</span>
+            <span className="ml-auto whitespace-nowrap">{SUBSCRIPTION_PRICE_YEAR}€</span>
           </li>
         )}
       </ul>

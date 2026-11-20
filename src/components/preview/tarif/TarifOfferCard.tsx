@@ -125,18 +125,18 @@ export default function TarifOfferCard({ options, onInterested }: { options: ITa
           <span className="n">Création et mise en ligne du site</span>
           <span className="p">{BASE_PRICE}€</span>
         </li>
-        {withSubscription && (
-          <li>
-            <span className="puce" />
-            <span className="n">Formule Sérénité</span>
-            <span className="p">{SUBSCRIPTION_PRICE_YEAR}€</span>
-          </li>
-        )}
         {withDomain && (
           <li>
             <span className="puce" />
             <span className="n">Nom de domaine</span>
             <span className="p">{DOMAIN_PRICE_YEAR}€</span>
+          </li>
+        )}
+        {withSubscription && (
+          <li>
+            <span className="puce" />
+            <span className="n">Formule Sérénité</span>
+            <span className="p">{SUBSCRIPTION_PRICE_YEAR}€</span>
           </li>
         )}
       </ul>
