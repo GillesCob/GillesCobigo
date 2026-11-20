@@ -13,7 +13,7 @@ type Popover = "allersRetours" | "domain" | null;
 
 /** Carte du forfait : contenu, options, total et bouton « Ça m'intéresse » (maquette S-203, montants de lib/boutiquesPricing). */
 export default function TarifOfferCard({ options, onInterested }: { options: ITarifOptions; onInterested: () => void }) {
-  const { withSubscription, withDomain, domainActive, total, toggleDomain, toggleSubscription } = options;
+  const { withSubscription, withDomain, total, toggleDomain, toggleSubscription } = options;
   // Un seul popover ouvert a la fois, fermeture au clic n'importe ou ailleurs.
   const [popover, setPopover] = useState<Popover>(null);
 
@@ -76,13 +76,13 @@ export default function TarifOfferCard({ options, onInterested }: { options: ITa
       <p className="opt-titre">Options</p>
 
       <div className="opt-wrap">
-        <label className={`opt avec-i${withSubscription ? " estompe" : ""}`}>
+        <label className="opt avec-i">
           <input type="checkbox" checked={withDomain} onChange={(e) => toggleDomain(e.target.checked)} />
           <span className="case" aria-hidden="true">
             <Check strokeWidth={3} />
           </span>
           <span className="corps-opt">
-            <span className="t">Nom de domaine, {withSubscription ? "inclus dans la formule" : `+${DOMAIN_PRICE_YEAR}€`}</span>
+            <span className="t">Nom de domaine, +{DOMAIN_PRICE_YEAR}€</span>
             <span className="s">Valable 1 an.</span>
             {popover === "domain" && (
               <span className="bulle domaine" onClick={stop}>
@@ -103,14 +103,14 @@ export default function TarifOfferCard({ options, onInterested }: { options: ITa
         </button>
       </div>
 
-      <label className={`opt${domainActive ? " estompe" : ""}`} style={{ marginBottom: 10 }}>
+      <label className="opt" style={{ marginBottom: 10 }}>
         <input type="checkbox" checked={withSubscription} onChange={(e) => toggleSubscription(e.target.checked)} />
         <span className="case" aria-hidden="true">
           <Check strokeWidth={3} />
         </span>
         <span className="corps-opt">
           <span className="t">Formule Sérénité, +{SUBSCRIPTION_PRICE_YEAR}€</span>
-          <span className="s">Nom de domaine, + {SUBSCRIPTION_INCLUDED_MODIFS} allers-retours, retours sous 48h ouvrées.</span>
+          <span className="s">{SUBSCRIPTION_INCLUDED_MODIFS} allers-retours supplémentaires, retours sous 48h ouvrées.</span>
         </span>
       </label>
 
@@ -132,7 +132,7 @@ export default function TarifOfferCard({ options, onInterested }: { options: ITa
             <span className="p">{SUBSCRIPTION_PRICE_YEAR}€</span>
           </li>
         )}
-        {domainActive && (
+        {withDomain && (
           <li>
             <span className="puce" />
             <span className="n">Nom de domaine</span>

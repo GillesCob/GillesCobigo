@@ -4,7 +4,7 @@
 .pe {
       -webkit-text-size-adjust: 100%; margin: 0; background: var(--bg); color: var(--text);
       font-family: var(--font-body); font-size: 17px; line-height: 1.6;
-      min-height: 100dvh; overflow-x: clip; overflow-wrap: break-word;
+      min-height: 100dvh; display: flow-root; overflow-x: clip; overflow-wrap: break-word;
     }
 .pe .wrap { width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 16px; }
 .pe header.top { background: var(--ink); color: var(--bg); }

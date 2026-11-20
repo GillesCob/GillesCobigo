@@ -2,7 +2,7 @@
    Tout est scope sous .pt ; la palette arrive par variables CSS posees sur .pt (cf lib/previewTarif.ts). */
 .pt, .pt *, .pt *::before, .pt *::after { box-sizing: border-box; }
 .pt {
-  min-height: 100dvh; margin: 0; background: var(--bg); color: var(--text);
+  min-height: 100dvh; display: flow-root; margin: 0; background: var(--bg); color: var(--text);
   font-family: var(--font-body); font-size: 17px; line-height: 1.6;
   overflow-x: clip; overflow-wrap: break-word; -webkit-text-size-adjust: 100%;
 }

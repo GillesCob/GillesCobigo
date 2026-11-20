@@ -5,7 +5,7 @@
 export const BASE_PRICE = 500;
 export const DOMAIN_PRICE_YEAR = 20;
 export const ADHOC_MODIF_PRICE = 40;
-export const SUBSCRIPTION_PRICE_YEAR = 75;
+export const SUBSCRIPTION_PRICE_YEAR = 55;
 export const SUBSCRIPTION_INCLUDED_MODIFS = 2;
 
 // Meme endpoint Formspree que Contact.tsx (pas de compte dedie pour l'instant) : le payload precise la
@@ -21,12 +21,12 @@ export interface IPricingSelection {
 
 export interface IPricingTotal {
   total: number;
-  /** Le nom de domaine n'est facture que seul : la Formule Sérénité l'inclut deja. */
+  /** Le nom de domaine est facture des qu'il est coche : la Formule Sérénité ne l'inclut plus, les deux se cumulent. */
   domainActive: boolean;
 }
 
 export function computePricing({ withSubscription, withDomain }: IPricingSelection): IPricingTotal {
-  const domainActive = withDomain && !withSubscription;
+  const domainActive = withDomain;
   const total = BASE_PRICE + (withSubscription ? SUBSCRIPTION_PRICE_YEAR : 0) + (domainActive ? DOMAIN_PRICE_YEAR : 0);
   return { total, domainActive };
 }

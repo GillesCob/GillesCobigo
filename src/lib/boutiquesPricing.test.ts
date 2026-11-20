@@ -8,9 +8,9 @@ describe("computePricing", () => {
   it("nom de domaine seul : 520", () => {
     expect(computePricing({ withSubscription: false, withDomain: true })).toEqual({ total: 520, domainActive: true });
   });
-  it("Formule Sérénité : 575, le domaine n'est jamais facture en plus", () => {
-    expect(computePricing({ withSubscription: true, withDomain: false }).total).toBe(575);
-    expect(computePricing({ withSubscription: true, withDomain: true })).toEqual({ total: 575, domainActive: false });
+  it("Formule Sérénité : 555, cumulable avec le domaine : 575", () => {
+    expect(computePricing({ withSubscription: true, withDomain: false })).toEqual({ total: 555, domainActive: false });
+    expect(computePricing({ withSubscription: true, withDomain: true })).toEqual({ total: 575, domainActive: true });
   });
 });
 
@@ -25,8 +25,8 @@ describe("sendContactRequest", () => {
     const [url, init] = fetchMock.mock.calls[0] as [string, { body: string }];
     expect(url).toBe(FORMSPREE_ENDPOINT);
     const body = JSON.parse(init.body) as Record<string, string>;
-    expect(body).toMatchObject({ source: "Boutiques - PricingCard", projet: "Atelier Fictif", formule: "575€ (avec Formule Sérénité)", contact: "06 00 00 00 00" });
-    expect(body.message).toBe("Atelier Fictif est intéressé(e) par son site, première facture à 575€ (avec Formule Sérénité). Rappel : 06 00 00 00 00.");
+    expect(body).toMatchObject({ source: "Boutiques - PricingCard", projet: "Atelier Fictif", formule: "555€ (avec Formule Sérénité)", contact: "06 00 00 00 00" });
+    expect(body.message).toBe("Atelier Fictif est intéressé(e) par son site, première facture à 555€ (avec Formule Sérénité). Rappel : 06 00 00 00 00.");
   });
 
   it("contact vide : « Non précisé » et « canal non précisé » ; domaine seul mentionné", async () => {

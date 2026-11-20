@@ -32,10 +32,9 @@ export default function PricingCard({
   slug?: string;
 }) {
   const [withSubscription, setWithSubscription] = useState(false);
-  // Non pertinente une fois l'abonnement coche (nom de domaine deja inclus dedans) : decochee
-  // automatiquement au moment ou l'abonnement est coche, cf onChange ci-dessous.
+  // Cumulable avec la Formule Sérénité (le domaine n'y est plus inclus).
   const [withDomain, setWithDomain] = useState(false);
-  const { total, domainActive } = computePricing({ withSubscription, withDomain });
+  const { total } = computePricing({ withSubscription, withDomain });
   // Le clic sur "Ça m'intéresse" ouvre la modale mais n'envoie rien : on confirme d'abord le canal
   // de rappel dedans, un seul envoi Formspree au clic sur "Confirmer" (retex du 14/08 : 2 envois
   // separes, un a l'interet et un a la correction du numero, faisait doublon cote Gilles).
@@ -136,9 +135,7 @@ export default function PricingCard({
 
       <div className="relative mb-2.5">
         <label
-          className={`flex items-start gap-3 rounded-xl border border-border p-3 pr-8 transition-colors cursor-pointer hover:border-foreground/30 ${
-            withSubscription ? "opacity-40" : ""
-          }`}
+          className="flex items-start gap-3 rounded-xl border border-border p-3 pr-8 transition-colors cursor-pointer hover:border-foreground/30"
         >
           {/* Case a cocher stylee maison (reproduit .opt-checkbox de preview-prospect.html) : la
               case native <input type="checkbox"> rend un style trop different du mockup (rendu
@@ -151,10 +148,7 @@ export default function PricingCard({
           <input
             type="checkbox"
             checked={withDomain}
-            onChange={(e) => {
-              setWithDomain(e.target.checked);
-              if (e.target.checked) setWithSubscription(false);
-            }}
+            onChange={(e) => setWithDomain(e.target.checked)}
             className="sr-only"
           />
           <span
@@ -167,7 +161,7 @@ export default function PricingCard({
           </span>
           <span className="block text-sm text-foreground">
             <span className="font-semibold">
-              Nom de domaine, {withSubscription ? "inclus dans la formule" : `+${DOMAIN_PRICE_YEAR}€`}
+              Nom de domaine, +{DOMAIN_PRICE_YEAR}€
             </span>
             <span className="block text-xs text-muted-foreground mt-0.5">Valable 1 an.</span>
             {/* Dans .opt-body, comme .info-popover de preview-prospect.html (ecart trouve le
@@ -203,22 +197,13 @@ export default function PricingCard({
         </button>
       </div>
 
-      {/* Grisee (opacity-40) quand le nom de domaine seul est coche, symetrique au grisage de
-          l'option domaine ci-dessus (retour du 19/08 reproduit a la lettre depuis
-          preview-prospect.html, `#optSerenite.classList.toggle("disabled", state.domain)`,
-          ecart trouve le 20/08 par Gilles en meme temps que le champ disabled ci-dessus). */}
       <label
-        className={`flex items-start gap-3 rounded-xl border border-border p-3 mb-2.5 cursor-pointer hover:border-foreground/30 transition-colors ${
-          domainActive ? "opacity-40" : ""
-        }`}
+        className="flex items-start gap-3 rounded-xl border border-border p-3 mb-2.5 cursor-pointer hover:border-foreground/30 transition-colors"
       >
         <input
           type="checkbox"
           checked={withSubscription}
-          onChange={(e) => {
-            setWithSubscription(e.target.checked);
-            if (e.target.checked) setWithDomain(false);
-          }}
+          onChange={(e) => setWithSubscription(e.target.checked)}
           className="sr-only"
         />
         <span
@@ -232,7 +217,7 @@ export default function PricingCard({
         <span className="block text-sm text-foreground">
           <span className="font-semibold">Formule Sérénité, +{SUBSCRIPTION_PRICE_YEAR}€</span>
           <span className="block text-xs text-muted-foreground mt-0.5">
-            Nom de domaine, + {SUBSCRIPTION_INCLUDED_MODIFS} allers-retours, retours sous 48h ouvrées.
+            {SUBSCRIPTION_INCLUDED_MODIFS} allers-retours supplémentaires, retours sous 48h ouvrées.
           </span>
         </span>
       </label>
@@ -261,7 +246,7 @@ export default function PricingCard({
             <span className="ml-auto whitespace-nowrap">{SUBSCRIPTION_PRICE_YEAR}€</span>
           </li>
         )}
-        {!withSubscription && domainActive && (
+        {withDomain && (
           <li className="flex items-start gap-2 text-[12.5px] font-semibold text-foreground">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1" />
             <span className="min-w-0">Nom de domaine</span>
