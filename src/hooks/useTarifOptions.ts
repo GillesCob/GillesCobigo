@@ -8,7 +8,7 @@ export interface ITarifOptions extends IPricingTotal {
   toggleSubscription: (checked: boolean) => void;
 }
 
-/** Options cochees de la page de prix : la Formule Sérénité et le nom de domaine seul s'excluent (la formule inclut le domaine). */
+/** Options cochees de la page de prix : la Formule Sérénité et le nom de domaine se cochent indépendamment et se cumulent. */
 export function useTarifOptions(): ITarifOptions {
   const [withSubscription, setWithSubscription] = useState(false);
   const [withDomain, setWithDomain] = useState(false);
@@ -16,13 +16,7 @@ export function useTarifOptions(): ITarifOptions {
     withSubscription,
     withDomain,
     ...computePricing({ withSubscription, withDomain }),
-    toggleDomain: (checked) => {
-      setWithDomain(checked);
-      if (checked) setWithSubscription(false);
-    },
-    toggleSubscription: (checked) => {
-      setWithSubscription(checked);
-      if (checked) setWithDomain(false);
-    },
+    toggleDomain: setWithDomain,
+    toggleSubscription: setWithSubscription,
   };
 }

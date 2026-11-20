@@ -18,14 +18,13 @@ const MISE_EN_LIGNE_VALUE = 30;
 const ROUND_VALUE = (500 - MISE_EN_LIGNE_VALUE) / BASE_STEPS.length;
 const BASE_ACQUIS = BASE_STEPS.map((_, i) => Math.round(ROUND_VALUE * (i + 1)));
 const V6_ACQUIS = BASE_ACQUIS[BASE_ACQUIS.length - 1];
-// Formule Serenite (75€) : 20€ nom de domaine (acquis immediatement, meme regle que l'option
-// domaine seule) + 55€ pour 2 allers-retours inclus, acquis seulement au fur et a mesure de
+// Formule Serenite (55€) : 55€ pour 2 allers-retours inclus, acquis seulement au fur et a mesure de
 // leur utilisation (27,50€ chacun). Un allers-retours utilise pour une version supplementaire
 // (V7, V8...) avant la mise en ligne ajoute une ligne au tableau ; utilisee apres la mise en
 // ligne, elle n'a aucun impact ici (plus de remboursement possible a ce stade de toute facon).
 const MODIF_CREDIT_VALUE = 27.5;
 
-type Scenario = "none" | "domain" | "serenite";
+type Scenario = "none" | "domain" | "serenite" | "both";
 
 export default function CGVBoutiques() {
   const [scenario, setScenario] = useState<Scenario>("none");
@@ -72,15 +71,16 @@ export default function CGVBoutiques() {
     };
   }, []);
 
-  const total = scenario === "domain" ? 520 : scenario === "serenite" ? 575 : 500;
-  const domainPart = scenario === "domain" || scenario === "serenite" ? 20 : 0;
-  const modifsUsed = scenario === "serenite" ? (v8Done ? 2 : v7Done ? 1 : 0) : 0;
+  const hasSerenite = scenario === "serenite" || scenario === "both";
+  const total = scenario === "both" ? 575 : scenario === "domain" ? 520 : scenario === "serenite" ? 555 : 500;
+  const domainPart = scenario === "domain" || scenario === "both" ? 20 : 0;
+  const modifsUsed = hasSerenite ? (v8Done ? 2 : v7Done ? 1 : 0) : 0;
 
   const rows: { label: string; acquis: number }[] = BASE_STEPS.map((label, i) => ({
     label,
     acquis: BASE_ACQUIS[i] + domainPart,
   }));
-  if (scenario === "serenite") {
+  if (hasSerenite) {
     if (modifsUsed >= 1) rows.push({ label: "V7", acquis: V6_ACQUIS + domainPart + MODIF_CREDIT_VALUE });
     if (modifsUsed >= 2) rows.push({ label: "V8", acquis: V6_ACQUIS + domainPart + MODIF_CREDIT_VALUE * 2 });
   }
@@ -120,7 +120,7 @@ export default function CGVBoutiques() {
                 <li>Nom de domaine : 20€/an, ou 85€ pour 5 ans prépayés.</li>
                 <li>Version supplémentaire (V7, V8...) ou modification après mise en ligne : 40€.</li>
                 <li>
-                  Formule Sérénité, +75€ (paiement unique) : nom de domaine inclus pour la période, 2
+                  Formule Sérénité, +55€ (paiement unique) : 2
                   allers-retours inclus (utilisables pour une version en plus avant mise en ligne ou une
                   modification après), retours sous 48h ouvrées. Non reconduite automatiquement.
                 </li>
@@ -192,11 +192,20 @@ export default function CGVBoutiques() {
                     scenario === "serenite" ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  Avec Formule Sérénité (575€)
+                  Avec Formule Sérénité (555€)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setScenario("both")}
+                  className={`px-3 py-1.5 text-xs font-medium border-l border-border transition-colors ${
+                    scenario === "both" ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Domaine + Formule Sérénité (575€)
                 </button>
               </div>
 
-              {scenario === "serenite" && (
+              {hasSerenite && (
                 <div className="flex items-center flex-wrap gap-3 mb-4">
                   <span className="text-xs text-muted-foreground">Versions supplémentaires déjà livrées avant l'arrêt :</span>
                   <label className="inline-flex items-center gap-1.5 text-sm cursor-pointer">
@@ -237,7 +246,7 @@ export default function CGVBoutiques() {
                 <p className="mt-2">
                   Montants arrondis à l'euro. Les 30€ de mise en ligne correspondent au déploiement
                   technique, pas à une version de conception. Le nom de domaine, une fois acheté, est
-                  immédiatement enregistré à votre nom : les 20€ (seul ou inclus dans la Formule Sérénité)
+                  immédiatement enregistré à votre nom : les 20€
                   sont acquis dès la signature, indépendamment de la suite. Avec la Formule Sérénité, les 2
                   allers-retours inclus (55€) ne sont acquis qu'au fur et à mesure de leur utilisation
                   (27,50€ chacun) : une version supplémentaire (V7, V8...) faite avant l'arrêt ajoute une

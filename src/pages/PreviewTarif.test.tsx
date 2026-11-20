@@ -94,21 +94,22 @@ describe("PreviewTarif", () => {
     expect(beacon.mock.calls[0]?.[0]).toBe("https://boutiques-api.gillescobigo.com/track");
   });
 
-  it("total : Sérénité 575, domaine seul 520, les deux options s'excluent", async () => {
+  it("total : Sérénité 555, domaine seul 520, les deux options se cumulent (575)", async () => {
     const user = userEvent.setup();
     renderAt(OK);
     const total = () => document.querySelector(".total .m")?.textContent;
     expect(total()).toBe("500€");
     const domaine = screen.getByRole("checkbox", { name: /^Nom de domaine, \+20€/ });
-    const serenite = screen.getByRole("checkbox", { name: /^Formule Sérénité, \+75€/ });
+    const serenite = screen.getByRole("checkbox", { name: /^Formule Sérénité, \+55€/ });
     await user.click(domaine);
     expect(total()).toBe("520€");
     await user.click(serenite);
     expect(total()).toBe("575€");
-    expect(domaine).not.toBeChecked();
+    expect(domaine).toBeChecked();
     await user.click(domaine);
-    expect(total()).toBe("520€");
-    expect(serenite).not.toBeChecked();
+    expect(total()).toBe("555€");
+    await user.click(serenite);
+    expect(total()).toBe("500€");
   });
 
   it("une seule bulle d'information ouverte, fermee par un clic ailleurs", async () => {
@@ -137,7 +138,7 @@ describe("PreviewTarif", () => {
   it("modale : Confirmer inactif tant que le champ est vide, un seul envoi avec le total, puis confirmation", async () => {
     const user = userEvent.setup();
     renderAt(OK);
-    await user.click(screen.getByRole("checkbox", { name: /^Formule Sérénité, \+75€/ }));
+    await user.click(screen.getByRole("checkbox", { name: /^Formule Sérénité, \+55€/ }));
     await user.click(screen.getByRole("button", { name: /Ça m'intéresse/ }));
     expect(beacon).toHaveBeenCalledTimes(2);
     const confirmer = screen.getByRole("button", { name: "Confirmer", hidden: true });
@@ -147,7 +148,7 @@ describe("PreviewTarif", () => {
     await waitFor(() => expect(screen.getByText("C'est noté !")).toBeInTheDocument());
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const body = JSON.parse((fetchMock.mock.calls[0] as [string, { body: string }])[1].body) as Record<string, string>;
-    expect(body.formule).toBe("575€ (avec Formule Sérénité)");
+    expect(body.formule).toBe("555€ (avec Formule Sérénité)");
     expect(body.projet).toBe('Atelier <b>"Fictif"</b>');
   });
 
