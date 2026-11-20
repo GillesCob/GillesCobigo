@@ -23,6 +23,30 @@ export interface IPreviewRound {
   roundInfo?: string;
 }
 
+/**
+ * Identite visuelle de la page de prix partagee (/preview/<slug>/<secret>/tarif) d'un prospect : palette et polices de ses
+ * propositions. Texte et prix sont communs a tous les prospects (PreviewTarif.tsx). Toute valeur est validee avant usage
+ * (lib/previewTarif.ts) ; une valeur invalide ou absente ramene a la palette par defaut.
+ */
+export interface IPreviewTarifTheme {
+  bg: string;
+  surface: string;
+  surface2: string;
+  border: string;
+  text: string;
+  muted: string;
+  accent: string;
+  onAccent: string;
+  ink: string;
+  inkSub: string;
+  fontTitle: string;
+  fontBody: string;
+  /** Feuille Google Fonts (https://fonts.googleapis.com/css2?...), absente = polices systeme. */
+  fontsUrl?: string;
+  /** Ligne sous le nom dans l'en-tete, ex. "Cave à vin à Dax". Absente = nom seul. */
+  tagline?: string;
+}
+
 export interface IPreviewProject {
   /** Segment d'URL lisible (ex. "dressing-mailys"), affiché mais pas utilisé pour la recherche : la clé de ce Record (le secret) fait foi. */
   slug: string;
@@ -45,6 +69,8 @@ export interface IPreviewProject {
   shareTitle?: string;
   shareDescription?: string;
   shareImage?: string;
+  /** Identite visuelle de la page de prix partagee. Absente : palette par defaut. */
+  tarifTheme?: IPreviewTarifTheme;
   rounds: IPreviewRound[];
 }
 
