@@ -127,19 +127,6 @@ body { padding-top: 42px; padding-bottom: 42px; }
 @media (max-width: 360px) {
   .retour-bandeau { font-size: 12px; padding: 0 66px 0 8px; }
 }
-.result-modal-overlay { position: fixed; inset: 0; z-index: 1100; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .3s ease, visibility 0s linear .3s; }
-.result-modal-overlay.show { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity .3s ease; }
-.result-modal { position: relative; max-width: 380px; width: 100%; background: var(--surface); border-radius: 20px; padding: 38px 30px 32px; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,.35); transform: translateY(14px); transition: transform .3s ease; }
-.result-modal-overlay.show .result-modal { transform: translateY(0); }
-.result-modal h2 { font-family: var(--font-title); font-size: 23px; margin: 0 0 10px; color: var(--text); }
-.result-modal p { font-family: var(--font-body); font-size: 14.5px; color: var(--muted); margin: 0 0 24px; line-height: 1.5; }
-.result-modal .btn { display: inline-block; padding: 14px 30px; background: var(--accent); color: var(--on-accent); text-decoration: none; border-radius: 30px; font-family: var(--font-body); font-weight: 700; font-size: 15px; border: none; min-height: 0; }
-.result-modal .btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
-.result-modal-close { position: absolute; top: 12px; right: 12px; background: none; border: 0; font-size: 18px; line-height: 1; color: var(--muted); cursor: pointer; padding: 8px; }
-.result-modal-close:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-@media (prefers-reduced-motion: reduce) {
-  .result-modal-overlay, .result-modal { transition: none; }
-}
 </style>
 </head>
 <body class="commerce-p2">
@@ -235,14 +222,6 @@ body { padding-top: 42px; padding-bottom: 42px; }
 })();
 </script>
 <a class="proposition-banner" href="https://www.gillescobigo.com/preview/la-bouteille-40-dax/c52fe43d2b4120b0"><span class="proposition-banner-retour">← Vos deux propositions</span> · 2ème proposition</a>
-<div class="result-modal-overlay" id="resultModalOverlay">
-  <div class="result-modal">
-    <button type="button" class="result-modal-close" aria-label="Fermer" onclick="closeResultModal()">✕</button>
-    <h2>Séduit par le visuel ?</h2>
-    <p>Il suffit d'ajouter quelques éléments de personnalisation pour modeler le site à votre image !</p>
-    <a class="btn" href="https://www.gillescobigo.com/preview/la-bouteille-40-dax/c52fe43d2b4120b0/tarif">Obtenir plus d'informations →</a>
-  </div>
-</div>
 
 <div class="retour-bandeau">
   <a href="https://www.gillescobigo.com/preview/la-bouteille-40-dax/c52fe43d2b4120b0/tarif">Obtenir plus d'informations →</a>
@@ -261,24 +240,6 @@ body { padding-top: 42px; padding-bottom: 42px; }
   }
   syncBandeauSpacing();
   window.addEventListener('resize', syncBandeauSpacing);
-
-  var overlay = document.getElementById('resultModalOverlay');
-  if (!overlay) return;
-  var shown = false;
-  function openModal() { if (shown) return; shown = true; overlay.classList.add('show'); }
-  function closeModal() { overlay.classList.remove('show'); }
-  window.closeResultModal = closeModal;
-  overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
-  function checkNearBottom() {
-    if (shown) return;
-    var doc = document.documentElement;
-    var scrollBottom = window.scrollY + window.innerHeight;
-    var pageHeight = Math.max(document.body.scrollHeight, doc.scrollHeight);
-    if (scrollBottom >= pageHeight - 80) openModal();
-  }
-  // Jamais d'appel au chargement : seulement sur un vrai defilement ou redimensionnement (reference, 21/08).
-  window.addEventListener('scroll', checkNearBottom, { passive: true });
-  window.addEventListener('resize', checkNearBottom);
 })();
 (function () {
   try {
