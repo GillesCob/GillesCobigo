@@ -3,10 +3,39 @@
 # sans confirmation explicite que la checklist git-diff-du-mockup a ete faite (cf
 # Moi/regle-portage-mockup-prod.md, vault-perso, acte le 19/08 a la demande de Gilles).
 # MOCKUP_DIFF_CHECKED=1 doit etre pose explicitement avant `git commit`, jamais par defaut.
+#
+# Exception (21/11, Gilles) : un commit qui ne contient QUE des apercus generes par la chaine de nuit Sites
+# (ajouts sous public/preview/<slug>/<secret de 16 hex>/, plus l'entree src/data/previewProjects.ts) n'a pas
+# de mockup vault a comparer : le controle est ignore. Tout autre fichier indexe, une modification ou une
+# suppression d'un apercu existant (versions envoyees gelees), ou un melange, garde le controle ci-dessus.
 FUNNEL_PATTERN='^src/components/preview/|^src/pages/PreviewHome\.tsx$|^src/pages/CaseStudyRound\.tsx$|^src/components/ui/dialog\.tsx$|^public/preview/'
+APERCU_GENERE='^public/preview/[a-z0-9][a-z0-9-]*/[0-9a-f]{16}/[^[:cntrl:]]+$'
+FICHIER_ENTREES='src/data/previewProjects.ts'
 
-STAGED=$(git diff --cached --name-only)
-if echo "$STAGED" | grep -Eq "$FUNNEL_PATTERN"; then
+funnel=0
+apercus=0
+que_des_apercus=1
+# --raw -z : ":<mode avant> <mode apres> <sha> <sha> <statut>" puis le chemin brut, separes par NUL, jamais cites
+# (un chemin non ASCII cite echapperait aux motifs). Le mode apres exclut les liens symboliques (120000) et sous-modules.
+while IFS= read -r -d '' meta && IFS= read -r -d '' chemin; do
+  set -- ${meta#:}
+  mode=$2
+  statut=$5
+  if [[ $chemin =~ $FUNNEL_PATTERN ]]; then funnel=1; fi
+  if [ "$chemin" = "$FICHIER_ENTREES" ]; then
+    [ "$statut" = "M" ] || que_des_apercus=0
+  elif [ "$statut" = "A" ] && { [ "$mode" = "100644" ] || [ "$mode" = "100755" ]; } && [[ $chemin =~ $APERCU_GENERE ]]; then
+    apercus=1
+  else
+    que_des_apercus=0
+  fi
+done < <(git diff --cached --raw --no-renames -z)
+
+if [ "$funnel" = "1" ]; then
+  if [ "$apercus" = "1" ] && [ "$que_des_apercus" = "1" ]; then
+    echo "Apercus generes seuls (public/preview/<slug>/<secret>/ et $FICHIER_ENTREES) : controle MOCKUP_DIFF_CHECKED non requis."
+    exit 0
+  fi
   if [ "$MOCKUP_DIFF_CHECKED" != "1" ]; then
     echo ""
     echo "BLOQUE : ce commit touche un fichier du funnel prospect (miroir d'un mockup vault)."
