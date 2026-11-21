@@ -111,15 +111,21 @@ section[id] { scroll-margin-top: calc(var(--decalage-haut, 0px) + var(--nav-haut
 .galerie-photo { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; }
 </style>
 <style>
-body { padding-top: 42px; padding-bottom: 100px; }
-.proposition-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #18181b; color: #fff; text-align: center; padding: 10px 16px; font-family: var(--font-body); font-size: 12.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
-.retour-bandeau { position: fixed; bottom: 0; left: 0; right: 0; z-index: 900; background: #18181b; color: #fff; padding: 22px 20px; text-align: center; font-family: var(--font-body); font-size: 16px; box-shadow: 0 -4px 16px rgba(0,0,0,.2); }
-.retour-bandeau a { color: #fff; font-weight: 800; text-decoration: underline; margin-left: 6px; }
-.retour-bandeau a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
-.retour-bandeau a.retour-bandeau-confidentialite { display: block; text-align: right; margin: 6px 0 0; font-size: 10.5px; font-weight: 600; opacity: .55; padding-block: 8px; }
+body { padding-top: 42px; padding-bottom: 42px; }
+.proposition-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; box-sizing: border-box; height: 42px; background: #18181b; color: #fff; text-align: center; text-decoration: none; padding: 0 16px; font-family: var(--font-body); font-size: 12.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+.proposition-banner .proposition-banner-retour { text-decoration: underline; text-underline-offset: 3px; }
+.proposition-banner:focus-visible { outline: 3px solid #fff; outline-offset: -5px; }
+.retour-bandeau { position: fixed; bottom: 0; left: 0; right: 0; z-index: 900; display: flex; align-items: center; justify-content: center; gap: 16px; box-sizing: border-box; height: 42px; background: #18181b; color: #fff; padding: 0 20px; text-align: center; font-family: var(--font-body); font-size: 16px; box-shadow: 0 -4px 16px rgba(0,0,0,.2); white-space: nowrap; }
+.retour-bandeau a { display: flex; align-items: center; align-self: stretch; color: #fff; font-weight: 800; text-decoration: underline; margin: 0; }
+.retour-bandeau a:focus-visible { outline: 3px solid #fff; outline-offset: -5px; }
+.retour-bandeau a.retour-bandeau-confidentialite { position: absolute; top: 0; bottom: 0; right: 20px; font-size: 10.5px; font-weight: 600; opacity: .55; }
 @media (max-width: 480px) {
-  .retour-bandeau { font-size: 13.5px; padding: 20px 16px; }
-  .retour-bandeau a.retour-bandeau-confidentialite { text-align: center; margin-top: 16px; }
+  .proposition-banner { font-size: 11px; letter-spacing: .02em; padding-inline: 8px; }
+  .retour-bandeau { font-size: 13.5px; padding: 0 74px; }
+  .retour-bandeau a.retour-bandeau-confidentialite { right: 10px; font-size: 9.5px; }
+}
+@media (max-width: 360px) {
+  .retour-bandeau { font-size: 12px; padding: 0 66px 0 8px; }
 }
 .result-modal-overlay { position: fixed; inset: 0; z-index: 1100; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .3s ease, visibility 0s linear .3s; }
 .result-modal-overlay.show { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity .3s ease; }
@@ -231,7 +237,7 @@ body { padding-top: 42px; padding-bottom: 100px; }
   document.addEventListener('click', function (e) { if (menu.open && !menu.contains(e.target)) menu.open = false; });
 })();
 </script>
-<div class="proposition-banner">2ème proposition</div>
+<a class="proposition-banner" href="https://www.gillescobigo.com/preview/o-barricot-hossegor/c22df94489636bcf"><span class="proposition-banner-retour">← Vos deux propositions</span> · 2ème proposition</a>
 <div class="result-modal-overlay" id="resultModalOverlay">
   <div class="result-modal">
     <button type="button" class="result-modal-close" aria-label="Fermer" onclick="closeResultModal()">✕</button>
