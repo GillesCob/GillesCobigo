@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 // Page publique des CGV du flux "Boutiques" (prospection a froid de commerces locaux, cf
 // Projets/Boutiques/ dans le vault). Contenu porte depuis le mockup de reference
@@ -11,25 +12,17 @@ import { useEffect, useState } from "react";
 
 // Repartition du forfait 500€ (20/08) : 30€ fixes pour la mise en ligne (deploiement technique,
 // pas un round de conception), le reste (470€) divise a parts egales sur les 5 rounds de
-// conception (V2 a V6) = 94€ chacun. Remplace l'ancienne repartition egale sur 6 etapes (500/6),
+// conception (V1 a V5, V0 = version gratuite envoyee) = 94€ chacun. Remplace l'ancienne repartition egale sur 6 etapes (500/6),
 // qui surevaluait la mise en ligne au meme niveau qu'un round de conception.
-const BASE_STEPS = ["V2", "V3", "V4", "V5", "V6"];
+const BASE_STEPS = ["V1", "V2", "V3", "V4", "V5"];
 const MISE_EN_LIGNE_VALUE = 30;
 const ROUND_VALUE = (500 - MISE_EN_LIGNE_VALUE) / BASE_STEPS.length;
 const BASE_ACQUIS = BASE_STEPS.map((_, i) => Math.round(ROUND_VALUE * (i + 1)));
-const V6_ACQUIS = BASE_ACQUIS[BASE_ACQUIS.length - 1];
-// Formule Serenite (55€) : 55€ pour 2 allers-retours inclus, acquis seulement au fur et a mesure de
-// leur utilisation (27,50€ chacun). Un allers-retours utilise pour une version supplementaire
-// (V7, V8...) avant la mise en ligne ajoute une ligne au tableau ; utilisee apres la mise en
-// ligne, elle n'a aucun impact ici (plus de remboursement possible a ce stade de toute facon).
-const MODIF_CREDIT_VALUE = 27.5;
 
-type Scenario = "none" | "domain" | "serenite" | "both";
+type Scenario = "none" | "domain";
 
 export default function CGVBoutiques() {
   const [scenario, setScenario] = useState<Scenario>("none");
-  const [v7Done, setV7Done] = useState(false);
-  const [v8Done, setV8Done] = useState(false);
 
   // Scroll vers l'ancre au chargement (20/08, lien depuis la checklist "Appel" de
   // Boutiques/suivi.html vers /cgv-boutiques#remboursement) : sur une navigation complete
@@ -71,29 +64,14 @@ export default function CGVBoutiques() {
     };
   }, []);
 
-  const hasSerenite = scenario === "serenite" || scenario === "both";
-  const total = scenario === "both" ? 575 : scenario === "domain" ? 520 : scenario === "serenite" ? 555 : 500;
-  const domainPart = scenario === "domain" || scenario === "both" ? 20 : 0;
-  const modifsUsed = hasSerenite ? (v8Done ? 2 : v7Done ? 1 : 0) : 0;
+  const total = scenario === "domain" ? 520 : 500;
+  const domainPart = scenario === "domain" ? 20 : 0;
 
   const rows: { label: string; acquis: number }[] = BASE_STEPS.map((label, i) => ({
     label,
     acquis: BASE_ACQUIS[i] + domainPart,
   }));
-  if (hasSerenite) {
-    if (modifsUsed >= 1) rows.push({ label: "V7", acquis: V6_ACQUIS + domainPart + MODIF_CREDIT_VALUE });
-    if (modifsUsed >= 2) rows.push({ label: "V8", acquis: V6_ACQUIS + domainPart + MODIF_CREDIT_VALUE * 2 });
-  }
   rows.push({ label: "Mise en ligne", acquis: total });
-
-  function toggleV7(checked: boolean) {
-    setV7Done(checked);
-    if (!checked) setV8Done(false);
-  }
-  function toggleV8(checked: boolean) {
-    setV8Done(checked);
-    if (checked) setV7Done(true);
-  }
 
   return (
     <div className="min-h-dvh bg-background flex flex-col relative">
@@ -105,26 +83,35 @@ export default function CGVBoutiques() {
           <div className="space-y-8 text-sm text-foreground/90 leading-relaxed">
             <section>
               <h2 className="text-base font-semibold text-foreground mb-2">1. Prestation</h2>
-              <p>
-                Création d'un site vitrine one-page (HTML/CSS/JS statique), jusqu'à 5 allers-retours de
-                retouches (la version finale sera la V6), mise en ligne incluse si vous disposez déjà d'un nom
-                de domaine. Une version peut proposer plusieurs variations à comparer (couleurs, polices...),
-                ça reste un seul aller-retour.
+              <p>La prestation est la création d'un site vitrine one page, en HTML, CSS et JavaScript. Elle comprend :</p>
+              <ul className="list-disc list-outside pl-5 space-y-1 mt-2">
+                <li>la création du site</li>
+                <li>la V0 (deux propositions réalisées gratuitement avant tout engagement)</li>
+                <li>5 allers-retours*, de la V1 à la V5, pour aller jusqu'au site que vous souhaitez</li>
+                <li>la mise en ligne</li>
+                <li>un site qui vous appartient, avec l'export complet de son code pour le faire reprendre par la personne de votre choix</li>
+                <li>une notice (README) qui accompagne le code</li>
+                <li>la correction gratuite, sans limite de durée, de tout ce qui devait fonctionner au moment de la mise en ligne du site</li>
+              </ul>
+              <p className="text-xs text-muted-foreground mt-3">
+                * Un aller-retour consiste à lister par écrit les modifications souhaitées sur la version
+                en cours. Elles sont appliquées dans la version suivante (V1 après le premier
+                aller-retour, V2 après le deuxième). Une version peut proposer plusieurs variations à
+                comparer (couleurs, polices). Cela reste un seul aller-retour.{" "}
+                <Link to="/cas-client/v1" target="_blank" rel="noopener" className="underline hover:text-foreground">
+                  Voir un exemple d'allers-retours
+                </Link>
               </p>
             </section>
 
             <section>
               <h2 className="text-base font-semibold text-foreground mb-2">2. Tarifs</h2>
               <ul className="list-disc list-outside pl-5 space-y-1">
-                <li>500€ le forfait initial (520€ si un nom de domaine doit être acheté).</li>
-                <li>Nom de domaine : 20€/an, ou 85€ pour 5 ans prépayés.</li>
-                <li>Version supplémentaire (V7, V8...) ou modification après mise en ligne : 40€.</li>
-                <li>
-                  Formule Sérénité, +55€ (paiement unique) : 2
-                  allers-retours inclus (utilisables pour une version en plus avant mise en ligne ou une
-                  modification après), retours sous 48h ouvrées. Non reconduite automatiquement.
-                </li>
-                <li>Toute évolution ou projet plus ambitieux (nouvelle fonctionnalité, vente en ligne, site multi-pages...) : devis séparé, jamais ce tarif.</li>
+                <li>Forfait initial : 500€.</li>
+                <li>Aller-retour supplémentaire (V6, V7...) : 40€.</li>
+                <li>Gestion de votre nom de domaine par le prestataire : 20€/an, renouvellement et gestion technique compris.</li>
+                <li>Gestion de votre nom de domaine par vos soins : toute demande technique fait l'objet d'un devis, à partir de 40€ (article 8).</li>
+                <li>Toute évolution ou projet plus ambitieux : devis séparé.</li>
               </ul>
               <p className="text-xs text-muted-foreground mt-2">TVA non applicable, art. 293 B du CGI.</p>
             </section>
@@ -134,36 +121,62 @@ export default function CGVBoutiques() {
               <p>
                 Le site vous appartient entièrement. Le nom de domaine est toujours enregistré à votre nom. Le
                 code source reste hébergé sur un repository privé chez le prestataire. Un export complet du
-                code vous est fourni dès la mise en ligne du site, sans que vous ayez à le demander : vous
-                disposez de tout dès ce moment-là. Le prestataire reste disponible pour vous le renvoyer à tout
-                moment par la suite. Aucune dépendance technique ne vous lie au prestataire : vous pouvez faire
-                reprendre le code par un tiers quand vous le souhaitez, une notice (README) accompagne le code
-                pour lui faciliter la prise en main.
+                code vous est fourni dès la mise en ligne du site. Le prestataire reste disponible pour vous le
+                renvoyer à tout moment par la suite.
               </p>
             </section>
 
             <section>
               <h2 className="text-base font-semibold text-foreground mb-2">4. Nom de domaine</h2>
-              <p>
-                Si le domaine est acheté par le prestataire pour votre compte, son renouvellement annuel est
-                facturé avant chaque échéance (30 jours à l'avance). Sans règlement à cette date, le domaine
-                n'est pas renouvelé : le prestataire ne prend jamais en charge un renouvellement non payé.
+              <p>Deux possibilités existent pour votre nom de domaine.</p>
+              <h3 className="font-semibold text-foreground mt-3">1. Vous gérez vous-même votre nom de domaine</h3>
+              <p className="mt-1">
+                Vous gardez votre nom de domaine sur le site où vous l'avez acheté (votre registrar) et vous le
+                gérez vous-même.
+              </p>
+              <p className="mt-2">Tout besoin technique est facturé conformément à l'article 2 (tarifs).</p>
+              <h3 className="font-semibold text-foreground mt-3">2. Le prestataire gère votre nom de domaine</h3>
+              <p className="mt-1">
+                Le forfait de l'article 2 couvre le renouvellement du domaine et sa gestion technique.
+              </p>
+              <p className="mt-2">
+                Il s'applique que le prestataire achète le domaine pour votre compte ou que vous le fassiez
+                transférer chez lui.
+              </p>
+              <p className="mt-2">
+                Ce forfait est facturé dès la première année, quelle que soit la date d'échéance de votre domaine.
+              </p>
+              <p className="mt-2">
+                Si le prestataire achète le domaine pour votre compte, son renouvellement annuel est facturé avant
+                chaque échéance (environ 2 mois à l'avance). Sans règlement à cette date, le domaine n'est pas
+                renouvelé : le prestataire ne prend jamais en charge un renouvellement non payé.
+              </p>
+              <p className="mt-2">
+                Si vous souhaitez transférer chez le prestataire un nom de domaine que vous avez déjà acheté, vous
+                en faites vous-même la demande auprès du site où vous l'avez acheté (déverrouillage du domaine et
+                code de transfert). Le prestataire vous accompagne pour réaliser ces démarches.
               </p>
             </section>
 
             <section id="remboursement">
               <h2 className="text-base font-semibold text-foreground mb-2">5. Durée et résiliation</h2>
-              <p className="mb-4">
-                Le forfait est réglé à la signature et se répartit en 94€ par version (V2 à V6) et 30€ pour
-                la mise en ligne (détail dans le tableau ci-dessous). La V1 (premier jet) est réalisée
-                gratuitement dans le cadre de la prospection, avant tout engagement. En cas d'arrêt avant la
-                mise en ligne, seules les étapes déjà livrées sont dues, le reste est remboursé au prorata.
-                Il n'est pas nécessaire d'aller jusqu'à la V6 pour être mis en ligne : dès qu'une version
-                vous convient, elle peut être mise en ligne moyennant les 30€ de mise en ligne, les versions
-                restantes étant alors remboursées comme pour tout arrêt anticipé. Une évolution demandée
-                ensuite sur une version déjà remboursée reste facturée au tarif du forfait (94€), pas au
-                tarif modification après mise en ligne (40€, cf tarifs) : ce tarif réduit ne s'applique
-                qu'au-delà des 6 versions couvertes par le forfait (V1 à V6).
+              <p>
+                Le forfait est réglé à la signature et se répartit en 94€ par aller-retour et 30€ pour
+                la mise en ligne (détail dans le tableau ci-dessous).
+              </p>
+              <p className="mt-2">
+                En cas d'arrêt avant la mise en ligne, seuls les allers-retours déjà livrés sont dus, le reste est
+                remboursé au prorata.
+              </p>
+              <p className="mt-2">
+                Il n'est pas nécessaire d'aller jusqu'à la V5 pour être mis en ligne : dès qu'une version
+                vous convient, elle peut être mise en ligne moyennant les 30€ de mise en ligne, les allers-retours
+                restants étant alors remboursés comme pour tout arrêt anticipé.
+              </p>
+              <p className="mt-2 mb-4">
+                Une prestation arrêtée de manière anticipée reste facturée au tarif du forfait, soit 94€ par
+                aller-retour déjà livré. Le tarif de 40€ ne s'applique qu'à chaque nouvel aller-retour demandé
+                au-delà des 5 inclus dans le forfait (V1 à V5), après la mise en ligne.
               </p>
 
               <div className="inline-flex rounded-md border border-border overflow-hidden mb-4">
@@ -185,44 +198,12 @@ export default function CGVBoutiques() {
                 >
                   Avec nom de domaine (520€)
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setScenario("serenite")}
-                  className={`px-3 py-1.5 text-xs font-medium border-l border-border transition-colors ${
-                    scenario === "serenite" ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Avec Formule Sérénité (555€)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setScenario("both")}
-                  className={`px-3 py-1.5 text-xs font-medium border-l border-border transition-colors ${
-                    scenario === "both" ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Domaine + Formule Sérénité (575€)
-                </button>
               </div>
-
-              {hasSerenite && (
-                <div className="flex items-center flex-wrap gap-3 mb-4">
-                  <span className="text-xs text-muted-foreground">Versions supplémentaires déjà livrées avant l'arrêt :</span>
-                  <label className="inline-flex items-center gap-1.5 text-sm cursor-pointer">
-                    <input type="checkbox" checked={v7Done} onChange={(e) => toggleV7(e.target.checked)} />
-                    V7
-                  </label>
-                  <label className="inline-flex items-center gap-1.5 text-sm cursor-pointer">
-                    <input type="checkbox" checked={v8Done} onChange={(e) => toggleV8(e.target.checked)} />
-                    V8
-                  </label>
-                </div>
-              )}
 
               <table className="w-full text-sm mb-2">
                 <thead>
                   <tr className="text-left text-muted-foreground border-b border-border">
-                    <th className="font-medium py-1.5 pr-2">Étape livrée</th>
+                    <th className="font-medium py-1.5 pr-2">Version livrée</th>
                     <th className="font-medium py-1.5 pr-2">Acquis (non remboursable)</th>
                     <th className="font-medium py-1.5">Remboursable si arrêt</th>
                   </tr>
@@ -245,12 +226,8 @@ export default function CGVBoutiques() {
                 <summary className="cursor-pointer list-none text-foreground hover:underline">+ d'infos sur ce calcul</summary>
                 <p className="mt-2">
                   Montants arrondis à l'euro. Les 30€ de mise en ligne correspondent au déploiement
-                  technique, pas à une version de conception. Le nom de domaine, une fois acheté, est
-                  immédiatement enregistré à votre nom : les 20€
-                  sont acquis dès la signature, indépendamment de la suite. Avec la Formule Sérénité, les 2
-                  allers-retours inclus (55€) ne sont acquis qu'au fur et à mesure de leur utilisation
-                  (27,50€ chacun) : une version supplémentaire (V7, V8...) faite avant l'arrêt ajoute une
-                  ligne au tableau, la part non utilisée reste remboursable.
+                  technique, pas à une version de conception. Les 20€ du nom de domaine sont acquis
+                  dès la signature, indépendamment de la suite.
                 </p>
               </details>
             </section>
@@ -284,6 +261,27 @@ export default function CGVBoutiques() {
                 Conservées le temps de la relation commerciale, puis 3 ans maximum après le dernier échange.
                 Vous pouvez à tout moment demander l'accès, la rectification ou la suppression de vos données
                 par simple mail au prestataire.
+              </p>
+            </section>
+
+            <section id="assistance">
+              <h2 className="text-base font-semibold text-foreground mb-2">8. Assistance après la mise en ligne</h2>
+              <p>
+                Si vous gérez vous-même votre nom de domaine, tout souci technique (domaine, DNS, mail, site qui
+                ne fonctionne plus...) fait l'objet d'un devis, facturé 40€ de l'heure avec un minimum de 40€ par
+                demande. Le montant facturé est celui du devis.
+              </p>
+              <p className="mt-2">
+                Le devis ne couvre que les problématiques qui y sont listées. Toute demande ajoutée donne lieu
+                à un nouveau devis.
+              </p>
+              <p className="mt-2">
+                Si le prestataire gère votre nom de domaine (20€ par an), ses interventions techniques sont
+                comprises dans ce forfait.
+              </p>
+              <p className="mt-2">
+                Un problème lié à la mise en place réalisée par le prestataire (défaut de sa livraison) est
+                toujours compris dans ce que vous avez déjà payé, sans devis ni limite de durée.
               </p>
             </section>
           </div>
