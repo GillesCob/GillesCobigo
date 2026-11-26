@@ -2,7 +2,7 @@
 // sur WhatsApp montrait l'aperçu général du portfolio. Au build, on écrit un second index.html à `construire-en-numerique/index.html` avec les balises de cette page ;
 // l'hébergeur sert ce fichier statique pour cette adresse exacte avant la règle de réécriture. Les autres adresses ne changent pas.
 import type { Plugin } from "vite";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { previewProjects } from "../src/data/previewProjects";
 
@@ -79,6 +79,8 @@ export function apercuPartage(): Plugin {
       const page = readFileSync(path.join(sortie, "index.html"), "utf8");
       for (const apercu of [APERCU_CONSTRUIRE_NUMERIQUE, ...apercusPreview()]) {
         const dossier = path.join(sortie, apercu.chemin);
+        // Une page statique déposée dans public/<chemin>/index.html (ex. page de retour guidée de Philippe) porte déjà ses propres balises : elle prime.
+        if (existsSync(path.join(dossier, "index.html"))) continue;
         mkdirSync(dossier, { recursive: true });
         writeFileSync(path.join(dossier, "index.html"), appliquerApercu(page, apercu));
       }
