@@ -861,7 +861,7 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
   function doSend() {
     if (sending) return;
     sending = true; sendErr = ''; render(true);
-    var body = { projet: C.projet, contact: C.prenom, version: C.round.v, proposition: PROPS[refProp()].label, message: buildReport(), donnees: JSON.stringify(stateForSend()) };
+    var body = { projet: C.projet, contact: C.prenom, version: C.round.v, proposition: PROPS[refProp()].label, message: buildReport(), _subject: 'Retour ' + C.round.v + ' ' + C.projet.replace(/^Cours de guitare de /, '') };
     var fail = function () { sending = false; sendErr = v('L\'envoi n\'a pas fonctionné. Tes réponses sont bien enregistrées sur cet appareil : réessaie dans un instant, ou réponds-moi directement par mail ou message.', 'L\'envoi n\'a pas fonctionné. Vos réponses sont bien enregistrées sur cet appareil : réessayez dans un instant, ou répondez-moi directement par mail ou message.'); render(true); };
     fetch('https://formspree.io/f/' + C.formId, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(body) })
       .then(function (res) { if (!res.ok) { fail(); return; } sending = false; sendErr = ''; S.sent = true; save(); render(true); })
