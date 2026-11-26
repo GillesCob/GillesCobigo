@@ -15,7 +15,7 @@ window.CLIENT = {
   prenom: 'Philippe',
   sousTitre: 'Cours de guitare à Rezé',
   vouvoiement: false,
-  round: { v: 'V0', date: '17 novembre 2026' },
+  round: { v: 'V0', date: '26 novembre 2026' },
   deadline: 'vendredi 28 novembre',
   /* Formulaire Formspree qui reçoit les retours (même que la page d'échanges du projet). */
   formId: 'xgoggnej',
@@ -32,7 +32,7 @@ window.CLIENT = {
       palettes: [['Bleu et cuivre', '#10262f', '#d98f3f'], ['Océan', '#11283b', '#66b2f5'], ['Sauge', '#192e20', '#5ae28c'], ['Prune', '#2e1736', '#d3a0e3'], ['Ambre', '#2d2416', '#ffad33'], ['Graphite', '#212327', '#c8cbd0']],
       pages: [
         { id: 'accueil', name: 'Accueil',
-          sections: ['Bandeau « Un accompagnement sur-mesure »', '« Un site consacré à mes propositions pédagogiques »', '« Ce que je vous propose »', '« Trois niveaux pour progresser »', 'Témoignage de Jean-Yves, élève', 'Bande « Parlons de votre projet »'],
+          sections: ['« Un accompagnement sur-mesure »', '« Un site consacré à mes propositions pédagogiques »', '« Ce que je vous propose »', '« Trois niveaux pour progresser »', 'Témoignage de Jean-Yves, élève', '« Parlons de votre projet »'],
           photos: [
             { f: 'p1-hero.webp', t: 'Ampli du bandeau', s: 1 },
             { f: 'p1-philippe.webp', t: 'Portrait en noir et blanc', s: 2 },
@@ -40,7 +40,7 @@ window.CLIENT = {
             { f: 'p1-manches-fond.webp', t: 'Fond de la bande « Parlons de votre projet »', s: 6 }
           ] },
         { id: 'cours', name: 'Cours',
-          sections: ['Bandeau « Des cours de guitare sur-mesure »', '« Un accompagnement musical global »', 'Niveau 1', 'Niveau 2', 'Niveau 3', 'Coaching', 'Bande « Un projet de cours ou de coaching ? »'],
+          sections: ['« Des cours de guitare sur-mesure »', '« Un accompagnement musical global »', 'Niveau 1', 'Niveau 2', 'Niveau 3', 'Coaching', '« Un projet de cours ou de coaching ? »'],
           photos: [
             { f: 'p1-frettes-1.webp', t: 'Photo du bandeau', s: 1 },
             { f: 'p1-tete-classique.webp', t: 'Tête de guitare classique', s: 3 },
@@ -49,23 +49,23 @@ window.CLIENT = {
             { f: 'p1-trois-manches.webp', t: 'Trois têtes de guitares alignées', s: 6 }
           ] },
         { id: 'prof', name: 'Le prof',
-          sections: ['Bandeau « Mon parcours de musicien »', '« Une vie de musique »', 'Photo de concert', '« Mes projets musicaux »', '« Philippe André partage sa passion pour la guitare au plus grand nombre »', 'Bande « Envie de jouer avec moi ? »'],
+          sections: ['« Mon parcours de musicien »', '« Une vie de musique »', 'Photo de concert', '« Mes projets musicaux »', '« Philippe André partage sa passion pour la guitare au plus grand nombre »', '« Envie de jouer avec moi ? »'],
           photos: [
             { f: 'p1-philippe.webp', t: 'Portrait en noir et blanc', s: 1 },
             { f: 'p1-concert.webp', t: 'Photo de concert', s: 3 },
             { f: 'p1-manches-fond.webp', t: 'Fond de la bande « Envie de jouer avec moi ? »', s: 6 }
           ] },
         { id: 'tarifs', name: 'Tarifs',
-          sections: ['Bandeau « Tarifs, agenda et conditions »', '« Forfaits mensuels »', '« Agenda annuel »', '« Conditions générales des cours »', '« Conditions d\'annulation des cours »', 'Bande « Une question sur les formules ? »'],
+          sections: ['« Tarifs, agenda et conditions »', '« Forfaits mensuels »', '« Agenda annuel »', '« Conditions générales des cours »', '« Conditions d\'annulation des cours »', '« Une question sur les formules ? »'],
           photos: [{ f: 'p1-mecanique.webp', t: 'Photo du bandeau', s: 1 }] },
         { id: 'temoignages', name: 'Témoignages',
-          sections: ['Bandeau « Témoignages »', 'Mot de Philippe en introduction', '« Témoignages d\'élèves »', '« Témoignages de groupes »', 'Bande « À votre tour de jouer »'],
+          sections: ['« Témoignages »', 'Mot de Philippe en introduction', '« Témoignages d\'élèves »', '« Témoignages de groupes »', '« À votre tour de jouer »'],
           photos: [{ f: 'p1-bois-oeillets.webp', t: 'Photo du bandeau', s: 1 }] },
         { id: 'liens', name: 'Liens',
-          sections: ['Bandeau « Liens utiles et conseils »', '« Entretien, réparation et santé du musicien »', '« Ressources sur le Web »', '« Trouver des musiciens pour former un groupe »', '« Téléchargements de supports vierges »', 'Bande « Une question avant de vous lancer ? »'],
+          sections: ['« Liens utiles et conseils »', '« Entretien, réparation et santé du musicien »', '« Ressources sur le Web »', '« Trouver des musiciens pour former un groupe »', '« Téléchargements de supports vierges »', '« Une question avant de vous lancer ? »'],
           photos: [{ f: 'p1-frettes-2.webp', t: 'Photo du bandeau', s: 1 }] },
         { id: 'contact', name: 'Contact',
-          sections: ['Bandeau « Me contacter »', '« Les coordonnées » et « M\'écrire »'],
+          sections: ['« Me contacter »', '« Les coordonnées » et « M\'écrire »'],
           photos: [{ f: 'p1-ouie.webp', t: 'Photo du bandeau', s: 1 }] }
       ]
     },
@@ -77,10 +77,10 @@ window.CLIENT = {
       palettes: [['Bordeaux', '#9e253f', '#d4eae6'], ['Océan', '#1d5aaf', '#d3e3ee'], ['Sauge', '#2b643e', '#ddead7'], ['Prune', '#8d389f', '#ead7ea'], ['Ambre', '#9d4307', '#f6e6cb'], ['Graphite', '#4f5a69', '#dee0e3']],
       pages: [
         { id: 'accueil', name: 'Accueil',
-          sections: ['Bandeau « Un accompagnement sur-mesure »', '« Où en êtes-vous ? »', '« Un site consacré à mes propositions pédagogiques »', '« Ce que je vous propose »', 'Témoignage de Jean-Yves, élève', 'Bande « Parlons de votre projet »'],
+          sections: ['« Un accompagnement sur-mesure »', '« Où en êtes-vous ? »', '« Un site consacré à mes propositions pédagogiques »', '« Ce que je vous propose »', 'Témoignage de Jean-Yves, élève', '« Parlons de votre projet »'],
           photos: [{ f: 'p2-philippe.webp', t: 'Portrait', s: 3 }] },
         { id: 'apprendre', name: 'Apprendre avec moi',
-          sections: ['Bandeau « Apprendre avec moi »', '« Un accompagnement musical global »', 'Niveau 1', 'Niveau 2', 'Niveau 3', 'Coaching', '« Forfaits mensuels »', '« Agenda annuel »', '« Conditions générales des cours »', 'Bande « Un projet de cours ou de coaching ? »'],
+          sections: ['« Apprendre avec moi »', '« Un accompagnement musical global »', 'Niveau 1', 'Niveau 2', 'Niveau 3', 'Coaching', '« Forfaits mensuels »', '« Agenda annuel »', '« Conditions générales des cours »', '« Un projet de cours ou de coaching ? »'],
           photos: [
             { f: 'p2-tete-classique.webp', t: 'Tête de guitare classique', s: 3 },
             { f: 'p2-manche-folk.webp', t: 'Manche de guitare folk', s: 4 },
@@ -88,13 +88,13 @@ window.CLIENT = {
             { f: 'p2-trois-manches.webp', t: 'Trois têtes de guitares alignées', s: 6 }
           ] },
         { id: 'parcours', name: 'Mon parcours',
-          sections: ['Bandeau « Mon parcours de musicien »', '« Une vie de musique »', 'Photo de concert', '« Mes projets musicaux »', '« Philippe André partage sa passion pour la guitare au plus grand nombre »', 'Bande « Envie de jouer avec moi ? »'],
+          sections: ['« Mon parcours de musicien »', '« Une vie de musique »', 'Photo de concert', '« Mes projets musicaux »', '« Philippe André partage sa passion pour la guitare au plus grand nombre »', '« Envie de jouer avec moi ? »'],
           photos: [{ f: 'p2-concert.webp', t: 'Photo de concert', s: 3 }] },
         { id: 'temoignages', name: 'Témoignages',
-          sections: ['Bandeau « Témoignages »', 'Mot de Philippe en introduction', '« Témoignages d\'élèves »', '« Témoignages de groupes »', 'Bande « À votre tour de jouer »'],
+          sections: ['« Témoignages »', 'Mot de Philippe en introduction', '« Témoignages d\'élèves »', '« Témoignages de groupes »', '« À votre tour de jouer »'],
           photos: [] },
         { id: 'contact', name: 'Contact',
-          sections: ['Bandeau « Me contacter »', '« Les coordonnées » et « M\'écrire »', '« Entretien, réparation et santé du musicien »', '« Ressources sur le Web »', '« Trouver des musiciens pour former un groupe »', '« Téléchargements de supports vierges »'],
+          sections: ['« Me contacter »', '« Les coordonnées » et « M\'écrire »', '« Entretien, réparation et santé du musicien »', '« Ressources sur le Web »', '« Trouver des musiciens pour former un groupe »', '« Téléchargements de supports vierges »'],
           photos: [] }
       ]
     }
@@ -134,12 +134,12 @@ window.CLIENT_TYPES = {
   'p2-temoignages': ['tx', 'x', 'txb', 'txb', 'txb'],
   'p2-contact': ['tx', 'txb', 'tx', 'tx', 'tx', 'tx']
 };
-/* Contenus à valider à la section concernée (indice de section, à partir de 0) : tarifs = tarifs, dates et conditions ; coord = coordonnées.
+/* Contenus à valider à la section concernée (indice de section, à partir de 0) : tarifs, dates, conditions, coord (coordonnées) : un élément de plus dans la liste de la section.
    Le pied de page (coordonnées) se valide à la dernière section de l'accueil. */
 window.CLIENT_CONTENTS = {
-  'p1-tarifs': { 1: 'tarifs', 2: 'tarifs', 3: 'tarifs', 4: 'tarifs' },
+  'p1-tarifs': { 1: 'tarifs', 2: 'dates', 3: 'conditions', 4: 'conditions' },
   'p1-contact': { 1: 'coord' },
-  'p2-apprendre': { 6: 'tarifs', 7: 'tarifs', 8: 'tarifs' },
+  'p2-apprendre': { 6: 'tarifs', 7: 'dates', 8: 'conditions' },
   'p2-contact': { 1: 'coord' }
 };
 Object.keys(window.CLIENT.props).forEach(function (p) {

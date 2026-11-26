@@ -17,6 +17,8 @@
 <meta name="twitter:image" content="https://www.gillescobigo.com/preview/cours-guitare-philippe-andre/8d720daaa28e052a/assets/img/og.jpg">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Page de retour guidée V0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page de retour guidée V0</title>
 <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 <style>
@@ -61,8 +63,6 @@ button,textarea{font:inherit;color:inherit}
 /* Étape */
 .step-title{font-size:1.25rem;font-weight:600;margin:0 0 .5rem;line-height:1.3}
 .step-intro{font-size:.875rem;color:var(--muted);margin:0 0 1.5rem;max-width:42rem}
-.tag{display:inline-block;font-size:.6875rem;font-weight:600;letter-spacing:.02em;text-transform:uppercase;border:1px solid var(--border);border-radius:999px;padding:.125rem .5rem;color:var(--muted);margin-left:.5rem;vertical-align:middle}
-.tag.req{color:var(--text)}
 
 /* Boutons (modèle shadcn) */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;white-space:nowrap;border-radius:var(--radius);font-size:.875rem;font-weight:500;height:2.25rem;padding:.5rem 1rem;cursor:pointer;border:1px solid transparent;transition:background-color .15s,color .15s,opacity .15s;text-decoration:none}
@@ -86,7 +86,7 @@ button,textarea{font:inherit;color:inherit}
 .prop{border:1px solid var(--border);border-radius:10px;padding:1rem;background:var(--surface);display:flex;flex-direction:column;min-width:0}
 .prop.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 .prop .lab{font-size:.875rem;font-weight:600;margin:0 0 .75rem}
-.shot{display:block;border:1px solid var(--border);border-radius:.5rem;overflow:hidden;margin-bottom:.75rem;background:color-mix(in srgb,var(--surface-2) 30%,transparent)}
+.shot{display:block;width:100%;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer;border:1px solid var(--border);border-radius:.5rem;overflow:hidden;margin-bottom:.75rem;background:color-mix(in srgb,var(--surface-2) 30%,transparent)}
 .shot img{display:block;width:100%;height:auto}
 .prop .acts{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:auto}
 .btn.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
@@ -223,8 +223,6 @@ button.mk:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .row .name{flex:1 1 11rem}
 .ph-row .seg{flex-shrink:0}
 .ph-row .cmt,.row .cmt{flex-basis:100%;margin-top:.25rem}
-.rc .tx ul{list-style:none;margin:.25rem 0 0;padding:0;font-size:.8125rem;color:var(--muted);overflow-wrap:anywhere}
-.rc .tx ul li+li{margin-top:.125rem}
 .pager{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
 .pager .n{font-size:.875rem;font-weight:600}
 .pager .dots{display:flex;gap:.375rem;flex:1;min-width:6rem}
@@ -232,16 +230,6 @@ button.mk:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .pager .dots i.on{background:var(--accent)}
 
 /* Récapitulatif */
-.recap{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.5rem}
-.rc{display:flex;align-items:center;gap:.75rem;border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;flex-wrap:wrap;background:var(--surface)}
-.rc .ic{width:1.5rem;height:1.5rem;border-radius:999px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.rc .ic svg{width:12px;height:12px}
-.rc.ok .ic{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
-.rc.miss{border-color:var(--danger)}
-.rc.miss .ic{background:var(--danger);color:var(--on-danger);border-color:var(--danger)}
-.rc .tx{flex:1;min-width:12rem}
-.rc .tx b{display:block;font-size:.875rem;font-weight:600}
-.rc .tx span{font-size:.8125rem;color:var(--muted);overflow-wrap:anywhere}
 .alert{border:1px solid var(--danger);border-radius:10px;padding:1rem;margin:1.25rem 0 0;font-size:.875rem}
 .alert b{display:block;margin-bottom:.25rem}
 .alert ul{margin:.25rem 0 0;padding-left:1.25rem}
@@ -273,6 +261,9 @@ button.mk:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .fopt:hover,.fopt:focus-visible{background:var(--surface-2)}
 .fopt:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
 .fopt[aria-selected="true"]{font-weight:700}
+.palbtn,.palopt{display:flex;align-items:center;gap:.5rem}
+.palbtn>span:last-child,.palopt>span:last-child{min-width:0}
+.pal-list{max-height:min(22rem,60vh);overflow-y:auto}
 .pg-keep{margin-top:1.5rem}
 .pg-zone.off{opacity:.7;filter:grayscale(1);cursor:not-allowed}
 .pg-zone.off *{pointer-events:none}
@@ -315,9 +306,6 @@ button.mk:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .stack{display:flex;flex-direction:column;gap:.5rem}
 .stack .item,.stack .ph-row{margin:0}
 .grp{margin:0 0 .75rem}
-.allrow{margin-top:.5rem}
-.all{display:inline-flex;align-items:center;gap:.5rem;font-size:.8125rem;cursor:pointer;min-height:2rem}
-.all input{width:1.125rem;height:1.125rem;margin:0;accent-color:var(--accent);flex-shrink:0}
 .filerow{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;flex-basis:100%}
 .filebtn{position:relative}
 .filebtn:focus-within{outline:3px solid var(--ink);outline-offset:3px}
@@ -335,12 +323,12 @@ header.top .wrap{display:flex;align-items:center;gap:12px;padding:18px 16px;flex
 .brand-home{border:0;background:none;padding:0;margin:0;cursor:pointer;flex:none;display:block;border-radius:8px;line-height:0}
 .brand-home:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .brand-mark{width:44px;height:44px;flex:none;display:block}
-.brand{flex:1;min-width:0}
+.brand{flex:0 1 auto;min-width:0}
 .brand-link{border:0;background:none;padding:0;margin:0;font:inherit;color:inherit;text-align:left;cursor:pointer;display:block;border-radius:8px}
 .brand-link:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .brand-name{display:block;font-weight:700;font-size:20px;line-height:normal;color:var(--ink)}
 .brand-sub{display:block;font-size:14px;color:var(--muted);line-height:1.3}
-.versions{flex:none;display:flex;align-items:center;gap:8px;list-style:none;margin:0;padding:0}
+.versions{flex:none;display:flex;align-items:center;gap:8px;list-style:none;margin:0 0 0 auto;padding:0}
 .ver-btn{min-width:44px;height:44px;padding:8px 16px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-weight:600;font-size:13px;display:inline-flex;align-items:center;justify-content:center}
 .ver-btn[aria-current="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
 .ver-btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
@@ -382,6 +370,7 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
 .credit .credit-li svg{width:18px;height:18px}
 .on-home .round{display:none}
 .compact .round{display:none}
+.on-step1 .round{display:none}
 #main-wrap.step2-wrap{padding-bottom:.5rem}
 #main-wrap.step2-wrap + .credit{margin-top:.5rem}
 #main-wrap.compact-wrap{padding-top:1rem}
@@ -439,15 +428,16 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
   var TOTAL = STEPS.length;
 
   var KEY = 'retour-guide-v0-mockup-' + C.slug;
-  function freshState() { return { screen: 'home', choice: null, pg: 0, si: 0, sec: {}, pho: {}, phoc: {}, phof: {}, el: {}, all: {}, rate: {}, extra: {}, ed: {}, pal: {}, mot: '', sent: false, focus: '' }; }
+  function freshState() { return { screen: 'home', choice: null, pg: 0, si: 0, sec: {}, pho: {}, phoc: {}, phof: {}, el: {}, rate: {}, extra: {}, ed: {}, pal: {}, mot: '', sent: false, focus: '' }; }
   var S = freshState();
   try { var saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved && typeof saved === 'object') { for (var k in saved) S[k] = saved[k]; } } catch (e) {}
   /* Ancienne sauvegarde (8 étapes) : les anciennes étapes 3 à 7 sont désormais dans l'étape 2, l'ancienne étape 8 devient l'étape 3. */
   if (typeof S.screen === 'number') { if (S.screen >= 8) S.screen = 3; else if (S.screen > 3) S.screen = 2; else if (S.screen < 1) S.screen = 'home'; }
-  else if (S.screen !== 'home' && S.screen !== 'recap') S.screen = 'home';
+  else if (S.screen === 'recap') S.screen = 3; else if (S.screen !== 'home') S.screen = 'home';
   /* Ancienne sauvegarde (choix « aucune des deux » ou « un mélange », supprimés le 26/11) : retombe sur « non choisi ». */
   if (S.choice !== 'p1' && S.choice !== 'p2') S.choice = null;
-  ['sec', 'pho', 'phoc', 'phof', 'el', 'all', 'rate', 'extra', 'ed', 'pal', 'site', 'colors', 'font', 'fontName', 'pageOff'].forEach(function (f) { if (!S[f] || typeof S[f] !== 'object' || Array.isArray(S[f])) S[f] = {}; });
+  ['sec', 'pho', 'phoc', 'phof', 'el', 'rate', 'extra', 'ed', 'pal', 'site', 'colors', 'font', 'fontName', 'pageOff'].forEach(function (f) { if (!S[f] || typeof S[f] !== 'object' || Array.isArray(S[f])) S[f] = {}; });
+  delete S.all; /* ancienne sauvegarde : « Pareil partout » supprimé */
   if (typeof S.mot !== 'string') S.mot = '';
   if (typeof S.pages !== 'string') S.pages = '';
   /* Ancienne sauvegarde (palettes notées une à une) : reprend la palette notée « J'aime », sinon la première notée, sinon non choisie. */
@@ -456,7 +446,10 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
   /* Sélection de l'Accueil : UNE variable (null | 'menu' | index de section | 'pied'). S.si ne sert qu'à la navigation. */
   /* Ancienne sauvegarde (sans page Général) : les index de pages sont décalés d'un cran. */
   if (!S.gen) { if (S.choice) S.pg = (Number(S.pg) || 0) + 1; S.gen = 1; }
-  if (typeof S.maxPage !== 'number') S.maxPage = (S.screen === 3 || S.screen === 'recap') && S.choice && PROPS[S.choice] ? PROPS[S.choice].pages.length : S.pg;
+  if (typeof S.maxPage !== 'number') S.maxPage = S.screen === 3 && S.choice && PROPS[S.choice] ? PROPS[S.choice].pages.length : S.pg;
+  /* Étape la plus avancée atteinte (1, 2 ou 3), pour « Reprendre ». Ancienne sauvegarde : déduite de l'écran, de la page la plus avancée et du choix. */
+  if (typeof S.maxScreen !== 'number') S.maxScreen = typeof S.screen === 'number' ? S.screen : (S.choice ? 1 : 0);
+  if (S.choice && PROPS[S.choice]) { if (S.maxPage >= PROPS[S.choice].pages.length) S.maxScreen = Math.max(S.maxScreen, 3); else if (S.maxPage > 0 || S.pg > 0) S.maxScreen = Math.max(S.maxScreen, 2); }
   if (S.sel === undefined) S.sel = S.si;
   if (S.sel !== null && S.sel !== 'menu' && S.sel !== 'pied') S.sel = Number(S.sel) || 0;
   delete S.base; delete S.why; delete S.mixStruct; delete S.mixStyle; delete S.view; delete S.viewTouched;
@@ -465,7 +458,7 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
 
   /* ===== Thème : theme-charte.js (clé partagée « charte-theme ») ===== */
   document.getElementById('round-v').textContent = C.round.v;
-  document.getElementById('round-d').textContent = C.round.date;
+  document.getElementById('round-d').textContent = 'du ' + C.round.date;
   document.getElementById('nom').textContent = C.projet.replace(/^Cours de guitare de /, '');
   document.getElementById('sous').textContent = C.sousTitre || '';
   document.title = 'Page de retour guidée V0 · ' + C.projet;
@@ -502,57 +495,26 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
   function rate(prop, step, item) { return S.rate[prop + ':' + step + ':' + item] || { v: '', c: '' }; }
   function rateRatedCount(step) { var n = 0; for (var k in S.rate) { if (k.split(':')[1] === step && S.rate[k].v) n++; } return n; }
   function rateChangeCount(step) { var n = 0; for (var k in S.rate) { if (k.split(':')[1] === step && S.rate[k].v === 'change') n++; } return n; }
-  function secStats() {
-    var removed = 0, moved = 0, mods = [];
-    for (var k in S.sec) {
-      var kp = k.split('|'), pgObj = PROPS[kp[0]] && PROPS[kp[0]].pages.filter(function (p) { return p.id === kp[1]; })[0];
-      S.sec[k].forEach(function (r, idx) {
-        if (r.keep === false) removed++;
-        if (r.i !== idx) moved++;
-        if (r.keep !== false && r.mod) mods.push({ page: pgObj ? pgObj.name : kp[1], name: pgObj ? pgObj.sections[r.i] : '', c: (r.c || '').trim() });
-      });
-    }
-    return { removed: removed, moved: moved, mods: mods };
-  }
-
-  /* Éléments d'une section. Types présents : relevés dans le DOM des propositions (data : page.types). Mise en page = r.mod / r.c de la section. Garder par défaut.
-     « Pareil partout » (titres, boutons) : S.all[type] = { on, st, c, at } ; cochée, le choix vaut pour toutes les occurrences et n'est plus redemandé. */
+  /* Éléments d'une section. Types présents : relevés dans le DOM des propositions (data : page.types). Mise en page = r.mod / r.c de la section. Garder par défaut. */
   var EL_DEF = [['titres', 'Les titres', 't', 'les titres'], ['textes', 'Les textes', 'x', 'les textes'], ['mise', 'La mise en page', '', 'la mise en page'], ['boutons', 'Les boutons', 'b', 'les boutons'], ['deroul', 'Les menus déroulants', 'd', 'les menus déroulants']];
-  var GLOBAL = { titres: 1, boutons: 1 };
+  /* Contenu de la section (tarifs, dates, conditions, coordonnées) : un élément de plus dans la liste, même fonctionnement que les autres (Garder / Modifier + commentaire). */
+  var CONTENT_LABEL = { tarifs: 'Les tarifs', dates: 'Les dates', conditions: 'Les conditions', coord: 'Les coordonnées' };
+  function contentDef(page, si) { var ck = page.contents && page.contents[si]; return ck ? ['contenu', CONTENT_LABEL[ck], '', CONTENT_LABEL[ck].toLowerCase()] : null; }
+  function elDefs(page, si) { var types = page.types[si] || '', d = EL_DEF.filter(function (x) { return x[2] === '' || types.indexOf(x[2]) >= 0; }), c = contentDef(page, si); return c ? d.concat([c]) : d; }
   function elLabel(type) { for (var i = 0; i < EL_DEF.length; i++) if (EL_DEF[i][0] === type) return EL_DEF[i][1]; return type; }
   function elKey(prop, page, si, type) { return prop + '|' + page.id + '|' + si + '|' + type; }
   function elGet(prop, page, si, type, r) {
     if (type === 'mise') return { st: r.mod ? 'mod' : 'keep', c: r.c || '' };
-    var key = elKey(prop, page, si, type), g = S.all[type];
-    if (GLOBAL[type] && g && g.on) return { st: g.st === 'mod' ? 'mod' : 'keep', c: g.c || '', all: true, here: g.at === key };
+    var key = elKey(prop, page, si, type);
     var x = S.el[key] || {};
     return { st: x.st === 'mod' ? 'mod' : 'keep', c: x.c || '' };
   }
   function elSet(prop, page, si, type, r, patch) {
     if (type === 'mise') { if ('st' in patch) r.mod = patch.st === 'mod'; if ('c' in patch) r.c = patch.c; return; }
-    var key = elKey(prop, page, si, type), g = S.all[type];
-    if (GLOBAL[type] && g && g.on && g.at === key) { for (var f in patch) g[f] = patch[f]; return; }
+    var key = elKey(prop, page, si, type);
     var x = S.el[key] = S.el[key] || { st: 'keep', c: '' };
     for (var f2 in patch) x[f2] = patch[f2];
   }
-  function setAll(type, on) {
-    var prop = refProp(), pg = curPage();
-    if (type === 'couleurs') { S.all.couleurs = { on: on }; return; }
-    var key = elKey(prop, pg, S.si, type);
-    if (on) { var x = S.el[key] || {}; S.all[type] = { on: true, st: x.st === 'mod' ? 'mod' : 'keep', c: x.c || '', at: key }; }
-    else { var g = S.all[type]; if (g && g.at) S.el[g.at] = { st: g.st, c: g.c }; S.all[type] = { on: false }; }
-  }
-  function elStats() {
-    var mods = [], alls = [];
-    for (var k in S.el) {
-      var x = S.el[k]; if (!x || x.st !== 'mod') continue;
-      var kp = k.split('|'), P = PROPS[kp[0]], pgObj = P && P.pages.filter(function (p) { return p.id === kp[1]; })[0];
-      if (pgObj) mods.push({ page: pgObj.name, name: pgObj.sections[Number(kp[2])], type: elLabel(kp[3]), c: (x.c || '').trim() });
-    }
-    Object.keys(GLOBAL).forEach(function (t) { var g = S.all[t]; if (g && g.on) alls.push({ type: elLabel(t), st: g.st === 'mod' ? 'mod' : 'keep', c: (g.c || '').trim() }); });
-    return { mods: mods, alls: alls };
-  }
-  function contentAnswers() { var n = 0; for (var k in S.rate) { var q = k.split(':'); if (q[1] === 'contenus' && q[2] !== 'pied' && S.rate[k].v) n++; } return n; }
   /* Menu du haut et pied de page : sections fixes de la page Accueil (Garder / Modifier). Ancienne sauvegarde : « Oui » = Garder, « Non » (menu) ou « À corriger / À ajouter » (pied) = Modifier avec le commentaire repris. */
   var SITE_CK = [['corr', 'À corriger', 'cc', 'Quelle information est incorrecte, et quelle est la bonne ?'], ['add', 'À ajouter', 'ca', 'Quelle information veux-tu ajouter ?']];
   function siteGet(prop, key) {
@@ -579,12 +541,20 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
   function colGet(prop) { var c = S.colors[prop] || {}; return { main: c.main || '', sec: c.sec || '', acc: c.acc || '' }; }
   var COL_DEF = [['main', 'Couleur principale', true], ['sec', 'Couleur secondaire', false], ['acc', 'Couleur d\'accent (facultative)', false]];
   var COL_ERR = 'Code non valide. Exemple : #2B4A4A ou #2BA.';
+  /* Page Général : la couleur ET la police sont obligatoires. Retourne les éléments manquants (texte court). */
+  var genErr = false;
+  function genMiss(prop) {
+    var m = [];
+    if (typeof S.pal[prop] !== 'number' && S.pal[prop] !== 'other') m.push('la couleur');
+    else if (S.pal[prop] === 'other' && !hexOk(colGet(prop).main)) m.push('la couleur principale');
+    if (['keep', 'swap', 'other'].indexOf(S.font[prop]) < 0) m.push('la police');
+    return m;
+  }
   function status() {
     var miss = [];
     if (!S.choice) miss.push({ step: 1, txt: 'Choisir une proposition (étape 1)' });
     var pr = refProp() || 'p1';
-    if (S.choice && typeof S.pal[pr] !== 'number' && S.pal[pr] !== 'other') miss.push({ goto: '0,0', txt: 'Choisir une palette de couleurs (étape 2, page Accueil)' });
-    if (S.choice && S.pal[pr] === 'other' && !hexOk(colGet(pr).main)) miss.push({ goto: '0,0', txt: 'Donner au moins la couleur principale, au format #RRGGBB (étape 2, page Accueil)' });
+    if (S.choice) genMiss(pr).forEach(function (t) { miss.push({ goto: '0,0', txt: 'Renseigner ' + t + ' (étape 2, page Général)' }); });
     return miss;
   }
   function pc(val, H) { return (val / H * 100).toFixed(3) + '%'; }
@@ -609,9 +579,9 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
     var pct = Math.round(n / TOTAL * 100);
     return '<div class="progress"><div class="progress-top"><span class="n">Étape ' + n + ' sur ' + TOTAL + '</span><span class="saved">' + ICON.check + 'Enregistré sur cet appareil</span></div><div class="bar" role="progressbar" aria-valuemin="1" aria-valuemax="' + TOTAL + '" aria-valuenow="' + n + '"><i style="width:' + pct + '%"></i></div></div>';
   }
-  function head(step) { return '<h1 class="step-title">' + esc(step.title) + (step.req ? '<span class="tag req">Obligatoire</span>' : '<span class="tag">Facultatif</span>') + '</h1>'; }
+  function head(step) { return '<h1 class="step-title">' + esc(step.title) + '</h1>'; }
   function navRow(n, nextLabel) {
-    return '<div class="nav-row"><button class="btn btn-outline" data-go="' + (n === 1 ? 'home' : n - 1) + '">Précédent</button><span class="spacer"></span><button class="btn btn-primary" data-go="' + (n === TOTAL ? 'recap' : n + 1) + '">' + (nextLabel || 'Suivant') + '</button></div>';
+    return '<div class="nav-row"><button class="btn btn-outline" data-go="' + (n === 1 ? 'home' : n - 1) + '">Précédent</button><span class="spacer"></span><button class="btn btn-primary" data-go="' + (n + 1) + '">' + (nextLabel || 'Suivant') + '</button></div>';
   }
   /* Groupe de boutons exclusifs : opts = [[valeur, libellé, classe active]]. */
   function segBtns(attr, key, st, opts, aria) {
@@ -682,14 +652,10 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
 
   /* Carte d'un élément de la section : Garder (défaut) / Modifier, un seul champ de commentaire. */
   function elCard(prop, page, si, def, r) {
-    var type = def[0], e = elGet(prop, page, si, type, r), glob = !!GLOBAL[type];
-    if (e.all && !e.here) {
-      return '<div class="item"><div class="item-head"><div class="item-name"><span>' + def[1] + '</span></div><span class="small muted">Pareil partout : ' + (e.st === 'mod' ? 'Modifier' : 'Garder') + '</span><button type="button" class="btn btn-outline btn-sm" data-alloff="' + type + '">Ne plus appliquer partout</button></div></div>';
-    }
-    var all = glob ? '<label class="all"><input type="checkbox" data-all="' + type + '"' + (e.all ? ' checked' : '') + '>Pareil partout sur le site</label>' : '';
+    var type = def[0], e = elGet(prop, page, si, type, r);
     var what = def[3];
     var c = e.st === 'mod' ? '<div class="cmt"><label class="sr" for="elc-' + type + '">Ce que ' + v('tu veux', 'vous voulez') + ' modifier : ' + esc(what) + '</label><textarea id="elc-' + type + '" data-elc="' + type + '" rows="3" placeholder="' + esc(v('Dis-moi précisément de quelle manière tu souhaites modifier ' + what + ' : ...', 'Dites-moi précisément de quelle manière vous souhaitez modifier ' + what + ' : ...')) + '">' + esc(e.c) + '</textarea></div>' : '';
-    return '<div class="item"><div class="item-head"><div class="item-name"><span>' + def[1] + '</span></div>' + segBtns('el', type, e.st, OPT_KM, def[1] + ' : garder ou modifier') + '</div>' + (all ? '<div class="allrow">' + all + '</div>' : '') + c + '</div>';
+    return '<div class="item"><div class="item-head"><div class="item-name"><span>' + def[1] + '</span></div>' + segBtns('el', type, e.st, OPT_KM, def[1] + ' : garder ou modifier') + '</div>' + c + '</div>';
   }
   function photoCard(prop, page, i) {
     var ph = page.photos[i], st = phoState(prop, page, i), k = prop + '|' + page.id + '|' + i;
@@ -701,12 +667,13 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
       '<button type="button" class="info lookbtn" data-look="p' + i + '"><b>' + esc(ph.t) + '</b><span>' + esc(where(ph, page)) + '</span></button>' +
       segBtns('pho', k, st, OPT_PHO, 'Photo ' + (i + 1) + ' : garder, modifier ou supprimer') + mod + '</div>';
   }
-  /* Blocs qui valent pour tout le site : couleurs (accueil, liste déroulante seule), contenus (tarifs, coordonnées). */
+  function palInner(cp, P) { var nm = typeof cp === 'number' ? P.palettes[cp][0] : (cp === 'other' ? 'Autre (je donne mes couleurs)' : v('Choisis une couleur', 'Choisissez une couleur')); return (typeof cp === 'number' ? '<span class="pal-chip" aria-hidden="true"><i style="background:' + P.palettes[cp][1] + '"></i><i style="background:' + P.palettes[cp][2] + '"></i></span>' : '') + '<span>' + esc(nm) + '</span>'; }
+  /* Blocs qui valent pour tout le site : couleurs (accueil, liste déroulante seule). */
   function siteBlocks(prop, page, si) {
     var P = PROPS[prop], out = '';
     var home = isPalPage(page);
     if (home && si === 0) {
-      var cp = S.pal[prop], pal = '<div class="pal-row"><label class="sr" for="pal-sel">' + v('Quelle couleur as-tu choisie ?', 'Quelle couleur avez-vous choisie ?') + '</label><span class="pal-q" aria-hidden="true">' + v('Quelle couleur as-tu choisie ?', 'Quelle couleur avez-vous choisie ?') + '</span><select id="pal-sel" class="pal-sel" data-pal="1"><option value="">' + v('Choisis une couleur', 'Choisissez une couleur') + '</option>' + P.palettes.map(function (pa, i) { return [pa[0], i]; }).sort(function (x, y) { return x[0].localeCompare(y[0], 'fr'); }).map(function (o) { return '<option value="' + o[1] + '"' + (cp === o[1] ? ' selected' : '') + '>' + esc(o[0]) + '</option>'; }).join('') + '<option value="other"' + (cp === 'other' ? ' selected' : '') + '>Autre (je donne mes couleurs)</option></select>' + (typeof cp === 'number' ? '<span class="pal-chip" aria-hidden="true"><i style="background:' + P.palettes[cp][1] + '"></i><i style="background:' + P.palettes[cp][2] + '"></i></span>' : '') + '</div>';
+      var cp = S.pal[prop], pal = '<div class="pal-row"><label class="sr" for="pal-btn">' + v('Quelle couleur as-tu choisie ?', 'Quelle couleur avez-vous choisie ?') + '</label><span class="pal-q" aria-hidden="true">' + v('Quelle couleur as-tu choisie ?', 'Quelle couleur avez-vous choisie ?') + '</span><div class="fsel"><button type="button" id="pal-btn" class="pal-sel fbtn palbtn" aria-haspopup="listbox" aria-expanded="false" aria-controls="pal-list" data-palbtn="1">' + palInner(cp, P) + '</button><div id="pal-list" class="flist pal-list" role="listbox" aria-label="' + esc(v('Quelle couleur as-tu choisie ?', 'Quelle couleur avez-vous choisie ?')) + '" hidden>' + [['', v('Choisis une couleur', 'Choisissez une couleur'), null]].concat(P.palettes.map(function (pa, i) { return [String(i), pa[0], pa]; }).sort(function (x, y) { return x[1].localeCompare(y[1], 'fr'); }), [['other', 'Autre (je donne mes couleurs)', null]]).map(function (o) { var sel = o[0] === '' ? (typeof cp !== 'number' && cp !== 'other') : (o[0] === 'other' ? cp === 'other' : cp === Number(o[0])); return '<button type="button" role="option" class="fopt palopt" data-palopt="' + o[0] + '" aria-selected="' + sel + '" tabindex="-1">' + (o[2] ? '<span class="pal-chip" aria-hidden="true"><i style="background:' + o[2][1] + '"></i><i style="background:' + o[2][2] + '"></i></span>' : '') + '<span>' + esc(o[1]) + '</span></button>'; }).join('') + '</div></div></div>';
       var oth = '';
       if (cp === 'other') {
         var cg = colGet(prop);
@@ -716,14 +683,10 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
         }).join('') + '</div>';
       }
       var fo = S.font[prop] || '', other = prop === 'p1' ? 'p2' : 'p1', fq = v('Quelle police préfères-tu ?', 'Quelle police préférez-vous ?');
-      var fopts = [['', 'Garder la police actuelle : ' + P.police], ['swap', 'Utiliser la police de l\'autre proposition : ' + PROPS[other].police], ['other', 'Autre']], fcur = fopts.filter(function (o) { return o[0] === fo; })[0] || fopts[0];
-      var fnt = '<div class="pal-row font-row"><label class="sr" for="font-btn">' + fq + '</label><span class="pal-q" aria-hidden="true">' + fq + '</span><div class="fsel"><button type="button" id="font-btn" class="pal-sel fbtn" aria-haspopup="listbox" aria-expanded="false" aria-controls="font-list" data-fontbtn="1">' + esc(fcur[1]) + '</button><div id="font-list" class="flist" role="listbox" aria-label="' + esc(fq) + '" hidden>' + fopts.map(function (o) { return '<button type="button" role="option" class="fopt" data-fontopt="' + o[0] + '" aria-selected="' + (o[0] === fcur[0]) + '" tabindex="-1">' + esc(o[1]) + '</button>'; }).join('') + '</div></div></div>';
+      var fopts = [['keep', 'Garder la police actuelle : ' + P.police], ['swap', 'Utiliser la police de l\'autre proposition : ' + PROPS[other].police], ['other', 'Autre']], fcur = fopts.filter(function (o) { return o[0] === fo; })[0] || null;
+      var fnt = '<div class="pal-row font-row"><label class="sr" for="font-btn">' + fq + '</label><span class="pal-q" aria-hidden="true">' + fq + '</span><div class="fsel"><button type="button" id="font-btn" class="pal-sel fbtn" aria-haspopup="listbox" aria-expanded="false" aria-controls="font-list" data-fontbtn="1">' + esc(fcur ? fcur[1] : v('Choisis une police', 'Choisissez une police')) + '</button><div id="font-list" class="flist" role="listbox" aria-label="' + esc(fq) + '" hidden>' + fopts.map(function (o) { return '<button type="button" role="option" class="fopt" data-fontopt="' + o[0] + '" aria-selected="' + (!!fcur && o[0] === fcur[0]) + '" tabindex="-1">' + esc(o[1]) + '</button>'; }).join('') + '</div></div></div>';
       if (fo === 'other') fnt += '<div class="col-box"><div class="col-row"><label for="font-name">' + v('Nom de la police, si tu le connais', 'Nom de la police, si vous le connaissez') + '</label><input id="font-name" class="col-txt" type="text" autocomplete="off" maxlength="80" data-fontn="1" value="' + esc(S.fontName[prop] || '') + '"><p class="xs muted font-hint">' + v('Ou décris ce que tu cherches (plus rond, plus classique…)', 'Ou décrivez ce que vous cherchez (plus rond, plus classique…)') + '</p></div></div>';
       out += pal + oth + fnt;
-    }
-    var ck = page.contents && page.contents[si];
-    if (ck) {
-      out += '<h2 class="sub">Les contenus</h2><div class="stack">' + itemBlock(prop, 'contenus', page.id + '-' + si, ck === 'coord' ? 'Les coordonnées (téléphone, mail, adresse)' : 'Les tarifs, les dates et les conditions de cette section', null, 'content') + '</div>';
     }
     return out;
   }
@@ -734,17 +697,15 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
     return '<div class="pills" role="group" aria-label="Pages (progression)">' + P.pages.map(function (pp, i) {
       var off = !!S.pageOff[prop + '|' + pp.id];
       if (i === pg) return '<span class="pill on" aria-current="step">' + esc(pp.name) + '</span>';
-      if (i < mx) {
+      if (i <= mx) {
         var mark = off ? ICON.x : ICON.check, st = off ? '(page à supprimer)' : '(terminée)', cls = off ? 'gone' : 'done';
-        if (i < pg) return '<button type="button" class="pill ' + cls + '" data-goto="' + i + ',0">' + mark + esc(pp.name) + '<span class="sr"> ' + st + '</span></button>';
-        return '<span class="pill ' + cls + '" aria-disabled="true">' + mark + esc(pp.name) + '<span class="sr"> ' + st + '</span></span>';
+        return '<button type="button" class="pill ' + cls + '" data-goto="' + i + ',0">' + mark + esc(pp.name) + '<span class="sr"> ' + st + '</span></button>';
       }
       return '<span class="pill todo" aria-disabled="true">' + esc(pp.name) + '<span class="sr"> (à venir)</span></span>';
     }).join('') + '</div>';
   }
   /* Page Accueil : une page = un écran (test du 26/11). Trois niveaux : section, éléments, détail. */
   function homeView(prop, cur) {
-    ['titres', 'boutons'].forEach(function (t) { if (S.all[t] && S.all[t].on) setAll(t, false); });
     var P = PROPS[prop], n = P.pages.length, pg = S.pg, N = cur.sections.length, list = secList(prop, cur), gen = !!cur.general;
     var acc = P.pages.filter(function (p) { return p.id === 'accueil'; })[0];
     if (gen && typeof S.sel === 'number') S.sel = 'menu';
@@ -752,7 +713,7 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
     var visual = gen ? genCapture(prop, acc) : (cur.capture ? captureView(prop, cur, list, true, 0, true) : planView(prop, cur, list, true, 0, true));
     var rows = list.map(function (r, idx) {
       var i = r.i, k = prop + '|' + cur.id + '|' + i, types = cur.types[i] || '', removed = r.keep === false;
-      var defs = EL_DEF.filter(function (d) { return d[2] === '' || types.indexOf(d[2]) >= 0; });
+      var defs = elDefs(cur, i);
       var phIdx = []; cur.photos.forEach(function (ph, pi) { if (ph.s === i + 1 || ph.after === i + 1) phIdx.push(pi); });
       var anyMod = defs.some(function (d) { return elGet(prop, cur, i, d[0], r).st === 'mod'; }) || phIdx.some(function (pi) { return phoState(prop, cur, pi) !== 'keep'; });
       var mode = removed ? 'remove' : ((S.ed[k] || anyMod) ? 'mod' : 'keep');
@@ -773,11 +734,10 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
         }).join('');
         sub = '<div class="hs-sub">' + items + phs + '</div>';
       }
-      var ckn = cur.contents && cur.contents[i], ctn = ckn && !removed ? '<div class="hs-sub">' + itemBlock(prop, 'contenus', cur.id + '-' + i, ckn === 'coord' ? 'Les coordonnées (téléphone, mail, adresse)' : 'Les tarifs, les dates et les conditions de cette section', null, 'content') + '</div>' : '';
       var arrows = '<div class="arrows"><button class="arrow" data-move="' + idx + '" data-dir="-1" aria-label="Monter la section" ' + (idx === 0 ? 'disabled' : '') + '>' + ICON.up + '</button><button class="arrow" data-move="' + idx + '" data-dir="1" aria-label="Descendre la section" ' + (idx === list.length - 1 ? 'disabled' : '') + '>' + ICON.down + '</button></div>';
       var isSel = S.sel === i;
       return '<div class="hs' + (isSel ? ' sel' : '') + (removed ? ' off' : '') + '"' + (isSel ? ' aria-current="true"' : '') + ' data-selsec="' + i + '"><div class="hs-head">' + mk(i + 1) + '<span class="hs-name" role="button" tabindex="0">' + esc(cur.sections[i]) + '</span>' +
-        segBtns('hm', i, mode, OPT_PHO, 'Section ' + (i + 1) + ' : garder, modifier ou supprimer') + arrows + '</div>' + sub + ctn + '</div>';
+        segBtns('hm', i, mode, OPT_PHO, 'Section ' + (i + 1) + ' : garder, modifier ou supprimer') + arrows + '</div>' + sub + '</div>';
     }).join('');
     function siteRow(key, name) {
       var e = siteGet(prop, key), sub2 = '';
@@ -788,33 +748,34 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
       return '<div class="hs' + (S.sel === key ? ' sel' : '') + '"' + (S.sel === key ? ' aria-current="true"' : '') + ' data-selsite="' + key + '"><div class="hs-head">' + mk(key === 'menu' ? 1 : 2) + '<span class="hs-name" role="button" tabindex="0">' + name + '</span>' + segBtns('hsite', key, e.st, OPT_KM, name + ' : garder ou modifier') + '</div>' + sub2 + '</div>';
     }
     var commons = siteBlocks(prop, cur, 0);
+    var gm = gen && genErr ? genMiss(prop) : [], genAlert = gm.length ? '<p class="alert" id="gen-alert" role="alert" style="margin:1rem 0 0">Il manque ' + gm.join(' et ') + ' pour continuer.</p>' : '';
     var pgOff = !gen && !!S.pageOff[prop + '|' + cur.id], dis = pgOff ? ' aria-disabled="true" inert' : '';
     var keepQ = '<div class="item pg-keep"><div class="item-head"><div class="item-name"><span>' + v('Veux-tu garder cette page ?', 'Voulez-vous garder cette page ?') + '</span></div>' + segBtns('keeppg', prop + '|' + cur.id, pgOff ? 'no' : 'yes', [['yes', 'Oui', 'on-keep'], ['no', 'Non', 'on-remove']], v('Veux-tu garder cette page ?', 'Voulez-vous garder cette page ?')) + '</div></div>';
-    var extra = '<div class="addmore"><label class="sub" for="sec-more" style="display:block;margin-top:0">Autre chose sur cette page ?</label><textarea id="sec-more" data-extra="' + esc(prop + '|' + cur.id) + '" placeholder="' + esc(v('Dis-moi ce qui manque ou ce que tu veux ajouter', 'Dites-moi ce qui manque ou ce que vous voulez ajouter')) + '">' + esc(S.extra[prop + '|' + cur.id] || '') + '</textarea></div>';
+    var extra = '<div class="addmore"><label class="sub" for="sec-more" style="display:block;margin-top:0">Autres remarques concernant cette page</label><textarea id="sec-more" data-extra="' + esc(prop + '|' + cur.id) + '" placeholder="' + esc(v('Dis-moi ce qui manque ou ce que tu veux ajouter', 'Dites-moi ce qui manque ou ce que vous voulez ajouter')) + '">' + esc(S.extra[prop + '|' + cur.id] || '') + '</textarea></div>';
     var pgTabs = pgTabsHtml(prop, pg);
 
 
-    var next = pg < n - 1 ? '<button class="btn btn-primary" data-goto="' + (pg + 1) + ',0">Suivant : ' + esc(P.pages[pg + 1].name) + '</button>' : '<button class="btn btn-primary" data-go="3">Suivant</button>';
+    var next = pg < n - 1 ? '<button class="btn btn-primary" ' + (gen ? 'data-nextgen="1"' : 'data-goto="' + (pg + 1) + ',0"') + '>Suivant</button>' : '<button class="btn btn-primary" data-go="3">Suivant</button>';
     return (pg === 0 ? progress(2) + head(STEPS[1]) + '<p class="step-intro">' + PAGE_INTRO + '</p>' : '') + pgTabs +
       '<div class="split"><div class="stick"><div class="frame" id="frame" tabindex="0" aria-label="' + (cur.capture ? 'Capture' : 'Plan') + ' de la page ' + esc(cur.name) + '">' + visual + '</div></div>' +
-      '<div class="panel">' + commons + (gen ? '' : keepQ) + '<div class="pg-zone' + (pgOff ? ' off' : '') + '"' + dis + '><h2 class="sub">Les sections de la page</h2><div class="stack">' + (gen ? siteRow('menu', 'Menu du haut') + siteRow('pied', 'Pied de page') : rows) + '</div>' + extra + '</div></div></div>' +
-      '<div class="nav-row nav-sticky">' + (pg > 0 ? '<button class="btn btn-outline" data-goto="' + (pg - 1) + ',0">Précédent : ' + esc(P.pages[pg - 1].name) + '</button>' : '<button class="btn btn-outline" data-go="1">Précédent</button>') + '<div class="pager"><span class="n">' + esc(cur.name) + '</span></div>' + next + '</div>';
+      '<div class="panel">' + commons + genAlert + (gen ? '' : keepQ) + '<div class="pg-zone' + (pgOff ? ' off' : '') + '"' + dis + '><h2 class="sub">Les sections de la page</h2><div class="stack">' + (gen ? siteRow('menu', 'Menu du haut') + siteRow('pied', 'Pied de page') : rows) + '</div>' + extra + '</div></div></div>' +
+      '<div class="nav-row nav-sticky">' + (pg > 0 ? '<button class="btn btn-outline" data-goto="' + (pg - 1) + ',0">Précédent</button>' : '<button class="btn btn-outline" data-go="1">Précédent</button>') + '<span class="spacer"></span>' + next + '</div>';
   }
 
   var screens = {
     home: function () {
       return '<h1 class="home-h1">Bonjour ' + esc(C.prenom) + '</h1>' +
-        '<div class="carte carte-accueil"><p>' + esc(v('Je t\'ai fait deux propositions pour ton site.\nL\'objectif maintenant est que tu me dises ce qui te plaît et ce que tu veux changer.', 'Je vous ai fait deux propositions pour votre site.\nL\'objectif maintenant est que vous me disiez ce qui vous plaît et ce que vous voulez changer.')) + '</p><span class="version"><b>V0</b><span>' + esc(C.round.date) + '</span></span></div>' +
+        '<div class="carte carte-accueil"><p>' + esc(v('Je t\'ai fait deux propositions pour ton site.\nL\'objectif maintenant est que tu me dises ce qui te plaît et ce que tu veux changer. Je t\'invite à faire ce travail sur un ordinateur et non pas sur téléphone.', 'Je vous ai fait deux propositions pour votre site.\nL\'objectif maintenant est que vous me disiez ce qui vous plaît et ce que vous voulez changer. Je vous invite à faire ce travail sur un ordinateur et non pas sur téléphone.')) + '</p><span class="version"><b>V0</b><span>du ' + esc(C.round.date) + '</span></span></div>' +
         '<ul class="faits"><li class="carte fait"><p class="lib">Durée</p><p class="val">Environ 15 minutes</p></li>' +
         '<li class="carte fait"><p class="lib">Enregistrement</p><p class="val">Automatique</p><p class="txt">' + esc(v('Ton avancement est enregistré automatiquement : tu peux fermer la page et revenir plus tard.', 'Votre avancement est enregistré automatiquement : vous pouvez fermer la page et revenir plus tard.')) + '<br><strong class="alerte">Attention :</strong> il faut revenir depuis le même appareil et le même navigateur.</p></li></ul>' +
-        '<div class="cta"><button class="btn btn-primary" data-go="1">' + (hasProgress() ? 'Reprendre' : 'Commencer') + '</button></div>';
+        '<div class="cta"><button class="btn btn-primary" ' + (hasProgress() ? 'data-resume="1"' : 'data-go="1"') + '>' + (hasProgress() ? 'Reprendre' : 'Commencer') + '</button></div>';
     },
     1: function () {
       var step = STEPS[0];
       function card(id) {
         var p = PROPS[id], sel = S.choice === id;
         return '<div class="prop' + (sel ? ' sel' : '') + '"><p class="lab">' + p.label + '</p>' +
-          '<a class="shot" href="' + p.url + '" target="_blank" rel="noopener" aria-label="Ouvrir ' + p.label + ' dans un nouvel onglet"><img src="' + p.shot + '" alt="Aperçu ' + p.label + '" width="900" height="563"></a>' +
+          '<button type="button" class="shot" data-choice="' + id + '" aria-pressed="' + sel + '" aria-label="Choisir ' + p.label + '"><img src="' + p.shot + '" alt="Aperçu ' + p.label + '" width="900" height="563"></button>' +
           '<div class="acts"><a class="btn btn-outline btn-sm" href="' + p.url + '" target="_blank" rel="noopener">' + ICON.ext + 'Ouvrir dans un nouvel onglet</a>' +
           '<button class="btn btn-sm ' + (sel ? 'btn-primary' : 'btn-outline') + '" data-choice="' + id + '" aria-pressed="' + sel + '">' + (sel ? ICON.check : '') + (sel ? 'Choisie' : 'Je choisis celle-ci') + '</button></div></div>';
       }
@@ -833,51 +794,22 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
       return homeView(prop, cur);
     },
     3: function () {
-      var step = STEPS[2];
+      var step = STEPS[2], miss = status();
       var pq = v('Aurais-tu besoin d\'autres pages pour mettre du contenu ?', 'Auriez-vous besoin d\'autres pages pour mettre du contenu ?'), pph = v('Si oui, décris-moi ce que tu veux y mettre', 'Si oui, décrivez-moi ce que vous voulez y mettre');
-      return progress(3) + head(step) + '<h2 class="sub" style="margin-top:0">' + pq + '</h2><label class="sr" for="more-pages">' + esc(pq) + '</label><textarea id="more-pages" data-pages="1" rows="3" placeholder="' + esc(pph) + '">' + esc(S.pages) + '</textarea>' + '<p class="step-intro" style="margin-top:1.5rem">' + v('Un dernier mot, une idée ou une envie qui n\'est pas venue plus tôt. Tu peux aussi laisser vide.', 'Un dernier mot, une idée ou une envie qui n\'est pas venue plus tôt. Vous pouvez aussi laisser vide.') + '</p>' +
-        '<label class="sr" for="mot">' + esc(step.title) + '</label><textarea id="mot" data-mot="1" rows="6" placeholder="' + esc(v('Écris ici ce que tu veux ajouter', 'Écrivez ici ce que vous voulez ajouter')) + '">' + esc(S.mot) + '</textarea>' +
-        navRow(3, 'Voir le récapitulatif');
-    },
-    recap: function () {
-      var miss = status(), ss = secStats(), es = elStats(), phoMods = phoList('mod'), phoRem = phoList('remove'), pr = refProp() || 'p1';
-      function line(label, title, txt, ok, req, extra, go) {
-        var cls = req && !ok ? 'miss' : (ok ? 'ok' : '');
-        return '<li class="rc ' + cls + '"><span class="ic">' + (req && !ok ? ICON.x : (ok ? ICON.check : '')) + '</span><div class="tx"><b>' + esc(label) + ' · ' + esc(title) + '</b><span>' + esc(txt) + '</span>' + (extra || '') + '</div><button class="btn btn-outline btn-sm" ' + go + '>' + (req && !ok ? 'Répondre' : 'Modifier') + '</button></li>';
-      }
-      var choixTxt = S.choice ? PROPS[S.choice].label : 'Pas encore de réponse';
-      var nMod = ss.mods.length + es.mods.length + es.alls.filter(function (a) { return a.st === 'mod'; }).length;
-      var items = (S.pageOff[pr + '|accueil'] ? '<li>Page Accueil : à supprimer</li>' : '') + ss.mods.map(function (m) { return '<li>Mise en page à modifier, ' + esc(m.page) + ' : ' + esc(m.name) + (m.c ? ' : ' + esc(m.c) : ' (sans commentaire)') + '</li>'; }).join('') +
-        es.mods.map(function (m) { return '<li>' + esc(m.type) + ' à modifier, ' + esc(m.page) + ' : ' + esc(m.name) + (m.c ? ' : ' + esc(m.c) : ' (sans commentaire)') + '</li>'; }).join('') +
-        es.alls.map(function (m) { return '<li>' + esc(m.type) + ', pareil partout : ' + (m.st === 'mod' ? 'à modifier' + (m.c ? ' : ' + esc(m.c) : ' (sans commentaire)') : 'gardé') + '</li>'; }).join('') +
-        phoMods.map(function (m) { return '<li>Photo à modifier, ' + esc(m.page) + ' : ' + esc(m.t) + (m.f ? ' (photo choisie : ' + esc(m.f) + ')' : '') + (m.c ? ' : ' + esc(m.c) : ' (sans commentaire)') + '</li>'; }).join('') +
-        phoRem.map(function (m) { return '<li>Photo supprimée, ' + esc(m.page) + ' : ' + esc(m.t) + '</li>'; }).join('') +
-        ['general', 'Général'].concat(['accueil', 'Accueil']).reduce(function (acc, x, i, arr) { return i % 2 ? acc : acc.concat([[arr[i], arr[i + 1]]]); }, []).map(function (g) { var tx = (S.extra[pr + '|' + g[0]] || '').trim(); return tx ? '<li>Autre chose, page ' + g[1] + ' : ' + esc(tx) + '</li>' : ''; }).join('');
-      var palI = S.pal[refProp()], cgR = colGet(refProp()), palN = typeof palI === 'number' ? 1 : (palI === 'other' && hexOk(cgR.main) ? 1 : 0);
-      var lines = [
-        line('Étape 1', STEPS[0].title, choixTxt, !!S.choice, true, '', 'data-go="1"'),
-        line('Général', 'Les couleurs', palN ? (palI === 'other' ? 'Mes couleurs : ' + COL_DEF.filter(function (d) { return hexOk(cgR[d[0]]); }).map(function (d) { return d[1].replace(' (facultative)', '').toLowerCase() + ' ' + hex6(cgR[d[0]]).toUpperCase(); }).join(', ') : 'Palette choisie : ' + PROPS[refProp()].palettes[palI][0]) : (palI === 'other' ? 'Couleur principale à donner' : 'Pas encore de réponse'), palN > 0, true, palI === 'other' ? '<span class="pal-chip" aria-hidden="true">' + COL_DEF.filter(function (d) { return hexOk(cgR[d[0]]); }).map(function (d) { return '<i style="background:' + hex6(cgR[d[0]]) + '"></i>'; }).join('') + '</span>' : '', 'data-goto="0,0"'),
-        line('Général', 'La police', (function () { var fo = S.font[pr] || '', oth = pr === 'p1' ? 'p2' : 'p1'; if (fo === 'swap') return 'Police de l\'autre proposition : ' + PROPS[oth].police; if (fo === 'other') return 'Autre police' + ((S.fontName[pr] || '').trim() ? ' : ' + S.fontName[pr].trim() : ' (sans précision)'); return 'Police de la proposition : ' + PROPS[pr].police; })(), true, false, '', 'data-goto="0,0"'),
-        line('Général', 'Le menu du haut', siteGet(pr, 'menu').st === 'mod' ? 'À modifier' + (siteGet(pr, 'menu').c.trim() ? ' : ' + siteGet(pr, 'menu').c.trim() : ' (sans commentaire)') : 'Gardé', true, false, '', 'data-goto="0,0"'),
-        line('Général', 'Le pied de page', (function () { var g = siteGet(pr, 'pied'); if (g.st !== 'mod') return 'Gardé (coordonnées correctes)'; return 'À modifier' + (g.c.trim() ? ' : ' + g.c.trim() : ' (sans commentaire)'); })(), true, false, '', 'data-goto="0,0"'),
-        line('Étape 2', 'Les sections, les photos et les éléments', ss.removed + ' section(s) retirée(s), ' + ss.moved + ' déplacée(s), ' + nMod + ' élément(s) à modifier, ' + phoMods.length + ' photo(s) à modifier, ' + phoRem.length + ' photo(s) supprimée(s)', true, false, items ? '<ul>' + items + '</ul>' : '', 'data-go="2"'),
-        line('Étape 2', 'Les contenus', contentAnswers() + ' réponse(s)', true, false, '', 'data-go="2"'),
-        line('Étape 3', 'Autres pages', S.pages.trim() ? S.pages.trim() : 'Pas de besoin indiqué', true, false, '', 'data-go="3"'),
-        line('Étape 3', STEPS[2].title, S.mot.trim() ? 'Rempli' : 'Laissé vide', true, false, '', 'data-go="3"')
-      ].join('');
-      var alert = miss.length ? '<div class="alert" role="alert"><b>Il manque encore ' + miss.length + ' point' + (miss.length > 1 ? 's' : '') + ' pour pouvoir envoyer.</b><ul>' + miss.map(function (m) { return '<li><button ' + (m.goto ? 'data-goto="' + m.goto + '"' : 'data-go="' + m.step + '"') + '>' + esc(m.txt) + '</button></li>'; }).join('') + '</ul></div>' : '';
-      var send = S.sent ? '<p class="thanks" role="status">Merci, c\'est bien reçu.</p>' : (sendErr ? '<p class="alert" role="alert" style="margin:0 1rem 0 0">' + esc(sendErr) + '</p>' : '') + '<button class="btn btn-primary" data-send="1" ' + (miss.length || sending ? 'disabled' : '') + '>' + (sending ? 'Envoi en cours…' : (sendErr ? 'Réessayer' : 'Envoyer mes réponses')) + '</button>';
-      return '<div class="progress"><div class="progress-top"><span class="n">Récapitulatif</span><span class="saved">' + ICON.check + 'Enregistré sur cet appareil</span></div><div class="bar"><i style="width:100%"></i></div></div>' +
-        '<h1 class="step-title">Avant d\'envoyer</h1><p class="step-intro">' + v('Relis tes réponses. Tu peux revenir sur n\'importe quelle étape.', 'Relisez vos réponses. Vous pouvez revenir sur n\'importe quelle étape.') + '</p>' +
-        '<ul class="recap">' + lines + '</ul>' + alert +
-        '<div class="nav-row"><button class="btn btn-outline" data-go="3">Précédent</button><span class="spacer"></span>' + send + '</div>';
+      var mq = v('Un dernier mot, une idée ou une envie qui n\'est pas venue plus tôt. Tu peux aussi laisser vide.', 'Un dernier mot, une idée ou une envie qui n\'est pas venue plus tôt. Vous pouvez aussi laisser vide.');
+      var alert = showMiss && miss.length ? '<div class="alert" id="miss-alert" role="alert"><b>Il manque encore ' + miss.length + ' point' + (miss.length > 1 ? 's' : '') + ' pour pouvoir envoyer.</b><ul>' + miss.map(function (m) { return '<li><button ' + (m.goto ? 'data-goto="' + m.goto + '"' : 'data-go="' + m.step + '"') + '>' + esc(m.txt) + '</button></li>'; }).join('') + '</ul></div>' : '';
+      var send = S.sent ? '<p class="thanks" role="status">Merci, c\'est bien reçu.</p>' : (sendErr ? '<p class="alert" role="alert" style="margin:0 1rem 0 0">' + esc(sendErr) + '</p>' : '') + '<button class="btn btn-primary" data-send="1" ' + (sending ? 'disabled' : '') + '>' + (sending ? 'Envoi en cours…' : (sendErr ? 'Réessayer' : 'Envoyer')) + '</button>';
+      return progress(3) + head(step) + '<h2 class="sub" style="margin-top:0">' + pq + '</h2><label class="sr" for="more-pages">' + esc(pq) + '</label><textarea id="more-pages" data-pages="1" rows="3" placeholder="' + esc(pph) + '">' + esc(S.pages) + '</textarea>' +
+        '<h2 class="sub">' + mq + '</h2>' +
+        '<label class="sr" for="mot">' + esc(mq) + '</label><textarea id="mot" data-mot="1" rows="6" placeholder="' + esc(v('Écris ici ce que tu veux ajouter', 'Écrivez ici ce que vous voulez ajouter')) + '">' + esc(S.mot) + '</textarea>' + alert +
+        '<div class="nav-row"><button class="btn btn-outline" data-go="2">Précédent</button><span class="spacer"></span>' + send + '</div>';
     }
   };
 
   /* ===== Modale de rappel photos (au moment de l'envoi, seulement si au moins une photo est en Modifier) ===== */
   var modal = null, modalOpener = null;
   /* ===== Envoi : Formspree (même formulaire que la page d'échanges), message lisible + données brutes ===== */
-  var sending = false, sendErr = '';
+  var sending = false, sendErr = '', showMiss = false;
   var RATE_TXT = { like: 'correct', change: 'à corriger', none: 'à ajouter' };
   function buildReport() {
     var pr = refProp(), P = PROPS[pr], L = [], ph = phoList('mod'), pr2 = phoList('remove');
@@ -895,10 +827,9 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
       if (S.pageOff[pr + '|' + pg.id]) { L.push('Page à supprimer.'); return; }
       var list = secList(pr, pg);
       list.forEach(function (r, idx) {
-        var i = r.i, lines = [], defs = EL_DEF.filter(function (d) { return d[2] === '' || (pg.types[i] || '').indexOf(d[2]) >= 0; });
+        var i = r.i, lines = [], defs = elDefs(pg, i);
         defs.forEach(function (d) { var e = elGet(pr, pg, i, d[0], r); if (e.st === 'mod') lines.push('  - ' + d[1] + ' à modifier' + (e.c.trim() ? ' : ' + e.c.trim() : ' (sans commentaire)')); });
         pg.photos.forEach(function (pho, pi) { if (pho.s !== i + 1 && pho.after !== i + 1) return; var st = phoState(pr, pg, pi), k = pr + '|' + pg.id + '|' + pi; if (st === 'mod') lines.push('  - Photo « ' + pho.t + ' » à remplacer' + ((S.phoc[k] || '').trim() ? ' : ' + S.phoc[k].trim() : '') + (S.phof[k] ? ' (fichier choisi : ' + S.phof[k] + ')' : '')); if (st === 'remove') lines.push('  - Photo « ' + pho.t + ' » à supprimer'); });
-        var ck = S.rate[pr + ':contenus:' + pg.id + '-' + i]; if (pg.contents[i] && ck && ck.v) lines.push('  - Contenus : ' + RATE_TXT[ck.v] + ((ck.c || '').trim() ? ' : ' + ck.c.trim() : ''));
         var head = (idx + 1) + '. [section ' + (i === idx ? '' : 'd\'origine ') + (i + 1) + '] ' + pg.sections[i] + ' : ' + (r.keep === false ? 'À SUPPRIMER' : (lines.length ? 'à modifier' : 'gardée'));
         L.push(head); lines.forEach(function (x) { L.push(x); });
       });
@@ -909,10 +840,26 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
     if (pr2.length) L.push('Photos supprimées : ' + pr2.map(function (m) { return m.page + ' / ' + m.t; }).join(' ; '));
     return L.join('\n');
   }
+  /* Copie de l'état pour l'envoi : seulement les réponses de la proposition choisie (S et localStorage restent intacts). */
+  function stateForSend() {
+    var p = refProp(), out = {}, k, o, n;
+    for (k in S) out[k] = S[k];
+    ['sec', 'pho', 'phoc', 'phof', 'el', 'rate', 'extra', 'ed', 'site', 'pageOff'].forEach(function (f) {
+      o = {};
+      for (n in S[f]) if (n.indexOf(p + '|') === 0 || n.indexOf(p + ':') === 0) o[n] = S[f][n];
+      out[f] = o;
+    });
+    ['pal', 'font', 'fontName', 'colors'].forEach(function (f) {
+      o = {};
+      if (Object.prototype.hasOwnProperty.call(S[f], p)) o[p] = S[f][p];
+      out[f] = o;
+    });
+    return out;
+  }
   function doSend() {
     if (sending) return;
     sending = true; sendErr = ''; render(true);
-    var body = { projet: C.projet, contact: C.prenom, version: C.round.v, proposition: PROPS[refProp()].label, message: buildReport(), donnees: JSON.stringify(S) };
+    var body = { projet: C.projet, contact: C.prenom, version: C.round.v, proposition: PROPS[refProp()].label, message: buildReport(), donnees: JSON.stringify(stateForSend()) };
     var fail = function () { sending = false; sendErr = v('L\'envoi n\'a pas fonctionné. Tes réponses sont bien enregistrées sur cet appareil : réessaie dans un instant, ou réponds-moi directement par mail ou message.', 'L\'envoi n\'a pas fonctionné. Vos réponses sont bien enregistrées sur cet appareil : réessayez dans un instant, ou répondez-moi directement par mail ou message.'); render(true); };
     fetch('https://formspree.io/f/' + C.formId, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(body) })
       .then(function (res) { if (!res.ok) { fail(); return; } sending = false; sendErr = ''; S.sent = true; save(); render(true); })
@@ -962,8 +909,10 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
   }
   function render(focusTop) {
     var old = document.getElementById('frame'), top = old ? old.scrollTop : 0;
+    if (typeof S.screen === 'number' && S.screen > (S.maxScreen || 0)) { S.maxScreen = S.screen; save(); }
     app.innerHTML = screens[S.screen]();
     document.getElementById('inner').classList.toggle('on-home', S.screen === 'home');
+    document.getElementById('inner').classList.toggle('on-step1', S.screen === 1);
     document.getElementById('inner').classList.toggle('compact', S.screen === 2 && S.pg > 0);
     document.getElementById('main-wrap').classList.toggle('compact-wrap', S.screen === 2 && S.pg > 0);
     document.getElementById('main-wrap').classList.toggle('step2-wrap', S.screen === 2);
@@ -975,10 +924,10 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
     }
     if (focusTop) window.scrollTo(0, 0);
   }
-  function goStep(g) { if (S.screen === 2 && Number(g) === 3 && PROPS[refProp()]) S.maxPage = Math.max(S.maxPage, PROPS[refProp()].pages.length); S.screen = (g === 'home' || g === 'recap') ? g : Number(g); S.focus = ''; save(); render(true); }
+  function goStep(g) { if (S.screen === 2 && Number(g) === 3 && PROPS[refProp()]) S.maxPage = Math.max(S.maxPage, PROPS[refProp()].pages.length); S.screen = (g === 'home') ? g : Number(g); S.focus = ''; save(); render(true); }
   function goSection(pg, si) {
     var P = PROPS[refProp()]; if (!P) return;
-    S.screen = 2; S.pg = Math.max(0, Math.min(pg, P.pages.length - 1)); if (S.pg > S.maxPage) S.maxPage = S.pg;
+    genErr = false; S.screen = 2; S.pg = Math.max(0, Math.min(pg, P.pages.length - 1)); if (S.pg > S.maxPage) S.maxPage = S.pg;
     var N = P.pages[S.pg].sections.length; S.si = si < 0 ? N - 1 : Math.max(0, Math.min(si, N - 1)); S.sel = P.pages[S.pg].general ? 'menu' : S.si; S.focus = ''; save(); render(true);
   }
   function curRow() { var prop = refProp(), pg = curPage(); return { prop: prop, pg: pg, list: secList(prop, pg) }; }
@@ -993,11 +942,17 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
     }
     if (e.target.closest('textarea,input,label')) return;
     if (S.focus && !e.target.closest('.look,.zone,.pz,.pl-block,.pl-strip,.pl-ph,.mk')) { S.focus = ''; render(); }
-    var t = e.target.closest('[data-go],[data-goto],[data-choice],[data-rate],[data-sk],[data-el],[data-alloff],[data-move],[data-pho],[data-look],[data-send],[data-hm],[data-keeppg],[data-selsec],[data-hsite],[data-selsite]');
+    var t = e.target.closest('[data-go],[data-resume],[data-goto],[data-choice],[data-rate],[data-sk],[data-el],[data-move],[data-pho],[data-look],[data-send],[data-nextgen],[data-hm],[data-keeppg],[data-selsec],[data-hsite],[data-selsite]');
     if (!t) return;
+    if (t.hasAttribute('data-resume')) {
+      var rP = PROPS[refProp()], rs = Math.max(1, Math.min(3, Number(S.maxScreen) || 1));
+      if (rs === 2 && rP) goSection(Math.min(Number(S.maxPage) || 0, rP.pages.length - 1), 0); else goStep(rs);
+      return;
+    }
     if (t.hasAttribute('data-go')) { goStep(t.getAttribute('data-go')); return; }
+    if (t.hasAttribute('data-nextgen')) { var gmx = genMiss(refProp()); if (gmx.length) { genErr = true; render(); var ga = document.getElementById('gen-alert'); if (ga) ga.scrollIntoView({ block: 'center' }); } else { genErr = false; goSection(S.pg + 1, 0); } return; }
     if (t.hasAttribute('data-goto')) { var gp = t.getAttribute('data-goto').split(','); goSection(Number(gp[0]), Number(gp[1])); return; }
-    if (t.hasAttribute('data-choice')) { S.choice = t.getAttribute('data-choice'); S.pg = 0; S.si = 0; S.sel = 'menu'; S.maxPage = 0; save(); render(); return; }
+    if (t.hasAttribute('data-choice')) { S.choice = t.getAttribute('data-choice'); S.pg = 0; S.si = 0; S.sel = 'menu'; S.maxPage = 0; S.maxScreen = 1; save(); render(); return; }
     if (t.hasAttribute('data-rate')) {
       var id = t.getAttribute('data-rate'), val = t.getAttribute('data-v'), cur = S.rate[id] || { v: '', c: '' };
       S.rate[id] = { v: cur.v === val ? '' : val, c: cur.c }; save(); render(); return;
@@ -1008,11 +963,18 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
       var o2 = curRow(), r2 = o2.list[posOf(o2.list, S.si)];
       elSet(o2.prop, o2.pg, S.si, t.getAttribute('data-el'), r2, { st: t.getAttribute('data-val') === 'mod' ? 'mod' : 'keep' }); save(); render(); return;
     }
-    if (t.hasAttribute('data-alloff')) { setAll(t.getAttribute('data-alloff'), false); save(); render(); return; }
     if (t.hasAttribute('data-move')) {
       var o3 = curRow(), l2 = o3.list, i = Number(t.getAttribute('data-move')), dd = Number(t.getAttribute('data-dir')), j = i + dd;
       if (j < 0 || j >= l2.length) return;
+      var fromTop = {}; app.querySelectorAll('.hs[data-selsec]').forEach(function (h) { fromTop[h.getAttribute('data-selsec')] = h.getBoundingClientRect().top; });
       var tmp = l2[i]; l2[i] = l2[j]; l2[j] = tmp; save(); render();
+      /* Animation de l'échange (toutes les pages à sections réordonnables) : les lignes glissent de leur ancienne place vers la nouvelle, 300 ms. */
+      if (!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+        app.querySelectorAll('.hs[data-selsec]').forEach(function (h) {
+          var dy = fromTop[h.getAttribute('data-selsec')] - h.getBoundingClientRect().top;
+          if (Math.abs(dy) > 1 && h.animate) h.animate([{ transform: 'translateY(' + dy + 'px)' }, { transform: 'none' }], { duration: 300, easing: 'ease-in-out' });
+        });
+      }
       var ar = app.querySelector('[data-move="' + j + '"][data-dir="' + dd + '"]') || app.querySelector('[data-move="' + j + '"]'); if (ar && !ar.disabled) ar.focus();
       return;
     }
@@ -1020,7 +982,7 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
       var oh = curRow(), hi = Number(t.getAttribute('data-hm')), hv = t.getAttribute('data-val'), hr = oh.list[posOf(oh.list, hi)], hk = oh.prop + '|' + oh.pg.id + '|' + hi;
       if (hv === 'remove') { hr.keep = false; S.ed[hk] = false; }
       else { hr.keep = true; S.ed[hk] = hv === 'mod';
-        if (hv === 'keep') { EL_DEF.forEach(function (d) { if (d[0] === 'mise') { hr.mod = false; hr.c = ''; } else delete S.el[elKey(oh.prop, oh.pg, hi, d[0])]; }); oh.pg.photos.forEach(function (ph, pi) { if (ph.s === hi + 1 || ph.after === hi + 1) S.pho[oh.prop + '|' + oh.pg.id + '|' + pi] = 'keep'; }); } }
+        if (hv === 'keep') { elDefs(oh.pg, hi).forEach(function (d) { if (d[0] === 'mise') { hr.mod = false; hr.c = ''; } else delete S.el[elKey(oh.prop, oh.pg, hi, d[0])]; }); oh.pg.photos.forEach(function (ph, pi) { if (ph.s === hi + 1 || ph.after === hi + 1) S.pho[oh.prop + '|' + oh.pg.id + '|' + pi] = 'keep'; }); } }
       save(); render(); return;
     }
     if (t.hasAttribute('data-hsite')) { var sk = t.getAttribute('data-hsite'), sp = refProp(); siteSet(sp, sk, t.getAttribute('data-val') === 'mod' ? { st: 'mod' } : { st: 'keep', c: '', ck: {}, cc: '', ca: '' }); save(); render(); return; }
@@ -1029,7 +991,7 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
     if (t.hasAttribute('data-selsec')) { S.si = Number(t.getAttribute('data-selsec')); S.sel = S.si; S.focus = ''; save(); render(); scrollFrameToHot(true); return; }
     if (t.hasAttribute('data-pho')) { S.pho[t.getAttribute('data-pho')] = phoNorm(t.getAttribute('data-val')); save(); render(); return; }
     if (t.hasAttribute('data-look')) { S.focus = t.getAttribute('data-look'); render(); scrollFrameToHot(true); return; }
-    if (t.hasAttribute('data-send')) { if (!status().length) { if (phoList('mod').length) openPhotoModal(t); else doSend(); } return; }
+    if (t.hasAttribute('data-send')) { if (status().length) { showMiss = true; render(); var ma = document.getElementById('miss-alert'); if (ma) ma.scrollIntoView({ block: 'center' }); return; } showMiss = false; if (phoList('mod').length) openPhotoModal(t); else doSend(); return; }
   });
   document.addEventListener('keydown', function (e) {
     if (modal) {
@@ -1042,7 +1004,7 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
       }
       return;
     }
-    if (e.key === 'Escape' && onHome() && !document.getElementById('font-list').hidden) return;
+    if (e.key === 'Escape' && onHome() && ((document.getElementById('font-list') && !document.getElementById('font-list').hidden) || (document.getElementById('pal-list') && !document.getElementById('pal-list').hidden))) return;
     if (e.key === 'Escape' && onHome()) { deselect(); return; }
     if (e.key === 'Escape' && S.focus) { S.focus = ''; render(); }
   });
@@ -1067,10 +1029,10 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
   }, true);
   /* Liste de choix de la police (composant accessible : bouton + listbox, libellés longs à la ligne). */
   function fontClose(focusBtn) { var l = document.getElementById('font-list'), b = document.getElementById('font-btn'); if (l) l.hidden = true; if (b) { b.setAttribute('aria-expanded', 'false'); if (focusBtn) b.focus(); } }
-  function fontOpenList() { var l = document.getElementById('font-list'), b = document.getElementById('font-btn'); if (!l) return; l.hidden = false; b.setAttribute('aria-expanded', 'true'); var o = l.querySelector('[aria-selected="true"]') || l.firstElementChild; o.focus(); }
+  function fontOpenList() { var l = document.getElementById('font-list'), b = document.getElementById('font-btn'); if (!l) return; palClose(false); l.hidden = false; b.setAttribute('aria-expanded', 'true'); var o = l.querySelector('[aria-selected="true"]') || l.firstElementChild; o.focus(); }
   document.addEventListener('click', function (e) {
     var tb = e.target.closest('[data-fontbtn]'), to = e.target.closest('[data-fontopt]');
-    if (to) { e.stopPropagation(); var fr = refProp(), val = to.getAttribute('data-fontopt'); if (val === '') delete S.font[fr]; else S.font[fr] = val; save(); render(); var nb = document.getElementById('font-btn'); if (nb) nb.focus(); return; }
+    if (to) { e.stopPropagation(); var fr = refProp(), val = to.getAttribute('data-fontopt'); S.font[fr] = val; save(); render(); var nb = document.getElementById('font-btn'); if (nb) nb.focus(); return; }
     if (tb) { e.stopPropagation(); var l = document.getElementById('font-list'); if (l.hidden) fontOpenList(); else fontClose(false); return; }
     var l2 = document.getElementById('font-list'); if (l2 && !l2.hidden) fontClose(false);
   }, true);
@@ -1086,6 +1048,27 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
     else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); fontClose(true); }
     else if (e.key === 'Tab') fontClose(false);
   }, true);
+  /* Liste de choix de la couleur (bouton + listbox, pastille et nom par option). */
+  function palClose(focusBtn) { var l = document.getElementById('pal-list'), b = document.getElementById('pal-btn'); if (l) l.hidden = true; if (b) { b.setAttribute('aria-expanded', 'false'); if (focusBtn) b.focus(); } }
+  function palOpenList() { var l = document.getElementById('pal-list'), b = document.getElementById('pal-btn'); if (!l) return; fontClose(false); l.hidden = false; b.setAttribute('aria-expanded', 'true'); var o = l.querySelector('[aria-selected="true"]') || l.firstElementChild; o.focus(); }
+  document.addEventListener('click', function (e) {
+    var tb = e.target.closest('[data-palbtn]'), to = e.target.closest('[data-palopt]');
+    if (to) { e.stopPropagation(); var pv = to.getAttribute('data-palopt'), pr = refProp(); if (pv === '') delete S.pal[pr]; else S.pal[pr] = pv === 'other' ? 'other' : Number(pv); save(); render(); var nb = document.getElementById('pal-btn'); if (nb) nb.focus(); return; }
+    if (tb) { e.stopPropagation(); var l = document.getElementById('pal-list'); if (l.hidden) palOpenList(); else palClose(false); return; }
+    var l2 = document.getElementById('pal-list'); if (l2 && !l2.hidden) palClose(false);
+  }, true);
+  document.addEventListener('keydown', function (e) {
+    var l = document.getElementById('pal-list'); if (!l) return;
+    if (e.target.closest('[data-palbtn]') && (e.key === 'ArrowDown' || e.key === 'ArrowUp') && l.hidden) { e.preventDefault(); palOpenList(); return; }
+    if (!e.target.closest('#pal-list')) return;
+    var os = Array.prototype.slice.call(l.children), k = os.indexOf(e.target);
+    if (e.key === 'ArrowDown') { e.preventDefault(); os[Math.min(os.length - 1, k + 1)].focus(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); os[Math.max(0, k - 1)].focus(); }
+    else if (e.key === 'Home') { e.preventDefault(); os[0].focus(); }
+    else if (e.key === 'End') { e.preventDefault(); os[os.length - 1].focus(); }
+    else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); palClose(true); }
+    else if (e.key === 'Tab') palClose(false);
+  }, true);
   document.addEventListener('change', function (e) {
     var t = e.target;
     if (t.hasAttribute('data-font')) { var fr0 = refProp(); if (t.value === '') delete S.font[fr0]; else S.font[fr0] = t.value; save(); render(); }
@@ -1093,7 +1076,6 @@ h1,.step-title{color:var(--ink);font-weight:800;letter-spacing:-.01em}
     else if (t.hasAttribute('data-hc')) { var hp = t.getAttribute('data-hc').split('|'), oc = curRow(); elSet(oc.prop, oc.pg, Number(hp[0]), hp[1], oc.list[posOf(oc.list, Number(hp[0]))], { st: t.checked ? 'mod' : 'keep' }); save(); render(); }
     else if (t.hasAttribute('data-siteck')) { var sc = t.getAttribute('data-siteck').split('|'), sx = siteGet(refProp(), sc[0]); sx.ck[sc[1]] = t.checked; siteSet(refProp(), sc[0], { ck: sx.ck }); save(); render(); }
     else if (t.hasAttribute('data-hph')) { S.pho[t.getAttribute('data-hph')] = t.checked ? 'mod' : 'keep'; save(); render(); }
-    else if (t.hasAttribute('data-all')) { setAll(t.getAttribute('data-all'), t.checked); save(); render(); }
     else if (t.hasAttribute('data-file')) { var f = t.files && t.files[0]; var k = t.getAttribute('data-file'); if (f) S.phof[k] = f.name; else delete S.phof[k]; save(); render(); }
   });
   document.addEventListener('input', function (e) {
