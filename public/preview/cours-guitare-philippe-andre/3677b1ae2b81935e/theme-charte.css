@@ -1,0 +1,27 @@
+/* Bascule clair/sombre des trois pages de la charte du portfolio (retour V0, arrivée, tarif). Sombre dérivé de la charte dev, pas issu du portfolio. */
+.theme-toggle { flex: none; margin-left: auto; width: 44px; height: 44px; padding: 0; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .2s ease, box-shadow .2s ease; }
+.brand + .versions + .theme-toggle, .versions + .theme-toggle { margin-left: 0; }
+.theme-toggle svg { width: 20px; height: 20px; display: block; }
+.theme-toggle:hover, .theme-toggle:focus-visible { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(20,18,16,.12); }
+.theme-toggle:active { transform: translateY(1px) scale(.97); box-shadow: none; }
+.theme-toggle:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.theme-toggle .i-soleil { display: none; }
+:root[data-theme="dark"] .theme-toggle .i-soleil { display: block; }
+:root[data-theme="dark"] .theme-toggle .i-lune { display: none; }
+@media (prefers-reduced-motion: reduce) { .theme-toggle { transition: none; } .theme-toggle:hover, .theme-toggle:focus-visible, .theme-toggle:active { transform: none; } }
+
+:root { --danger: #B3261E; }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --danger: #FF8A80;
+  --bg: #16181A; --surface: #1E2124; --surface-2: #25292C; --text: #FAFAF8; --muted: #A9AEB3; --border: #3A3F44;
+  --accent: #8CC4BD; --accent-hover: #8CC4BD; --on-accent: #0E1A1A; --ink: #FAFAF8; --step-bg: #8CC4BD; --step-text: #0E1A1A;
+}
+:root[data-theme="dark"] .ver-btn { background: var(--surface); }
+:root[data-theme="dark"] .ver-btn[aria-current="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+:root[data-theme="dark"] .dlg-champ { background: var(--surface-2); }
+:root[data-theme="dark"] .etapes li::before { color: var(--on-accent); }
+:root[data-theme="dark"] .credit { color: var(--muted); }
+:root[data-theme="dark"] .credit a:hover { color: var(--text); }
+:root[data-theme="dark"] .btn:hover, :root[data-theme="dark"] .btn:focus-visible, :root[data-theme="dark"] .btn-tarif:hover, :root[data-theme="dark"] .btn-tarif:focus-visible, :root[data-theme="dark"] .prop:hover, :root[data-theme="dark"] .prop:focus-within, :root[data-theme="dark"] .theme-toggle:hover, :root[data-theme="dark"] .theme-toggle:focus-visible { box-shadow: 0 8px 18px rgba(0,0,0,.45); }
+:root[data-theme="dark"] dialog { box-shadow: 0 24px 70px rgba(0,0,0,.7); }
