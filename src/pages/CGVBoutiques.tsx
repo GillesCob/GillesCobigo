@@ -10,13 +10,13 @@ import { Link } from "react-router-dom";
 // cf App.tsx isBareLayout. Theme force clair (themeStore.ts, isProspectFacing), aucun bouton de
 // bascule sur cette page (20/08, alignee sur le mockup).
 
-// Repartition du forfait 500€ (20/08) : 30€ fixes pour la mise en ligne (deploiement technique,
-// pas un round de conception), le reste (470€) divise a parts egales sur les 5 rounds de
-// conception (V1 a V5, V0 = version gratuite envoyee) = 94€ chacun. Remplace l'ancienne repartition egale sur 6 etapes (500/6),
-// qui surevaluait la mise en ligne au meme niveau qu'un round de conception.
-const BASE_STEPS = ["V1", "V2", "V3", "V4", "V5"];
-const MISE_EN_LIGNE_VALUE = 30;
-const ROUND_VALUE = (500 - MISE_EN_LIGNE_VALUE) / BASE_STEPS.length;
+// Tarif (decision du 25/11/2026) : 2 allers-retours (V1 et V2, V0 = version gratuite envoyee) a 90€
+// chacun + mise en ligne 50€ (deploiement technique, pas un round de conception) = a partir de 230€.
+// Aller-retour supplementaire ou modification apres la mise en ligne : 90€, sans plafond ni palier.
+const BASE_STEPS = ["V1", "V2"];
+const MISE_EN_LIGNE_VALUE = 50;
+const ROUND_VALUE = 90;
+const BASE_TOTAL = ROUND_VALUE * BASE_STEPS.length + MISE_EN_LIGNE_VALUE;
 const BASE_ACQUIS = BASE_STEPS.map((_, i) => Math.round(ROUND_VALUE * (i + 1)));
 
 type Scenario = "none" | "domain";
@@ -64,7 +64,7 @@ export default function CGVBoutiques() {
     };
   }, []);
 
-  const total = scenario === "domain" ? 520 : 500;
+  const total = scenario === "domain" ? BASE_TOTAL + 20 : BASE_TOTAL;
   const domainPart = scenario === "domain" ? 20 : 0;
 
   const rows: { label: string; acquis: number }[] = BASE_STEPS.map((label, i) => ({
@@ -87,7 +87,7 @@ export default function CGVBoutiques() {
               <ul className="list-disc list-outside pl-5 space-y-1 mt-2">
                 <li>la création du site</li>
                 <li>la V0 (deux propositions réalisées gratuitement avant tout engagement)</li>
-                <li>5 allers-retours*, de la V1 à la V5, pour aller jusqu'au site que vous souhaitez</li>
+                <li>2 allers-retours*, de la V1 à la V2, pour aller jusqu'au site que vous souhaitez</li>
                 <li>la mise en ligne</li>
                 <li>un site qui vous appartient, avec l'export complet de son code pour le faire reprendre par la personne de votre choix</li>
                 <li>une notice (README) qui accompagne le code</li>
@@ -107,8 +107,8 @@ export default function CGVBoutiques() {
             <section>
               <h2 className="text-base font-semibold text-foreground mb-2">2. Tarifs</h2>
               <ul className="list-disc list-outside pl-5 space-y-1">
-                <li>Forfait initial : 500€.</li>
-                <li>Aller-retour supplémentaire (V6, V7...) : 40€.</li>
+                <li>À partir de 230€ : 2 allers-retours à 90€ et la mise en ligne à 50€.</li>
+                <li>Aller-retour supplémentaire, ou modification du site après la mise en ligne : 90€, sans plafond.</li>
                 <li>Gestion de votre nom de domaine par le prestataire : 20€/an, renouvellement et gestion technique compris.</li>
                 <li>Gestion de votre nom de domaine par vos soins : toute demande technique fait l'objet d'un devis, à partir de 40€ (article 8).</li>
                 <li>Toute évolution ou projet plus ambitieux : devis séparé.</li>
@@ -161,7 +161,7 @@ export default function CGVBoutiques() {
             <section id="remboursement">
               <h2 className="text-base font-semibold text-foreground mb-2">5. Durée et résiliation</h2>
               <p>
-                Le forfait est réglé à la signature et se répartit en 94€ par aller-retour et 30€ pour
+                Le forfait est réglé à la signature et se répartit en 90€ par aller-retour et 50€ pour
                 la mise en ligne (détail dans le tableau ci-dessous).
               </p>
               <p className="mt-2">
@@ -169,14 +169,14 @@ export default function CGVBoutiques() {
                 remboursé au prorata.
               </p>
               <p className="mt-2">
-                Il n'est pas nécessaire d'aller jusqu'à la V5 pour être mis en ligne : dès qu'une version
-                vous convient, elle peut être mise en ligne moyennant les 30€ de mise en ligne, les allers-retours
+                Il n'est pas nécessaire d'aller jusqu'à la V2 pour être mis en ligne : dès qu'une version
+                vous convient, elle peut être mise en ligne moyennant les 50€ de mise en ligne, les allers-retours
                 restants étant alors remboursés comme pour tout arrêt anticipé.
               </p>
               <p className="mt-2 mb-4">
-                Une prestation arrêtée de manière anticipée reste facturée au tarif du forfait, soit 94€ par
-                aller-retour déjà livré. Le tarif de 40€ ne s'applique qu'à chaque nouvel aller-retour demandé
-                au-delà des 5 inclus dans le forfait (V1 à V5), après la mise en ligne.
+                Une prestation arrêtée de manière anticipée reste facturée au tarif du forfait, soit 90€ par
+                aller-retour déjà livré. Chaque nouvel aller-retour demandé au-delà des 2 inclus (V1 et V2), ou
+                chaque modification du site après la mise en ligne, est facturé 90€.
               </p>
 
               <div className="inline-flex rounded-md border border-border overflow-hidden mb-4">
@@ -187,7 +187,7 @@ export default function CGVBoutiques() {
                     scenario === "none" ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  Sans nom de domaine (500€)
+                  Sans nom de domaine (230€)
                 </button>
                 <button
                   type="button"
@@ -196,7 +196,7 @@ export default function CGVBoutiques() {
                     scenario === "domain" ? "bg-secondary text-secondary-foreground" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  Avec nom de domaine (520€)
+                  Avec nom de domaine (250€)
                 </button>
               </div>
 
@@ -225,7 +225,7 @@ export default function CGVBoutiques() {
               <details className="text-xs text-muted-foreground">
                 <summary className="cursor-pointer list-none text-foreground hover:underline">+ d'infos sur ce calcul</summary>
                 <p className="mt-2">
-                  Montants arrondis à l'euro. Les 30€ de mise en ligne correspondent au déploiement
+                  Montants arrondis à l'euro. Les 50€ de mise en ligne correspondent au déploiement
                   technique, pas à une version de conception. Les 20€ du nom de domaine sont acquis
                   dès la signature, indépendamment de la suite.
                 </p>
